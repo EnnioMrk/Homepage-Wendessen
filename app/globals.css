@@ -3,70 +3,90 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    :root {
+        /* Main color palette based on the Wendessen village colors */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+        /* Primary: Fresh green */
+        --primary-hsl: 102 28% 57%; /* #7FB069 */
+        --primary-light-hsl: 102 28% 67%; /* #9BC88A */
+        --primary-dark-hsl: 102 32% 35%; /* Darker for better contrast: #4D7639 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+        /* Secondary: Deep blue-gray (previously accent) */
+        --secondary-hsl: 200 45% 32%; /* #2B5F75 */
+        --secondary-light-hsl: 201 41% 41%; /* #3D7A94 */
+        --secondary-dark-hsl: 200 55% 24%; /* #1A4A5C */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+        /* Accent: Warm gold (previously secondary) */
+        --accent-hsl: 39 72% 67%; /* #E8B96C */
+        --accent-light-hsl: 40 82% 80%; /* #F5D4A3 */
+        --accent-dark-hsl: 39 61% 56%; /* #D4A04A */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+        /* Standard UI colors */
+        --background: 0 0% 100%; /* white */
+        --foreground: 0 0% 10%; /* #1A1A1A */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 10%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 10%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+        /* Re-map the color variables to our palette */
+        --primary: var(--primary-hsl);
+        --primary-foreground: 0 0% 100%;
+        --primary-dark: var(--primary-dark-hsl);
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+        --secondary: var(--secondary-hsl);
+        --secondary-foreground: 0 0% 10%;
 
-    --radius: 0.5rem;
-  }
+        --accent: var(--accent-hsl);
+        --accent-foreground: 0 0% 100%;
+
+        --muted: 210 20% 96%;
+        --muted-foreground: 215 8% 50%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: var(--primary-hsl);
+
+        --radius: 0.5rem;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
 }
 
 /* Custom styles for navigation */
 .navigation-menu-trigger {
-  @apply bg-white text-foreground hover:bg-accent hover:text-accent-foreground;
+    @apply bg-white text-foreground hover:bg-primary/20 hover:text-primary-dark;
 }
 
 .navigation-menu-content {
-  @apply bg-white border border-border shadow-lg;
+    @apply bg-white border border-border shadow-lg;
 }
 
 .navigation-menu-item {
-  @apply hover:bg-accent hover:text-accent-foreground;
+    @apply hover:bg-primary/15 hover:text-primary-dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
 }
