@@ -37,8 +37,10 @@ export default function BackgroundElements() {
             {/* Parallax scrolling rotated rectangle */}
             <div
                 ref={rectangleRef}
-                className="absolute bg-gradient-to-r from-primary/40 to-primary-light/50"
+                className="absolute"
                 style={{
+                    background:
+                        'linear-gradient(135deg, rgba(24, 157, 73, 0.5) 0%, rgba(16, 120, 55, 0.55) 50%, rgba(12, 95, 43, 0.6) 100%)',
                     width: '200vw',
                     height: '18vh',
                     top: 'calc(30vh - 5vh)',
@@ -46,15 +48,16 @@ export default function BackgroundElements() {
                     transform: 'translate(-50%, -50%) rotate(12deg)',
                     zIndex: -2,
                     willChange: 'transform' /* Performance optimization */,
-                    boxShadow: '0 4px 30px rgba(127, 176, 105, 0.2)',
+                    boxShadow:
+                        '0 4px 30px rgba(24, 157, 73, 0.3), 0 8px 60px rgba(12, 95, 43, 0.2)',
                 }}
             ></div>
 
             {/* Subtle background pattern */}
             <div
-                className="absolute inset-0 opacity-[0.08]"
+                className="absolute inset-0 opacity-[0.06]"
                 style={{
-                    backgroundImage: `radial-gradient(circle at 1px 1px, rgba(75, 85, 99, 0.4) 1px, transparent 0)`,
+                    backgroundImage: `radial-gradient(circle at 1px 1px, rgba(24, 157, 73, 0.4) 1px, transparent 0)`,
                     backgroundSize: '30px 30px',
                 }}
             ></div>
