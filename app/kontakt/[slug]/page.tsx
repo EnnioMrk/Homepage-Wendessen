@@ -12,9 +12,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
-    const contact = getContactBySlug(params.slug);
+    const { slug } = await params;
+    const contact = getContactBySlug(slug);
 
     if (!contact) {
         return {
@@ -29,8 +30,9 @@ export async function generateMetadata({
     };
 }
 
-export default function ContactPage({ params }: { params: { slug: string } }) {
-    const contact = getContactBySlug(params.slug);
+export default async function ContactPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const contact = getContactBySlug(slug);
 
     if (!contact) {
         notFound();

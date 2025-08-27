@@ -3,7 +3,8 @@ import BackButton from './components/BackButton';
 
 export const metadata = {
     title: 'Seite nicht gefunden - Wendessen',
-    description: 'Die angeforderte Seite wurde nicht gefunden. Wendessen wird stetig erweitert.',
+    description:
+        'Die angeforderte Seite wurde nicht gefunden. Wendessen wird stetig erweitert.',
 };
 
 export default function NotFound() {
@@ -48,25 +49,41 @@ export default function NotFound() {
 
                     <div className="max-w-2xl mx-auto space-y-4">
                         <p className="text-xl text-gray-600 leading-relaxed">
-                            Diese Seite befindet sich noch im Aufbau oder wurde nicht gefunden.
+                            Diese Seite befindet sich noch im Aufbau oder wurde
+                            nicht gefunden.
                         </p>
                         <p className="text-lg text-gray-500">
-                            Wendessen wird stetig erweitert - schauen Sie gerne bald wieder vorbei!
+                            Wendessen wird stetig erweitert - schauen Sie gerne
+                            bald wieder vorbei!
                         </p>
                     </div>
 
                     {/* Construction Elements */}
                     <div className="flex items-center justify-center space-x-8 my-12">
                         <div className="flex items-center space-x-2 text-orange-600">
-                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            <svg
+                                className="w-6 h-6"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                             </svg>
                             <span className="font-medium">Im Aufbau</span>
                         </div>
                         <div className="w-px h-8 bg-gray-300"></div>
                         <div className="flex items-center space-x-2 text-yellow-600">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
                             </svg>
                             <span className="font-medium">Bald verfügbar</span>
                         </div>
@@ -108,13 +125,21 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <svg className="w-5 h-5 text-green-600 group-hover:text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                        <svg
+                                            className="w-5 h-5 text-green-600 group-hover:text-orange-600"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <div className="font-semibold text-gray-800 group-hover:text-orange-700">Dorfleben</div>
-                                        <div className="text-sm text-gray-500">Ortsrat, Vereine & mehr</div>
+                                        <div className="font-semibold text-gray-800 group-hover:text-orange-700">
+                                            Dorfleben
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            Ortsrat, Vereine & mehr
+                                        </div>
                                     </div>
                                 </div>
                             </Link>
@@ -125,13 +150,21 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <svg className="w-5 h-5 text-blue-600 group-hover:text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        <svg
+                                            className="w-5 h-5 text-blue-600 group-hover:text-orange-600"
+                                            fill="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <div className="font-semibold text-gray-800 group-hover:text-orange-700">Wir Wendesser</div>
-                                        <div className="text-sm text-gray-500">Unsere Gemeinschaft</div>
+                                        <div className="font-semibold text-gray-800 group-hover:text-orange-700">
+                                            Wir Wendesser
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            Unsere Gemeinschaft
+                                        </div>
                                     </div>
                                 </div>
                             </Link>
@@ -142,13 +175,27 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <svg className="w-5 h-5 text-purple-600 group-hover:text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        <svg
+                                            className="w-5 h-5 text-purple-600 group-hover:text-orange-600"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                            />
                                         </svg>
                                     </div>
                                     <div>
-                                        <div className="font-semibold text-gray-800 group-hover:text-orange-700">Kontakt</div>
-                                        <div className="text-sm text-gray-500">Ansprechpartner</div>
+                                        <div className="font-semibold text-gray-800 group-hover:text-orange-700">
+                                            Kontakt
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            Ansprechpartner
+                                        </div>
                                     </div>
                                 </div>
                             </Link>
@@ -158,7 +205,8 @@ export default function NotFound() {
                     {/* Footer Note */}
                     <div className="mt-12 text-center">
                         <p className="text-gray-400 text-sm">
-                            💻 Diese Website wird kontinuierlich erweitert und verbessert
+                            💻 Diese Website wird kontinuierlich erweitert und
+                            verbessert
                         </p>
                     </div>
                 </div>
