@@ -225,7 +225,7 @@ const dorflebenItems = [
     },
     {
         title: 'Wir Wendesser',
-        href: '/dorfleben/wir-wendesser',
+        href: '/wir-wendesser',
     },
     {
         title: 'Wetter',

@@ -15,7 +15,7 @@ export function Footer() {
                 />
 
                 <p className="text-sm text-muted-foreground">
-                    © {new Date().getFullYear()} Copyright
+                    © 2025 Copyright
                 </p>
 
                 <div className="flex items-center gap-2">

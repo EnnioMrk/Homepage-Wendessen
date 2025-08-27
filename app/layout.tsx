@@ -20,24 +20,14 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="de" className="h-full">
+        <html lang="de" className="h-full" suppressHydrationWarning={true}>
             <body
                 className={`${inter.className} min-h-full bg-background-secondary`}
+                suppressHydrationWarning={true}
             >
                 <div className="flex min-h-screen flex-col">
-                    {/* Banner image at the very top */}
-                    <div className="w-full bg-background flex justify-center border-b border-border">
-                        <Image
-                            src="/images/Banner.jpg"
-                            alt="Willkommen in Wendessen"
-                            width={1853}
-                            height={275}
-                            priority
-                            className="w-full h-auto object-cover max-h-[220px] md:max-h-[275px] shadow-md rounded-b-lg"
-                        />
-                    </div>
                     {/* Navigation with Wappen icon */}
-                    <header className="sticky top-0 z-50 w-full border-b border-border bg-background relative">
+                    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
                         <div className="container mx-auto flex items-center justify-center py-1 relative">
                             {/* Absolutely positioned icon on the left */}
                             <div className="absolute left-0 top-1/2 -translate-y-1/2">
