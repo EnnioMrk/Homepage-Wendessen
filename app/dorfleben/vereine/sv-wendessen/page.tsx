@@ -125,7 +125,7 @@ export default function SVWendessenPage() {
                                     >
                                         <path d="M5,16L3,5H1V3H4L6,14H18.5L19.5,11H21.5L20.2,16H5ZM12,2L13.5,6H18L15,9L16.5,13L12,10L7.5,13L9,9L6,6H10.5L12,2Z" />
                                     </svg>
-                                    Unser Stolz
+                                    Unser Erflog
                                 </h3>
                                 <p className="text-green-800">
                                     Stolz sind wir auf die mittlerweile
