@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export const metadata = {
     title: 'Impressum - Wendessen',
     description:
@@ -305,7 +307,7 @@ export default function ImpressumPage() {
                                 personenbezogenen Daten finden Sie in unserer
                                 separaten Datenschutzerklärung.
                             </p>
-                            <a
+                            <Link
                                 href="/kontakt/datenschutz"
                                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-full hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                             >
@@ -323,7 +325,7 @@ export default function ImpressumPage() {
                                     />
                                 </svg>
                                 Zur Datenschutzerklärung
-                            </a>
+                            </Link>
                         </div>
                     </div>
 
