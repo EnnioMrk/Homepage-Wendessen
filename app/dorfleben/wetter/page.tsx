@@ -1,6 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import {
+    Cloud,
+    Thermometer,
+    Droplets,
+    Wind,
+    TrendingUp,
+    Sun,
+    CloudRain,
+    Calendar,
+    MapPin,
+    Clock,
+    AlertTriangle,
+} from 'lucide-react';
 
 interface WeatherData {
     location: string;
@@ -125,19 +138,7 @@ export default function WetterPage() {
             <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="text-red-600 mb-4">
-                        <svg
-                            className="w-16 h-16 mx-auto"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                            />
-                        </svg>
+                        <AlertTriangle className="w-16 h-16 mx-auto" />
                     </div>
                     <p className="text-red-600 font-medium">{error}</p>
                 </div>
@@ -156,19 +157,7 @@ export default function WetterPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <svg
-                                    className="w-12 h-12 text-blue-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
-                                    />
-                                </svg>
+                                <Cloud className="w-12 h-12 text-blue-600" />
                             </div>
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
                                 Wetter
@@ -214,13 +203,7 @@ export default function WetterPage() {
                                 <h3 className="text-lg font-bold text-orange-800">
                                     Temperatur
                                 </h3>
-                                <svg
-                                    className="w-8 h-8 text-orange-600"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M15 13V5a3 3 0 0 0-6 0v8a5 5 0 0 0 6 0z" />
-                                </svg>
+                                <Thermometer className="w-8 h-8 text-orange-600" />
                             </div>
                             <div className="text-center">
                                 <div className="text-4xl font-bold text-orange-700 mb-2">
@@ -250,19 +233,7 @@ export default function WetterPage() {
                                 <h3 className="text-lg font-bold text-blue-800">
                                     Luftfeuchte
                                 </h3>
-                                <svg
-                                    className="w-8 h-8 text-blue-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                                    />
-                                </svg>
+                                <Droplets className="w-8 h-8 text-blue-600" />
                             </div>
                             <div className="text-center">
                                 <div className="text-4xl font-bold text-blue-700 mb-2">
@@ -290,19 +261,7 @@ export default function WetterPage() {
                                 <h3 className="text-lg font-bold text-green-800">
                                     Wind
                                 </h3>
-                                <svg
-                                    className="w-8 h-8 text-green-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
+                                <Wind className="w-8 h-8 text-green-600" />
                             </div>
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-green-700 mb-2">
@@ -326,19 +285,7 @@ export default function WetterPage() {
                                 <h3 className="text-lg font-bold text-purple-800">
                                     Luftdruck
                                 </h3>
-                                <svg
-                                    className="w-8 h-8 text-purple-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                                    />
-                                </svg>
+                                <TrendingUp className="w-8 h-8 text-purple-600" />
                             </div>
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-purple-700 mb-2">
@@ -373,13 +320,7 @@ export default function WetterPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                    </svg>
+                                    <Sun className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-3">
                                     Sonnenstrahlung
@@ -397,19 +338,7 @@ export default function WetterPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                                        />
-                                    </svg>
+                                    <CloudRain className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-3">
                                     Niederschlag
@@ -444,19 +373,7 @@ export default function WetterPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
-                                        />
-                                    </svg>
+                                    <Calendar className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-3">
                                     Vorhersage
@@ -483,41 +400,11 @@ export default function WetterPage() {
                         </p>
                         <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
                             <div className="flex items-center space-x-1">
-                                <svg
-                                    className="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                    />
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                </svg>
+                                <MapPin className="w-4 h-4" />
                                 <span>79m über NN</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                                <svg
-                                    className="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
+                                <Clock className="w-4 h-4" />
                                 <span>Aktualisierung alle 5 Min.</span>
                             </div>
                         </div>

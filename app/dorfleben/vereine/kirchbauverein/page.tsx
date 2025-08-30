@@ -1,4 +1,19 @@
 import Image from 'next/image';
+import {
+    Shield,
+    Building,
+    Clock,
+    CheckCircle,
+    Wrench,
+    Hammer,
+    Music,
+    MapPin,
+    Mail,
+    Users,
+    Plus,
+    Heart,
+    Globe,
+} from 'lucide-react';
 
 export const metadata = {
     title: 'Kirchbauverein St. Georg Wendessen - Dorfleben',
@@ -18,13 +33,7 @@ export default function KirchbauvereinsPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <svg
-                                    className="w-12 h-12 text-blue-700"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 2L3 7V10.5C3 16.75 7.3 22.4 12 24C16.7 22.4 21 16.75 21 10.5V7L12 2ZM12 4.3L18 7.9V10.5C18 15.64 15.03 20.09 12 21.5C8.97 20.09 6 15.64 6 10.5V7.9L12 4.3ZM11 7V13H13V7H11ZM11 15V17H13V15H11Z" />
-                                </svg>
+                                <Shield className="w-12 h-12 text-blue-700" />
                             </div>
                             <div className="text-left">
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
@@ -93,19 +102,7 @@ export default function KirchbauvereinsPage() {
                             {/* Foundation */}
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-blue-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                        />
-                                    </svg>
+                                    <Building className="w-6 h-6 mr-2" />
                                     Vereinsgründung
                                 </h3>
                                 <p className="text-lg">
@@ -122,19 +119,7 @@ export default function KirchbauvereinsPage() {
                             {/* Historical Context */}
                             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-purple-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                                    <Clock className="w-6 h-6 mr-2" />
                                     Historischer Hintergrund
                                 </h3>
                                 <p>
@@ -156,19 +141,7 @@ export default function KirchbauvereinsPage() {
                             {/* Mission */}
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-green-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                                    <CheckCircle className="w-6 h-6 mr-2" />
                                     Unsere Mission
                                 </h3>
                                 <p>
@@ -200,19 +173,7 @@ export default function KirchbauvereinsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-green-700 mb-6 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                                        />
-                                    </svg>
+                                    <Wrench className="w-8 h-8 mr-3" />
                                     Abgeschlossene Projekte
                                 </h3>
                                 <ul className="space-y-3 text-gray-700">
@@ -243,19 +204,7 @@ export default function KirchbauvereinsPage() {
 
                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 17h5l-5 5v-5zM4.222 3.808l6.717 6.717-2.04 2.04L2.182 5.848 4.222 3.808zM10.323 13.323L22 1.646l-1.646-1.646L8.677 11.677l1.646 1.646z"
-                                        />
-                                    </svg>
+                                    <Hammer className="w-8 h-8 mr-3" />
                                     Aktuelles Projekt 2022
                                 </h3>
                                 <div className="bg-white p-6 rounded-xl border border-blue-200">
@@ -301,19 +250,7 @@ export default function KirchbauvereinsPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-white p-6 rounded-2xl shadow-lg">
                                     <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                                        <svg
-                                            className="w-5 h-5 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                                            />
-                                        </svg>
+                                        <Music className="w-5 h-5 mr-2" />
                                         Musikrichtungen
                                     </h4>
                                     <ul className="space-y-2 text-gray-600">
@@ -326,25 +263,7 @@ export default function KirchbauvereinsPage() {
 
                                 <div className="bg-white p-6 rounded-2xl shadow-lg">
                                     <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                                        <svg
-                                            className="w-5 h-5 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                            />
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                            />
-                                        </svg>
+                                        <MapPin className="w-5 h-5 mr-2" />
                                         Veranstaltungsorte
                                     </h4>
                                     <ul className="space-y-2 text-gray-600">
@@ -367,19 +286,7 @@ export default function KirchbauvereinsPage() {
 
                             <div className="bg-white p-6 rounded-2xl border-2 border-purple-200">
                                 <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-5 h-5 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <Mail className="w-5 h-5 mr-2" />
                                     Newsletter abonnieren
                                 </h4>
                                 <p className="text-gray-700 mb-3">
@@ -390,19 +297,7 @@ export default function KirchbauvereinsPage() {
                                     href="mailto:kirchbauverein.wendessen@gmail.com"
                                     className="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold"
                                 >
-                                    <svg
-                                        className="w-4 h-4 mr-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <Mail className="w-4 h-4 mr-1" />
                                     kirchbauverein.wendessen@gmail.com
                                 </a>
                             </div>
@@ -421,19 +316,7 @@ export default function KirchbauvereinsPage() {
                         {/* Membership */}
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg">
                             <h3 className="text-2xl font-bold text-green-700 mb-6 flex items-center">
-                                <svg
-                                    className="w-8 h-8 mr-3"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                                    />
-                                </svg>
+                                <Users className="w-8 h-8 mr-3" />
                                 Jahresbeiträge
                             </h3>
 
@@ -477,19 +360,7 @@ export default function KirchbauvereinsPage() {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                                 >
-                                    <svg
-                                        className="w-5 h-5 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                                        />
-                                    </svg>
+                                    <Plus className="w-5 h-5 mr-2" />
                                     Beitragsformular
                                 </a>
                             </div>
@@ -498,19 +369,7 @@ export default function KirchbauvereinsPage() {
                         {/* Donations */}
                         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
                             <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                <svg
-                                    className="w-8 h-8 mr-3"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                </svg>
+                                <Heart className="w-8 h-8 mr-3" />
                                 Einmalige Spende
                             </h3>
 
@@ -578,44 +437,17 @@ export default function KirchbauvereinsPage() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                             >
-                                <svg
-                                    className="w-5 h-5 mr-2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
-                                    />
-                                </svg>
+                                <Globe className="w-5 h-5 mr-2" />
                                 www.kirchbauverein-wendessen.de
                             </a>
                             <a
                                 href="mailto:kirchbauverein.wendessen@gmail.com"
                                 className="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                             >
-                                <svg
-                                    className="w-5 h-5 mr-2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                    />
-                                </svg>
+                                <Mail className="w-5 h-5 mr-2" />
                                 E-Mail schreiben
                             </a>
                         </div>
-                        <p className="text-2xl font-bold text-blue-700 mt-8">
-                            Wir freuen uns auf Sie! ⛪
-                        </p>
                     </div>
                 </div>
             </div>

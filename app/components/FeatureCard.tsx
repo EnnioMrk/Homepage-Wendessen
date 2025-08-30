@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { ArrowRight } from 'lucide-react';
 
 interface FeatureCardProps {
     title: string;
@@ -68,19 +69,7 @@ export default function FeatureCard({
                             className={`inline-flex items-center justify-center px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-4 ${buttonColorClasses[buttonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn`}
                         >
                             <span className="mr-2">{buttonText}</span>
-                            <svg
-                                className="w-4 h-4 md:w-5 md:h-5 transform group-hover/btn:translate-x-1 transition-transform duration-300"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                                />
-                            </svg>
+                            <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transform group-hover/btn:translate-x-1 transition-transform duration-300" />
                         </a>
                     </div>
                 </div>
@@ -126,19 +115,7 @@ export default function FeatureCard({
                             className={`inline-flex items-center justify-center px-4 md:px-6 py-2 md:py-3 ${buttonColorClasses[buttonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn backdrop-blur-sm`}
                         >
                             <span className="mr-2">{buttonText}</span>
-                            <svg
-                                className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-300"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                                />
-                            </svg>
+                            <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-300" />
                         </a>
                     </div>
                 </div>

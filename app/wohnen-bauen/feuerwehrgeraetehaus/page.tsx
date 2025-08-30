@@ -1,3 +1,14 @@
+import {
+    Building2,
+    MapPin,
+    Wrench,
+    Users,
+    CheckCircle,
+    Clock,
+    Building,
+    Heart,
+} from 'lucide-react';
+
 export const metadata = {
     title: 'Feuerwehrgerätehaus - Wohnen & Bauen in Wendessen',
     description:
@@ -16,25 +27,7 @@ export default function FeuerwehrgeraetehausPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <svg
-                                    className="w-12 h-12 text-red-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                                    />
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 3l7 7-7 7-7-7 7-7z"
-                                    />
-                                </svg>
+                                <Building2 className="w-12 h-12 text-red-600" />
                             </div>
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
                                 Feuerwehrgerätehaus
@@ -77,25 +70,7 @@ export default function FeuerwehrgeraetehausPage() {
                         <div className="space-y-6 text-gray-700 leading-relaxed">
                             <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-bold text-red-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
+                                    <MapPin className="w-6 h-6 mr-3" />
                                     Neues Feuerwehrgerätehaus am Eckgrundstück
                                 </h3>
                                 <p className="text-lg">
@@ -135,19 +110,7 @@ export default function FeuerwehrgeraetehausPage() {
 
                             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-6 rounded-r-2xl">
                                 <div className="flex items-start space-x-3">
-                                    <svg
-                                        className="w-6 h-6 text-yellow-600 mt-1 flex-shrink-0"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                                    <Building className="w-6 h-6 text-yellow-600 mt-1 flex-shrink-0" />
                                     <div>
                                         <h4 className="font-bold text-yellow-800 mb-2">
                                             Aktuelle Situation
@@ -180,25 +143,7 @@ export default function FeuerwehrgeraetehausPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
+                                    <MapPin className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-red-800 mb-3">
                                     Zentrale Lage
@@ -211,19 +156,7 @@ export default function FeuerwehrgeraetehausPage() {
 
                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                        />
-                                    </svg>
+                                    <Wrench className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-blue-800 mb-3">
                                     Moderne Ausstattung
@@ -236,19 +169,7 @@ export default function FeuerwehrgeraetehausPage() {
 
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                                        />
-                                    </svg>
+                                    <Users className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-green-800 mb-3">
                                     Bessere Bedingungen
@@ -276,19 +197,7 @@ export default function FeuerwehrgeraetehausPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                        />
-                                    </svg>
+                                    <Building className="w-6 h-6 mr-3" />
                                     Mehrfamilienhaus zwischen
                                     Feuerwehrgerätehaus und Hotel Gala
                                 </h3>
@@ -340,17 +249,7 @@ export default function FeuerwehrgeraetehausPage() {
                             <div className="space-y-6">
                                 <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-xl border-l-4 border-green-500">
                                     <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        <CheckCircle className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-green-800">
@@ -366,19 +265,7 @@ export default function FeuerwehrgeraetehausPage() {
 
                                 <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
                                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            />
-                                        </svg>
+                                        <Clock className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-blue-800">
@@ -393,19 +280,7 @@ export default function FeuerwehrgeraetehausPage() {
 
                                 <div className="flex items-center space-x-4 p-4 bg-yellow-50 rounded-xl border-l-4 border-yellow-500">
                                     <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                                            />
-                                        </svg>
+                                        <Wrench className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-yellow-800">
@@ -420,19 +295,7 @@ export default function FeuerwehrgeraetehausPage() {
 
                                 <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border-l-4 border-gray-400">
                                     <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                            />
-                                        </svg>
+                                        <Building className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-gray-700">
@@ -459,19 +322,7 @@ export default function FeuerwehrgeraetehausPage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-red-600">
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                </svg>
+                                <Heart className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Für die Sicherheit von Wendessen
                                 </span>

@@ -1,3 +1,15 @@
+import {
+    Flame,
+    AlertTriangle,
+    Shield,
+    Cake,
+    Clock,
+    MapPin,
+    User,
+    Phone,
+    Globe,
+} from 'lucide-react';
+
 export const metadata = {
     title: 'Freiwillige Feuerwehr Wendessen - Vereine',
     description:
@@ -16,13 +28,7 @@ export default function FeuerwehrPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <svg
-                                    className="w-12 h-12 text-red-600"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                                </svg>
+                                <Flame className="w-12 h-12 text-red-600" />
                             </div>
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
                                 Feuerwehr
@@ -94,19 +100,7 @@ export default function FeuerwehrPage() {
 
                             <div className="bg-gradient-to-r from-yellow-50 to-red-50 border-2 border-red-500 p-8 rounded-2xl">
                                 <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                        />
-                                    </svg>
+                                    <AlertTriangle className="w-8 h-8 mr-3" />
                                     Darum unsere Bitte an Sie:
                                 </h3>
                                 <p className="text-lg">
@@ -150,19 +144,7 @@ export default function FeuerwehrPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-red-700 mb-6 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                                        />
-                                    </svg>
+                                    <Shield className="w-8 h-8 mr-3" />
                                     Hauptaufgaben
                                 </h3>
                                 <ul className="space-y-3 text-gray-700">
@@ -191,19 +173,7 @@ export default function FeuerwehrPage() {
 
                             <div className="bg-gradient-to-br from-blue-50 to-green-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zM3 9a2 2 0 012-2h14a2 2 0 012 2v2H3V9z"
-                                        />
-                                    </svg>
+                                    <Cake className="w-8 h-8 mr-3" />
                                     Gemeinschaftsaktivitäten
                                 </h3>
                                 <ul className="space-y-3 text-gray-700">
@@ -241,19 +211,7 @@ export default function FeuerwehrPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <h4 className="text-xl font-semibold text-blue-800 mb-4 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                                    <Clock className="w-6 h-6 mr-2" />
                                     Dienstzeiten
                                 </h4>
                                 <p className="text-gray-700 mb-4">
@@ -275,25 +233,7 @@ export default function FeuerwehrPage() {
 
                             <div>
                                 <h4 className="text-xl font-semibold text-blue-800 mb-4 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
+                                    <MapPin className="w-6 h-6 mr-2" />
                                     Treffpunkt
                                 </h4>
                                 <p className="text-gray-700 mb-4">
@@ -329,19 +269,7 @@ export default function FeuerwehrPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-red-500">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <svg
-                                        className="w-10 h-10 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
-                                    </svg>
+                                    <User className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-2">
                                     Ortsbrandmeister
@@ -354,19 +282,7 @@ export default function FeuerwehrPage() {
                                         href="tel:01575454517195"
                                         className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
                                     >
-                                        <svg
-                                            className="w-5 h-5 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                            />
-                                        </svg>
+                                        <Phone className="w-5 h-5 mr-2" />
                                         0157/54517195
                                     </a>
                                 </div>
@@ -377,19 +293,7 @@ export default function FeuerwehrPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-orange-500">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <svg
-                                        className="w-10 h-10 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
-                                    </svg>
+                                    <User className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-orange-600 uppercase tracking-wide mb-2">
                                     stellv. Ortsbrandmeister
@@ -402,19 +306,7 @@ export default function FeuerwehrPage() {
                                         href="tel:053318049931"
                                         className="flex items-center justify-center text-orange-600 hover:text-orange-700 transition-colors"
                                     >
-                                        <svg
-                                            className="w-5 h-5 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                            />
-                                        </svg>
+                                        <Phone className="w-5 h-5 mr-2" />
                                         05331 / 8049931
                                     </a>
                                 </div>
@@ -432,13 +324,10 @@ export default function FeuerwehrPage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-red-600">
-                                <svg
+                                <Globe
                                     className="w-6 h-6"
                                     fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                                </svg>
+                                />
                                 <span className="font-semibold">
                                     Dem &quot;Roten Hahn&quot; keine Chance!
                                 </span>

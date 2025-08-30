@@ -6,6 +6,17 @@ import 'moment/locale/de';
 import { useState, useEffect } from 'react';
 import './calendar.css';
 import { CalendarEvent } from '@/lib/database';
+import {
+    Users,
+    Calendar as CalendarIcon,
+    Zap,
+    Music,
+    MapPin,
+    Clock,
+    X,
+    User,
+    AlertCircle,
+} from 'lucide-react';
 
 // Set German locale
 moment.locale('de');
@@ -98,85 +109,15 @@ export default function WasStehAnPage() {
     const getCategoryIcon = (category: string) => {
         switch (category) {
             case 'meeting':
-                return (
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                    </svg>
-                );
+                return <Users className="w-5 h-5" />;
             case 'event':
-                return (
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                    </svg>
-                );
+                return <CalendarIcon className="w-5 h-5" />;
             case 'sports':
-                return (
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                    </svg>
-                );
+                return <Zap className="w-5 h-5" />;
             case 'culture':
-                return (
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 19V6l12-1v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-1c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-1"
-                        />
-                    </svg>
-                );
+                return <Music className="w-5 h-5" />;
             default:
-                return (
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                        />
-                    </svg>
-                );
+                return <CalendarIcon className="w-5 h-5" />;
         }
     };
 
@@ -191,19 +132,7 @@ export default function WasStehAnPage() {
                         <div className="max-w-4xl mx-auto">
                             <div className="flex items-center justify-center mb-6">
                                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <svg
-                                        className="w-8 h-8 text-indigo-600"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <CalendarIcon className="w-8 h-8 text-indigo-600" />
                                 </div>
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                     Was steht an?
@@ -243,19 +172,7 @@ export default function WasStehAnPage() {
                         <div className="max-w-4xl mx-auto">
                             <div className="flex items-center justify-center mb-6">
                                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <svg
-                                        className="w-8 h-8 text-indigo-600"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <CalendarIcon className="w-8 h-8 text-indigo-600" />
                                 </div>
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                     Was steht an?
@@ -274,19 +191,7 @@ export default function WasStehAnPage() {
                     <div className="max-w-6xl mx-auto">
                         <div className="bg-white rounded-3xl p-12 shadow-xl text-center">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg
-                                    className="w-8 h-8 text-red-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
+                                <AlertCircle className="w-8 h-8 text-red-600" />
                             </div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">
                                 Fehler beim Laden
@@ -317,19 +222,7 @@ export default function WasStehAnPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <svg
-                                    className="w-8 h-8 text-indigo-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    />
-                                </svg>
+                                <CalendarIcon className="w-8 h-8 text-indigo-600" />
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                 Was steht an?
@@ -482,9 +375,10 @@ export default function WasStehAnPage() {
                                                     Uhr
                                                 </p>
                                                 {event.location && (
-                                                    <p className="text-sm text-gray-500">
-                                                        📍 {event.location}
-                                                    </p>
+                                                    <div className="flex items-center text-sm text-gray-500">
+                                                        <MapPin className="w-3 h-3 mr-1" />
+                                                        {event.location}
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
@@ -507,19 +401,7 @@ export default function WasStehAnPage() {
                                 onClick={() => setSelectedEvent(null)}
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
+                                <X className="w-6 h-6" />
                             </button>
                         </div>
 
@@ -558,19 +440,7 @@ export default function WasStehAnPage() {
                             </div>
 
                             <div className="flex items-center space-x-3">
-                                <svg
-                                    className="w-5 h-5 text-gray-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
+                                <Clock className="w-5 h-5 text-gray-500" />
                                 <span className="text-gray-700">
                                     {moment(selectedEvent.start).format(
                                         'dddd, DD. MMMM YYYY, HH:mm'
@@ -583,25 +453,7 @@ export default function WasStehAnPage() {
 
                             {selectedEvent.location && (
                                 <div className="flex items-center space-x-3">
-                                    <svg
-                                        className="w-5 h-5 text-gray-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
+                                    <MapPin className="w-5 h-5 text-gray-500" />
                                     <span className="text-gray-700">
                                         {selectedEvent.location}
                                     </span>
@@ -610,19 +462,7 @@ export default function WasStehAnPage() {
 
                             {selectedEvent.organizer && (
                                 <div className="flex items-center space-x-3">
-                                    <svg
-                                        className="w-5 h-5 text-gray-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
-                                    </svg>
+                                    <User className="w-5 h-5 text-gray-500" />
                                     <span className="text-gray-700">
                                         {selectedEvent.organizer}
                                     </span>

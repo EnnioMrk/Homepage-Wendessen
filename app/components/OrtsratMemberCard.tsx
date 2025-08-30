@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Crown, Mail } from 'lucide-react';
 
 interface OrtsratMemberCardProps {
     name: string;
@@ -41,17 +42,7 @@ export default function OrtsratMemberCard({
             {isLeader && (
                 <div className="absolute top-4 left-4 z-20">
                     <div className="bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full text-white text-xs font-bold shadow-lg">
-                        <svg
-                            className="w-3 h-3 inline-block mr-1"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M9.664 1.319a.75.75 0 01.672 0 41.059 41.059 0 018.198 5.424.75.75 0 01-.254 1.285 31.372 31.372 0 00-7.86 3.83.75.75 0 01-.84 0 31.508 31.508 0 00-2.08-1.287V9.394c0-.244.116-.463.302-.592a35.504 35.504 0 013.305-2.033.75.75 0 00-.714-1.319 37 37 0 00-3.446 2.12A2.216 2.216 0 006 9.393v.38a31.293 31.293 0 00-4.28-1.746.75.75 0 01-.254-1.285 41.059 41.059 0 018.198-5.424zM6 11.459a29.848 29.848 0 00-2.455-1.158 41.029 41.029 0 00-.39 3.114.75.75 0 00.419.74c.528.256 1.046.53 1.554.82-.21-.899-.322-1.835-.322-2.777C4.806 11.924 5.381 11.676 6 11.459z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <Crown className="w-3 h-3 inline-block mr-1" />
                         LEITUNG
                     </div>
                 </div>
@@ -81,19 +72,7 @@ export default function OrtsratMemberCard({
                 {contactSlug && (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-foreground font-semibold shadow-lg flex items-center space-x-2">
-                            <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                />
-                            </svg>
+                            <Mail className="w-4 h-4" />
                             <span>Kontakt</span>
                         </div>
                     </div>

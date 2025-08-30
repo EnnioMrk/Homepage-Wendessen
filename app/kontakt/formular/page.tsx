@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Mail, Send, Phone, MapPin, Clock, Heart } from 'lucide-react';
 
 export const metadata = {
     title: 'Kontaktformular - Wendessen',
@@ -17,19 +18,7 @@ export default function KontaktformularPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <svg
-                                    className="w-8 h-8 text-emerald-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                    />
-                                </svg>
+                                <Mail className="w-8 h-8 text-emerald-600" />
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                 Kontaktformular
@@ -249,19 +238,7 @@ export default function KontaktformularPage() {
                                     type="submit"
                                     className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg rounded-full hover:from-emerald-600 hover:to-teal-600 transform hover:scale-105 transition-all duration-300 shadow-xl"
                                 >
-                                    <svg
-                                        className="w-5 h-5 mr-2"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                                        />
-                                    </svg>
+                                    <Send className="w-5 h-5 mr-2" />
                                     Nachricht senden
                                 </button>
                             </div>
@@ -279,19 +256,7 @@ export default function KontaktformularPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="text-center mb-6">
                                 <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                        />
-                                    </svg>
+                                    <Phone className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-emerald-800 mb-2">
                                     Direkter Kontakt
@@ -299,19 +264,7 @@ export default function KontaktformularPage() {
                             </div>
                             <div className="space-y-3 text-gray-700">
                                 <div className="flex items-center space-x-3">
-                                    <svg
-                                        className="w-5 h-5 text-emerald-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                        />
-                                    </svg>
+                                    <Phone className="w-5 h-5 text-emerald-500" />
                                     <a
                                         href="tel:053317107733"
                                         className="text-emerald-600 hover:text-emerald-800 transition-colors"
@@ -320,19 +273,7 @@ export default function KontaktformularPage() {
                                     </a>
                                 </div>
                                 <div className="flex items-center space-x-3">
-                                    <svg
-                                        className="w-5 h-5 text-emerald-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <Mail className="w-5 h-5 text-emerald-500" />
                                     <a
                                         href="mailto:info@wendessen.de"
                                         className="text-emerald-600 hover:text-emerald-800 transition-colors"
@@ -341,25 +282,7 @@ export default function KontaktformularPage() {
                                     </a>
                                 </div>
                                 <div className="flex items-start space-x-3">
-                                    <svg
-                                        className="w-5 h-5 text-emerald-500 mt-1"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
+                                    <MapPin className="w-5 h-5 text-emerald-500 mt-1" />
                                     <div>
                                         <p>Am Gute 2 R</p>
                                         <p>38300 Wolfenbüttel - Wendessen</p>
@@ -372,19 +295,7 @@ export default function KontaktformularPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="text-center mb-6">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                                    <Clock className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-blue-800 mb-2">
                                     Antwortzeit
@@ -433,19 +344,7 @@ export default function KontaktformularPage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-emerald-600">
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                </svg>
+                                <Heart className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Gemeinsam gestalten wir die Zukunft von
                                     Wendessen

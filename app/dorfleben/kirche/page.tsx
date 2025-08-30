@@ -1,3 +1,16 @@
+import {
+    Star,
+    Calendar,
+    Heart,
+    FileText,
+    Globe,
+    User,
+    Phone,
+    Mail,
+    Building2,
+    Clock,
+} from 'lucide-react';
+
 export const metadata = {
     title: 'Kirchengemeinde Ahlum-Atzum-Wendessen - Dorfleben',
     description:
@@ -16,13 +29,10 @@ export default function KirchePage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <svg
+                                <Star
                                     className="w-12 h-12 text-purple-600"
                                     fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                </svg>
+                                />
                             </div>
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
                                 Kirche
@@ -120,19 +130,7 @@ export default function KirchePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-purple-700 mb-6 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 3v9m0 0l-3-3m3 3l3-3m-6 3h12m-12 4h12"
-                                        />
-                                    </svg>
+                                    <Calendar className="w-8 h-8 mr-3" />
                                     Sonntagsgottesdienste
                                 </h3>
                                 <div className="space-y-3 text-gray-700">
@@ -157,19 +155,7 @@ export default function KirchePage() {
 
                             <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <svg
-                                        className="w-8 h-8 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                        />
-                                    </svg>
+                                    <Heart className="w-8 h-8 mr-3" />
                                     Taufen
                                 </h3>
                                 <div className="space-y-3 text-gray-700">
@@ -202,19 +188,7 @@ export default function KirchePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <h4 className="text-xl font-semibold text-orange-800 mb-4 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                        />
-                                    </svg>
+                                    <FileText className="w-6 h-6 mr-3" />
                                     Gemeindebrief
                                 </h4>
                                 <div className="bg-white p-4 rounded-xl border border-orange-200">
@@ -229,19 +203,7 @@ export default function KirchePage() {
 
                             <div>
                                 <h4 className="text-xl font-semibold text-orange-800 mb-4 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
-                                        />
-                                    </svg>
+                                    <Globe className="w-6 h-6 mr-3" />
                                     Online
                                 </h4>
                                 <div className="bg-white p-4 rounded-xl border border-orange-200">
@@ -286,19 +248,7 @@ export default function KirchePage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-purple-500">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                        />
-                                    </svg>
+                                    <User className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-foreground mb-2">
                                     Vakanzvertretung
@@ -308,19 +258,7 @@ export default function KirchePage() {
                                 </p>
                                 <div className="space-y-3 text-gray-600">
                                     <div className="flex items-center justify-center space-x-2">
-                                        <svg
-                                            className="w-5 h-5 text-purple-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                            />
-                                        </svg>
+                                        <Phone className="w-5 h-5 text-purple-500" />
                                         <a
                                             href="tel:05331972830"
                                             className="text-purple-600 hover:text-purple-800 transition-colors"
@@ -329,19 +267,7 @@ export default function KirchePage() {
                                         </a>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <svg
-                                            className="w-5 h-5 text-purple-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                            />
-                                        </svg>
+                                        <Mail className="w-5 h-5 text-purple-500" />
                                         <a
                                             href="mailto:dieter.schultz-seitz@lk-bs.de"
                                             className="text-purple-600 hover:text-purple-800 transition-colors"
@@ -357,19 +283,7 @@ export default function KirchePage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                        />
-                                    </svg>
+                                    <Building2 className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-foreground mb-2">
                                     Kirchenbüro
@@ -385,19 +299,7 @@ export default function KirchePage() {
                                         <p>38302 Wolfenbüttel / Ahlum</p>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <svg
-                                            className="w-4 h-4 text-blue-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                            />
-                                        </svg>
+                                        <Phone className="w-4 h-4 text-blue-500" />
                                         <a
                                             href="tel:0533171875"
                                             className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -406,19 +308,7 @@ export default function KirchePage() {
                                         </a>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <svg
-                                            className="w-4 h-4 text-blue-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"
-                                            />
-                                        </svg>
+                                        <Clock className="w-4 h-4 text-blue-500" />
                                         <span className="text-gray-600">
                                             Fax: 05331 / 340224
                                         </span>
@@ -431,19 +321,7 @@ export default function KirchePage() {
                                         <p>10:00 - 12:00 Uhr</p>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <svg
-                                            className="w-4 h-4 text-blue-500"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                            />
-                                        </svg>
+                                        <Mail className="w-4 h-4 text-blue-500" />
                                         <a
                                             href="mailto:ahlum.buero@lk-bs.de"
                                             className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -490,13 +368,7 @@ export default function KirchePage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-purple-600">
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                </svg>
+                                <Star className="w-6 h-6" fill="currentColor" />
                                 <span className="font-semibold">
                                     Willkommen in unserer Gemeinschaft
                                 </span>

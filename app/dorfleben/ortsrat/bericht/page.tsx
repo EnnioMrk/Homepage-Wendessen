@@ -1,5 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+    Briefcase,
+    Mail,
+    CheckCircle,
+    AlertTriangle,
+    Cake,
+    Building2,
+    Heart,
+    Bell,
+    Zap,
+    BarChart3,
+} from 'lucide-react';
 
 export const metadata = {
     title: 'Bürgermeister berichtet - Grußwort 2023 | Wendessen',
@@ -58,35 +70,11 @@ export default function BuergermeisterBerichtetPage() {
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 text-gray-600 justify-center md:justify-start">
                                 <div className="flex items-center space-x-2">
-                                    <svg
-                                        className="w-5 h-5 text-primary"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1m-6 0h6m-6 0l.01.01M18 7v8a2 2 0 01-2 2H8a2 2 0 01-2-2V7a2 2 0 012-2h8a2 2 0 012 2z"
-                                        />
-                                    </svg>
+                                    <Briefcase className="w-5 h-5 text-primary" />
                                     <span>Marketingberater</span>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <svg
-                                        className="w-5 h-5 text-primary"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <Mail className="w-5 h-5 text-primary" />
                                     <Link
                                         href="/kontakt/andreas-rink"
                                         className="text-primary hover:text-primary-dark transition-colors"
@@ -118,19 +106,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-2xl">
                                     <h4 className="text-xl font-semibold text-green-800 mb-3 flex items-center">
-                                        <svg
-                                            className="w-6 h-6 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            />
-                                        </svg>
+                                        <CheckCircle className="w-6 h-6 mr-2" />
                                         Zuversicht
                                     </h4>
                                     <p>
@@ -147,19 +123,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                 <div className="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 p-6 rounded-r-2xl">
                                     <h4 className="text-xl font-semibold text-orange-800 mb-3 flex items-center">
-                                        <svg
-                                            className="w-6 h-6 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                            />
-                                        </svg>
+                                        <AlertTriangle className="w-6 h-6 mr-2" />
                                         Herausforderungen
                                     </h4>
                                     <p>
@@ -182,19 +146,7 @@ export default function BuergermeisterBerichtetPage() {
                                 {/* 850 Jahre Wendessen */}
                                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
                                     <h4 className="text-xl font-semibold text-blue-800 mb-3 flex items-center">
-                                        <svg
-                                            className="w-6 h-6 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zM3 9a2 2 0 012-2h14a2 2 0 012 2v2H3V9z"
-                                            />
-                                        </svg>
+                                        <Cake className="w-6 h-6 mr-2" />
                                         850 Jahre Wendessen
                                     </h4>
                                     <p>
@@ -220,19 +172,7 @@ export default function BuergermeisterBerichtetPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100">
                                         <h5 className="text-lg font-semibold text-purple-800 mb-3 flex items-center">
-                                            <svg
-                                                className="w-5 h-5 mr-2"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                                />
-                                            </svg>
+                                            <Building2 className="w-5 h-5 mr-2" />
                                             Baugebiet
                                         </h5>
                                         <p className="text-sm">
@@ -246,19 +186,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                     <div className="bg-gradient-to-br from-green-50 to-teal-50 p-6 rounded-2xl border border-green-100">
                                         <h5 className="text-lg font-semibold text-green-800 mb-3 flex items-center">
-                                            <svg
-                                                className="w-5 h-5 mr-2"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                                />
-                                            </svg>
+                                            <Heart className="w-5 h-5 mr-2" />
                                             Hospiz
                                         </h5>
                                         <p className="text-sm">
@@ -273,19 +201,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                     <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-2xl border border-yellow-100">
                                         <h5 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center">
-                                            <svg
-                                                className="w-5 h-5 mr-2"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M15 17h5l-5 5v-5zM4.828 4.828a9.95 9.95 0 000 14.142 9.95 9.95 0 0014.142 0 9.95 9.95 0 000-14.142 9.95 9.95 0 00-14.142 0z"
-                                                />
-                                            </svg>
+                                            <Bell className="w-5 h-5 mr-2" />
                                             Kirchenglocken
                                         </h5>
                                         <p className="text-sm">
@@ -298,19 +214,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                     <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-100">
                                         <h5 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
-                                            <svg
-                                                className="w-5 h-5 mr-2"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                                                />
-                                            </svg>
+                                            <Zap className="w-5 h-5 mr-2" />
                                             Sport
                                         </h5>
                                         <p className="text-sm">
@@ -325,19 +229,7 @@ export default function BuergermeisterBerichtetPage() {
                                 {/* Verkehr */}
                                 <div className="bg-gradient-to-r from-gray-50 to-slate-50 border-l-4 border-gray-500 p-6 rounded-r-2xl">
                                     <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
-                                        <svg
-                                            className="w-6 h-6 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                            />
-                                        </svg>
+                                        <BarChart3 className="w-6 h-6 mr-2" />
                                         Verkehr - Ein Dauerbrenner
                                     </h4>
                                     <p>

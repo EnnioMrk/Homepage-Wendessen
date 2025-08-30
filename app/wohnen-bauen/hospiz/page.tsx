@@ -1,4 +1,13 @@
 import Image from 'next/image';
+import {
+    Heart,
+    Building2,
+    Check,
+    Globe,
+    MapPin,
+    FileText,
+    Clock,
+} from 'lucide-react';
 
 export const metadata = {
     title: 'Hospiz - Wohnen & Bauen in Wendessen',
@@ -18,19 +27,7 @@ export default function HospizPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <svg
-                                    className="w-12 h-12 text-purple-600"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                </svg>
+                                <Heart className="w-12 h-12 text-purple-600" />
                             </div>
                             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
                                 Hospiz
@@ -90,19 +87,7 @@ export default function HospizPage() {
 
                             <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-l-4 border-purple-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                        />
-                                    </svg>
+                                    <Building2 className="w-6 h-6 mr-3" />
                                     Hospiz des Hospizvereins Wolfenbüttel
                                 </h3>
                                 <p className="text-lg text-gray-800 font-medium">
@@ -245,17 +230,7 @@ export default function HospizPage() {
 
                                 <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-xl border-l-4 border-purple-500">
                                     <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <svg
-                                            className="w-5 h-5 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        <Check className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-purple-800">
@@ -286,19 +261,7 @@ export default function HospizPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                        />
-                                    </svg>
+                                    <Heart className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-purple-800 mb-3">
                                     Würdevolle Betreuung
@@ -311,19 +274,7 @@ export default function HospizPage() {
 
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                                    <Globe className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-green-800 mb-3">
                                     Naturnahe Umgebung
@@ -336,25 +287,7 @@ export default function HospizPage() {
 
                             <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                    </svg>
+                                    <MapPin className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-blue-800 mb-3">
                                     Zentrale Lage
@@ -372,19 +305,7 @@ export default function HospizPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-bold text-blue-800 mb-3 flex items-center">
-                                    <svg
-                                        className="w-6 h-6 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                        />
-                                    </svg>
+                                    <FileText className="w-6 h-6 mr-3" />
                                     Rechtliche Grundlage
                                 </h3>
                                 <p className="text-lg text-gray-800 font-medium">
@@ -422,17 +343,7 @@ export default function HospizPage() {
                             <div className="space-y-6">
                                 <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-xl border-l-4 border-purple-500">
                                     <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        <Check className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-purple-800">
@@ -447,19 +358,7 @@ export default function HospizPage() {
 
                                 <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
                                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            />
-                                        </svg>
+                                        <Clock className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-blue-800">
@@ -474,17 +373,7 @@ export default function HospizPage() {
 
                                 <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-xl border-l-4 border-green-500">
                                     <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                        <svg
-                                            className="w-4 h-4 text-white"
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                        <Check className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-green-800">
@@ -511,19 +400,7 @@ export default function HospizPage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-purple-600">
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                    />
-                                </svg>
+                                <Heart className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Hospizverein Wolfenbüttel
                                 </span>
