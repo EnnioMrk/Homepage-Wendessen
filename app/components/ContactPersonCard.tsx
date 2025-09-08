@@ -180,7 +180,7 @@ export default function ContactPersonCard({
             <div className="container mx-auto px-4 py-16">
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-12">
-                        <h3 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                        <h3 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                             Kontaktinformationen
                         </h3>
                         <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-6"></div>

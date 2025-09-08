@@ -32,14 +32,14 @@ export default function KirchbauvereinsPage() {
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
-                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <Shield className="w-12 h-12 text-blue-700" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
+                                <Shield className="w-8 h-8 sm:w-12 sm:h-12 text-blue-700" />
                             </div>
                             <div className="text-left">
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
                                     Kirchbauverein
                                 </h1>
-                                <p className="text-2xl md:text-3xl text-blue-100 mt-2">
+                                <p className="text-xl sm:text-2xl md:text-3xl text-blue-100 mt-2">
                                     St. Georg Wendessen
                                 </p>
                             </div>
@@ -49,11 +49,11 @@ export default function KirchbauvereinsPage() {
                             Erhaltung • Kultur • Gemeinschaft • Geschichte
                         </p>
 
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-blue-300/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-blue-300/60 rounded-full animate-bounce delay-300"></div>
+                        {/* Decorative elements - hidden on mobile */}
+                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-blue-300/50 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
+                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-blue-300/60 rounded-full animate-bounce delay-300"></div>
                     </div>
                 </div>
             </div>

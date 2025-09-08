@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Image from 'next/image';
+import Link from 'next/link';
 import './globals.css';
 import { MenubarDemo } from './components/menubar';
 import MobileNavbar from './components/mobile-navbar';
@@ -28,20 +29,22 @@ export default function RootLayout({
                 <div className="flex min-h-screen flex-col">
                     {/* Navigation with Wappen icon */}
                     <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-                        <div className="container mx-auto flex items-center justify-center py-1 relative">
-                            {/* Absolutely positioned icon on the left */}
-                            <div className="absolute left-0 top-1/2 -translate-y-1/2">
-                                <Image
-                                    src="/images/Wappen.png"
-                                    alt="Wappen Wendessen"
-                                    width={48}
-                                    height={48}
-                                    className="h-10 w-10 md:h-12 md:w-12 object-contain drop-shadow"
-                                    priority
-                                />
+                        <div className="container mx-auto flex items-center justify-between py-1">
+                            {/* Logo on the left */}
+                            <div className="flex items-center">
+                                <Link href="/" className="cursor-pointer">
+                                    <Image
+                                        src="/images/Wappen.png"
+                                        alt="Wappen Wendessen"
+                                        width={48}
+                                        height={48}
+                                        className="h-10 w-10 md:h-12 md:w-12 object-contain drop-shadow hover:scale-105 transition-transform duration-200"
+                                        priority
+                                    />
+                                </Link>
                             </div>
                             {/* Centered menubar (desktop only) */}
-                            <div className="hidden lg:flex">
+                            <div className="hidden lg:flex flex-1 justify-center">
                                 <MenubarDemo />
                             </div>
                             {/* Mobile: Centered heading */}
@@ -51,7 +54,7 @@ export default function RootLayout({
                                 </span>
                             </div>
                             {/* Mobile navbar (mobile only) */}
-                            <div className="flex lg:hidden ml-auto">
+                            <div className="flex lg:hidden">
                                 <MobileNavbar />
                             </div>
                         </div>

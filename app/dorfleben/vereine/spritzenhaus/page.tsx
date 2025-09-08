@@ -32,10 +32,10 @@ export default function SpritzenhausPage() {
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
-                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <Building className="w-12 h-12 text-amber-700" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
+                                <Building className="w-8 h-8 sm:w-12 sm:h-12 text-amber-700" />
                             </div>
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
                                 Spritzenhaus
                             </h1>
                         </div>
@@ -47,11 +47,11 @@ export default function SpritzenhausPage() {
                             Erhalt • Geschichte • Gemeinschaft
                         </p>
 
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-300/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-yellow-300/60 rounded-full animate-bounce delay-300"></div>
+                        {/* Decorative elements - hidden on mobile */}
+                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-300/50 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
+                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-yellow-300/60 rounded-full animate-bounce delay-300"></div>
                     </div>
                 </div>
             </div>
@@ -262,7 +262,7 @@ export default function SpritzenhausPage() {
                         {/* 1. Vorsitzende */}
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-amber-500">
                             <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <div className="w-20 h-20 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
                                     <User className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-amber-600 uppercase tracking-wide mb-2">
@@ -290,7 +290,7 @@ export default function SpritzenhausPage() {
                         {/* 2. Vorsitzende */}
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-yellow-500">
                             <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <div className="w-20 h-20 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
                                     <User className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-yellow-600 uppercase tracking-wide mb-2">
@@ -318,7 +318,7 @@ export default function SpritzenhausPage() {
                         {/* Kassenführer */}
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-green-500">
                             <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
                                     <CreditCard className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-2">
@@ -346,7 +346,7 @@ export default function SpritzenhausPage() {
                         {/* Schriftführer */}
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
                             <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
                                     <PenTool className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-2">

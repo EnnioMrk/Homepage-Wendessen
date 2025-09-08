@@ -28,13 +28,13 @@ export default function KirchePage() {
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
-                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
                                 <Star
-                                    className="w-12 h-12 text-purple-600"
+                                    className="w-8 h-8 sm:w-12 sm:h-12 text-purple-600"
                                     fill="currentColor"
                                 />
                             </div>
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
                                 Kirche
                             </h1>
                         </div>
@@ -46,11 +46,11 @@ export default function KirchePage() {
                             Glaube • Gemeinschaft • Hoffnung
                         </p>
 
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
+                        {/* Decorative elements - hidden on mobile */}
+                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
+                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
                     </div>
                 </div>
             </div>
@@ -247,7 +247,7 @@ export default function KirchePage() {
                         {/* Vakanzvertretung */}
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-purple-500">
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                     <User className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-foreground mb-2">
@@ -282,7 +282,7 @@ export default function KirchePage() {
                         {/* Kirchenbüro */}
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                     <Building2 className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-foreground mb-2">

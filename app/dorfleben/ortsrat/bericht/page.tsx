@@ -41,7 +41,7 @@ export default function BuergermeisterBerichtetPage() {
                         <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
                         <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-accent/50 rounded-full animate-pulse"></div>
                         <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-accent/60 rounded-full animate-bounce delay-300"></div>
+                        <div className="hidden sm:block absolute top-1/3 lg:top-1/2 right-32 w-3 h-3 bg-accent/60 rounded-full animate-bounce delay-300"></div>
                     </div>
                 </div>
             </div>

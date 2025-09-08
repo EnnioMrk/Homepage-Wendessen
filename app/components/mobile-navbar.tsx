@@ -98,13 +98,14 @@ export default function MobileNavbar() {
                 }`}
                 aria-label="Mobile Navigation"
             >
-                <div className="flex items-center justify-between p-4 border-b border-border">
+                <div className="flex items-center justify-center p-4 border-b border-border relative">
                     <span className="font-bold text-lg text-foreground">
                         Menü
                     </span>
                     <button
                         onClick={() => setOpen(false)}
                         aria-label="Menü schließen"
+                        className="absolute right-4"
                     >
                         <X size={24} className="text-foreground" />
                     </button>

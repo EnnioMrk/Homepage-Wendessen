@@ -26,10 +26,10 @@ export default function WirWendesserPage() {
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
-                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <Users className="w-12 h-12 text-green-600" />
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
+                                <Users className="w-8 h-8 sm:w-12 sm:h-12 text-green-600" />
                             </div>
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
                                 Wir Wendesser
                             </h1>
                         </div>
@@ -41,11 +41,11 @@ export default function WirWendesserPage() {
                             Vielfalt • Gemeinschaft • Zusammenhalt
                         </p>
 
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
+                        {/* Decorative elements - hidden on mobile */}
+                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
+                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
                     </div>
                 </div>
             </div>
@@ -182,17 +182,17 @@ export default function WirWendesserPage() {
                                     ein Foto mit ein paar Textzeilen an:
                                 </p>
 
-                                <div className="bg-white p-6 rounded-2xl border-2 border-green-300 shadow-lg">
-                                    <div className="flex items-center justify-center space-x-3 mb-4">
-                                        <Mail className="w-8 h-8 text-green-600" />
+                                <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-green-300 shadow-lg">
+                                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
+                                        <Mail className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 flex-shrink-0" />
                                         <a
                                             href="mailto:portrait@wendessen.de"
-                                            className="text-2xl font-bold text-green-600 hover:text-green-800 transition-colors"
+                                            className="text-base sm:text-lg md:text-xl font-bold text-green-600 hover:text-green-800 transition-colors break-all text-center sm:text-left"
                                         >
                                             portrait@wendessen.de
                                         </a>
                                     </div>
-                                    <p className="text-gray-600">
+                                    <p className="text-gray-600 text-center">
                                         Wir freuen uns darauf, auch Ihre
                                         Geschichte zu teilen!
                                     </p>
@@ -200,7 +200,7 @@ export default function WirWendesserPage() {
 
                                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                             <ImageIcon className="w-8 h-8 text-white" />
                                         </div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2">
@@ -212,7 +212,7 @@ export default function WirWendesserPage() {
                                     </div>
 
                                     <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                             <Edit className="w-8 h-8 text-white" />
                                         </div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2">
@@ -224,7 +224,7 @@ export default function WirWendesserPage() {
                                     </div>
 
                                     <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                             <UserPlus className="w-8 h-8 text-white" />
                                         </div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2">
@@ -247,7 +247,7 @@ export default function WirWendesserPage() {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                                 <div className="text-center">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                         <span className="text-2xl">🌟</span>
                                     </div>
                                     <h4 className="text-xl font-semibold text-blue-800 mb-2">
@@ -259,7 +259,7 @@ export default function WirWendesserPage() {
                                 </div>
 
                                 <div className="text-center">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                         <span className="text-2xl">🤝</span>
                                     </div>
                                     <h4 className="text-xl font-semibold text-indigo-800 mb-2">
@@ -271,7 +271,7 @@ export default function WirWendesserPage() {
                                 </div>
 
                                 <div className="text-center">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
                                         <span className="text-2xl">❤️</span>
                                     </div>
                                     <h4 className="text-xl font-semibold text-purple-800 mb-2">
