@@ -25,28 +25,28 @@ export default function HospizPage() {
 
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <Heart className="w-12 h-12 text-purple-600" />
+                        <div className="flex items-center justify-center mb-6 gap-4 sm:gap-6">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl flex-shrink-0">
+                                <Heart className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-purple-600" />
                             </div>
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white">
                                 Hospiz
                             </h1>
                         </div>
                         <div className="w-32 h-2 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-8"></div>
-                        <p className="text-2xl md:text-3xl text-white/90 leading-relaxed max-w-3xl mx-auto">
+                        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 leading-relaxed max-w-3xl mx-auto">
                             Neues Zuhause im alten Gutshaus
                         </p>
-                        <p className="text-xl text-yellow-200 font-semibold mt-4">
+                        <p className="text-base sm:text-lg md:text-xl text-yellow-200 font-semibold mt-4">
                             Hospizverein Wolfenbüttel • Historisches Gutshaus •
                             Ab 2024
                         </p>
 
                         {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
+                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
+                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
+                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
                     </div>
                 </div>
             </div>
@@ -56,11 +56,11 @@ export default function HospizPage() {
                 <div className="max-w-5xl mx-auto">
                     {/* Introduction Section */}
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                             Ein Ort der Würde und Geborgenheit
                         </h2>
                         <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
                             Das historische Gutshaus wird zu einem modernen
                             Hospiz für Menschen in ihrer letzten Lebensphase
                         </p>
@@ -154,11 +154,11 @@ export default function HospizPage() {
                     {/* Historical Background */}
                     <div className="mb-16">
                         <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                                 Geschichte des Gutshauses
                             </h2>
                             <div className="w-24 h-1 bg-gradient-to-r from-amber-600 to-yellow-600 mx-auto mb-6"></div>
-                            <p className="text-lg text-gray-600">
+                            <p className="text-base sm:text-lg text-gray-600">
                                 Über 360 Jahre Geschichte werden zu neuem Leben
                                 erweckt
                             </p>
@@ -252,7 +252,7 @@ export default function HospizPage() {
                     {/* Features */}
                     <div className="mb-16">
                         <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                                 Hospiz-Ausstattung
                             </h2>
                             <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto mb-6"></div>
@@ -333,7 +333,7 @@ export default function HospizPage() {
                     {/* Timeline */}
                     <div className="mb-16">
                         <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                                 Projektverlauf
                             </h2>
                             <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto mb-6"></div>
@@ -391,10 +391,10 @@ export default function HospizPage() {
 
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-purple-50 to-blue-50 rounded-3xl p-8 shadow-lg">
-                        <h3 className="text-3xl font-bold text-purple-700 mb-6">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-700 mb-6">
                             Neues Leben für historische Mauern 💜
                         </h3>
-                        <p className="text-xl text-gray-700 font-medium mb-4">
+                        <p className="text-lg sm:text-xl text-gray-700 font-medium mb-4">
                             Das alte Gutshaus wird zu einem Ort der Würde,
                             Geborgenheit und professionellen Betreuung
                         </p>
