@@ -128,16 +128,17 @@ export default function GeschichtePage() {
 
                     {/* Historical Timeline */}
                     <div className="mb-20">
-                            <div className="text-center mb-16">
-                                <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
-                                    Historische Ereignisse
-                                </h3>
-                                <div className="w-32 h-2 bg-gradient-to-r from-amber-600 to-orange-600 mx-auto mb-8"></div>
-                                <p className="text-base sm:text-lg text-gray-600">
-                                    Die wichtigsten Meilensteine in der Geschichte
-                                    Wendessens
-                                </p>
-                            </div>                        <div className="space-y-8">
+                        <div className="text-center mb-16">
+                            <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
+                                Historische Ereignisse
+                            </h3>
+                            <div className="w-32 h-2 bg-gradient-to-r from-amber-600 to-orange-600 mx-auto mb-8"></div>
+                            <p className="text-base sm:text-lg text-gray-600">
+                                Die wichtigsten Meilensteine in der Geschichte
+                                Wendessens
+                            </p>
+                        </div>{' '}
+                        <div className="space-y-8">
                             {/* 1218 - Patronatsrechte */}
                             <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6 bg-white rounded-3xl p-6 sm:p-8 shadow-xl">
                                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mx-auto sm:mx-0">
