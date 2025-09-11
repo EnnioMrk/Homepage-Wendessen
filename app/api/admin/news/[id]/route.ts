@@ -7,7 +7,7 @@ const sql = neon(process.env.DATABASE_URL!);
 // PUT - Update news
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const authenticated = await isAuthenticated();
@@ -18,7 +18,7 @@ export async function PUT(
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         const { title, content, category } = await request.json();
 
         if (!title?.trim()) {
@@ -71,7 +71,7 @@ export async function PUT(
 // DELETE - Delete news
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const authenticated = await isAuthenticated();
@@ -82,7 +82,7 @@ export async function DELETE(
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
 
         // Check if news exists
         const existingNews = await sql`
