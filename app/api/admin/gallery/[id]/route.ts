@@ -8,7 +8,7 @@ const sql = neon(process.env.DATABASE_URL!);
 // PUT - Update image (rename)
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const authenticated = await isAuthenticated();
@@ -19,7 +19,7 @@ export async function PUT(
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
         const { displayName } = await request.json();
 
         if (!displayName?.trim()) {
@@ -63,7 +63,7 @@ export async function PUT(
 // DELETE - Delete image
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const authenticated = await isAuthenticated();
@@ -74,7 +74,7 @@ export async function DELETE(
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
 
         // Get image info before deleting
         const imageResult = await sql`

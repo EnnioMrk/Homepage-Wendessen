@@ -87,7 +87,9 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
             <div className="flex-1">
                 <div className="font-medium text-gray-900">{event.title}</div>
                 {event.location && (
-                    <div className="text-sm text-gray-500">{event.location}</div>
+                    <div className="text-sm text-gray-500">
+                        {event.location}
+                    </div>
                 )}
                 {event.organizer && (
                     <div className="text-sm text-gray-500">
@@ -539,7 +541,9 @@ export default function AdminEventsCalendar({
                                                         Bild ausgewählt
                                                     </p>
                                                     <p className="text-xs text-gray-500">
-                                                        Wird in der Terminübersicht angezeigt
+                                                        Wird in der
+                                                        Terminübersicht
+                                                        angezeigt
                                                     </p>
                                                 </div>
                                                 <button
@@ -558,7 +562,9 @@ export default function AdminEventsCalendar({
                                         ) : (
                                             <button
                                                 type="button"
-                                                onClick={() => setShowImagePicker(true)}
+                                                onClick={() =>
+                                                    setShowImagePicker(true)
+                                                }
                                                 className="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
                                             >
                                                 <ImageIcon className="w-5 h-5 text-gray-400 mr-2" />
@@ -840,7 +846,8 @@ export default function AdminEventsCalendar({
                                                     Bild ausgewählt
                                                 </p>
                                                 <p className="text-xs text-gray-500">
-                                                    Wird in der Terminübersicht angezeigt
+                                                    Wird in der Terminübersicht
+                                                    angezeigt
                                                 </p>
                                             </div>
                                             <button
@@ -859,7 +866,9 @@ export default function AdminEventsCalendar({
                                     ) : (
                                         <button
                                             type="button"
-                                            onClick={() => setShowImagePicker(true)}
+                                            onClick={() =>
+                                                setShowImagePicker(true)
+                                            }
                                             className="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
                                         >
                                             <ImageIcon className="w-5 h-5 text-gray-400 mr-2" />

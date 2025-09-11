@@ -84,7 +84,9 @@ export default function ImagePicker({
                     </div>
                     <div className="flex items-center justify-center py-12">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                        <span className="ml-3 text-gray-600">Lade Bilder...</span>
+                        <span className="ml-3 text-gray-600">
+                            Lade Bilder...
+                        </span>
                     </div>
                 </div>
             </div>
@@ -153,7 +155,9 @@ export default function ImagePicker({
                                         Ausgewähltes Bild
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Klicken Sie &ldquo;Auswahl aufheben&rdquo; um kein Bild zu verwenden
+                                        Klicken Sie &ldquo;Auswahl
+                                        aufheben&rdquo; um kein Bild zu
+                                        verwenden
                                     </p>
                                 </div>
                             </div>
@@ -175,7 +179,8 @@ export default function ImagePicker({
                             Keine Bilder in der Galerie gefunden
                         </p>
                         <p className="text-sm text-gray-500">
-                            Laden Sie zuerst Bilder in die Galerie hoch, um sie für Termine verwenden zu können.
+                            Laden Sie zuerst Bilder in die Galerie hoch, um sie
+                            für Termine verwenden zu können.
                         </p>
                     </div>
                 ) : (
@@ -183,7 +188,9 @@ export default function ImagePicker({
                         {/* Instructions */}
                         <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                             <p className="text-sm text-gray-600">
-                                Klicken Sie auf ein Bild um es auszuwählen. Das ausgewählte Bild wird in der Terminübersicht angezeigt.
+                                Klicken Sie auf ein Bild um es auszuwählen. Das
+                                ausgewählte Bild wird in der Terminübersicht
+                                angezeigt.
                             </p>
                         </div>
 
@@ -207,7 +214,7 @@ export default function ImagePicker({
                                             className="object-cover"
                                         />
                                     </div>
-                                    
+
                                     {/* Selection Indicator */}
                                     {selectedImageUrl === image.url && (
                                         <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center">

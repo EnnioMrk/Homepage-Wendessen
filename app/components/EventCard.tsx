@@ -67,7 +67,9 @@ export default function EventCard({
                             <p className="text-sm opacity-80 mb-1">
                                 {location}
                             </p>
-                            <p className="text-lg font-semibold text-gray-800">{time}</p>
+                            <p className="text-lg font-semibold text-gray-800">
+                                {time}
+                            </p>
                         </div>
                     </div>
                 </>

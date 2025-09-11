@@ -22,8 +22,9 @@ async function addImageUrlColumn() {
 
         console.log('✅ Successfully added image_url column to events table');
         console.log('');
-        console.log('Migration completed! Events can now have associated images from the gallery.');
-
+        console.log(
+            'Migration completed! Events can now have associated images from the gallery.'
+        );
     } catch (error) {
         console.error('❌ Error adding image_url column:', error);
         throw error;

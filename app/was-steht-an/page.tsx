@@ -53,7 +53,9 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
             <div className="flex-1">
                 <div className="font-medium text-gray-900">{event.title}</div>
                 {event.location && (
-                    <div className="text-sm text-gray-500">{event.location}</div>
+                    <div className="text-sm text-gray-500">
+                        {event.location}
+                    </div>
                 )}
             </div>
             <span
@@ -463,16 +465,19 @@ export default function WasStehAnPage() {
                                 <div className="flex items-center space-x-3">
                                     <div
                                         className={`p-2 rounded-lg ${getCategoryBadgeClasses(
-                                            selectedEvent.category || 'sonstiges'
+                                            selectedEvent.category ||
+                                                'sonstiges'
                                         )}`}
                                     >
                                         {getCategoryIcon(
-                                            selectedEvent.category || 'sonstiges'
+                                            selectedEvent.category ||
+                                                'sonstiges'
                                         )}
                                     </div>
                                     <span className="font-medium text-gray-700">
                                         {getCategoryDisplayName(
-                                            selectedEvent.category || 'sonstiges'
+                                            selectedEvent.category ||
+                                                'sonstiges'
                                         )}
                                     </span>
                                 </div>
@@ -484,7 +489,9 @@ export default function WasStehAnPage() {
                                             'dddd, DD. MMMM YYYY, HH:mm'
                                         )}{' '}
                                         -{' '}
-                                        {moment(selectedEvent.end).format('HH:mm')}{' '}
+                                        {moment(selectedEvent.end).format(
+                                            'HH:mm'
+                                        )}{' '}
                                         Uhr
                                     </span>
                                 </div>
