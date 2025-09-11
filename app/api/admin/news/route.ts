@@ -1,0 +1,89 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticated } from '../../../../lib/auth';
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon(process.env.DATABASE_URL!);
+
+// GET - List all news
+export async function GET() {
+    try {
+        const authenticated = await isAuthenticated();
+        if (!authenticated) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        // Get news from database
+        const result = await sql`
+            SELECT id, title, content, category, published_date as "publishedDate"
+            FROM news 
+            ORDER BY published_date DESC
+        `;
+
+        const news = result.map((row) => ({
+            ...row,
+            publishedDate: row.publishedDate.toISOString(),
+        }));
+
+        return NextResponse.json({ news });
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
+}
+
+// POST - Create new news
+export async function POST(request: NextRequest) {
+    try {
+        const authenticated = await isAuthenticated();
+        if (!authenticated) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        const { title, content, category } = await request.json();
+
+        if (!title?.trim()) {
+            return NextResponse.json(
+                { error: 'Title is required' },
+                { status: 400 }
+            );
+        }
+
+        if (!category?.trim()) {
+            return NextResponse.json(
+                { error: 'Category is required' },
+                { status: 400 }
+            );
+        }
+
+        // Insert into database
+        const result = await sql`
+            INSERT INTO news (title, content, category)
+            VALUES (${title.trim()}, ${
+            content?.trim() || null
+        }, ${category.trim()})
+            RETURNING id, title, content, category, published_date as "publishedDate"
+        `;
+
+        const newNews = {
+            ...result[0],
+            publishedDate: result[0].publishedDate.toISOString(),
+        };
+
+        return NextResponse.json({ news: newNews });
+    } catch (error) {
+        console.error('Error creating news:', error);
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
+}

@@ -7,6 +7,11 @@ import { useState, useEffect } from 'react';
 import './calendar.css';
 import { CalendarEvent } from '@/lib/database';
 import {
+    getCategoryBackgroundColor,
+    getCategoryBadgeClasses,
+    getCategoryDisplayName,
+} from '@/lib/event-utils';
+import {
     Users,
     Calendar as CalendarIcon,
     Zap,
@@ -17,6 +22,7 @@ import {
     User,
     AlertCircle,
 } from 'lucide-react';
+import Image from 'next/image';
 
 // Set German locale
 moment.locale('de');
@@ -24,30 +30,39 @@ const localizer = momentLocalizer(moment);
 
 // Custom event component
 const EventComponent = ({ event }: { event: CalendarEvent }) => {
-    const getCategoryColor = (category: string) => {
-        switch (category) {
-            case 'meeting':
-                return 'bg-blue-500';
-            case 'event':
-                return 'bg-green-500';
-            case 'sports':
-                return 'bg-orange-500';
-            case 'culture':
-                return 'bg-purple-500';
-            case 'emergency':
-                return 'bg-red-500';
-            default:
-                return 'bg-gray-500';
-        }
-    };
-
     return (
         <div
-            className={`${getCategoryColor(
-                event.category || 'other'
+            className={`${getCategoryBackgroundColor(
+                event.category || 'sonstiges'
             )} text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
             <div className="truncate">{event.title}</div>
+        </div>
+    );
+};
+
+// Custom agenda event component
+const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
+    return (
+        <div className="flex items-center space-x-3">
+            <div
+                className={`w-3 h-3 rounded-full ${getCategoryBackgroundColor(
+                    event.category || 'sonstiges'
+                )}`}
+            ></div>
+            <div className="flex-1">
+                <div className="font-medium text-gray-900">{event.title}</div>
+                {event.location && (
+                    <div className="text-sm text-gray-500">{event.location}</div>
+                )}
+            </div>
+            <span
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeClasses(
+                    event.category || 'sonstiges'
+                )}`}
+            >
+                {getCategoryDisplayName(event.category || 'sonstiges')}
+            </span>
         </div>
     );
 };
@@ -108,14 +123,16 @@ export default function WasStehAnPage() {
 
     const getCategoryIcon = (category: string) => {
         switch (category) {
-            case 'meeting':
+            case 'sitzung':
                 return <Users className="w-5 h-5" />;
-            case 'event':
+            case 'veranstaltung':
                 return <CalendarIcon className="w-5 h-5" />;
-            case 'sports':
+            case 'sport':
                 return <Zap className="w-5 h-5" />;
-            case 'culture':
+            case 'kultur':
                 return <Music className="w-5 h-5" />;
+            case 'notfall':
+                return <span className="text-red-500">🚨</span>;
             default:
                 return <CalendarIcon className="w-5 h-5" />;
         }
@@ -248,27 +265,27 @@ export default function WasStehAnPage() {
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                             {[
                                 {
-                                    category: 'meeting',
+                                    category: 'sitzung',
                                     label: 'Sitzungen',
                                     color: 'bg-blue-500',
                                 },
                                 {
-                                    category: 'event',
+                                    category: 'veranstaltung',
                                     label: 'Veranstaltungen',
                                     color: 'bg-green-500',
                                 },
                                 {
-                                    category: 'sports',
+                                    category: 'sport',
                                     label: 'Sport',
                                     color: 'bg-orange-500',
                                 },
                                 {
-                                    category: 'culture',
+                                    category: 'kultur',
                                     label: 'Kultur',
                                     color: 'bg-purple-500',
                                 },
                                 {
-                                    category: 'other',
+                                    category: 'sonstiges',
                                     label: 'Sonstiges',
                                     color: 'bg-gray-500',
                                 },
@@ -303,6 +320,9 @@ export default function WasStehAnPage() {
                             date={date}
                             components={{
                                 event: EventComponent,
+                                agenda: {
+                                    event: AgendaEventComponent,
+                                },
                             }}
                             messages={{
                                 next: 'Weiter',
@@ -340,28 +360,34 @@ export default function WasStehAnPage() {
                                 .map((event) => (
                                     <div
                                         key={event.id}
-                                        className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                                        className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
                                         onClick={() => setSelectedEvent(event)}
                                     >
+                                        {/* Event Image */}
+                                        {event.imageUrl && (
+                                            <div className="mb-4 -mx-6 -mt-6">
+                                                <div className="relative h-32 w-full">
+                                                    <Image
+                                                        src={event.imageUrl}
+                                                        alt={event.title}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div className="flex items-start space-x-3 mb-3">
                                             <div
-                                                className={`p-2 rounded-lg ${
-                                                    event.category === 'meeting'
-                                                        ? 'bg-blue-100 text-blue-600'
-                                                        : event.category ===
-                                                          'event'
-                                                        ? 'bg-green-100 text-green-600'
-                                                        : event.category ===
-                                                          'sports'
-                                                        ? 'bg-orange-100 text-orange-600'
-                                                        : event.category ===
-                                                          'culture'
-                                                        ? 'bg-purple-100 text-purple-600'
-                                                        : 'bg-gray-100 text-gray-600'
-                                                }`}
+                                                className={`p-2 rounded-lg ${getCategoryBadgeClasses(
+                                                    event.category ||
+                                                        'sonstiges'
+                                                )}`}
                                             >
                                                 {getCategoryIcon(
-                                                    event.category || 'other'
+                                                    event.category ||
+                                                        'sonstiges'
                                                 )}
                                             </div>
                                             <div className="flex-1">
@@ -392,93 +418,106 @@ export default function WasStehAnPage() {
             {/* Event Details Modal */}
             {selectedEvent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-start mb-6">
-                            <h2 className="text-2xl font-bold text-gray-800">
-                                {selectedEvent.title}
-                            </h2>
-                            <button
-                                onClick={() => setSelectedEvent(null)}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-3">
-                                <div
-                                    className={`p-2 rounded-lg ${
-                                        selectedEvent.category === 'meeting'
-                                            ? 'bg-blue-100 text-blue-600'
-                                            : selectedEvent.category === 'event'
-                                            ? 'bg-green-100 text-green-600'
-                                            : selectedEvent.category ===
-                                              'sports'
-                                            ? 'bg-orange-100 text-orange-600'
-                                            : selectedEvent.category ===
-                                              'culture'
-                                            ? 'bg-purple-100 text-purple-600'
-                                            : 'bg-gray-100 text-gray-600'
-                                    }`}
+                    <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        {/* Event Image Header */}
+                        {selectedEvent.imageUrl && (
+                            <div className="relative h-48 w-full">
+                                <Image
+                                    src={selectedEvent.imageUrl}
+                                    alt={selectedEvent.title}
+                                    fill
+                                    className="object-cover rounded-t-3xl"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-3xl"></div>
+                                <button
+                                    onClick={() => setSelectedEvent(null)}
+                                    className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full transition-colors"
                                 >
-                                    {getCategoryIcon(
-                                        selectedEvent.category || 'other'
-                                    )}
+                                    <X className="w-6 h-6 text-white" />
+                                </button>
+                                <div className="absolute bottom-4 left-4 right-4">
+                                    <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                                        {selectedEvent.title}
+                                    </h2>
                                 </div>
-                                <span className="font-medium text-gray-700">
-                                    {selectedEvent.category === 'meeting'
-                                        ? 'Sitzung'
-                                        : selectedEvent.category === 'event'
-                                        ? 'Veranstaltung'
-                                        : selectedEvent.category === 'sports'
-                                        ? 'Sport'
-                                        : selectedEvent.category === 'culture'
-                                        ? 'Kultur'
-                                        : 'Sonstiges'}
-                                </span>
                             </div>
+                        )}
 
-                            <div className="flex items-center space-x-3">
-                                <Clock className="w-5 h-5 text-gray-500" />
-                                <span className="text-gray-700">
-                                    {moment(selectedEvent.start).format(
-                                        'dddd, DD. MMMM YYYY, HH:mm'
-                                    )}{' '}
-                                    -{' '}
-                                    {moment(selectedEvent.end).format('HH:mm')}{' '}
-                                    Uhr
-                                </span>
-                            </div>
+                        <div className="p-8">
+                            {/* Title for events without image */}
+                            {!selectedEvent.imageUrl && (
+                                <div className="flex justify-between items-start mb-6">
+                                    <h2 className="text-2xl font-bold text-gray-800">
+                                        {selectedEvent.title}
+                                    </h2>
+                                    <button
+                                        onClick={() => setSelectedEvent(null)}
+                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                    >
+                                        <X className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+                                    </button>
+                                </div>
+                            )}
 
-                            {selectedEvent.location && (
+                            <div className="space-y-4">
                                 <div className="flex items-center space-x-3">
-                                    <MapPin className="w-5 h-5 text-gray-500" />
-                                    <span className="text-gray-700">
-                                        {selectedEvent.location}
+                                    <div
+                                        className={`p-2 rounded-lg ${getCategoryBadgeClasses(
+                                            selectedEvent.category || 'sonstiges'
+                                        )}`}
+                                    >
+                                        {getCategoryIcon(
+                                            selectedEvent.category || 'sonstiges'
+                                        )}
+                                    </div>
+                                    <span className="font-medium text-gray-700">
+                                        {getCategoryDisplayName(
+                                            selectedEvent.category || 'sonstiges'
+                                        )}
                                     </span>
                                 </div>
-                            )}
 
-                            {selectedEvent.organizer && (
                                 <div className="flex items-center space-x-3">
-                                    <User className="w-5 h-5 text-gray-500" />
+                                    <Clock className="w-5 h-5 text-gray-500" />
                                     <span className="text-gray-700">
-                                        {selectedEvent.organizer}
+                                        {moment(selectedEvent.start).format(
+                                            'dddd, DD. MMMM YYYY, HH:mm'
+                                        )}{' '}
+                                        -{' '}
+                                        {moment(selectedEvent.end).format('HH:mm')}{' '}
+                                        Uhr
                                     </span>
                                 </div>
-                            )}
 
-                            {selectedEvent.description && (
-                                <div className="mt-6">
-                                    <h3 className="font-bold text-gray-800 mb-2">
-                                        Beschreibung
-                                    </h3>
-                                    <p className="text-gray-700 leading-relaxed">
-                                        {selectedEvent.description}
-                                    </p>
-                                </div>
-                            )}
+                                {selectedEvent.location && (
+                                    <div className="flex items-center space-x-3">
+                                        <MapPin className="w-5 h-5 text-gray-500" />
+                                        <span className="text-gray-700">
+                                            {selectedEvent.location}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {selectedEvent.organizer && (
+                                    <div className="flex items-center space-x-3">
+                                        <User className="w-5 h-5 text-gray-500" />
+                                        <span className="text-gray-700">
+                                            {selectedEvent.organizer}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {selectedEvent.description && (
+                                    <div className="mt-6">
+                                        <h3 className="font-bold text-gray-800 mb-2">
+                                            Beschreibung
+                                        </h3>
+                                        <p className="text-gray-700 leading-relaxed">
+                                            {selectedEvent.description}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

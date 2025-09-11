@@ -6,13 +6,14 @@ import './globals.css';
 import { MenubarDemo } from './components/menubar';
 import MobileNavbar from './components/mobile-navbar';
 import { Footer } from './components/footer';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'Dorfleben - Willkommen in unserem Dorf',
+    title: 'Wendessen',
     description:
-        'Offizielle Website unseres Dorfes - Aktuelle Informationen, Veranstaltungen und mehr',
+        'Offizielle Website des Dorfes Wendessen - Aktuelle Informationen, Veranstaltungen und mehr',
 };
 
 export default function RootLayout({
@@ -64,6 +65,8 @@ export default function RootLayout({
                     </main>
                     <Footer />
                 </div>
+                {/* Ennio Marke */}
+                <Analytics />
             </body>
         </html>
     );

@@ -10,13 +10,14 @@ export interface DatabaseEvent {
     end_date: string;
     location?: string;
     category:
-        | 'meeting'
-        | 'event'
-        | 'sports'
-        | 'culture'
-        | 'emergency'
-        | 'other';
+        | 'sitzung'
+        | 'veranstaltung'
+        | 'sport'
+        | 'kultur'
+        | 'notfall'
+        | 'sonstiges';
     organizer?: string;
+    image_url?: string;
     created_at: string;
     updated_at: string;
 }
@@ -29,13 +30,32 @@ export interface CalendarEvent {
     description?: string;
     location?: string;
     category:
-        | 'meeting'
-        | 'event'
-        | 'sports'
-        | 'culture'
-        | 'emergency'
-        | 'other';
+        | 'sitzung'
+        | 'veranstaltung'
+        | 'sport'
+        | 'kultur'
+        | 'notfall'
+        | 'sonstiges';
     organizer?: string;
+    imageUrl?: string;
+}
+
+export interface DatabaseNews {
+    id: number;
+    title: string;
+    content?: string;
+    category: string;
+    published_date: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface NewsItem {
+    id: string;
+    title: string;
+    content?: string;
+    category: string;
+    publishedDate: Date;
 }
 
 // Convert database event to calendar event format
@@ -53,6 +73,18 @@ function convertToCalendarEvent(
         location: dbEvent.location ? String(dbEvent.location) : undefined,
         category: String(dbEvent.category) as CalendarEvent['category'],
         organizer: dbEvent.organizer ? String(dbEvent.organizer) : undefined,
+        imageUrl: dbEvent.image_url ? String(dbEvent.image_url) : undefined,
+    };
+}
+
+// Convert database news to news item format
+function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
+    return {
+        id: String(dbNews.id),
+        title: String(dbNews.title),
+        content: dbNews.content ? String(dbNews.content) : undefined,
+        category: String(dbNews.category),
+        publishedDate: new Date(String(dbNews.published_date)),
     };
 }
 
@@ -135,7 +167,7 @@ export async function createEvent(
 ): Promise<CalendarEvent> {
     try {
         const result = await sql`
-      INSERT INTO events (title, description, start_date, end_date, location, category, organizer)
+      INSERT INTO events (title, description, start_date, end_date, location, category, organizer, image_url)
       VALUES (
         ${event.title}, 
         ${event.description || null}, 
@@ -143,7 +175,8 @@ export async function createEvent(
         ${event.end.toISOString()}, 
         ${event.location || null}, 
         ${event.category}, 
-        ${event.organizer || null}
+        ${event.organizer || null},
+        ${event.imageUrl || null}
       )
       RETURNING *
     `;
@@ -161,48 +194,50 @@ export async function updateEvent(
     event: Partial<Omit<CalendarEvent, 'id'>>
 ): Promise<CalendarEvent> {
     try {
-        const updateFields: string[] = [];
-        const updateValues: (string | null)[] = [];
-        let paramCount = 1;
-
-        if (event.title !== undefined) {
-            updateFields.push(`title = $${paramCount++}`);
-            updateValues.push(event.title);
-        }
-        if (event.description !== undefined) {
-            updateFields.push(`description = $${paramCount++}`);
-            updateValues.push(event.description || null);
-        }
-        if (event.start !== undefined) {
-            updateFields.push(`start_date = $${paramCount++}`);
-            updateValues.push(event.start.toISOString());
-        }
-        if (event.end !== undefined) {
-            updateFields.push(`end_date = $${paramCount++}`);
-            updateValues.push(event.end.toISOString());
-        }
-        if (event.location !== undefined) {
-            updateFields.push(`location = $${paramCount++}`);
-            updateValues.push(event.location || null);
-        }
-        if (event.category !== undefined) {
-            updateFields.push(`category = $${paramCount++}`);
-            updateValues.push(event.category);
-        }
-        if (event.organizer !== undefined) {
-            updateFields.push(`organizer = $${paramCount++}`);
-            updateValues.push(event.organizer || null);
-        }
-
-        updateFields.push(`updated_at = $${paramCount++}`);
-        updateValues.push(new Date().toISOString());
-
+        // For simplicity, let's update all fields (this ensures consistency)
         const result = await sql`
-      UPDATE events 
-      SET ${sql.unsafe(updateFields.join(', '))}
-      WHERE id = ${id}
-      RETURNING *
-    `;
+            UPDATE events 
+            SET 
+                title = ${event.title !== undefined ? event.title : sql`title`},
+                description = ${
+                    event.description !== undefined
+                        ? event.description || null
+                        : sql`description`
+                },
+                start_date = ${
+                    event.start !== undefined
+                        ? event.start.toISOString()
+                        : sql`start_date`
+                },
+                end_date = ${
+                    event.end !== undefined
+                        ? event.end.toISOString()
+                        : sql`end_date`
+                },
+                location = ${
+                    event.location !== undefined
+                        ? event.location || null
+                        : sql`location`
+                },
+                category = ${
+                    event.category !== undefined
+                        ? event.category
+                        : sql`category`
+                },
+                organizer = ${
+                    event.organizer !== undefined
+                        ? event.organizer || null
+                        : sql`organizer`
+                },
+                image_url = ${
+                    event.imageUrl !== undefined
+                        ? event.imageUrl || null
+                        : sql`image_url`
+                },
+                updated_at = ${new Date().toISOString()}
+            WHERE id = ${id}
+            RETURNING *
+        `;
 
         if (result.length === 0) {
             throw new Error('Event not found');
@@ -246,5 +281,91 @@ export async function getEventById(id: string): Promise<CalendarEvent | null> {
     } catch (error) {
         console.error('Error fetching event by ID:', error);
         throw new Error('Failed to fetch event by ID from database');
+    }
+}
+
+// News functions
+
+// Get all news
+export async function getNews(): Promise<NewsItem[]> {
+    try {
+        const news = await sql`
+      SELECT * FROM news 
+      ORDER BY published_date DESC
+    `;
+
+        return news.map(convertToNewsItem);
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        throw new Error('Failed to fetch news from database');
+    }
+}
+
+// Get recent news (limited)
+export async function getRecentNews(limit: number = 4): Promise<NewsItem[]> {
+    try {
+        const news = await sql`
+      SELECT * FROM news 
+      ORDER BY published_date DESC
+      LIMIT ${limit}
+    `;
+
+        return news.map(convertToNewsItem);
+    } catch (error) {
+        console.error('Error fetching recent news:', error);
+        throw new Error('Failed to fetch recent news from database');
+    }
+}
+
+// Get news by category
+export async function getNewsByCategory(category: string): Promise<NewsItem[]> {
+    try {
+        const news = await sql`
+      SELECT * FROM news 
+      WHERE category = ${category}
+      ORDER BY published_date DESC
+    `;
+
+        return news.map(convertToNewsItem);
+    } catch (error) {
+        console.error('Error fetching news by category:', error);
+        throw new Error('Failed to fetch news by category from database');
+    }
+}
+
+// Create a new news item
+export async function createNews(
+    news: Omit<NewsItem, 'id' | 'publishedDate'>
+): Promise<NewsItem> {
+    try {
+        const result = await sql`
+      INSERT INTO news (title, content, category)
+      VALUES (${news.title}, ${news.content || null}, ${news.category})
+      RETURNING *
+    `;
+
+        return convertToNewsItem(result[0]);
+    } catch (error) {
+        console.error('Error creating news:', error);
+        throw new Error('Failed to create news in database');
+    }
+}
+
+// Get news by ID
+export async function getNewsById(id: string): Promise<NewsItem | null> {
+    try {
+        const result = await sql`
+      SELECT * FROM news 
+      WHERE id = ${id}
+    `;
+
+        if (result.length === 0) {
+            return null;
+        }
+
+        return convertToNewsItem(result[0]);
+    } catch (error) {
+        console.error('Error fetching news by ID:', error);
+        throw new Error('Failed to fetch news by ID from database');
     }
 }

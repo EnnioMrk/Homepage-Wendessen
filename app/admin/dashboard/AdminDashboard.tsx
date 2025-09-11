@@ -1,0 +1,346 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { CalendarEvent, NewsItem } from '@/lib/database';
+import Link from 'next/link';
+
+// Function to get category colors for news badges
+function getNewsCategoryColors(category: string): string {
+    const colorMap: Record<string, string> = {
+        Bildung: 'bg-amber-100 text-amber-800',
+        Gemeinschaft: 'bg-green-100 text-green-800',
+        Feuerwehr: 'bg-red-100 text-red-800',
+        Digital: 'bg-indigo-100 text-indigo-800',
+        Sport: 'bg-blue-100 text-blue-800',
+        Kultur: 'bg-purple-100 text-purple-800',
+        Verwaltung: 'bg-gray-100 text-gray-800',
+    };
+
+    return colorMap[category] || 'bg-gray-100 text-gray-800';
+}
+
+interface AdminDashboardProps {
+    events: CalendarEvent[];
+    news: NewsItem[];
+    eventsError?: string;
+    newsError?: string;
+}
+
+export default function AdminDashboard({
+    events,
+    news,
+    eventsError,
+    newsError,
+}: AdminDashboardProps) {
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await fetch('/api/admin/logout', {
+                method: 'POST',
+            });
+            router.push('/admin/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <header className="bg-white shadow">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center py-6">
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">
+                                Admin Dashboard
+                            </h1>
+                            <p className="text-sm text-gray-600 mt-1">
+                                Wendessen Website Verwaltung
+                            </p>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <Link
+                                href="/"
+                                className="text-gray-600 hover:text-gray-900"
+                            >
+                                Website anzeigen
+                            </Link>
+                            <button
+                                onClick={handleLogout}
+                                disabled={isLoggingOut}
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:bg-gray-400"
+                            >
+                                {isLoggingOut ? 'Abmelden...' : 'Abmelden'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div className="px-4 py-6 sm:px-0">
+                    {/* Overview Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div className="bg-white overflow-hidden shadow rounded-lg">
+                            <div className="p-5">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                            <span className="text-white text-sm font-medium">
+                                                📅
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                                Termine
+                                            </dt>
+                                            <dd className="text-lg font-medium text-gray-900">
+                                                {eventsError
+                                                    ? 'Fehler'
+                                                    : events.length}
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white overflow-hidden shadow rounded-lg">
+                            <div className="p-5">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                                            <span className="text-white text-sm font-medium">
+                                                📰
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                                Nachrichten
+                                            </dt>
+                                            <dd className="text-lg font-medium text-gray-900">
+                                                {newsError
+                                                    ? 'Fehler'
+                                                    : news.length}
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white overflow-hidden shadow rounded-lg">
+                            <div className="p-5">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                                            <span className="text-white text-sm font-medium">
+                                                📊
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                                Status
+                                            </dt>
+                                            <dd className="text-lg font-medium text-gray-900">
+                                                Online
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white overflow-hidden shadow rounded-lg">
+                            <div className="p-5">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                                            <span className="text-white text-sm font-medium">
+                                                ⚙️
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                                Version
+                                            </dt>
+                                            <dd className="text-lg font-medium text-gray-900">
+                                                1.0.0
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Content */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Recent Events */}
+                        <div className="bg-white shadow rounded-lg">
+                            <div className="px-4 py-5 sm:p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                        Aktuelle Termine
+                                    </h3>
+                                    <Link
+                                        href="/admin/events"
+                                        className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                                    >
+                                        Alle Termine →
+                                    </Link>
+                                </div>
+                                {eventsError ? (
+                                    <div className="text-red-600 text-sm">
+                                        {eventsError}
+                                    </div>
+                                ) : events.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {events.slice(0, 5).map((event) => (
+                                            <div
+                                                key={event.id}
+                                                className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                                            >
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {event.title}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {new Date(
+                                                            event.start
+                                                        ).toLocaleDateString(
+                                                            'de-DE'
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                        event.category ===
+                                                        'sitzung'
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : event.category ===
+                                                              'veranstaltung'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : event.category ===
+                                                              'sport'
+                                                            ? 'bg-orange-100 text-orange-800'
+                                                            : event.category ===
+                                                              'kultur'
+                                                            ? 'bg-purple-100 text-purple-800'
+                                                            : 'bg-gray-100 text-gray-800'
+                                                    }`}
+                                                >
+                                                    {event.category}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-sm">
+                                        Keine Termine gefunden
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Recent News */}
+                        <div className="bg-white shadow rounded-lg">
+                            <div className="px-4 py-5 sm:p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                        Aktuelle Neugkeiten
+                                    </h3>
+                                    <Link
+                                        href="/admin/news"
+                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    >
+                                        Alle Neuigkeiten →
+                                    </Link>
+                                </div>
+                                {newsError ? (
+                                    <div className="text-red-600 text-sm">
+                                        {newsError}
+                                    </div>
+                                ) : news.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {news.slice(0, 5).map((item) => (
+                                            <div
+                                                key={item.id}
+                                                className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                                            >
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {item.title}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {new Date(
+                                                            item.publishedDate
+                                                        ).toLocaleDateString(
+                                                            'de-DE'
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getNewsCategoryColors(
+                                                        item.category
+                                                    )}`}
+                                                >
+                                                    {item.category}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-sm">
+                                        Keine Nachrichten gefunden
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="mt-8 bg-white shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                Schnellzugriff
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <button className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    <span className="mr-2">📅</span>
+                                    Termin hinzufügen
+                                </button>
+                                <button className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    <span className="mr-2">📰</span>
+                                    Nachricht hinzufügen
+                                </button>
+                                <Link
+                                    href="/admin/gallery"
+                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    <span className="mr-2">🖼️</span>
+                                    Galerie
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}

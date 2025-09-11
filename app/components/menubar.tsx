@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import * as MenubarPrimitive from '@radix-ui/react-menubar';
 import { cn } from '../lib/utils';
+import { useAdminAuth } from '../../lib/useAdminAuth';
 
 const Menubar = React.forwardRef<
     React.ElementRef<typeof MenubarPrimitive.Root>,
@@ -283,6 +284,8 @@ const kontaktItems = [
 ];
 
 export function MenubarDemo() {
+    const { isAuthenticated } = useAdminAuth();
+
     return (
         <Menubar className="rounded-none border-b border-none px-2 lg:px-4">
             <MenubarPrimitive.Menu>
@@ -377,6 +380,17 @@ export function MenubarDemo() {
                     ))}
                 </MenubarContent>
             </MenubarPrimitive.Menu>
+
+            {/* Admin Dashboard Link - Only show when authenticated */}
+            {isAuthenticated && (
+                <MenubarPrimitive.Menu>
+                    <Link href="/admin/dashboard" passHref>
+                        <MenubarTrigger className="font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300">
+                            ADMIN
+                        </MenubarTrigger>
+                    </Link>
+                </MenubarPrimitive.Menu>
+            )}
         </Menubar>
     );
 }

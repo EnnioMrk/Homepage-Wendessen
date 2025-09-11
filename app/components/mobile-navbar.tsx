@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { useAdminAuth } from '../../lib/useAdminAuth';
 
 const dorflebenItems = [
     {
@@ -72,6 +73,7 @@ const kontaktItems = [
 
 export default function MobileNavbar() {
     const [open, setOpen] = useState(false);
+    const { isAuthenticated } = useAdminAuth();
 
     return (
         <div className="lg:hidden">
@@ -220,6 +222,19 @@ export default function MobileNavbar() {
                                 ))}
                             </ul>
                         </li>
+
+                        {/* Admin Dashboard Link - Only show when authenticated */}
+                        {isAuthenticated && (
+                            <li className="border-t border-border pt-2 mt-2">
+                                <Link
+                                    href="/admin/dashboard"
+                                    className="block py-2 px-2 rounded text-amber-800 bg-amber-100 hover:bg-amber-200 font-semibold"
+                                    onClick={() => setOpen(false)}
+                                >
+                                    ADMIN DASHBOARD
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </nav>
