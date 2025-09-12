@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { unstable_cache } from 'next/cache';
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -89,19 +90,26 @@ function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
 }
 
 // Get all events
-export async function getEvents(): Promise<CalendarEvent[]> {
-    try {
-        const events = await sql`
-      SELECT * FROM events 
-      ORDER BY start_date ASC
-    `;
+export const getEvents = unstable_cache(
+    async (): Promise<CalendarEvent[]> => {
+        try {
+            const events = await sql`
+          SELECT * FROM events 
+          ORDER BY start_date ASC
+        `;
 
-        return events.map(convertToCalendarEvent);
-    } catch (error) {
-        console.error('Error fetching events:', error);
-        throw new Error('Failed to fetch events from database');
+            return events.map(convertToCalendarEvent);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+            throw new Error('Failed to fetch events from database');
+        }
+    },
+    ['all-events'],
+    {
+        tags: ['events'],
+        revalidate: 3600, // Revalidate every hour as fallback
     }
-}
+);
 
 // Get events within a date range
 export async function getEventsByDateRange(
@@ -124,26 +132,31 @@ export async function getEventsByDateRange(
 }
 
 // Get upcoming events (next N events)
-export async function getUpcomingEvents(
-    limit: number = 10
-): Promise<CalendarEvent[]> {
-    try {
-        // Use current date with time set to beginning of day to include events happening today
-        const now = new Date();
-        now.setHours(0, 0, 0, 0); // Set to beginning of today
-        const events = await sql`
-      SELECT * FROM events 
-      WHERE start_date >= ${now.toISOString()}
-      ORDER BY start_date ASC
-      LIMIT ${limit}
-    `;
+export const getUpcomingEvents = unstable_cache(
+    async (limit: number = 10): Promise<CalendarEvent[]> => {
+        try {
+            // Use current date with time set to beginning of day to include events happening today
+            const now = new Date();
+            now.setHours(0, 0, 0, 0); // Set to beginning of today
+            const events = await sql`
+          SELECT * FROM events 
+          WHERE start_date >= ${now.toISOString()}
+          ORDER BY start_date ASC
+          LIMIT ${limit}
+        `;
 
-        return events.map(convertToCalendarEvent);
-    } catch (error) {
-        console.error('Error fetching upcoming events:', error);
-        throw new Error('Failed to fetch upcoming events from database');
+            return events.map(convertToCalendarEvent);
+        } catch (error) {
+            console.error('Error fetching upcoming events:', error);
+            throw new Error('Failed to fetch upcoming events from database');
+        }
+    },
+    ['upcoming-events'],
+    {
+        tags: ['events'],
+        revalidate: 3600, // Revalidate every hour as fallback
     }
-}
+);
 
 // Get events by category
 export async function getEventsByCategory(

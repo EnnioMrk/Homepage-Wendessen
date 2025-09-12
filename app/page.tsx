@@ -6,6 +6,9 @@ import WirSindWendessenSection from './components/WirSindWendessenSection';
 import FullWidthServicesSection from './components/FullWidthServicesSection';
 import HomeBanner from './components/HomeBanner';
 
+// Revalidate the homepage every hour, or when manually triggered
+export const revalidate = 3600;
+
 export default function Home() {
     return (
         <div className="min-h-screen py-6 px-4 relative">

@@ -8,18 +8,22 @@ interface BlobUploadResponse {
 }
 
 export async function uploadToBlob(
-    filename: string, 
-    file: File, 
-    options: { access: 'public'; addRandomSuffix?: boolean } = { access: 'public' }
+    filename: string,
+    file: File,
+    options: { access: 'public'; addRandomSuffix?: boolean } = {
+        access: 'public',
+    }
 ): Promise<BlobUploadResponse> {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
-        throw new Error('BLOB_READ_WRITE_TOKEN environment variable is not set');
+        throw new Error(
+            'BLOB_READ_WRITE_TOKEN environment variable is not set'
+        );
     }
 
     const formData = new FormData();
     formData.append('file', file);
 
-    const finalFilename = options.addRandomSuffix 
+    const finalFilename = options.addRandomSuffix
         ? `${Date.now()}-${Math.random().toString(36).substring(2)}-${filename}`
         : filename;
 
@@ -36,7 +40,9 @@ export async function uploadToBlob(
 
     if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to upload to blob storage: ${response.status} ${errorText}`);
+        throw new Error(
+            `Failed to upload to blob storage: ${response.status} ${errorText}`
+        );
     }
 
     const result = await response.json();
@@ -50,7 +56,9 @@ export async function uploadToBlob(
 
 export async function deleteFromBlob(url: string): Promise<void> {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
-        throw new Error('BLOB_READ_WRITE_TOKEN environment variable is not set');
+        throw new Error(
+            'BLOB_READ_WRITE_TOKEN environment variable is not set'
+        );
     }
 
     const response = await fetch(url, {
@@ -62,6 +70,8 @@ export async function deleteFromBlob(url: string): Promise<void> {
 
     if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to delete from blob storage: ${response.status} ${errorText}`);
+        throw new Error(
+            `Failed to delete from blob storage: ${response.status} ${errorText}`
+        );
     }
 }

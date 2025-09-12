@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
 import { isAuthenticated } from '@/lib/auth';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function GET() {
     try {
         const events = await getEvents();
-        return NextResponse.json(events);
+        return NextResponse.json(events, {
+            headers: {
+                'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+            },
+        });
     } catch (error) {
         console.error('API Error fetching events:', error);
         return NextResponse.json(
@@ -49,6 +54,11 @@ export async function POST(request: NextRequest) {
         };
 
         const createdEvent = await createEvent(newEvent);
+        
+        // Revalidate pages that show events
+        revalidatePath('/');
+        revalidateTag('events');
+        
         return NextResponse.json(createdEvent, { status: 201 });
     } catch (error) {
         console.error('API Error creating event:', error);

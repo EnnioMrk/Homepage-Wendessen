@@ -6,7 +6,8 @@ import './globals.css';
 import { MenubarDemo } from './components/menubar';
 import MobileNavbar from './components/mobile-navbar';
 import { Footer } from './components/footer';
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -65,8 +66,8 @@ export default function RootLayout({
                     </main>
                     <Footer />
                 </div>
-                {/* Ennio Marke */}
                 <Analytics />
+                <SpeedInsights />
             </body>
         </html>
     );
