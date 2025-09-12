@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../../../lib/auth';
-import { del } from '@vercel/blob';
+import { deleteFromBlob } from '../../../../../lib/blob-utils';
 import { neon } from '@neondatabase/serverless';
 
 export const runtime = 'nodejs';
@@ -94,7 +94,7 @@ export async function DELETE(
 
         try {
             // Delete from Vercel Blob
-            await del(imageUrl);
+            await deleteFromBlob(imageUrl);
         } catch (blobError) {
             console.warn('Could not delete from blob storage:', blobError);
             // Continue anyway, just remove from database

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../../lib/auth';
-import { put } from '@vercel/blob';
+import { uploadToBlob } from '../../../../lib/blob-utils';
 import { neon } from '@neondatabase/serverless';
 
 export const runtime = 'nodejs';
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Upload to Vercel Blob
-        const blob = await put(file.name, file, {
+        const blob = await uploadToBlob(file.name, file, {
             access: 'public',
             addRandomSuffix: true,
         });
