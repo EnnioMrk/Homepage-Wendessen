@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    experimental: {
+        serverComponentsExternalPackages: ['undici'],
+    },
+    serverExternalPackages: ['undici'],
 };
 
 export default nextConfig;
