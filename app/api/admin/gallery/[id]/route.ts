@@ -3,9 +3,6 @@ import { isAuthenticated } from '../../../../../lib/auth';
 import { del } from '@vercel/blob';
 import { neon } from '@neondatabase/serverless';
 
-// Force Node.js runtime (not Edge Runtime)
-export const runtime = 'nodejs';
-
 const sql = neon(process.env.DATABASE_URL!);
 
 // PUT - Update image (rename)

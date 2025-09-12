@@ -11,9 +11,6 @@ const nextConfig: NextConfig = {
             },
         ],
     },
-    experimental: {
-        serverComponentsExternalPackages: ['@vercel/blob'],
-    },
 };
 
 export default nextConfig;
