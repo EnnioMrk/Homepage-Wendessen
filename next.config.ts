@@ -11,10 +11,18 @@ const nextConfig: NextConfig = {
             },
         ],
     },
-    experimental: {
-        serverComponentsExternalPackages: ['undici'],
+    webpack: (config, { isServer }) => {
+        if (isServer) {
+            // Ensure undici is bundled properly
+            config.resolve = config.resolve || {};
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                'undici': require.resolve('undici'),
+            };
+        }
+        return config;
     },
-    serverExternalPackages: ['undici'],
+    serverExternalPackages: [],
 };
 
 export default nextConfig;

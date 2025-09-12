@@ -128,10 +128,12 @@ export async function getUpcomingEvents(
     limit: number = 10
 ): Promise<CalendarEvent[]> {
     try {
-        const now = new Date().toISOString();
+        // Use current date with time set to beginning of day to include events happening today
+        const now = new Date();
+        now.setHours(0, 0, 0, 0); // Set to beginning of today
         const events = await sql`
       SELECT * FROM events 
-      WHERE start_date >= ${now}
+      WHERE start_date >= ${now.toISOString()}
       ORDER BY start_date ASC
       LIMIT ${limit}
     `;

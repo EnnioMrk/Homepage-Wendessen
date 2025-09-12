@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../../lib/auth';
+import { put } from '@vercel/blob';
 import { neon } from '@neondatabase/serverless';
+
+export const runtime = 'nodejs';
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -84,7 +87,6 @@ export async function POST(request: NextRequest) {
         }
 
         // Upload to Vercel Blob
-        const { put } = await import('@vercel/blob');
         const blob = await put(file.name, file, {
             access: 'public',
             addRandomSuffix: true,
