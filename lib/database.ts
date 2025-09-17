@@ -63,40 +63,11 @@ export interface NewsItem {
 function convertToCalendarEvent(
     dbEvent: Record<string, unknown>
 ): CalendarEvent {
-    // Handle timezone properly by treating stored datetime as local time
-    const createLocalDate = (dateStr: string): Date => {
-        // If the string doesn't have timezone info, treat it as local time
-        if (
-            dateStr &&
-            !dateStr.includes('Z') &&
-            !dateStr.includes('+') &&
-            !dateStr.includes('-', 10)
-        ) {
-            // Parse as local time by creating date without timezone conversion
-            const parts = dateStr.split(/[T\s]/);
-            const datePart = parts[0].split('-').map((n) => parseInt(n));
-            const timePart = parts[1]
-                ? parts[1].split(':').map((n) => parseInt(n))
-                : [0, 0, 0];
-
-            return new Date(
-                datePart[0], // year
-                datePart[1] - 1, // month (0-indexed)
-                datePart[2], // day
-                timePart[0] || 0, // hour
-                timePart[1] || 0, // minute
-                timePart[2] || 0 // second
-            );
-        }
-        // If it has timezone info, parse normally
-        return new Date(dateStr);
-    };
-
     return {
         id: String(dbEvent.id),
         title: String(dbEvent.title),
-        start: createLocalDate(String(dbEvent.start_date)),
-        end: createLocalDate(String(dbEvent.end_date)),
+        start: new Date(String(dbEvent.start_date)),
+        end: new Date(String(dbEvent.end_date)),
         description: dbEvent.description
             ? String(dbEvent.description)
             : undefined,
