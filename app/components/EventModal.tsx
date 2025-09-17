@@ -54,15 +54,15 @@ export default function EventModal({
         let endDateTime: string;
 
         if (isAllDay) {
-            // All-day event: start at beginning of start date, end at beginning of day after end date
-            startDateTime = `${startDate}T00:00`;
-            endDateTime = `${endDate}T23:59`;
+            // All-day event: use local timezone and specify times
+            startDateTime = `${startDate}T00:00:00`;
+            endDateTime = `${endDate}T23:59:59`;
         } else {
-            // Timed event: combine date and time
+            // Timed event: combine date and time and ensure local timezone
             const startTimeValue = startTime || '00:00';
             const endTimeValue = endTime || '23:59';
-            startDateTime = `${startDate}T${startTimeValue}`;
-            endDateTime = `${endDate}T${endTimeValue}`;
+            startDateTime = `${startDate}T${startTimeValue}:00`;
+            endDateTime = `${endDate}T${endTimeValue}:00`;
         }
 
         const eventData = {

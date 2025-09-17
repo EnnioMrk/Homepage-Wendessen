@@ -156,14 +156,18 @@ export default function AdminEventsCalendar({
 
     // Update events when initialEvents changes
     useEffect(() => {
+        console.log(
+            'initialEvents changed, updating events. Count:',
+            initialEvents.length
+        );
         const processedEvents = initialEvents.map((event) => ({
             ...event,
             start: new Date(event.start),
             end: new Date(event.end),
         }));
         setEvents(processedEvents);
+        console.log('Events updated. New count:', processedEvents.length);
     }, [initialEvents]);
-
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null
     );
