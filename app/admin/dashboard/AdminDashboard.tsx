@@ -6,6 +6,7 @@ import { CalendarEvent, NewsItem } from '@/lib/database';
 import Link from 'next/link';
 import EventModal from '@/app/components/EventModal';
 import NewsModal from '@/app/components/NewsModal';
+import { Calendar, Newspaper, Image as ImageIcon } from 'lucide-react';
 
 // Function to get category colors for news badges
 function getNewsCategoryColors(category: string): string {
@@ -25,15 +26,19 @@ function getNewsCategoryColors(category: string): string {
 interface AdminDashboardProps {
     events: CalendarEvent[];
     news: NewsItem[];
+    galleryCount: number;
     eventsError?: string;
     newsError?: string;
+    galleryError?: string;
 }
 
 export default function AdminDashboard({
     events,
     news,
+    galleryCount,
     eventsError,
     newsError,
+    galleryError,
 }: AdminDashboardProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showEventModal, setShowEventModal] = useState(false);
@@ -97,9 +102,7 @@ export default function AdminDashboard({
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0">
                                         <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                            <span className="text-white text-sm font-medium">
-                                                📅
-                                            </span>
+                                            <Calendar className="w-4 h-4 text-white" />
                                         </div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
@@ -123,9 +126,7 @@ export default function AdminDashboard({
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0">
                                         <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                                            <span className="text-white text-sm font-medium">
-                                                📰
-                                            </span>
+                                            <Newspaper className="w-4 h-4 text-white" />
                                         </div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
@@ -149,18 +150,18 @@ export default function AdminDashboard({
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0">
                                         <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                            <span className="text-white text-sm font-medium">
-                                                📊
-                                            </span>
+                                            <ImageIcon className="w-4 h-4 text-white" />
                                         </div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
                                         <dl>
                                             <dt className="text-sm font-medium text-gray-500 truncate">
-                                                Status
+                                                Bilder
                                             </dt>
                                             <dd className="text-lg font-medium text-gray-900">
-                                                Online
+                                                {galleryError
+                                                    ? 'Fehler'
+                                                    : galleryCount}
                                             </dd>
                                         </dl>
                                     </div>
@@ -305,21 +306,21 @@ export default function AdminDashboard({
                                     onClick={() => setShowEventModal(true)}
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
-                                    <span className="mr-2">📅</span>
+                                    <Calendar className="w-4 h-4 mr-2" />
                                     Termin hinzufügen
                                 </button>
                                 <button
                                     onClick={() => setShowNewsModal(true)}
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
-                                    <span className="mr-2">📰</span>
+                                    <Newspaper className="w-4 h-4 mr-2" />
                                     Nachricht hinzufügen
                                 </button>
                                 <Link
                                     href="/admin/gallery"
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
-                                    <span className="mr-2">🖼️</span>
+                                    <ImageIcon className="w-4 h-4 mr-2" />
                                     Galerie
                                 </Link>
                             </div>

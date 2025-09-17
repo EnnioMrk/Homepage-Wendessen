@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
-import { getEvents, getNews, CalendarEvent, NewsItem } from '@/lib/database';
+import { getEvents, getNews, getGalleryImageCount, CalendarEvent, NewsItem } from '@/lib/database';
 import AdminDashboard from './AdminDashboard';
 
 export default async function AdminDashboardPage() {
@@ -13,8 +13,10 @@ export default async function AdminDashboardPage() {
     // Fetch data for the dashboard
     let events: CalendarEvent[] = [];
     let news: NewsItem[] = [];
+    let galleryCount = 0;
     let eventsError: string | undefined;
     let newsError: string | undefined;
+    let galleryError: string | undefined;
 
     try {
         events = await getEvents();
@@ -30,12 +32,21 @@ export default async function AdminDashboardPage() {
         newsError = 'Failed to load news';
     }
 
+    try {
+        galleryCount = await getGalleryImageCount();
+    } catch (error) {
+        console.error('Failed to fetch gallery count:', error);
+        galleryError = 'Failed to load gallery count';
+    }
+
     return (
         <AdminDashboard
             events={events}
             news={news}
+            galleryCount={galleryCount}
             eventsError={eventsError}
             newsError={newsError}
+            galleryError={galleryError}
         />
     );
 }
