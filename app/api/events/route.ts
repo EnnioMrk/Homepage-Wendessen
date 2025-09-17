@@ -8,7 +8,8 @@ export async function GET() {
         const events = await getEvents();
         return NextResponse.json(events, {
             headers: {
-                'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+                'Cache-Control':
+                    'public, s-maxage=3600, stale-while-revalidate=86400',
             },
         });
     } catch (error) {
@@ -54,11 +55,11 @@ export async function POST(request: NextRequest) {
         };
 
         const createdEvent = await createEvent(newEvent);
-        
+
         // Revalidate pages that show events
         revalidatePath('/');
         revalidateTag('events');
-        
+
         return NextResponse.json(createdEvent, { status: 201 });
     } catch (error) {
         console.error('API Error creating event:', error);

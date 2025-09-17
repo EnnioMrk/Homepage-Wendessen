@@ -4,9 +4,10 @@ import { Calendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/de';
 import '../../was-steht-an/calendar.css'; // Import calendar styles
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CalendarEvent } from '@/lib/database';
 import { getCategoryBackgroundColor } from '@/lib/event-utils';
+import EventModal from '@/app/components/EventModal';
 import {
     Users,
     Calendar as CalendarIcon,
@@ -16,7 +17,6 @@ import {
     Clock,
     X,
     User,
-    Plus,
     Edit,
     Trash2,
     Save,
@@ -25,12 +25,17 @@ import {
 import Image from 'next/image';
 import ImagePicker from '../../components/ImagePicker';
 
-// Set German locale
+// Set German locale and configure moment properly
 moment.locale('de');
+
+// Create localizer with proper configuration
 const localizer = momentLocalizer(moment);
 
 interface AdminEventsCalendarProps {
     initialEvents: CalendarEvent[];
+    showCreateModal?: boolean;
+    setShowCreateModal?: (show: boolean) => void;
+    onEventsUpdate?: () => Promise<void>;
 }
 
 // Event form interface
@@ -136,19 +141,44 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
 
 export default function AdminEventsCalendar({
     initialEvents,
+    showCreateModal = false,
+    setShowCreateModal,
+    onEventsUpdate,
 }: AdminEventsCalendarProps) {
-    const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+    // State for events that updates when initialEvents changes
+    const [events, setEvents] = useState<CalendarEvent[]>(() =>
+        initialEvents.map((event) => ({
+            ...event,
+            start: new Date(event.start),
+            end: new Date(event.end),
+        }))
+    );
+
+    // Update events when initialEvents changes
+    useEffect(() => {
+        const processedEvents = initialEvents.map((event) => ({
+            ...event,
+            start: new Date(event.start),
+            end: new Date(event.end),
+        }));
+        setEvents(processedEvents);
+    }, [initialEvents]);
+
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null
     );
     const [showEventModal, setShowEventModal] = useState(false);
-    const [showCreateModal, setShowCreateModal] = useState(false);
     const [eventForm, setEventForm] = useState<EventFormData>(defaultEventForm);
     const [isEditing, setIsEditing] = useState(false);
     const [view, setView] = useState<View>('month');
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalInitialValues, setModalInitialValues] = useState<{
+        start?: string;
+        end?: string;
+    }>({});
 
     const getCategoryIcon = (category: string) => {
         switch (category) {
@@ -170,45 +200,42 @@ export default function AdminEventsCalendar({
         setShowEventModal(true);
     };
 
-    const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
-        setEventForm({
-            ...defaultEventForm,
-            start: moment(start).format('YYYY-MM-DDTHH:mm'),
-            end: moment(end).format('YYYY-MM-DDTHH:mm'),
-        });
-        setShowCreateModal(true);
-    };
+    const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+        // Get the actual Date objects from the slot
+        const startDate = slotInfo.start;
+        const endDate = slotInfo.end;
 
-    const handleCreateEvent = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch('/api/events', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...eventForm,
-                    start: new Date(eventForm.start),
-                    end: new Date(eventForm.end),
-                }),
-            });
+        if (startDate && endDate) {
+            // Format dates in local timezone to avoid UTC conversion issues
+            const formatLocalDate = (date: Date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
 
-            if (response.ok) {
-                const newEvent = await response.json();
-                setEvents([...events, newEvent]);
-                setShowCreateModal(false);
-                setEventForm(defaultEventForm);
+            const start = formatLocalDate(startDate);
+            let end;
+
+            // Calculate the difference in days
+            const timeDiff = endDate.getTime() - startDate.getTime();
+            const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+
+            // If selecting a single day (difference is 0 or 1 day), use the same date for start and end
+            if (daysDiff <= 1) {
+                end = start;
             } else {
-                alert('Fehler beim Erstellen des Termins');
+                // For multi-day selections, use the day before the end date (since calendar adds an extra day)
+                const adjustedEndDate = new Date(endDate);
+                adjustedEndDate.setDate(adjustedEndDate.getDate() - 1);
+                end = formatLocalDate(adjustedEndDate);
             }
-        } catch (error) {
-            console.error('Error creating event:', error);
-            alert('Fehler beim Erstellen des Termins');
-        }
-        setLoading(false);
-    };
 
+            setModalInitialValues({ start, end });
+        }
+
+        setIsModalOpen(true);
+    };
     const handleUpdateEvent = async () => {
         if (!selectedEvent) return;
 
@@ -227,14 +254,11 @@ export default function AdminEventsCalendar({
             });
 
             if (response.ok) {
-                const updatedEvent = await response.json();
-                setEvents(
-                    events.map((e) =>
-                        e.id === selectedEvent.id ? updatedEvent : e
-                    )
-                );
+                // Refresh events from parent component
+                await onEventsUpdate?.();
                 setIsEditing(false);
-                setSelectedEvent(updatedEvent);
+                setSelectedEvent(null);
+                setShowEventModal(false);
             } else {
                 alert('Fehler beim Aktualisieren des Termins');
             }
@@ -257,10 +281,12 @@ export default function AdminEventsCalendar({
             });
 
             if (response.ok) {
-                setEvents(events.filter((e) => e.id !== selectedEvent.id));
+                // Refresh events from parent component
+                await onEventsUpdate?.();
                 setShowEventModal(false);
                 setSelectedEvent(null);
             } else {
+                console.error('Delete failed with status:', response.status);
                 alert('Fehler beim Löschen des Termins');
             }
         } catch (error) {
@@ -297,20 +323,6 @@ export default function AdminEventsCalendar({
 
     return (
         <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
-            {/* Calendar Toolbar */}
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
-                    Terminkalender
-                </h2>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Neuer Termin
-                </button>
-            </div>
-
             {/* Calendar */}
             <div className="calendar-container">
                 <Calendar
@@ -674,240 +686,31 @@ export default function AdminEventsCalendar({
                 </div>
             )}
 
-            {/* Create Event Modal */}
-            {showCreateModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-start mb-6">
-                            <h3 className="text-xl font-bold text-gray-900">
-                                Neuen Termin erstellen
-                            </h3>
-                            <button
-                                onClick={() => {
-                                    setShowCreateModal(false);
-                                    setEventForm(defaultEventForm);
-                                }}
-                                className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        </div>
+            {/* Event Modal for creating new events from button */}
+            <EventModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal?.(false)}
+                onSuccess={() => {
+                    // Refresh the events list using the parent's update function
+                    onEventsUpdate?.();
+                }}
+            />
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Titel *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={eventForm.title}
-                                    onChange={(e) =>
-                                        setEventForm({
-                                            ...eventForm,
-                                            title: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Beschreibung
-                                </label>
-                                <textarea
-                                    value={eventForm.description}
-                                    onChange={(e) =>
-                                        setEventForm({
-                                            ...eventForm,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Start *
-                                    </label>
-                                    <input
-                                        type="datetime-local"
-                                        value={eventForm.start}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                start: e.target.value,
-                                            })
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Ende *
-                                    </label>
-                                    <input
-                                        type="datetime-local"
-                                        value={eventForm.end}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                end: e.target.value,
-                                            })
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Ort
-                                </label>
-                                <input
-                                    type="text"
-                                    value={eventForm.location}
-                                    onChange={(e) =>
-                                        setEventForm({
-                                            ...eventForm,
-                                            location: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Kategorie
-                                </label>
-                                <select
-                                    value={eventForm.category}
-                                    onChange={(e) =>
-                                        setEventForm({
-                                            ...eventForm,
-                                            category: e.target
-                                                .value as CalendarEvent['category'],
-                                        })
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                >
-                                    {categoryOptions.map((option) => (
-                                        <option
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Veranstalter
-                                </label>
-                                <input
-                                    type="text"
-                                    value={eventForm.organizer}
-                                    onChange={(e) =>
-                                        setEventForm({
-                                            ...eventForm,
-                                            organizer: e.target.value,
-                                        })
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Bild (optional)
-                                </label>
-                                <div className="space-y-2">
-                                    {eventForm.imageUrl ? (
-                                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                                            <div className="w-12 h-12 rounded-lg overflow-hidden relative">
-                                                <Image
-                                                    src={eventForm.imageUrl}
-                                                    alt="Ausgewähltes Bild"
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium text-gray-900">
-                                                    Bild ausgewählt
-                                                </p>
-                                                <p className="text-xs text-gray-500">
-                                                    Wird in der Terminübersicht
-                                                    angezeigt
-                                                </p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setEventForm({
-                                                        ...eventForm,
-                                                        imageUrl: '',
-                                                    })
-                                                }
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setShowImagePicker(true)
-                                            }
-                                            className="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
-                                        >
-                                            <ImageIcon className="w-5 h-5 text-gray-400 mr-2" />
-                                            <span className="text-gray-600">
-                                                Bild aus Galerie wählen
-                                            </span>
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-2 pt-4">
-                                <button
-                                    onClick={() => {
-                                        setShowCreateModal(false);
-                                        setEventForm(defaultEventForm);
-                                    }}
-                                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                                >
-                                    Abbrechen
-                                </button>
-                                <button
-                                    onClick={handleCreateEvent}
-                                    disabled={
-                                        loading ||
-                                        !eventForm.title ||
-                                        !eventForm.start ||
-                                        !eventForm.end
-                                    }
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
-                                >
-                                    <Plus className="w-4 h-4 mr-2 inline" />
-                                    Erstellen
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Event Modal for creating new events from calendar selection */}
+            <EventModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setModalInitialValues({});
+                }}
+                onSuccess={() => {
+                    // Refresh the events list using the parent's update function
+                    onEventsUpdate?.();
+                    setIsModalOpen(false);
+                    setModalInitialValues({});
+                }}
+                initialValues={modalInitialValues}
+            />
 
             {/* Image Picker Modal */}
             {showImagePicker && (

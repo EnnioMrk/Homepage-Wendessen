@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
 import {
     Plus,
     Search,
@@ -219,18 +220,17 @@ export default function AdminNews() {
     };
 
     const getCategoryColor = (category: string) => {
-        const colors: Record<string, string> = {
-            'allgemein': 'bg-gray-100 text-gray-800',
-            'veranstaltung': 'bg-blue-100 text-blue-800',
-            'ortsrat': 'bg-green-100 text-green-800',
-            'verein': 'bg-purple-100 text-purple-800',
-            'feuerwehr': 'bg-red-100 text-red-800',
-            'sport': 'bg-orange-100 text-orange-800',
-            'kultur': 'bg-pink-100 text-pink-800',
-            'bau': 'bg-yellow-100 text-yellow-800',
-            'wichtig': 'bg-red-200 text-red-900',
+        const colorMap: Record<string, string> = {
+            Bildung: 'bg-amber-100 text-amber-800',
+            Gemeinschaft: 'bg-green-100 text-green-800',
+            Feuerwehr: 'bg-red-100 text-red-800',
+            Digital: 'bg-indigo-100 text-indigo-800',
+            Sport: 'bg-blue-100 text-blue-800',
+            Kultur: 'bg-purple-100 text-purple-800',
+            Verwaltung: 'bg-gray-100 text-gray-800',
         };
-        return colors[category] || 'bg-gray-100 text-gray-800';
+
+        return colorMap[category] || 'bg-gray-100 text-gray-800';
     };
 
     return (
@@ -330,12 +330,12 @@ export default function AdminNews() {
                     {/* News List */}
                     <div className="bg-white shadow rounded-lg">
                         {loading ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                                <p className="mt-4 text-gray-600">
-                                    Lade Nachrichten...
-                                </p>
-                            </div>
+                            <LoadingSpinner
+                                size="md"
+                                text="Lade Nachrichten..."
+                                centered
+                                className="my-12"
+                            />
                         ) : sortedAndFilteredNews.length > 0 ? (
                             <div className="divide-y divide-gray-200">
                                 {sortedAndFilteredNews.map((item) => (

@@ -22,6 +22,7 @@ import {
     User,
     AlertCircle,
 } from 'lucide-react';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
 import Image from 'next/image';
 
 // Set German locale
@@ -169,10 +170,12 @@ export default function WasStehAnPage() {
                 <div className="container mx-auto px-4 py-16">
                     <div className="max-w-6xl mx-auto">
                         <div className="bg-white rounded-3xl p-12 shadow-xl text-center">
-                            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                            <p className="text-lg text-gray-600">
-                                Lade Termine...
-                            </p>
+                            <LoadingSpinner
+                                size="xl"
+                                color="indigo"
+                                text="Lade Termine..."
+                                centered
+                            />
                         </div>
                     </div>
                 </div>

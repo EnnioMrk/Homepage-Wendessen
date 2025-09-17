@@ -79,11 +79,11 @@ export async function PUT(
             updateData.imageUrl = eventData.imageUrl;
 
         const updatedEvent = await updateEvent(id, updateData);
-        
+
         // Revalidate pages that show events
         revalidatePath('/');
         revalidateTag('events');
-        
+
         return NextResponse.json(updatedEvent);
     } catch (error) {
         console.error('API Error updating event:', error);
@@ -120,11 +120,11 @@ export async function DELETE(
         }
 
         await deleteEvent(id);
-        
+
         // Revalidate pages that show events
         revalidatePath('/');
         revalidateTag('events');
-        
+
         return NextResponse.json(
             { message: 'Event deleted successfully' },
             { status: 200 }

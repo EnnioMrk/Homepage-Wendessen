@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/app/components/LoadingSpinner';
 import {
     Upload,
     Search,
@@ -344,8 +345,11 @@ export default function AdminGallery() {
                     {/* Gallery Grid */}
                     {loading ? (
                         <div className="bg-white shadow rounded-lg p-12 text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                            <p className="mt-4 text-gray-600">Lade Bilder...</p>
+                            <LoadingSpinner
+                                size="lg"
+                                text="Lade Bilder..."
+                                centered
+                            />
                         </div>
                     ) : sortedAndFilteredImages.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
@@ -560,7 +564,11 @@ export default function AdminGallery() {
                             >
                                 {uploading ? (
                                     <>
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                        <LoadingSpinner
+                                            size="sm"
+                                            color="white"
+                                            className="mr-2"
+                                        />
                                         Hochladen...
                                     </>
                                 ) : (
