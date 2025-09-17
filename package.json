@@ -7,7 +7,8 @@
         "build": "bun run --bun next build",
         "start": "bun run --bun next start",
         "lint": "bun run --bun next lint",
-        "setup-gallery": "bun run --bun scripts/create-gallery-table.ts"
+        "setup-gallery": "bun run --bun scripts/create-gallery-table.ts",
+        "setup-contacts": "bun run --bun scripts/setup-contacts.ts"
     },
     "dependencies": {
         "@neondatabase/serverless": "^1.0.1",

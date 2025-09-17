@@ -1,0 +1,340 @@
+[
+    {
+        "name": "Andreas Rink",
+        "emails": ["rink@wendessen.de", "info@wendessen.de"],
+        "phones": [
+            { "type": "phone", "value": "05331/7107733" },
+            { "type": "mobile", "value": "0171/2741258" }
+        ],
+        "addresses": ["Am Gute 2R, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Ortsrat Wendessen", "role": "Ortsbürgermeister" },
+            { "org": "Ortsrat Wendessen", "role": "Herausgeber (Impressum)" },
+            { "org": "Ortsrat Wendessen", "role": "Ansprechperson Datenschutz" }
+        ],
+        "sources": [
+            "app/lib/contact-data.ts",
+            "app/kontakt/impressum/page.tsx",
+            "app/kontakt/datenschutz/page.tsx"
+        ]
+    },
+    {
+        "name": "Christina Balder",
+        "emails": ["christina.balder@fdp-wf.de"],
+        "phones": [
+            { "type": "phone", "value": "05331/859860" },
+            { "type": "mobile", "value": "0176/23589921" }
+        ],
+        "addresses": ["Lindenblick 12, 38300 Wendessen"],
+        "affiliations": [
+            {
+                "org": "Ortsrat Wendessen",
+                "role": "stellv. Ortsbürgermeisterin"
+            }
+        ],
+        "sources": ["app/lib/contact-data.ts"]
+    },
+    {
+        "name": "Renate Hübner",
+        "emails": ["renate.huebner@bub-umwelt.de"],
+        "phones": [{ "type": "mobile", "value": "0173/2157758" }],
+        "addresses": ["Am Gute 2M, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Ortsrat Wendessen", "role": "Ortsratsmitglied" }
+        ],
+        "sources": ["app/lib/contact-data.ts"]
+    },
+    {
+        "name": "Klaus-Martin Jungkurth",
+        "emails": ["klausmartinjungkurth@gmail.com"],
+        "phones": [
+            { "type": "phone", "value": "05331/68680" },
+            { "type": "mobile", "value": "0176/34356130" }
+        ],
+        "addresses": ["Dorfstraße 18, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Ortsrat Wendessen", "role": "Ortsratsmitglied" },
+            {
+                "org": "Initiative Wendesser Spritzenhaus e.V.",
+                "role": "Kassenführer"
+            }
+        ],
+        "sources": [
+            "app/lib/contact-data.ts",
+            "app/dorfleben/vereine/spritzenhaus/page.tsx"
+        ]
+    },
+    {
+        "name": "Reiner Asche",
+        "emails": ["reiner.asche@freenet.de"],
+        "phones": [
+            { "type": "phone", "value": "05331/9969400" },
+            { "type": "mobile", "value": "0157/35349073" }
+        ],
+        "addresses": ["Vor den Wiesen 12, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Ortsrat Wendessen", "role": "Ortsratsmitglied" }
+        ],
+        "sources": ["app/lib/contact-data.ts"]
+    },
+    {
+        "name": "Femmke Brandl",
+        "emails": ["f.brandl@gruene-wf.de"],
+        "phones": [{ "type": "mobile", "value": "0151/41476516" }],
+        "addresses": ["In den Äckern 25, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Ortsrat Wendessen", "role": "Ortsratsmitglied" }
+        ],
+        "sources": ["app/lib/contact-data.ts"]
+    },
+    {
+        "name": "Marc Both",
+        "emails": ["marc.both@wolfenbuettel.de"],
+        "phones": [{ "type": "mobile", "value": "0171/8640666" }],
+        "addresses": ["Dorfstraße 24, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Ortsrat Wendessen", "role": "Ortsratsmitglied" }
+        ],
+        "sources": ["app/lib/contact-data.ts"]
+    },
+
+    {
+        "name": "Propst Dieter Schultz-Seitz",
+        "emails": ["dieter.schultz-seitz@lk-bs.de"],
+        "phones": [{ "type": "phone", "value": "05331 / 972830" }],
+        "addresses": [],
+        "affiliations": [
+            {
+                "org": "Kirchengemeinde Ahlum-Atzum-Wendessen",
+                "role": "Vakanzvertretung"
+            }
+        ],
+        "sources": ["app/dorfleben/kirche/page.tsx"]
+    },
+    {
+        "name": "Christine Spilleke",
+        "emails": ["ahlum.buero@lk-bs.de"],
+        "phones": [
+            { "type": "phone", "value": "05331 / 71875" },
+            { "type": "fax", "value": "05331 / 340224" }
+        ],
+        "addresses": ["Adenemer Weg 14, 38302 Wolfenbüttel / Ahlum"],
+        "affiliations": [
+            {
+                "org": "Kirchengemeinde Ahlum-Atzum-Wendessen",
+                "role": "Kirchenbüro"
+            }
+        ],
+        "sources": ["app/dorfleben/kirche/page.tsx"]
+    },
+
+    {
+        "name": "Kai Brackmann",
+        "emails": [],
+        "phones": [{ "type": "mobile", "value": "0157/54517195" }],
+        "addresses": [],
+        "affiliations": [
+            {
+                "org": "Freiwillige Feuerwehr Wendessen",
+                "role": "Ortsbrandmeister"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/feuerwehr/page.tsx"]
+    },
+    {
+        "name": "Olaf Glaeske",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331 / 8049931" }],
+        "addresses": [],
+        "affiliations": [
+            {
+                "org": "Freiwillige Feuerwehr Wendessen",
+                "role": "stellv. Ortsbrandmeister"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/feuerwehr/page.tsx"]
+    },
+
+    {
+        "name": "Christoph Ruprecht",
+        "emails": [],
+        "phones": [
+            { "type": "phone", "value": "05331 / 935849" },
+            { "type": "mobile", "value": "0151 / 70168231" }
+        ],
+        "addresses": [],
+        "affiliations": [
+            {
+                "org": "Jugendfeuerwehr Wendessen",
+                "role": "Jugendfeuerwehrwart"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/jugendfeuerwehr/page.tsx"]
+    },
+    {
+        "name": "Frederick Witte",
+        "emails": [],
+        "phones": [
+            { "type": "phone", "value": "05331 / 64618" },
+            { "type": "mobile", "value": "01577 / 5767067" }
+        ],
+        "addresses": [],
+        "affiliations": [
+            {
+                "org": "Jugendfeuerwehr Wendessen",
+                "role": "stellv. Jugendfeuerwehrwart"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/jugendfeuerwehr/page.tsx"]
+    },
+
+    {
+        "name": "Felix Siebert",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331 / 88 57 67" }],
+        "addresses": [],
+        "affiliations": [
+            { "org": "Kleingärtnerverein Wendessen", "role": "1. Vorsitzender" }
+        ],
+        "sources": ["app/dorfleben/vereine/kleingaertner/page.tsx"]
+    },
+
+    {
+        "name": "Lothar Lange",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331 / 966756" }],
+        "addresses": ["Im Weingarten 9a, 38300 Wolfenbüttel"],
+        "affiliations": [
+            { "org": "Schützenverein Wendessen e.V.", "role": "Schriftführer" }
+        ],
+        "sources": ["app/dorfleben/vereine/schuetzenverein/page.tsx"]
+    },
+
+    {
+        "name": "Ines Lange",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331/9455640" }],
+        "addresses": ["Am Gute 3, 38300 Wolfenbüttel"],
+        "affiliations": [
+            {
+                "org": "Initiative Wendesser Spritzenhaus e.V.",
+                "role": "1. Vorsitzende"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/spritzenhaus/page.tsx"]
+    },
+    {
+        "name": "Ursula Hanke",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331/9357411" }],
+        "addresses": ["Am Gute 22, 38300 Wolfenbüttel"],
+        "affiliations": [
+            {
+                "org": "Initiative Wendesser Spritzenhaus e.V.",
+                "role": "2. Vorsitzende"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/spritzenhaus/page.tsx"]
+    },
+    {
+        "name": "Peter Dorn",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331/906681" }],
+        "addresses": ["Im Weingarten 10, 38300 Wolfenbüttel"],
+        "affiliations": [
+            {
+                "org": "Initiative Wendesser Spritzenhaus e.V.",
+                "role": "Schriftführer"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/spritzenhaus/page.tsx"]
+    },
+
+    {
+        "name": "Lennart Meinberg",
+        "emails": ["fussball@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0160 44 87 045" }],
+        "addresses": [],
+        "affiliations": [{ "org": "SV Wendessen", "role": "Kontakt Fußball" }],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Stefan Landsperger",
+        "emails": ["fussball-ju@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0171 61 10 209" }],
+        "addresses": [],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Kontakt Jugendfußball" }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Karlheinz Bock",
+        "emails": ["gymnastik@sv-wendessen.de"],
+        "phones": [{ "type": "phone", "value": "05331-4 41 33" }],
+        "addresses": [],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Kontakt Gymnastikabteilung" }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Hanna Simon",
+        "emails": ["kinderturnen@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0159 01 33 46 64" }],
+        "addresses": [],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Kontakt Kinderturnen" }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Manfred Rasche",
+        "emails": ["tanzsport@sv-wendessen.de"],
+        "phones": [{ "type": "phone", "value": "05331 31 86 7" }],
+        "addresses": [],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Kontakt Tanzsport" }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Johannes Grieger",
+        "emails": ["tennis@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0171 48 29 73 6" }],
+        "addresses": [],
+        "affiliations": [{ "org": "SV Wendessen", "role": "Kontakt Tennis" }],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Achim Schmeida",
+        "emails": ["tischtennis@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0157 54 11 04 95" }],
+        "addresses": [],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Kontakt Tischtennis" }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Thomas Rettberg",
+        "emails": ["pool99@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0172 54 98 704" }],
+        "addresses": [],
+        "affiliations": [
+            {
+                "org": "SV Wendessen",
+                "role": "Kontakt Fußballförderkreis Pool 99"
+            }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Maruan Nissan",
+        "emails": [],
+        "phones": [{ "type": "mobile", "value": "0176 55491268" }],
+        "addresses": [],
+        "affiliations": [{ "org": "SV Wendessen", "role": "Vereinswirt" }],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    }
+]

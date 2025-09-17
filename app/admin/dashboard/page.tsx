@@ -1,6 +1,12 @@
 import { redirect } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
-import { getEvents, getNews, getGalleryImageCount, CalendarEvent, NewsItem } from '@/lib/database';
+import {
+    getEvents,
+    getNews,
+    getGalleryImageCount,
+    CalendarEvent,
+    NewsItem,
+} from '@/lib/database';
 import AdminDashboard from './AdminDashboard';
 
 export default async function AdminDashboardPage() {

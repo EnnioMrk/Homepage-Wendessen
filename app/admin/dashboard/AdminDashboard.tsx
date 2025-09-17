@@ -64,26 +64,26 @@ export default function AdminDashboard({
             {/* Header */}
             <header className="bg-white shadow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-6">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-6 space-y-4 sm:space-y-0">
+                        <div className="min-w-0 flex-1 text-center sm:text-left">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">
                                 Admin Dashboard
                             </h1>
-                            <p className="text-sm text-gray-600 mt-1">
+                            <p className="text-sm text-gray-600 mt-1 hidden sm:block">
                                 Wendessen Website Verwaltung
                             </p>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                             <Link
                                 href="/"
-                                className="text-gray-600 hover:text-gray-900"
+                                className="text-center sm:text-left text-gray-600 hover:text-gray-900 px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium border border-gray-300 rounded-md sm:border-none hover:bg-gray-50 sm:hover:bg-transparent transition-colors"
                             >
                                 Website anzeigen
                             </Link>
                             <button
                                 onClick={handleLogout}
                                 disabled={isLoggingOut}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:bg-gray-400"
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:bg-gray-400 w-full sm:w-auto"
                             >
                                 {isLoggingOut ? 'Abmelden...' : 'Abmelden'}
                             </button>
@@ -96,21 +96,21 @@ export default function AdminDashboard({
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     {/* Overview Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-6 mb-8">
                         <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                            <Calendar className="w-4 h-4 text-white" />
+                            <div className="p-3 sm:p-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center">
+                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                         </div>
                                     </div>
-                                    <div className="ml-5 w-0 flex-1">
+                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
                                         <dl>
-                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
                                                 Termine
                                             </dt>
-                                            <dd className="text-lg font-medium text-gray-900">
+                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
                                                 {eventsError
                                                     ? 'Fehler'
                                                     : events.length}
@@ -122,19 +122,19 @@ export default function AdminDashboard({
                         </div>
 
                         <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                                            <Newspaper className="w-4 h-4 text-white" />
+                            <div className="p-3 sm:p-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center">
+                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-md flex items-center justify-center">
+                                            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                         </div>
                                     </div>
-                                    <div className="ml-5 w-0 flex-1">
+                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
                                         <dl>
-                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
                                                 Nachrichten
                                             </dt>
-                                            <dd className="text-lg font-medium text-gray-900">
+                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
                                                 {newsError
                                                     ? 'Fehler'
                                                     : news.length}
@@ -146,19 +146,19 @@ export default function AdminDashboard({
                         </div>
 
                         <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                            <ImageIcon className="w-4 h-4 text-white" />
+                            <div className="p-3 sm:p-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center">
+                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                                            <ImageIcon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                         </div>
                                     </div>
-                                    <div className="ml-5 w-0 flex-1">
+                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
                                         <dl>
-                                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
                                                 Bilder
                                             </dt>
-                                            <dd className="text-lg font-medium text-gray-900">
+                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
                                                 {galleryError
                                                     ? 'Fehler'
                                                     : galleryCount}
@@ -175,13 +175,13 @@ export default function AdminDashboard({
                         {/* Recent Events */}
                         <div className="bg-white shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
-                                <div className="flex items-center justify-between mb-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
                                         Aktuelle Termine
                                     </h3>
                                     <Link
                                         href="/admin/events"
-                                        className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                                        className="text-sm text-indigo-600 hover:text-indigo-800 font-medium self-center sm:self-auto"
                                     >
                                         Alle Termine →
                                     </Link>
@@ -242,13 +242,13 @@ export default function AdminDashboard({
                         {/* Recent News */}
                         <div className="bg-white shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
-                                <div className="flex items-center justify-between mb-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
                                         Aktuelle Neugkeiten
                                     </h3>
                                     <Link
                                         href="/admin/news"
-                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium self-center sm:self-auto"
                                     >
                                         Alle Neuigkeiten →
                                     </Link>
@@ -301,7 +301,7 @@ export default function AdminDashboard({
                             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                                 Schnellzugriff
                             </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <button
                                     onClick={() => setShowEventModal(true)}
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"

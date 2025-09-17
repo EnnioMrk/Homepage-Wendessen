@@ -33,7 +33,7 @@ export default function RootLayout({
                     <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
                         <div className="container mx-auto flex items-center justify-between py-1">
                             {/* Logo on the left */}
-                            <div className="flex items-center">
+                            <div className="flex items-center px-4">
                                 <Link href="/" className="cursor-pointer">
                                     <Image
                                         src="/images/Wappen.png"
