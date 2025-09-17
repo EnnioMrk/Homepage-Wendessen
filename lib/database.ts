@@ -68,6 +68,7 @@ export interface ContactRecord {
     addresses: string[];
     affiliations: { org: string; role: string }[];
     sources: string[];
+    importance: number;
 }
 
 export type ContactListItem = Omit<ContactRecord, 'id'> & { id: string };
@@ -91,6 +92,7 @@ function convertToContactItem(row: any): ContactListItem {
         sources: Array.isArray(row.sources)
             ? row.sources
             : JSON.parse(row.sources ?? '[]'),
+        importance: Number(row.importance ?? 0),
     };
 }
 

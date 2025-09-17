@@ -16,7 +16,7 @@ import {
     Smartphone,
 } from 'lucide-react';
 
-type SortKey = 'name' | 'org' | 'role';
+type SortKey = 'vorname' | 'name' | 'org' | 'role';
 
 type FlatContact = {
     id: string;
@@ -27,6 +27,7 @@ type FlatContact = {
     affiliations: { org: string; role: string }[];
     firstOrg: string;
     firstRole: string;
+    importance: number;
 };
 
 function Badge({
@@ -46,6 +47,17 @@ function Badge({
     return (
         <span className={`${baseClasses} ${variantClasses}`}>{children}</span>
     );
+}
+
+// Helper functions for name sorting
+function getFirstName(fullName: string): string {
+    const parts = fullName.trim().split(' ');
+    return parts[0] || '';
+}
+
+function getLastName(fullName: string): string {
+    const parts = fullName.trim().split(' ');
+    return parts[parts.length - 1] || '';
 }
 
 // Contact Modal Component
@@ -236,11 +248,11 @@ function ContactCard({
         >
             <div className="p-6 flex-1 flex flex-col">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">
+                <div className="mb-3">
+                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-emerald-700 transition-colors mb-2">
                         {name}
                     </h3>
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-wrap gap-1">
                         {firstAff?.role && <Badge>{firstAff.role}</Badge>}
                         {hasMultipleRoles && (
                             <Badge variant="secondary">
@@ -318,8 +330,8 @@ export default function ContactDirectory({
 }) {
     const [q, setQ] = useState('');
     const [orgFilter, setOrgFilter] = useState<string>('');
-    const [sortKey, setSortKey] = useState<SortKey>('name');
-    const [asc, setAsc] = useState(true);
+    const [sortKey, setSortKey] = useState<SortKey>('role');
+    const [asc, setAsc] = useState(false);
     const [selectedContact, setSelectedContact] = useState<FlatContact | null>(
         null
     );
@@ -352,18 +364,23 @@ export default function ContactDirectory({
         });
 
         arr.sort((a, b) => {
+            if (sortKey === 'role') {
+                // Secret importance-based sorting (higher importance = higher in list)
+                return asc ? a.importance - b.importance : b.importance - a.importance;
+            }
+            
             const ak =
-                sortKey === 'name'
-                    ? a.name
-                    : sortKey === 'org'
-                    ? a.firstOrg
-                    : a.firstRole;
+                sortKey === 'vorname'
+                    ? getFirstName(a.name)
+                    : sortKey === 'name'
+                    ? getLastName(a.name)
+                    : a.firstOrg; // org sorting
             const bk =
-                sortKey === 'name'
-                    ? b.name
-                    : sortKey === 'org'
-                    ? b.firstOrg
-                    : b.firstRole;
+                sortKey === 'vorname'
+                    ? getFirstName(b.name)
+                    : sortKey === 'name'
+                    ? getLastName(b.name)
+                    : b.firstOrg;
             return asc ? ak.localeCompare(bk) : bk.localeCompare(ak);
         });
         return arr;
@@ -402,7 +419,7 @@ export default function ContactDirectory({
                                 value={q}
                                 onChange={(e) => setQ(e.target.value)}
                                 placeholder="Name, E-Mail, Organisation, Rolle… (Drücke /)"
-                                className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                                className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-gray-900"
                             />
                         </div>
                     </div>
@@ -415,7 +432,7 @@ export default function ContactDirectory({
                             <select
                                 value={orgFilter}
                                 onChange={(e) => setOrgFilter(e.target.value)}
-                                className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-colors appearance-none"
+                                className="w-full h-12 pl-10 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-colors appearance-none text-gray-900"
                             >
                                 <option value="">Alle Organisationen</option>
                                 {allOrgs.map((o) => (
@@ -436,8 +453,9 @@ export default function ContactDirectory({
                                 onChange={(e) =>
                                     setSortKey(e.target.value as SortKey)
                                 }
-                                className="flex-1 h-full pl-3 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-colors appearance-none"
+                                className="flex-1 h-full pl-3 pr-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-colors appearance-none text-gray-900"
                             >
+                                <option value="vorname">Vorname</option>
                                 <option value="name">Name</option>
                                 <option value="org">Organisation</option>
                                 <option value="role">Rolle</option>

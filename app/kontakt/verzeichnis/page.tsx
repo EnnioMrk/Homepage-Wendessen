@@ -15,6 +15,7 @@ export default async function KontaktVerzeichnisPage() {
         ...c,
         firstOrg: c.affiliations?.[0]?.org ?? '',
         firstRole: c.affiliations?.[0]?.role ?? '',
+        // importance is already included from the database
     }));
 
     return (
