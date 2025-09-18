@@ -73,25 +73,25 @@ export interface ContactRecord {
 
 export type ContactListItem = Omit<ContactRecord, 'id'> & { id: string };
 
-function convertToContactItem(row: any): ContactListItem {
+function convertToContactItem(row: Record<string, unknown>): ContactListItem {
     return {
         id: String(row.id),
         name: String(row.name),
         emails: Array.isArray(row.emails)
             ? row.emails
-            : JSON.parse(row.emails ?? '[]'),
+            : JSON.parse((row.emails as string) ?? '[]'),
         phones: Array.isArray(row.phones)
             ? row.phones
-            : JSON.parse(row.phones ?? '[]'),
+            : JSON.parse((row.phones as string) ?? '[]'),
         addresses: Array.isArray(row.addresses)
             ? row.addresses
-            : JSON.parse(row.addresses ?? '[]'),
+            : JSON.parse((row.addresses as string) ?? '[]'),
         affiliations: Array.isArray(row.affiliations)
             ? row.affiliations
-            : JSON.parse(row.affiliations ?? '[]'),
+            : JSON.parse((row.affiliations as string) ?? '[]'),
         sources: Array.isArray(row.sources)
             ? row.sources
-            : JSON.parse(row.sources ?? '[]'),
+            : JSON.parse((row.sources as string) ?? '[]'),
         importance: Number(row.importance ?? 0),
     };
 }

@@ -366,9 +366,11 @@ export default function ContactDirectory({
         arr.sort((a, b) => {
             if (sortKey === 'role') {
                 // Secret importance-based sorting (higher importance = higher in list)
-                return asc ? a.importance - b.importance : b.importance - a.importance;
+                return asc
+                    ? a.importance - b.importance
+                    : b.importance - a.importance;
             }
-            
+
             const ak =
                 sortKey === 'vorname'
                     ? getFirstName(a.name)

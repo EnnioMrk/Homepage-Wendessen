@@ -18,17 +18,17 @@ const ROLE_IMPORTANCE: Record<string, number> = {
     'stellv. Ortsbürgermeister': 900,
     'Herausgeber (Impressum)': 850,
     'Ansprechperson Datenschutz': 800,
-    
+
     // Council members
     'Ortsratsmitglied': 700,
     'Vakanzvertretung': 650,
-    
+
     // Emergency services leadership
     'Ortsbrandmeister': 600,
     'stellv. Ortsbrandmeister': 550,
     'Jugendfeuerwehrwart': 500,
     'stellv. Jugendfeuerwehrwart': 450,
-    
+
     // Organization leadership
     '1. Vorsitzender': 400,
     '1. Vorsitzende': 400,
@@ -38,12 +38,12 @@ const ROLE_IMPORTANCE: Record<string, number> = {
     'Kassiererin': 300,
     'Schriftführer': 250,
     'Schriftführerin': 250,
-    
+
     // Specialized roles
     'Kirchenbüro': 200,
     'Pfarrer': 180,
     'Pastor': 180,
-    
+
     // General members and other roles
     'Mitglied': 100,
     'Vereinsmitglied': 100,
@@ -61,12 +61,12 @@ export function calculateImportance(affiliations: Affiliation[]): number {
 
     // Get the highest importance score from all roles
     let maxImportance = 0;
-    
+
     for (const affiliation of affiliations) {
         const roleImportance = ROLE_IMPORTANCE[affiliation.role] || 50; // Default low importance for unknown roles
         maxImportance = Math.max(maxImportance, roleImportance);
     }
-    
+
     return maxImportance;
 }
 
