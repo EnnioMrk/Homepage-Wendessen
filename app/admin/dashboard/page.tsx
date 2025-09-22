@@ -4,10 +4,21 @@ import {
     getEvents,
     getNews,
     getGalleryImageCount,
+    getPortraitSubmissions,
     CalendarEvent,
     NewsItem,
 } from '@/lib/database';
 import AdminDashboard from './AdminDashboard';
+
+async function getPortraitsCount(): Promise<number> {
+    try {
+        const submissions = await getPortraitSubmissions();
+        return submissions.length;
+    } catch (error) {
+        console.error('Error loading portraits count:', error);
+        return 0;
+    }
+}
 
 export default async function AdminDashboardPage() {
     const authenticated = await isAuthenticated();
@@ -20,9 +31,11 @@ export default async function AdminDashboardPage() {
     let events: CalendarEvent[] = [];
     let news: NewsItem[] = [];
     let galleryCount = 0;
+    let portraitsCount = 0;
     let eventsError: string | undefined;
     let newsError: string | undefined;
     let galleryError: string | undefined;
+    let portraitsError: string | undefined;
 
     try {
         events = await getEvents();
@@ -45,14 +58,23 @@ export default async function AdminDashboardPage() {
         galleryError = 'Failed to load gallery count';
     }
 
+    try {
+        portraitsCount = await getPortraitsCount();
+    } catch (error) {
+        console.error('Failed to fetch portraits count:', error);
+        portraitsError = 'Failed to load portraits count';
+    }
+
     return (
         <AdminDashboard
             events={events}
             news={news}
             galleryCount={galleryCount}
+            portraitsCount={portraitsCount}
             eventsError={eventsError}
             newsError={newsError}
             galleryError={galleryError}
+            portraitsError={portraitsError}
         />
     );
 }

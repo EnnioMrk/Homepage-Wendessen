@@ -6,7 +6,7 @@ import { CalendarEvent, NewsItem } from '@/lib/database';
 import Link from 'next/link';
 import EventModal from '@/app/components/EventModal';
 import NewsModal from '@/app/components/NewsModal';
-import { Calendar, Newspaper, Image as ImageIcon } from 'lucide-react';
+import { Calendar, Newspaper, Image as ImageIcon, Users } from 'lucide-react';
 
 // Function to get category colors for news badges
 function getNewsCategoryColors(category: string): string {
@@ -27,18 +27,22 @@ interface AdminDashboardProps {
     events: CalendarEvent[];
     news: NewsItem[];
     galleryCount: number;
+    portraitsCount?: number;
     eventsError?: string;
     newsError?: string;
     galleryError?: string;
+    portraitsError?: string;
 }
 
 export default function AdminDashboard({
     events,
     news,
     galleryCount,
+    portraitsCount = 0,
     eventsError,
     newsError,
     galleryError,
+    portraitsError,
 }: AdminDashboardProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showEventModal, setShowEventModal] = useState(false);
@@ -96,7 +100,7 @@ export default function AdminDashboard({
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     {/* Overview Cards */}
-                    <div className="grid grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-6 mb-8">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="p-3 sm:p-5">
                                 <div className="flex flex-col sm:flex-row sm:items-center">
@@ -162,6 +166,30 @@ export default function AdminDashboard({
                                                 {galleryError
                                                     ? 'Fehler'
                                                     : galleryCount}
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white overflow-hidden shadow rounded-lg">
+                            <div className="p-3 sm:p-5">
+                                <div className="flex flex-col sm:flex-row sm:items-center">
+                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-md flex items-center justify-center">
+                                            <Users className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                        </div>
+                                    </div>
+                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
+                                        <dl>
+                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+                                                Portraits
+                                            </dt>
+                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
+                                                {portraitsError
+                                                    ? 'Fehler'
+                                                    : portraitsCount}
                                             </dd>
                                         </dl>
                                     </div>
@@ -301,7 +329,7 @@ export default function AdminDashboard({
                             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                                 Schnellzugriff
                             </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <button
                                     onClick={() => setShowEventModal(true)}
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -322,6 +350,13 @@ export default function AdminDashboard({
                                 >
                                     <ImageIcon className="w-4 h-4 mr-2" />
                                     Galerie
+                                </Link>
+                                <Link
+                                    href="/admin/portraits"
+                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    <Users className="w-4 h-4 mr-2" />
+                                    Portraits
                                 </Link>
                             </div>
                         </div>

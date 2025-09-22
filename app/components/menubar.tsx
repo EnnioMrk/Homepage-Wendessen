@@ -221,12 +221,25 @@ const dorflebenItems = [
         ],
     },
     {
-        title: 'Kirche',
-        href: '/dorfleben/kirche',
+        title: 'Institutionen',
+        items: [
+            {
+                title: 'Kirche',
+                href: '/dorfleben/kirche',
+            },
+            {
+                title: 'Das Hospiz',
+                href: '/wohnen-bauen/hospiz',
+                items: [
+                    { title: 'Über uns', href: '/wohnen-bauen/hospiz/ueber-uns' },
+                    { title: 'Spenden', href: '/wohnen-bauen/hospiz/spenden' },
+                ],
+            },
+        ],
     },
     {
         title: 'Wir Wendesser',
-        href: '/wir-wendesser',
+        href: '/dorfleben/wir-wendesser',
     },
     {
         title: 'Wetter',
@@ -265,14 +278,6 @@ const wohnenBauenItems = [
                 title: 'Baufortschritt',
                 href: '/wohnen-bauen/feuerwehrgeraetehaus/fortschritt',
             },
-        ],
-    },
-    {
-        title: 'Das Hospiz',
-        href: '/wohnen-bauen/hospiz',
-        items: [
-            { title: 'Über uns', href: '/wohnen-bauen/hospiz/ueber-uns' },
-            { title: 'Spenden', href: '/wohnen-bauen/hospiz/spenden' },
         ],
     },
 ];
