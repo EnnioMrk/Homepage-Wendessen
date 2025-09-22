@@ -231,7 +231,10 @@ const dorflebenItems = [
                 title: 'Das Hospiz',
                 href: '/wohnen-bauen/hospiz',
                 items: [
-                    { title: 'Über uns', href: '/wohnen-bauen/hospiz/ueber-uns' },
+                    {
+                        title: 'Über uns',
+                        href: '/wohnen-bauen/hospiz/ueber-uns',
+                    },
                     { title: 'Spenden', href: '/wohnen-bauen/hospiz/spenden' },
                 ],
             },

@@ -42,7 +42,7 @@ export default function PortraitSubmissionModal({
             }
 
             setSelectedFile(file);
-            
+
             // Create preview URL
             const url = URL.createObjectURL(file);
             setPreviewUrl(url);
@@ -51,7 +51,7 @@ export default function PortraitSubmissionModal({
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (!selectedFile) {
             alert('Bitte wählen Sie ein Bild aus.');
             return;
@@ -81,16 +81,22 @@ export default function PortraitSubmissionModal({
                 setFormData({ name: '', description: '', email: '' });
                 setSelectedFile(null);
                 setPreviewUrl(null);
-                
+
                 onClose();
                 if (onSuccess) {
                     onSuccess();
                 }
-                
-                alert('Vielen Dank für Ihre Einreichung! Wir werden uns bald bei Ihnen melden.');
+
+                alert(
+                    'Vielen Dank für Ihre Einreichung! Wir werden uns bald bei Ihnen melden.'
+                );
             } else {
                 const errorData = await response.json();
-                alert(`Fehler beim Senden: ${errorData.message || 'Unbekannter Fehler'}`);
+                alert(
+                    `Fehler beim Senden: ${
+                        errorData.message || 'Unbekannter Fehler'
+                    }`
+                );
             }
         } catch (error) {
             console.error('Error submitting portrait:', error);
@@ -119,7 +125,10 @@ export default function PortraitSubmissionModal({
                 ></div>
 
                 <div className="relative bg-white rounded-xl shadow-xl transform transition-all w-full max-w-2xl h-[calc(100vh-12rem)] flex flex-col overflow-hidden">
-                    <form onSubmit={handleSubmit} className="flex flex-col h-full">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="flex flex-col h-full"
+                    >
                         {/* Fixed Header */}
                         <div className="bg-white px-6 pt-6 pb-4 border-b border-gray-200 flex-shrink-0 rounded-t-xl">
                             <div className="flex items-start justify-between">
@@ -128,7 +137,8 @@ export default function PortraitSubmissionModal({
                                         Portrait einreichen
                                     </h3>
                                     <p className="text-gray-600">
-                                        Teilen Sie Ihre Geschichte mit der Dorfgemeinschaft
+                                        Teilen Sie Ihre Geschichte mit der
+                                        Dorfgemeinschaft
                                     </p>
                                 </div>
                                 <button
@@ -151,7 +161,7 @@ export default function PortraitSubmissionModal({
                                         <ImageIcon className="w-4 h-4 inline mr-1" />
                                         Ihr Foto *
                                     </label>
-                                    
+
                                     {previewUrl ? (
                                         <div className="relative mx-auto w-2/3 sm:w-1/3">
                                             <div className="w-full aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-dashed border-gray-300 relative">
@@ -165,7 +175,10 @@ export default function PortraitSubmissionModal({
                                             <button
                                                 type="button"
                                                 onClick={() => {
-                                                    if (previewUrl) URL.revokeObjectURL(previewUrl);
+                                                    if (previewUrl)
+                                                        URL.revokeObjectURL(
+                                                            previewUrl
+                                                        );
                                                     setSelectedFile(null);
                                                     setPreviewUrl(null);
                                                 }}
@@ -187,7 +200,10 @@ export default function PortraitSubmissionModal({
                                             <div className="w-full aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-green-400 transition-colors">
                                                 <Upload className="w-12 h-12 text-gray-400 mb-2" />
                                                 <p className="text-gray-600 text-center">
-                                                    <span className="font-medium text-green-600">Klicken Sie hier</span> um ein Bild auszuwählen
+                                                    <span className="font-medium text-green-600">
+                                                        Klicken Sie hier
+                                                    </span>{' '}
+                                                    um ein Bild auszuwählen
                                                 </p>
                                                 <p className="text-sm text-gray-500 mt-1">
                                                     JPG, PNG oder GIF bis 5MB
@@ -206,7 +222,12 @@ export default function PortraitSubmissionModal({
                                     <input
                                         type="text"
                                         value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                name: e.target.value,
+                                            })
+                                        }
                                         placeholder="Wie sollen wir Sie nennen?"
                                         required
                                         disabled={isLoading}
@@ -222,7 +243,12 @@ export default function PortraitSubmissionModal({
                                     </label>
                                     <textarea
                                         value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                description: e.target.value,
+                                            })
+                                        }
                                         placeholder="Erzählen Sie uns etwas über sich, was Sie bewegt, was Sie sich wünschen..."
                                         rows={4}
                                         required
@@ -242,7 +268,12 @@ export default function PortraitSubmissionModal({
                                     <input
                                         type="email"
                                         value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                email: e.target.value,
+                                            })
+                                        }
                                         placeholder="Für Rückfragen (wird nicht veröffentlicht)"
                                         disabled={isLoading}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100 text-gray-900"
@@ -252,8 +283,15 @@ export default function PortraitSubmissionModal({
                                 {/* Privacy Notice */}
                                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                                     <p className="text-sm text-green-800">
-                                        <span className="font-medium">Datenschutz:</span> Ihre Daten werden nur für die Darstellung auf der Wendessen-Website verwendet. 
-                                        Das Foto und Ihr Name werden öffentlich sichtbar sein. Ihre E-Mail-Adresse wird nicht veröffentlicht.
+                                        <span className="font-medium">
+                                            Datenschutz:
+                                        </span>{' '}
+                                        Ihre Daten werden nur für die
+                                        Darstellung auf der Wendessen-Website
+                                        verwendet. Das Foto und Ihr Name werden
+                                        öffentlich sichtbar sein. Ihre
+                                        E-Mail-Adresse wird nicht
+                                        veröffentlicht.
                                     </p>
                                 </div>
                             </div>
@@ -262,31 +300,37 @@ export default function PortraitSubmissionModal({
                         {/* Fixed Footer */}
                         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex-shrink-0 rounded-b-xl">
                             <div className="flex flex-col sm:flex-row-reverse sm:space-x-reverse sm:space-x-3 space-y-3 sm:space-y-0">
-                            <button
-                                type="submit"
-                                disabled={isLoading || !selectedFile || !formData.name.trim() || !formData.description.trim() || formData.description.length < 50}
-                                className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <div className="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                                        Wird gesendet...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload className="w-5 h-5 mr-2" />
-                                        Portrait einreichen
-                                    </>
-                                )}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleClose}
-                                disabled={isLoading}
-                                className="w-full sm:w-auto inline-flex justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                            >
-                                Abbrechen
-                            </button>
+                                <button
+                                    type="submit"
+                                    disabled={
+                                        isLoading ||
+                                        !selectedFile ||
+                                        !formData.name.trim() ||
+                                        !formData.description.trim() ||
+                                        formData.description.length < 50
+                                    }
+                                    className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <div className="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                                            Wird gesendet...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload className="w-5 h-5 mr-2" />
+                                            Portrait einreichen
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleClose}
+                                    disabled={isLoading}
+                                    className="w-full sm:w-auto inline-flex justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                >
+                                    Abbrechen
+                                </button>
                             </div>
                         </div>
                     </form>

@@ -515,7 +515,9 @@ export interface PortraitSubmission {
     reviewedBy?: string;
 }
 
-function convertToPortraitSubmission(row: Record<string, unknown>): PortraitSubmission {
+function convertToPortraitSubmission(
+    row: Record<string, unknown>
+): PortraitSubmission {
     return {
         id: String(row.id),
         name: String(row.name),
@@ -523,10 +525,14 @@ function convertToPortraitSubmission(row: Record<string, unknown>): PortraitSubm
         email: row.email ? String(row.email) : undefined,
         imageData: String(row.image_data),
         imageMimeType: String(row.image_mime_type),
-        imageFilename: row.image_filename ? String(row.image_filename) : undefined,
+        imageFilename: row.image_filename
+            ? String(row.image_filename)
+            : undefined,
         status: String(row.status) as 'pending' | 'approved' | 'rejected',
         submittedAt: new Date(String(row.submitted_at)),
-        reviewedAt: row.reviewed_at ? new Date(String(row.reviewed_at)) : undefined,
+        reviewedAt: row.reviewed_at
+            ? new Date(String(row.reviewed_at))
+            : undefined,
         reviewedBy: row.reviewed_by ? String(row.reviewed_by) : undefined,
     };
 }
@@ -542,7 +548,9 @@ export const getPortraitSubmissions = unstable_cache(
             return result.map(convertToPortraitSubmission);
         } catch (error) {
             console.error('Error fetching portrait submissions:', error);
-            throw new Error('Failed to fetch portrait submissions from database');
+            throw new Error(
+                'Failed to fetch portrait submissions from database'
+            );
         }
     },
     ['portraits-all'],
@@ -578,7 +586,9 @@ export async function createPortraitSubmission(
     try {
         const result = await sql`
             INSERT INTO portraits (name, description, image_data, image_mime_type, image_filename, email)
-            VALUES (${name}, ${description}, ${imageData}, ${imageMimeType}, ${imageFilename || null}, ${email})
+            VALUES (${name}, ${description}, ${imageData}, ${imageMimeType}, ${
+            imageFilename || null
+        }, ${email})
             RETURNING *
         `;
         return convertToPortraitSubmission(result[0]);
@@ -603,11 +613,11 @@ export async function updatePortraitStatus(
             WHERE id = ${parseInt(id)}
             RETURNING *
         `;
-        
+
         if (result.length === 0) {
             throw new Error('Portrait submission not found');
         }
-        
+
         return convertToPortraitSubmission(result[0]);
     } catch (error) {
         console.error('Error updating portrait status:', error);
@@ -622,7 +632,7 @@ export async function deletePortraitSubmission(id: string): Promise<void> {
             WHERE id = ${parseInt(id)}
             RETURNING *
         `;
-        
+
         if (result.length === 0) {
             throw new Error('Portrait submission not found');
         }
@@ -636,7 +646,9 @@ export async function deletePortraitSubmission(id: string): Promise<void> {
  * Cleans up old rejected portraits if the count exceeds the maximum limit.
  * Deletes the oldest rejected portraits first.
  */
-export async function cleanupOldRejectedPortraits(maxRejectedPortraits: number): Promise<number> {
+export async function cleanupOldRejectedPortraits(
+    maxRejectedPortraits: number
+): Promise<number> {
     try {
         // Count current rejected portraits
         const countResult = await sql`
@@ -644,16 +656,16 @@ export async function cleanupOldRejectedPortraits(maxRejectedPortraits: number):
             FROM portraits 
             WHERE status = 'rejected'
         `;
-        
+
         const rejectedCount = parseInt(countResult[0].count as string);
-        
+
         if (rejectedCount <= maxRejectedPortraits) {
             return 0; // No cleanup needed
         }
-        
+
         // Calculate how many to delete
         const toDelete = rejectedCount - maxRejectedPortraits;
-        
+
         // Get the oldest rejected portraits to delete
         const toDeleteResult = await sql`
             SELECT id FROM portraits 
@@ -661,22 +673,23 @@ export async function cleanupOldRejectedPortraits(maxRejectedPortraits: number):
             ORDER BY reviewed_at ASC, submitted_at ASC
             LIMIT ${toDelete}
         `;
-        
+
         if (toDeleteResult.length === 0) {
             return 0;
         }
-        
+
         // Delete the oldest rejected portraits
-        const idsToDelete = toDeleteResult.map(row => row.id);
+        const idsToDelete = toDeleteResult.map((row) => row.id);
         const deleteResult = await sql`
             DELETE FROM portraits 
             WHERE id = ANY(${idsToDelete})
         `;
-        
-        console.log(`Cleaned up ${deleteResult.length} old rejected portraits (limit: ${maxRejectedPortraits}, was: ${rejectedCount})`);
-        
+
+        console.log(
+            `Cleaned up ${deleteResult.length} old rejected portraits (limit: ${maxRejectedPortraits}, was: ${rejectedCount})`
+        );
+
         return deleteResult.length;
-        
     } catch (error) {
         console.error('Error cleaning up old rejected portraits:', error);
         throw new Error('Failed to cleanup old rejected portraits');

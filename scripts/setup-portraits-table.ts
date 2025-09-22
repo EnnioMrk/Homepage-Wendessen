@@ -5,7 +5,7 @@ const sql = neon(process.env.DATABASE_URL!);
 export async function setupPortraitsTable() {
     try {
         console.log('Creating portraits table...');
-        
+
         await sql`
             CREATE TABLE IF NOT EXISTS portraits (
                 id SERIAL PRIMARY KEY,
@@ -25,17 +25,16 @@ export async function setupPortraitsTable() {
         `;
 
         console.log('Creating indexes for portraits table...');
-        
+
         await sql`
             CREATE INDEX IF NOT EXISTS idx_portraits_status ON portraits(status);
         `;
-        
+
         await sql`
             CREATE INDEX IF NOT EXISTS idx_portraits_submitted_at ON portraits(submitted_at);
         `;
 
         console.log('Portraits table setup completed successfully!');
-        
     } catch (error) {
         console.error('Error setting up portraits table:', error);
         throw error;

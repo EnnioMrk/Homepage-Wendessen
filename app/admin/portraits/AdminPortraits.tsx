@@ -1,7 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X, Eye, Trash2, Clock, CheckCircle, XCircle, Mail, Calendar } from 'lucide-react';
+import {
+    Check,
+    X,
+    Eye,
+    Trash2,
+    Clock,
+    CheckCircle,
+    XCircle,
+    Mail,
+    Calendar,
+} from 'lucide-react';
 import Image from 'next/image';
 
 interface PortraitSubmission {
@@ -21,16 +31,22 @@ interface AdminPortraitsProps {
     onSubmissionsUpdate: () => void;
 }
 
-export default function AdminPortraits({ submissions, onSubmissionsUpdate }: AdminPortraitsProps) {
-    const [selectedSubmission, setSelectedSubmission] = useState<PortraitSubmission | null>(null);
-    const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+export default function AdminPortraits({
+    submissions,
+    onSubmissionsUpdate,
+}: AdminPortraitsProps) {
+    const [selectedSubmission, setSelectedSubmission] =
+        useState<PortraitSubmission | null>(null);
+    const [filterStatus, setFilterStatus] = useState<
+        'all' | 'pending' | 'approved' | 'rejected'
+    >('all');
     const [isActionLoading, setIsActionLoading] = useState<number | null>(null);
 
     const getImageUrl = (submission: PortraitSubmission): string => {
         return `data:${submission.imageMimeType};base64,${submission.imageData}`;
     };
 
-    const filteredSubmissions = submissions.filter(submission => {
+    const filteredSubmissions = submissions.filter((submission) => {
         if (filterStatus === 'all') return true;
         return submission.status === filterStatus;
     });
@@ -84,7 +100,11 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('Sind Sie sicher, dass Sie diese Einreichung löschen möchten?')) {
+        if (
+            !confirm(
+                'Sind Sie sicher, dass Sie diese Einreichung löschen möchten?'
+            )
+        ) {
             return;
         }
 
@@ -125,7 +145,7 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
     };
 
     const getStatusBadge = (status: string) => {
-        const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
+        const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full';
         switch (status) {
             case 'pending':
                 return `${baseClasses} bg-yellow-100 text-yellow-800`;
@@ -158,14 +178,44 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                 <div className="border-b border-gray-200">
                     <nav className="-mb-px flex space-x-8">
                         {[
-                            { key: 'all', label: 'Alle', count: submissions.length },
-                            { key: 'pending', label: 'Wartend', count: submissions.filter(s => s.status === 'pending').length },
-                            { key: 'approved', label: 'Freigegeben', count: submissions.filter(s => s.status === 'approved').length },
-                            { key: 'rejected', label: 'Abgelehnt', count: submissions.filter(s => s.status === 'rejected').length },
+                            {
+                                key: 'all',
+                                label: 'Alle',
+                                count: submissions.length,
+                            },
+                            {
+                                key: 'pending',
+                                label: 'Wartend',
+                                count: submissions.filter(
+                                    (s) => s.status === 'pending'
+                                ).length,
+                            },
+                            {
+                                key: 'approved',
+                                label: 'Freigegeben',
+                                count: submissions.filter(
+                                    (s) => s.status === 'approved'
+                                ).length,
+                            },
+                            {
+                                key: 'rejected',
+                                label: 'Abgelehnt',
+                                count: submissions.filter(
+                                    (s) => s.status === 'rejected'
+                                ).length,
+                            },
                         ].map((tab) => (
                             <button
                                 key={tab.key}
-                                onClick={() => setFilterStatus(tab.key as 'all' | 'pending' | 'approved' | 'rejected')}
+                                onClick={() =>
+                                    setFilterStatus(
+                                        tab.key as
+                                            | 'all'
+                                            | 'pending'
+                                            | 'approved'
+                                            | 'rejected'
+                                    )
+                                }
                                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
                                     filterStatus === tab.key
                                         ? 'border-green-500 text-green-600'
@@ -192,10 +242,11 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                         Keine Einreichungen gefunden
                     </h3>
                     <p className="text-gray-500">
-                        {filterStatus === 'all' 
+                        {filterStatus === 'all'
                             ? 'Es wurden noch keine Portrait-Einreichungen eingereicht.'
-                            : `Keine Einreichungen mit Status "${getStatusText(filterStatus)}".`
-                        }
+                            : `Keine Einreichungen mit Status "${getStatusText(
+                                  filterStatus
+                              )}".`}
                     </p>
                 </div>
             ) : (
@@ -224,7 +275,11 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                                     <h3 className="text-lg font-semibold text-gray-900">
                                         {submission.name}
                                     </h3>
-                                    <span className={getStatusBadge(submission.status)}>
+                                    <span
+                                        className={getStatusBadge(
+                                            submission.status
+                                        )}
+                                    >
                                         {getStatusText(submission.status)}
                                     </span>
                                 </div>
@@ -235,17 +290,21 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
 
                                 <div className="flex items-center text-xs text-gray-500 mb-4">
                                     <Calendar className="w-3 h-3 mr-1" />
-                                    {new Date(submission.submittedAt).toLocaleDateString('de-DE', {
+                                    {new Date(
+                                        submission.submittedAt
+                                    ).toLocaleDateString('de-DE', {
                                         day: '2-digit',
                                         month: '2-digit',
                                         year: 'numeric',
                                         hour: '2-digit',
-                                        minute: '2-digit'
+                                        minute: '2-digit',
                                     })}
                                     {submission.email && (
                                         <>
                                             <Mail className="w-3 h-3 ml-3 mr-1" />
-                                            <span className="truncate">{submission.email}</span>
+                                            <span className="truncate">
+                                                {submission.email}
+                                            </span>
                                         </>
                                     )}
                                 </div>
@@ -253,35 +312,51 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                                 {/* Actions */}
                                 <div className="flex space-x-2">
                                     <button
-                                        onClick={() => setSelectedSubmission(submission)}
+                                        onClick={() =>
+                                            setSelectedSubmission(submission)
+                                        }
                                         className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center"
                                     >
                                         <Eye className="w-4 h-4 mr-1" />
                                         Details
                                     </button>
-                                    
+
                                     {submission.status === 'pending' && (
                                         <>
                                             <button
-                                                onClick={() => handleApprove(submission.id)}
-                                                disabled={isActionLoading === submission.id}
+                                                onClick={() =>
+                                                    handleApprove(submission.id)
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
                                                 className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
                                             >
                                                 <Check className="w-4 h-4" />
                                             </button>
                                             <button
-                                                onClick={() => handleReject(submission.id)}
-                                                disabled={isActionLoading === submission.id}
+                                                onClick={() =>
+                                                    handleReject(submission.id)
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
                                                 className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
                                             >
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </>
                                     )}
-                                    
+
                                     <button
-                                        onClick={() => handleDelete(submission.id)}
-                                        disabled={isActionLoading === submission.id}
+                                        onClick={() =>
+                                            handleDelete(submission.id)
+                                        }
+                                        disabled={
+                                            isActionLoading === submission.id
+                                        }
                                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -311,22 +386,32 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                                             {selectedSubmission.name}
                                         </h3>
                                         <div className="flex items-center space-x-3">
-                                            <span className={getStatusBadge(selectedSubmission.status)}>
-                                                {getStatusText(selectedSubmission.status)}
+                                            <span
+                                                className={getStatusBadge(
+                                                    selectedSubmission.status
+                                                )}
+                                            >
+                                                {getStatusText(
+                                                    selectedSubmission.status
+                                                )}
                                             </span>
                                             <span className="text-sm text-gray-500">
-                                                {new Date(selectedSubmission.submittedAt).toLocaleDateString('de-DE', {
+                                                {new Date(
+                                                    selectedSubmission.submittedAt
+                                                ).toLocaleDateString('de-DE', {
                                                     day: '2-digit',
                                                     month: '2-digit',
                                                     year: 'numeric',
                                                     hour: '2-digit',
-                                                    minute: '2-digit'
+                                                    minute: '2-digit',
                                                 })}
                                             </span>
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => setSelectedSubmission(null)}
+                                        onClick={() =>
+                                            setSelectedSubmission(null)
+                                        }
                                         className="text-gray-400 hover:text-gray-600"
                                     >
                                         <X className="w-6 h-6" />
@@ -345,7 +430,9 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
 
                                 {/* Description */}
                                 <div className="mb-4">
-                                    <h4 className="text-sm font-medium text-gray-900 mb-2">Beschreibung:</h4>
+                                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                                        Beschreibung:
+                                    </h4>
                                     <p className="text-gray-700 whitespace-pre-wrap">
                                         {selectedSubmission.description}
                                     </p>
@@ -354,7 +441,9 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                                 {/* Email */}
                                 {selectedSubmission.email && (
                                     <div className="mb-6">
-                                        <h4 className="text-sm font-medium text-gray-900 mb-1">E-Mail:</h4>
+                                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                                            E-Mail:
+                                        </h4>
                                         <a
                                             href={`mailto:${selectedSubmission.email}`}
                                             className="text-blue-600 hover:text-blue-800"
@@ -370,16 +459,30 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                                 {selectedSubmission.status === 'pending' && (
                                     <>
                                         <button
-                                            onClick={() => handleApprove(selectedSubmission.id)}
-                                            disabled={isActionLoading === selectedSubmission.id}
+                                            onClick={() =>
+                                                handleApprove(
+                                                    selectedSubmission.id
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
                                             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
                                             <Check className="w-4 h-4 mr-2" />
                                             Freigeben
                                         </button>
                                         <button
-                                            onClick={() => handleReject(selectedSubmission.id)}
-                                            disabled={isActionLoading === selectedSubmission.id}
+                                            onClick={() =>
+                                                handleReject(
+                                                    selectedSubmission.id
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
                                             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
                                             <X className="w-4 h-4 mr-2" />
@@ -388,8 +491,13 @@ export default function AdminPortraits({ submissions, onSubmissionsUpdate }: Adm
                                     </>
                                 )}
                                 <button
-                                    onClick={() => handleDelete(selectedSubmission.id)}
-                                    disabled={isActionLoading === selectedSubmission.id}
+                                    onClick={() =>
+                                        handleDelete(selectedSubmission.id)
+                                    }
+                                    disabled={
+                                        isActionLoading ===
+                                        selectedSubmission.id
+                                    }
                                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                 >
                                     <Trash2 className="w-4 h-4 mr-2" />
