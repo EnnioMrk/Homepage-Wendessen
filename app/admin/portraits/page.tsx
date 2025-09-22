@@ -9,7 +9,9 @@ interface PortraitSubmission {
     name: string;
     description: string;
     email: string;
-    imageUrl: string;
+    imageData: string;
+    imageMimeType: string;
+    imageFilename: string;
     submittedAt: string;
     status: 'pending' | 'approved' | 'rejected';
 }
