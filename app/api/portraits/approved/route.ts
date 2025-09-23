@@ -7,14 +7,7 @@ export async function GET() {
 
         // Convert to expected format for public display (remove email field)
         const publicPortraits = approvedPortraits.map((portrait) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {
-                email,
-                imageData,
-                imageMimeType,
-                imageFilename,
-                ...publicPortrait
-            } = portrait;
+            const { imageData, imageMimeType } = portrait;
 
             // Create data URL from base64
             const imageUrl =
@@ -22,10 +15,14 @@ export async function GET() {
                     ? `data:${imageMimeType};base64,${imageData}`
                     : '';
 
+            // Return only the public fields
             return {
-                ...publicPortrait,
-                imageUrl,
+                id: portrait.id,
+                name: portrait.name,
+                description: portrait.description,
+                status: portrait.status,
                 submittedAt: portrait.submittedAt.toISOString(),
+                imageUrl,
             };
         });
 
