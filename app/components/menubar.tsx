@@ -225,17 +225,20 @@ const dorflebenItems = [
         items: [
             {
                 title: 'Kirche',
-                href: '/dorfleben/kirche',
+                href: '/dorfleben/institutionen/kirche',
             },
             {
                 title: 'Das Hospiz',
-                href: '/wohnen-bauen/hospiz',
+                href: '/dorfleben/institutionen/hospiz',
                 items: [
                     {
                         title: 'Über uns',
-                        href: '/wohnen-bauen/hospiz/ueber-uns',
+                        href: '/dorfleben/institutionen/hospiz/ueber-uns',
                     },
-                    { title: 'Spenden', href: '/wohnen-bauen/hospiz/spenden' },
+                    {
+                        title: 'Spenden',
+                        href: '/dorfleben/institutionen/hospiz/spenden',
+                    },
                 ],
             },
         ],

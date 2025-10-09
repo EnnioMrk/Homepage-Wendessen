@@ -1,5 +1,5 @@
 import OrtsratMemberCard from '../../../components/OrtsratMemberCard';
-import { Users, Building2, Zap } from 'lucide-react';
+import { UsersThree, Buildings, Lightning } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Ortsratsmitglieder - Dorfleben Wendessen',
@@ -175,7 +175,7 @@ export default function OrtsratMitgliederPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Users className="w-8 h-8 text-white" />
+                                    <UsersThree className="w-8 h-8 text-white" />
                                 </div>
                                 <h4 className="text-xl font-semibold text-foreground mb-2">
                                     Bürgernähe
@@ -188,7 +188,7 @@ export default function OrtsratMitgliederPage() {
 
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-secondary to-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Building2 className="w-8 h-8 text-white" />
+                                    <Buildings className="w-8 h-8 text-white" />
                                 </div>
                                 <h4 className="text-xl font-semibold text-foreground mb-2">
                                     Gemeindeleben
@@ -201,7 +201,7 @@ export default function OrtsratMitgliederPage() {
 
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-accent to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Zap className="w-8 h-8 text-white" />
+                                    <Lightning className="w-8 h-8 text-white" />
                                 </div>
                                 <h4 className="text-xl font-semibold text-foreground mb-2">
                                     Zukunft gestalten

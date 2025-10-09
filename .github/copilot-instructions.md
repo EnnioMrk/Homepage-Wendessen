@@ -121,7 +121,7 @@ await sql`CREATE INDEX IF NOT EXISTS idx_name ON table(column);`;
 
 ### Local Development
 
-1. **Development Server**: Assume `bun dev` is always running in the background on port 3000 with Turbopack
+1. **Development Server**: Assume `bun dev` is always running in the background on port 3000 with Turbopack (never start a new develiopment server)
 2. Environment variables required: `DATABASE_URL`, `ADMIN_PASSWORD`
 3. Database setup: Run `setup-database.ts` script first
 4. Local URL: `http://localhost:3000` for testing changes

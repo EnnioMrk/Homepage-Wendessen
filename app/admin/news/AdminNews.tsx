@@ -5,18 +5,18 @@ import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import {
     Plus,
-    Search,
-    ArrowUpDown,
-    Edit3,
-    Trash2,
+    MagnifyingGlass,
+    ArrowsDownUp,
+    PencilSimple,
+    Trash,
     Eye,
     ArrowLeft,
     X,
     Check,
-    AlertCircle,
+    WarningCircle,
     Calendar,
     Tag,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 interface NewsItem {
     id: string;
@@ -273,7 +273,7 @@ export default function AdminNews() {
                     <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1 relative">
-                                <Search
+                                <MagnifyingGlass
                                     size={20}
                                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                 />
@@ -288,7 +288,7 @@ export default function AdminNews() {
                                 />
                             </div>
                             <div className="relative">
-                                <ArrowUpDown
+                                <ArrowsDownUp
                                     size={20}
                                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                 />
@@ -311,7 +311,7 @@ export default function AdminNews() {
                     {error && (
                         <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
                             <div className="flex">
-                                <AlertCircle className="h-5 w-5 text-red-400" />
+                                <WarningCircle className="h-5 w-5 text-red-400" />
                                 <div className="ml-3">
                                     <p className="text-sm text-red-800">
                                         {error}
@@ -400,7 +400,7 @@ export default function AdminNews() {
                                                     }}
                                                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
                                                 >
-                                                    <Edit3 size={16} />
+                                                    <PencilSimple size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -408,7 +408,7 @@ export default function AdminNews() {
                                                     }
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash size={16} />
                                                 </button>
                                             </div>
                                         </div>
@@ -417,7 +417,7 @@ export default function AdminNews() {
                             </div>
                         ) : (
                             <div className="text-center py-12">
-                                <div className="text-gray-400 mb-4">📰</div>
+                                <div className="text-gray-400 mb-4">Keine Nachrichten</div>
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                                     Keine Nachrichten gefunden
                                 </h3>
@@ -495,7 +495,7 @@ export default function AdminNews() {
                                 }}
                                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
                             >
-                                <Edit3 size={16} className="mr-2" />
+                                <PencilSimple size={16} className="mr-2" />
                                 Bearbeiten
                             </button>
                         </div>

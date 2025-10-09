@@ -2,7 +2,7 @@
 
 import AdminEventsCalendar from './AdminEventsCalendar';
 import { useState, useEffect } from 'react';
-import { Plus, ArrowLeft } from 'lucide-react';
+import { Plus, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import { CalendarEvent } from '@/lib/database';
 
 export default function AdminEventsPage() {

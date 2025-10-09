@@ -354,20 +354,27 @@ export async function getNews(): Promise<NewsItem[]> {
 }
 
 // Get recent news (limited)
-export async function getRecentNews(limit: number = 4): Promise<NewsItem[]> {
-    try {
-        const news = await sql`
-      SELECT * FROM news 
-      ORDER BY published_date DESC
-      LIMIT ${limit}
-    `;
+export const getRecentNews = unstable_cache(
+    async (limit: number = 4): Promise<NewsItem[]> => {
+        try {
+            const news = await sql`
+          SELECT * FROM news 
+          ORDER BY published_date DESC
+          LIMIT ${limit}
+        `;
 
-        return news.map(convertToNewsItem);
-    } catch (error) {
-        console.error('Error fetching recent news:', error);
-        throw new Error('Failed to fetch recent news from database');
+            return news.map(convertToNewsItem);
+        } catch (error) {
+            console.error('Error fetching recent news:', error);
+            throw new Error('Failed to fetch recent news from database');
+        }
+    },
+    ['recent-news'],
+    {
+        tags: ['news'],
+        revalidate: 3600, // Revalidate every hour as fallback
     }
-}
+);
 
 // Get news by category
 export async function getNewsByCategory(category: string): Promise<NewsItem[]> {

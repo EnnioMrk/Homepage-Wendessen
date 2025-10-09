@@ -1,17 +1,19 @@
 import {
     Target,
     Info,
-    BarChart3,
-    Zap,
+    ChartBar,
+    Lightning,
     Clock,
     Crown,
     Trophy,
-    AlertTriangle,
-    Users,
+    Warning,
+    UsersThree,
     Phone,
     User,
     Lightbulb,
-} from 'lucide-react';
+    Egg,
+    BowlFood,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Schützenverein Wendessen e.V. - Dorfleben',
@@ -117,7 +119,7 @@ export default function SchuetzenvereinsPage() {
                             {/* KK and SpoPi */}
                             <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-red-700 mb-6 flex items-center">
-                                    <BarChart3 className="w-8 h-8 mr-3" />
+                                    <ChartBar className="w-8 h-8 mr-3" />
                                     Elektronische Auswertung
                                 </h3>
                                 <div className="bg-white p-6 rounded-xl border border-red-200">
@@ -136,7 +138,7 @@ export default function SchuetzenvereinsPage() {
                             {/* Air Rifle */}
                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <Zap className="w-8 h-8 mr-3" />
+                                    <Lightning className="w-8 h-8 mr-3" />
                                     Infrarotauswertung
                                 </h3>
                                 <div className="bg-white p-6 rounded-xl border border-blue-200">
@@ -211,7 +213,7 @@ export default function SchuetzenvereinsPage() {
                             {/* Easter Shooting */}
                             <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-3xl shadow-lg">
                                 <h3 className="text-xl font-bold text-yellow-700 mb-4 flex items-center">
-                                    <Lightbulb className="w-6 h-6 mr-2" />
+                                    <Egg className="w-6 h-6 mr-2" />
                                     Ostereierschießen
                                 </h3>
                                 <p className="text-gray-700">
@@ -247,7 +249,7 @@ export default function SchuetzenvereinsPage() {
                             {/* Pig Shooting */}
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-3xl shadow-lg">
                                 <h3 className="text-xl font-bold text-green-700 mb-4 flex items-center">
-                                    <Lightbulb className="w-6 h-6 mr-2" />
+                                    <BowlFood className="w-6 h-6 mr-2" />
                                     Schweineschießen
                                 </h3>
                                 <p className="text-gray-700">
@@ -260,7 +262,7 @@ export default function SchuetzenvereinsPage() {
                         {/* Participation Info */}
                         <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-500 p-8 rounded-2xl mt-8">
                             <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center">
-                                <Users className="w-8 h-8 mr-3" />
+                                <UsersThree className="w-8 h-8 mr-3" />
                                 Für alle Dorfbürger!
                             </h3>
                             <p className="text-red-800 text-lg mb-4">
@@ -270,7 +272,7 @@ export default function SchuetzenvereinsPage() {
                             </p>
                             <div className="bg-white p-6 rounded-xl border border-red-200">
                                 <h4 className="font-semibold text-red-800 mb-3">
-                                    🏆 Besonderes Bonbon:
+                                    Das Highlight:
                                 </h4>
                                 <p className="text-red-800">
                                     Der{' '}
@@ -325,7 +327,7 @@ export default function SchuetzenvereinsPage() {
 
                             <div className="bg-white p-6 rounded-2xl border-2 border-purple-200">
                                 <h4 className="text-xl font-bold text-purple-700 mb-3 flex items-center">
-                                    <Zap className="w-6 h-6 mr-2" />
+                                    <Lightning className="w-6 h-6 mr-2" />
                                     Neu: Infrarotanlage
                                 </h4>
                                 <p className="text-purple-800 mb-3">
@@ -342,7 +344,7 @@ export default function SchuetzenvereinsPage() {
 
                             <div className="bg-gradient-to-r from-red-100 to-orange-100 border-l-4 border-red-500 p-6 rounded-r-2xl">
                                 <h4 className="font-semibold text-red-800 mb-2 flex items-center">
-                                    <AlertTriangle className="w-5 h-5 mr-2" />
+                                    <Warning className="w-5 h-5 mr-2" />
                                     Aktueller Hinweis:
                                 </h4>
                                 <p className="text-red-800">
@@ -401,7 +403,7 @@ export default function SchuetzenvereinsPage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-red-50 to-orange-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-3xl font-bold text-red-700 mb-6">
-                            Wir freuen uns auf Sie! 🎯
+                            Wir freuen uns auf Sie!
                         </h3>
                         <p className="text-xl text-gray-700 font-medium mb-4">
                             Wir freuen uns schon heute darauf, Sie an einer der

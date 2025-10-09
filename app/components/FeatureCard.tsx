@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@phosphor-icons/react/dist/ssr';
 
 interface FeatureCardProps {
     title: string;
@@ -81,7 +81,7 @@ export default function FeatureCard({
         <div
             className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 bg-white ${className}`}
         >
-            <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
+            <div className="relative w-full h-full overflow-hidden">
                 {imageSrc && (
                     <Image
                         src={imageSrc}
@@ -93,7 +93,7 @@ export default function FeatureCard({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent"></div>
                 <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-white">
                     <h3
-                        className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4 leading-tight drop-shadow-lg"
+                        className="text-xl md:text-2xl lg:text-3xl font-bold mb-3 md:mb-4 leading-tight drop-shadow-lg text-center"
                         style={{
                             textShadow:
                                 '1px 1px 2px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8), 1px -1px 2px rgba(0,0,0,0.8), -1px 1px 2px rgba(0,0,0,0.8)',
@@ -102,14 +102,14 @@ export default function FeatureCard({
                         {title}
                     </h3>
                     {subtitle && (
-                        <p className="text-lg md:text-xl lg:text-2xl text-red-200 font-semibold mb-3 md:mb-4 drop-shadow-md">
+                        <p className="text-lg md:text-xl lg:text-2xl text-red-200 font-semibold mb-3 md:mb-4 drop-shadow-md text-center">
                             {subtitle}
                         </p>
                     )}
-                    <p className="text-sm md:text-base lg:text-lg leading-relaxed drop-shadow-md opacity-90 mb-4 md:mb-6">
+                    <p className="text-sm md:text-base lg:text-lg leading-relaxed drop-shadow-md opacity-90 mb-4 md:mb-6 text-center">
                         {description}
                     </p>
-                    <div>
+                    <div className="text-center">
                         <a
                             href={buttonHref}
                             className={`inline-flex items-center justify-center px-4 md:px-6 py-2 md:py-3 ${buttonColorClasses[buttonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn backdrop-blur-sm`}

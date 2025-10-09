@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeSlash } from '@phosphor-icons/react/dist/ssr';
 
 export default function AdminLogin() {
     const [password, setPassword] = useState('');
@@ -80,7 +80,7 @@ export default function AdminLogin() {
                                     }
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                                        <EyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                                     ) : (
                                         <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                                     )}

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { List, X } from '@phosphor-icons/react/dist/ssr';
 import { useAdminAuth } from '../../lib/useAdminAuth';
 
 const dorflebenItems = [
@@ -47,7 +47,7 @@ const dorflebenItems = [
             { title: 'SV Wendessen', href: '/dorfleben/vereine/sv-wendessen' },
         ],
     },
-    { title: 'Kirche', href: '/dorfleben/kirche' },
+    { title: 'Kirche', href: '/dorfleben/institutionen/kirche' },
     { title: 'Wir Wendesser', href: '/dorfleben/wir-wendesser' },
     { title: 'Wetter', href: '/dorfleben/wetter' },
     { title: 'Archiv', href: '/dorfleben/archiv' },
@@ -62,7 +62,7 @@ const wohnenBauenItems = [
         title: 'Feuerwehrgerätehaus',
         href: '/wohnen-bauen/feuerwehrgeraetehaus',
     },
-    { title: 'Das Hospiz', href: '/wohnen-bauen/hospiz' },
+    { title: 'Das Hospiz', href: '/dorfleben/institutionen/hospiz' },
 ];
 
 const kontaktItems = [
@@ -86,7 +86,7 @@ export default function MobileNavbar() {
                 {open ? (
                     <X size={28} className="text-foreground" />
                 ) : (
-                    <Menu size={28} className="text-foreground" />
+                    <List size={28} className="text-foreground" />
                 )}
             </button>
             {open && (

@@ -1,4 +1,4 @@
-import { Shield } from 'lucide-react';
+import { Shield } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Datenschutzerklärung - Wendessen',

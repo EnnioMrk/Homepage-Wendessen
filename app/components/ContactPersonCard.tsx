@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import {
-    ExternalLink,
+    ArrowSquareOut,
     MapPin,
-    Mail,
-    Smartphone,
+    EnvelopeSimple,
+    DeviceMobile,
     Phone,
     Briefcase,
     Clock,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 interface ContactInfoCardProps {
     icon: React.ReactNode;
@@ -64,7 +64,7 @@ export function ContactInfoCard({
                 </div>
                 {isClickable && (
                     <div className="opacity-50 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
-                        <ExternalLink className="w-5 h-5 text-primary" />
+                        <ArrowSquareOut className="w-5 h-5 text-primary" />
                     </div>
                 )}
             </div>
@@ -205,8 +205,8 @@ export default function ContactPersonCard({
                         />
 
                         {/* Email */}
-                        <ContactInfoCard
-                            icon={<Mail className="w-6 h-6 text-white" />}
+                            <ContactInfoCard
+                                icon={<EnvelopeSimple className="w-6 h-6 text-white" />}
                             label="E-Mail"
                             value={contactInfo.email}
                             href={`mailto:${contactInfo.email}`}
@@ -215,8 +215,8 @@ export default function ContactPersonCard({
                         />
 
                         {/* Mobile Phone */}
-                        <ContactInfoCard
-                            icon={<Smartphone className="w-6 h-6 text-white" />}
+                            <ContactInfoCard
+                                icon={<DeviceMobile className="w-6 h-6 text-white" />}
                             label="Mobil (WhatsApp)"
                             value={contactInfo.mobile}
                             href={`tel:${contactInfo.mobile}`}

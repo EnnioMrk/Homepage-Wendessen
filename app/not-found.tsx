@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import BackButton from './components/BackButton';
 import {
-    Settings,
-    Layers,
-    Zap,
-    Home,
-    Building,
-    Users,
-    Mail,
-} from 'lucide-react';
+    GearSix,
+    Stack,
+    Lightning,
+    House,
+    Buildings,
+    UsersThree,
+    EnvelopeSimple,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Seite nicht gefunden - Wendessen',
@@ -23,7 +23,7 @@ export default function NotFound() {
                 {/* Construction Icon */}
                 <div className="relative mb-8">
                     <div className="w-32 h-32 bg-gradient-to-r from-orange-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-2xl">
-                        <Settings className="w-16 h-16 text-white" />
+                        <GearSix className="w-16 h-16 text-white" />
                     </div>
                     {/* Animated dots */}
                     <div className="absolute -top-2 -right-2 w-4 h-4 bg-orange-500 rounded-full animate-bounce"></div>
@@ -58,12 +58,12 @@ export default function NotFound() {
                     {/* Construction Elements */}
                     <div className="flex items-center justify-center space-x-8 my-12">
                         <div className="flex items-center space-x-2 text-orange-600">
-                            <Layers className="w-6 h-6" />
+                            <Stack className="w-6 h-6" />
                             <span className="font-medium">Im Aufbau</span>
                         </div>
                         <div className="w-px h-8 bg-gray-300"></div>
                         <div className="flex items-center space-x-2 text-yellow-600">
-                            <Zap className="w-6 h-6" />
+                            <Lightning className="w-6 h-6" />
                             <span className="font-medium">Bald verfügbar</span>
                         </div>
                     </div>
@@ -74,7 +74,7 @@ export default function NotFound() {
                             href="/"
                             className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-semibold rounded-full hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                         >
-                            <Home className="w-5 h-5 mr-2" />
+                            <House className="w-5 h-5 mr-2" />
                             Zur Startseite
                         </Link>
                         <BackButton />
@@ -92,7 +92,7 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <Building className="w-5 h-5 text-green-600 group-hover:text-orange-600" />
+                                        <Buildings className="w-5 h-5 text-green-600 group-hover:text-orange-600" />
                                     </div>
                                     <div>
                                         <div className="font-semibold text-gray-800 group-hover:text-orange-700">
@@ -111,7 +111,7 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <Users className="w-5 h-5 text-blue-600 group-hover:text-orange-600" />
+                                        <UsersThree className="w-5 h-5 text-blue-600 group-hover:text-orange-600" />
                                     </div>
                                     <div>
                                         <div className="font-semibold text-gray-800 group-hover:text-orange-700">
@@ -130,7 +130,7 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <Mail className="w-5 h-5 text-purple-600 group-hover:text-orange-600" />
+                                        <EnvelopeSimple className="w-5 h-5 text-purple-600 group-hover:text-orange-600" />
                                     </div>
                                     <div>
                                         <div className="font-semibold text-gray-800 group-hover:text-orange-700">
@@ -148,7 +148,7 @@ export default function NotFound() {
                     {/* Footer Note */}
                     <div className="mt-12 text-center">
                         <p className="text-gray-400 text-sm">
-                            💻 Diese Website wird kontinuierlich erweitert und
+                            Diese Website wird kontinuierlich erweitert und
                             verbessert
                         </p>
                     </div>

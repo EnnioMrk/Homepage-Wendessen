@@ -1,6 +1,6 @@
 export default function HeroTitle() {
     return (
-        <div className="flex flex-col items-center justify-center mb-20 py-10 mt-auto">
+        <div className="flex flex-col items-center justify-center my-20 py-10">
             <div className="relative max-w-full text-center">
                 {/* Text shadow/stroke effect to make it visible on any background */}
                 <h1

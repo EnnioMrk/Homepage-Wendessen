@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Search, Check } from 'lucide-react';
+import { X, MagnifyingGlass, Check } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 
 interface GalleryImage {
@@ -87,7 +87,7 @@ export default function ImagePicker({
                 {/* Search */}
                 <div className="p-6 border-b border-gray-200">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                             type="text"
                             placeholder="Bilder durchsuchen..."

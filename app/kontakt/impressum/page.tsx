@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FileText, Lock } from 'lucide-react';
+import { FileText, Lock } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Impressum - Wendessen',

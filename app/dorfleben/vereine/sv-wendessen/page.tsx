@@ -2,14 +2,15 @@ import Image from 'next/image';
 import {
     Medal,
     Star,
-    Users,
-    Gamepad2,
-    Activity,
-    Timer,
+    Racquet,
+    Barbell,
+    TennisBall,
+    MusicNotesSimple,
     Heart,
-    Trophy,
+    SoccerBall,
     ShoppingCart,
-} from 'lucide-react';
+    Baby,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'SV Wendessen - Dorfleben',
@@ -22,7 +23,7 @@ export default function SVWendessenPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
             <div className="relative bg-gradient-to-r from-blue-700 via-green-600 to-emerald-600 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Features/SV_Wendessen.JPG')] bg-cover bg-center opacity-30"></div>
+                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/SV_Wendessen.JPG')] bg-cover bg-center opacity-30"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700/90 to-emerald-600/90"></div>
 
                 <div className="relative z-10 container mx-auto px-4 text-center">
@@ -59,7 +60,7 @@ export default function SVWendessenPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-blue-100">
                             <Image
-                                src="/images/Features/SV_Wendessen.JPG"
+                                src="/images/Vereinsleben/SV_Wendessen.JPG"
                                 alt="SV Wendessen - Weinrich-Arena und Vereinsgelände"
                                 fill
                                 className="object-cover"
@@ -151,7 +152,7 @@ export default function SVWendessenPage() {
                             {/* Football */}
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Trophy className="w-8 h-8 text-white" />
+                                    <SoccerBall className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-green-700 mb-3">
                                     Fußball
@@ -165,7 +166,7 @@ export default function SVWendessenPage() {
                             {/* Gymnastics */}
                             <div className="bg-gradient-to-br from-pink-50 to-rose-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-pink-600 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Activity className="w-8 h-8 text-white" />
+                                    <Barbell className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-pink-700 mb-3">
                                     Gymnastik
@@ -179,7 +180,7 @@ export default function SVWendessenPage() {
                             {/* Children's Gymnastics */}
                             <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Users className="w-8 h-8 text-white" />
+                                    <Baby className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-orange-700 mb-3">
                                     Kinderturnen
@@ -192,7 +193,7 @@ export default function SVWendessenPage() {
                             {/* Table Tennis */}
                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Gamepad2 className="w-8 h-8 text-white" />
+                                    <Racquet className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-blue-700 mb-3">
                                     Tischtennis
@@ -205,7 +206,7 @@ export default function SVWendessenPage() {
                             {/* Tennis */}
                             <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Timer className="w-8 h-8 text-white" />
+                                    <TennisBall className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-purple-700 mb-3">
                                     Tennis
@@ -218,7 +219,7 @@ export default function SVWendessenPage() {
                             {/* Dance Sport */}
                             <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Heart className="w-8 h-8 text-white" />
+                                    <MusicNotesSimple className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-teal-700 mb-3">
                                     Tanzsport
@@ -370,7 +371,7 @@ export default function SVWendessenPage() {
                         {/* Football */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-green-500">
                             <h3 className="text-lg font-bold text-green-700 mb-3">
-                                ⚽ Fußball
+                                Fußball
                             </h3>
                             <div className="space-y-3">
                                 <div>
@@ -397,7 +398,7 @@ export default function SVWendessenPage() {
                         {/* Youth Football */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-blue-500">
                             <h3 className="text-lg font-bold text-blue-700 mb-3">
-                                👦 Jugendfußball
+                                Jugendfußball
                             </h3>
                             <div className="space-y-3">
                                 <div>
@@ -424,7 +425,7 @@ export default function SVWendessenPage() {
                         {/* Gymnastics */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-pink-500">
                             <h3 className="text-lg font-bold text-pink-700 mb-3">
-                                🤸‍♀️ Gymnastikabteilung
+                                Gymnastikabteilung
                             </h3>
                             <p className="text-sm text-gray-600 mb-2">
                                 Damengymnastik, Aerobic, Fit and Fun,
@@ -455,7 +456,7 @@ export default function SVWendessenPage() {
                         {/* Children's Gymnastics */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-orange-500">
                             <h3 className="text-lg font-bold text-orange-700 mb-3">
-                                🧸 Kinderturnen
+                                Kinderturnen
                             </h3>
                             <div className="space-y-3">
                                 <div>
@@ -482,7 +483,7 @@ export default function SVWendessenPage() {
                         {/* Dance Sport */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-purple-500">
                             <h3 className="text-lg font-bold text-purple-700 mb-3">
-                                💃 Tanzsport
+                                Tanzsport
                             </h3>
                             <p className="text-sm text-gray-600 mb-2">
                                 Paare, Standard und lateinamerikanische Tänze
@@ -512,7 +513,7 @@ export default function SVWendessenPage() {
                         {/* Tennis */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-indigo-500">
                             <h3 className="text-lg font-bold text-indigo-700 mb-3">
-                                🎾 Tennis
+                                Tennis
                             </h3>
                             <div className="space-y-3">
                                 <div>
@@ -539,7 +540,7 @@ export default function SVWendessenPage() {
                         {/* Table Tennis */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-teal-500">
                             <h3 className="text-lg font-bold text-teal-700 mb-3">
-                                🏓 Tischtennis
+                                Tischtennis
                             </h3>
                             <div className="space-y-3">
                                 <div>
@@ -566,7 +567,7 @@ export default function SVWendessenPage() {
                         {/* Pool 99 */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-yellow-500">
                             <h3 className="text-lg font-bold text-yellow-700 mb-3">
-                                🏆 Fußballförderkreis &quot;Pool 99&quot;
+                                Fußballförderkreis &quot;Pool 99&quot;
                             </h3>
                             <div className="space-y-3">
                                 <div>
@@ -614,7 +615,7 @@ export default function SVWendessenPage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-blue-50 to-green-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-3xl font-bold text-blue-700 mb-6">
-                            Werden Sie Teil unserer Gemeinschaft! ⚽
+                            Werden Sie Teil unserer Gemeinschaft!
                         </h3>
                         <p className="text-xl text-gray-700 font-medium mb-4">
                             SV Wendessen - Mehr als nur ein Sportverein

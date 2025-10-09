@@ -6,10 +6,10 @@ import {
     Globe,
     User,
     Phone,
-    Mail,
-    Building2,
+    EnvelopeSimple,
+    Buildings,
     Clock,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Kirchengemeinde Ahlum-Atzum-Wendessen - Dorfleben',
@@ -226,7 +226,7 @@ export default function KirchePage() {
                             <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 rounded-2xl border-2 border-purple-300">
                                 <p className="text-lg text-gray-700 font-medium">
                                     Zu allen Gottesdiensten und Veranstaltungen
-                                    laden wir Sie ganz herzlich ein! 🙏
+                                    laden wir Sie ganz herzlich ein!
                                 </p>
                             </div>
                         </div>
@@ -267,7 +267,7 @@ export default function KirchePage() {
                                         </a>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <Mail className="w-5 h-5 text-purple-500" />
+                                        <EnvelopeSimple className="w-5 h-5 text-purple-500" />
                                         <a
                                             href="mailto:dieter.schultz-seitz@lk-bs.de"
                                             className="text-purple-600 hover:text-purple-800 transition-colors"
@@ -283,7 +283,7 @@ export default function KirchePage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                    <Building2 className="w-8 h-8 text-white" />
+                                    <Buildings className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-foreground mb-2">
                                     Kirchenbüro
@@ -321,7 +321,7 @@ export default function KirchePage() {
                                         <p>10:00 - 12:00 Uhr</p>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <Mail className="w-4 h-4 text-blue-500" />
+                                        <EnvelopeSimple className="w-4 h-4 text-blue-500" />
                                         <a
                                             href="mailto:ahlum.buero@lk-bs.de"
                                             className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -361,7 +361,7 @@ export default function KirchePage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-purple-50 to-blue-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-3xl font-bold text-purple-700 mb-6">
-                            Ihre Kirchengemeinde Ahlum-Atzum-Wendessen ✝️
+                            Ihre Kirchengemeinde Ahlum-Atzum-Wendessen
                         </h3>
                         <p className="text-xl text-gray-700 font-medium">
                             Glaube verbindet - Gemeinschaft stärkt

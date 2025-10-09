@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Calendar } from '@phosphor-icons/react/dist/ssr';
 
 interface EventCardProps {
     title: string;
@@ -59,7 +60,7 @@ export default function EventCard({
                         </div>
                         <div className="text-center p-6 text-gray-700">
                             <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-2xl">📅</span>
+                                <Calendar className="w-8 h-8 text-gray-600" />
                             </div>
                             <h3 className="text-xl font-bold mb-2 group-hover:text-gray-900 transition-colors duration-300">
                                 {title}

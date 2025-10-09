@@ -1,15 +1,15 @@
 import Image from 'next/image';
 import {
-    Star,
-    Users,
+    Fire,
+    UsersThree,
     Clock,
-    Zap,
+    Lightning,
     UserPlus,
     MapPin,
     User,
     Phone,
-    Smartphone,
-} from 'lucide-react';
+    DeviceMobile,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Jugendfeuerwehr Wendessen - Vereine',
@@ -22,17 +22,14 @@ export default function JugendfeuerwehrPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
             <div className="relative bg-gradient-to-r from-orange-600 via-red-500 to-pink-600 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Events/Jugendfeuerwehr.jpeg')] bg-cover bg-center opacity-30"></div>
+                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/Jugendfeuerwehr.jpeg')] bg-cover bg-center opacity-30"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-600/90 to-pink-600/90"></div>
 
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Star
-                                    className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600"
-                                    fill="currentColor"
-                                />
+                                <Fire className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600" />
                             </div>
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
                                 Jugendfeuerwehr
@@ -62,7 +59,7 @@ export default function JugendfeuerwehrPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-orange-100">
                             <Image
-                                src="/images/Events/Jugendfeuerwehr.jpeg"
+                                src="/images/Vereinsleben/Jugendfeuerwehr.jpeg"
                                 alt="Jugendfeuerwehr Wendessen in Aktion"
                                 fill
                                 className="object-cover"
@@ -118,7 +115,7 @@ export default function JugendfeuerwehrPage() {
 
                             <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-500 p-8 rounded-2xl">
                                 <h3 className="text-2xl font-bold text-blue-700 mb-4 flex items-center">
-                                    <Users className="w-8 h-8 mr-3" />
+                                    <UsersThree className="w-8 h-8 mr-3" />
                                     Wer kann mitmachen?
                                 </h3>
                                 <p className="text-lg">
@@ -169,7 +166,7 @@ export default function JugendfeuerwehrPage() {
                             {/* Activities */}
                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <Zap className="w-8 h-8 mr-3" />
+                                    <Lightning className="w-8 h-8 mr-3" />
                                     Action & Spaß
                                 </h3>
                                 <ul className="space-y-3 text-gray-700">
@@ -200,7 +197,7 @@ export default function JugendfeuerwehrPage() {
                                 <div className="bg-white p-4 rounded-xl border border-blue-200 mt-4">
                                     <p className="font-semibold text-blue-800">
                                         Auf jeden Fall haben wir immer Spaß
-                                        zusammen! 🎉
+                                        zusammen!
                                     </p>
                                 </div>
                             </div>
@@ -333,7 +330,7 @@ export default function JugendfeuerwehrPage() {
                                             href="tel:015170168231"
                                             className="flex items-center justify-center text-orange-600 hover:text-orange-700 transition-colors"
                                         >
-                                            <Smartphone className="w-5 h-5 mr-2" />
+                                            <DeviceMobile className="w-5 h-5 mr-2" />
                                             0151 / 70168231
                                         </a>
                                     </div>
@@ -368,7 +365,7 @@ export default function JugendfeuerwehrPage() {
                                             href="tel:015775767067"
                                             className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
                                         >
-                                            <Smartphone className="w-5 h-5 mr-2" />
+                                            <DeviceMobile className="w-5 h-5 mr-2" />
                                             01577 / 5767067
                                         </a>
                                     </div>
@@ -380,18 +377,18 @@ export default function JugendfeuerwehrPage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-orange-50 to-red-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-3xl font-bold text-orange-700 mb-6">
-                            Wir freuen uns auf Dich! 🚒
+                            Wir freuen uns auf Dich!
                         </h3>
                         <p className="text-xl text-gray-700 font-medium mb-4">
                             Deine Jugendfeuerwehr Wendessen
                         </p>
                         <div className="flex justify-center">
                             <div className="flex items-center space-x-2 text-orange-600">
-                                <Star className="w-6 h-6" fill="currentColor" />
+                                <Fire className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Über 25 Jahre Jugendfeuerwehr
                                 </span>
-                                <Star className="w-6 h-6" fill="currentColor" />
+                                <Fire className="w-6 h-6" />
                             </div>
                         </div>
                     </div>

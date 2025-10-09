@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { Mail, Send, Phone, MapPin, Clock, Heart } from 'lucide-react';
+import {
+    Phone,
+    MapPin,
+    Clock,
+    Heart,
+    EnvelopeSimple,
+    PaperPlaneTilt,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Kontaktformular - Wendessen',
@@ -18,7 +25,7 @@ export default function KontaktformularPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <Mail className="w-8 h-8 text-emerald-600" />
+                                <EnvelopeSimple className="w-8 h-8 text-emerald-600" />
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                 Kontaktformular
@@ -238,7 +245,7 @@ export default function KontaktformularPage() {
                                     type="submit"
                                     className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg rounded-full hover:from-emerald-600 hover:to-teal-600 transform hover:scale-105 transition-all duration-300 shadow-xl"
                                 >
-                                    <Send className="w-5 h-5 mr-2" />
+                                    <PaperPlaneTilt className="w-5 h-5 mr-2" />
                                     Nachricht senden
                                 </button>
                             </div>
@@ -273,7 +280,9 @@ export default function KontaktformularPage() {
                                     </a>
                                 </div>
                                 <div className="flex items-center space-x-3">
-                                    <Mail className="w-5 h-5 text-emerald-500" />
+                                    <EnvelopeSimple className="w-5 h-5 text-emerald-500" />
+                                    <EnvelopeSimple className="w-5 h-5 text-emerald-500" />
+                                    <PaperPlaneTilt className="w-5 h-5 mr-2" />
                                     <a
                                         href="mailto:info@wendessen.de"
                                         className="text-emerald-600 hover:text-emerald-800 transition-colors"
@@ -336,7 +345,7 @@ export default function KontaktformularPage() {
                     {/* Thank You Note */}
                     <div className="text-center bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-3xl font-bold text-emerald-700 mb-6">
-                            Vielen Dank für Ihr Interesse! 💬
+                            Vielen Dank für Ihr Interesse!
                         </h3>
                         <p className="text-xl text-gray-700 font-medium mb-4">
                             Ihre Meinung und Ihre Anregungen helfen uns dabei,

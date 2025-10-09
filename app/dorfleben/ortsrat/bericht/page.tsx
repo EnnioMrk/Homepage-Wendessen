@@ -2,16 +2,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
     Briefcase,
-    Mail,
+    EnvelopeSimple,
     CheckCircle,
-    AlertTriangle,
+    Warning,
     Cake,
-    Building2,
+    Buildings,
     Heart,
     Bell,
-    Zap,
-    BarChart3,
-} from 'lucide-react';
+    Lightning,
+    ChartBar,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Bürgermeister berichtet - Grußwort 2023 | Wendessen',
@@ -74,7 +74,7 @@ export default function BuergermeisterBerichtetPage() {
                                     <span>Marketingberater</span>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <Mail className="w-5 h-5 text-primary" />
+                                    <EnvelopeSimple className="w-5 h-5 text-primary" />
                                     <Link
                                         href="/kontakt/andreas-rink"
                                         className="text-primary hover:text-primary-dark transition-colors"
@@ -123,7 +123,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                 <div className="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 p-6 rounded-r-2xl">
                                     <h4 className="text-xl font-semibold text-orange-800 mb-3 flex items-center">
-                                        <AlertTriangle className="w-6 h-6 mr-2" />
+                                        <Warning className="w-6 h-6 mr-2" />
                                         Herausforderungen
                                     </h4>
                                     <p>
@@ -172,7 +172,7 @@ export default function BuergermeisterBerichtetPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100">
                                         <h5 className="text-lg font-semibold text-purple-800 mb-3 flex items-center">
-                                            <Building2 className="w-5 h-5 mr-2" />
+                                            <Buildings className="w-5 h-5 mr-2" />
                                             Baugebiet
                                         </h5>
                                         <p className="text-sm">
@@ -214,7 +214,7 @@ export default function BuergermeisterBerichtetPage() {
 
                                     <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-2xl border border-blue-100">
                                         <h5 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
-                                            <Zap className="w-5 h-5 mr-2" />
+                                            <Lightning className="w-5 h-5 mr-2" />
                                             Sport
                                         </h5>
                                         <p className="text-sm">
@@ -229,7 +229,7 @@ export default function BuergermeisterBerichtetPage() {
                                 {/* Verkehr */}
                                 <div className="bg-gradient-to-r from-gray-50 to-slate-50 border-l-4 border-gray-500 p-6 rounded-r-2xl">
                                     <h4 className="text-xl font-semibold text-gray-800 mb-3 flex items-center">
-                                        <BarChart3 className="w-6 h-6 mr-2" />
+                                        <ChartBar className="w-6 h-6 mr-2" />
                                         Verkehr - Ein Dauerbrenner
                                     </h4>
                                     <p>

@@ -5,13 +5,13 @@ import {
     Check,
     X,
     Eye,
-    Trash2,
+    Trash,
     Clock,
     CheckCircle,
     XCircle,
-    Mail,
+    EnvelopeSimple,
     Calendar,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 
 interface PortraitSubmission {
@@ -301,7 +301,7 @@ export default function AdminPortraits({
                                     })}
                                     {submission.email && (
                                         <>
-                                            <Mail className="w-3 h-3 ml-3 mr-1" />
+                                            <EnvelopeSimple className="w-3 h-3 ml-3 mr-1" />
                                             <span className="truncate">
                                                 {submission.email}
                                             </span>
@@ -359,7 +359,7 @@ export default function AdminPortraits({
                                         }
                                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -500,7 +500,7 @@ export default function AdminPortraits({
                                     }
                                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                 >
-                                    <Trash2 className="w-4 h-4 mr-2" />
+                                        <Trash className="w-4 h-4 mr-2" />
                                     Löschen
                                 </button>
                             </div>

@@ -2,19 +2,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-    Mail,
+    EnvelopeSimple,
     Phone,
-    Search,
-    Filter,
-    SortAsc,
-    SortDesc,
-    Building2,
+    MagnifyingGlass,
+    Funnel,
+    SortAscending,
+    SortDescending,
+    Buildings,
     User,
     MapPin,
-    Users,
+    UsersThree,
     X,
-    Smartphone,
-} from 'lucide-react';
+    DeviceMobile,
+} from '@phosphor-icons/react/dist/ssr';
 
 type SortKey = 'vorname' | 'name' | 'org' | 'role';
 
@@ -111,7 +111,7 @@ function ContactModal({
                     {contact.affiliations.length > 0 && (
                         <div>
                             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-                                <Building2 className="w-5 h-5 mr-2 text-emerald-600" />
+                                <Buildings className="w-5 h-5 mr-2 text-emerald-600" />
                                 Organisationen
                             </h3>
                             <div className="space-y-2">
@@ -151,7 +151,7 @@ function ContactModal({
                                                 href={`mailto:${email}`}
                                                 className="flex items-center text-emerald-700 hover:text-emerald-900 hover:underline transition-colors"
                                             >
-                                                <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                                                <EnvelopeSimple className="w-4 h-4 mr-2 flex-shrink-0" />
                                                 <span>{email}</span>
                                             </a>
                                         ))}
@@ -173,7 +173,7 @@ function ContactModal({
                                                 className="flex items-center text-blue-700 hover:text-blue-900 hover:underline transition-colors"
                                             >
                                                 {phone.type === 'mobile' ? (
-                                                    <Smartphone className="w-4 h-4 mr-2 flex-shrink-0" />
+                                                    <DeviceMobile className="w-4 h-4 mr-2 flex-shrink-0" />
                                                 ) : (
                                                     <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
                                                 )}
@@ -265,7 +265,7 @@ function ContactCard({
                 {/* Organization */}
                 {firstAff?.org && (
                     <div className="flex items-center text-sm text-gray-600 mb-4">
-                        <Building2 className="w-4 h-4 mr-2 text-emerald-600 flex-shrink-0" />
+                        <Buildings className="w-4 h-4 mr-2 text-emerald-600 flex-shrink-0" />
                         <span className="truncate">{firstAff.org}</span>
                     </div>
                 )}
@@ -277,7 +277,7 @@ function ContactCard({
                             href={`mailto:${firstEmail}`}
                             className="flex items-center text-emerald-700 hover:text-emerald-900 hover:underline transition-colors group/link"
                         >
-                            <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+                            <EnvelopeSimple className="w-4 h-4 mr-2 flex-shrink-0" />
                             <span className="truncate text-sm">
                                 {firstEmail}
                             </span>
@@ -310,7 +310,7 @@ function ContactCard({
                 {/* Additional Info */}
                 {(emails.length > 1 || phones.length > 1) && (
                     <div className="text-xs text-gray-500 flex items-center mt-auto pt-2">
-                        <Users className="w-3 h-3 mr-1" />
+                        <UsersThree className="w-3 h-3 mr-1" />
                         {emails.length > 1 && `${emails.length} E-Mails`}
                         {emails.length > 1 && phones.length > 1 && ' • '}
                         {phones.length > 1 && `${phones.length} Telefonnummern`}
@@ -415,7 +415,7 @@ export default function ContactDirectory({
                             Suche
                         </label>
                         <div className="relative">
-                            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                            <MagnifyingGlass className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                             <input
                                 id="dir-search"
                                 value={q}
@@ -430,7 +430,7 @@ export default function ContactDirectory({
                             Organisation
                         </label>
                         <div className="relative">
-                            <Filter className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                            <Funnel className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                             <select
                                 value={orgFilter}
                                 onChange={(e) => setOrgFilter(e.target.value)}
@@ -477,9 +477,9 @@ export default function ContactDirectory({
                                 }
                             >
                                 {asc ? (
-                                    <SortAsc className="w-5 h-5 text-emerald-700" />
+                                    <SortAscending className="w-5 h-5 text-emerald-700" />
                                 ) : (
-                                    <SortDesc className="w-5 h-5 text-emerald-700" />
+                                    <SortDescending className="w-5 h-5 text-emerald-700" />
                                 )}
                             </button>
                         </div>

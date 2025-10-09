@@ -41,7 +41,7 @@
     "tailwindcss": "^3.3.0",
     "tailwind-merge": "^3.3.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.542.0",
+    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-menubar": "^1.1.15"
 }
 ```
@@ -54,7 +54,7 @@
 
 **Icon System**:
 
--   **Lucide React**: Modern, customizable icon library
+-   **Phosphor Icons**: SSR-friendly icon library using `@phosphor-icons/react/dist/ssr`
 -   **Radix UI**: Accessible, unstyled UI primitives
 
 ### Calendar & Date Handling
@@ -187,7 +187,7 @@ All dependencies are compatible with Bun runtime:
 
 -   **react-big-calendar**: Could use alternative calendar
 -   **moment**: Could migrate to date-fns or dayjs
--   **lucide-react**: Could use alternative icon library
+-   **@phosphor-icons/react**: Could swap for a different icon set if SSR support remains intact
 
 ### 3. Development Dependencies (Build-time only)
 

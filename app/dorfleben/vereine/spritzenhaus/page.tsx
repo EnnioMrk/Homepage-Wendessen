@@ -1,16 +1,16 @@
 import {
-    Building,
-    AlertTriangle,
+    Buildings,
+    Warning,
     Wrench,
-    Sparkles,
+    Sparkle,
     Calendar,
-    Users,
+    UsersThree,
     User,
     Heart,
     CreditCard,
-    PenTool,
+    PenNib,
     Phone,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Initiative Wendesser Spritzenhaus e.V. - Vereine',
@@ -33,7 +33,7 @@ export default function SpritzenhausPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Building className="w-8 h-8 sm:w-12 sm:h-12 text-amber-700" />
+                                <Buildings className="w-8 h-8 sm:w-12 sm:h-12 text-amber-700" />
                             </div>
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
                                 Spritzenhaus
@@ -77,7 +77,7 @@ export default function SpritzenhausPage() {
                             {/* Founding Story */}
                             <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-red-800 mb-3 flex items-center">
-                                    <AlertTriangle className="w-6 h-6 mr-2" />
+                                    <Warning className="w-6 h-6 mr-2" />
                                     Die Rettung in letzter Minute
                                 </h3>
                                 <p className="text-lg">
@@ -135,7 +135,7 @@ export default function SpritzenhausPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg">
                                 <h3 className="text-2xl font-bold text-green-700 mb-6 flex items-center">
-                                    <Sparkles className="w-8 h-8 mr-3" />
+                                    <Sparkle className="w-8 h-8 mr-3" />
                                     Weihnachtsbaummarkt
                                 </h3>
                                 <p className="text-gray-700 mb-4">
@@ -202,7 +202,7 @@ export default function SpritzenhausPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Users className="w-10 h-10 text-white" />
+                                    <UsersThree className="w-10 h-10 text-white" />
                                 </div>
                                 <h4 className="text-xl font-semibold text-foreground mb-2">
                                     75 Mitglieder
@@ -347,7 +347,7 @@ export default function SpritzenhausPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <PenTool className="w-10 h-10 text-white" />
+                                    <PenNib className="w-10 h-10 text-white" />
                                 </div>
                                 <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-2">
                                     Schriftführer

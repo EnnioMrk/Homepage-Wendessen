@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Crown, Mail } from 'lucide-react';
+import { CrownSimple, EnvelopeSimple } from '@phosphor-icons/react/dist/ssr';
 
 interface OrtsratMemberCardProps {
     name: string;
@@ -42,7 +42,7 @@ export default function OrtsratMemberCard({
             {isLeader && (
                 <div className="absolute top-4 left-4 z-20">
                     <div className="bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full text-white text-xs font-bold shadow-lg">
-                        <Crown className="w-3 h-3 inline-block mr-1" />
+                        <CrownSimple className="w-3 h-3 inline-block mr-1" />
                         LEITUNG
                     </div>
                 </div>
@@ -72,7 +72,7 @@ export default function OrtsratMemberCard({
                 {contactSlug && (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-foreground font-semibold shadow-lg flex items-center space-x-2">
-                            <Mail className="w-4 h-4" />
+                            <EnvelopeSimple className="w-4 h-4" />
                             <span>Kontakt</span>
                         </div>
                     </div>

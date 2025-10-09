@@ -3,14 +3,17 @@
 import { useState, useEffect } from 'react';
 import {
     Users,
-    Building2,
-    Landmark,
+    Buildings,
+    Bank,
     BookOpen,
-    ImageIcon,
-    Edit,
+    ImageSquare,
+    NotePencil,
     UserPlus,
     Camera,
-} from 'lucide-react';
+    Star,
+    Handshake,
+    Heart,
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import PortraitSubmissionModal from '@/app/components/PortraitSubmissionModal';
 
@@ -121,7 +124,7 @@ export default function WirWendesserContent() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100">
                                     <h4 className="text-lg font-bold text-blue-800 mb-3 flex items-center">
-                                        <Building2 className="w-5 h-5 mr-2" />
+                                        <Buildings className="w-5 h-5 mr-2" />
                                         Leipziger Allee
                                     </h4>
                                     <p className="text-gray-700">
@@ -133,7 +136,7 @@ export default function WirWendesserContent() {
 
                                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-100">
                                     <h4 className="text-lg font-bold text-green-800 mb-3 flex items-center">
-                                        <Landmark className="w-5 h-5 mr-2" />
+                                        <Bank className="w-5 h-5 mr-2" />
                                         Neues Baugebiet
                                     </h4>
                                     <p className="text-gray-700">
@@ -294,10 +297,10 @@ export default function WirWendesserContent() {
                                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="text-center">
                                         <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                            <ImageIcon className="w-8 h-8 text-white" />
+                                            <ImageSquare className="w-8 h-8 text-white" />
                                         </div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                            📸 Foto
+                                            Foto
                                         </h4>
                                         <p className="text-gray-600 text-sm">
                                             Ein schönes Bild von Ihnen
@@ -306,10 +309,10 @@ export default function WirWendesserContent() {
 
                                     <div className="text-center">
                                         <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                            <Edit className="w-8 h-8 text-white" />
+                                            <NotePencil className="w-8 h-8 text-white" />
                                         </div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                            ✍️ Text
+                                            Text
                                         </h4>
                                         <p className="text-gray-600 text-sm">
                                             Ein paar Zeilen über Sie
@@ -321,7 +324,7 @@ export default function WirWendesserContent() {
                                             <UserPlus className="w-8 h-8 text-white" />
                                         </div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                            🤝 Gemeinschaft
+                                            Gemeinschaft
                                         </h4>
                                         <p className="text-gray-600 text-sm">
                                             Teil unserer Vielfalt werden
@@ -341,7 +344,7 @@ export default function WirWendesserContent() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                                 <div className="text-center">
                                     <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                        <span className="text-2xl">🌟</span>
+                                        <Star className="w-8 h-8 text-white" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-blue-800 mb-2">
                                         Vielfalt
@@ -353,7 +356,7 @@ export default function WirWendesserContent() {
 
                                 <div className="text-center">
                                     <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                        <span className="text-2xl">🤝</span>
+                                        <Handshake className="w-8 h-8 text-white" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-indigo-800 mb-2">
                                         Gemeinschaft
@@ -365,7 +368,7 @@ export default function WirWendesserContent() {
 
                                 <div className="text-center">
                                     <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                        <span className="text-2xl">❤️</span>
+                                        <Heart className="w-8 h-8 text-white" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-purple-800 mb-2">
                                         Zusammenhalt

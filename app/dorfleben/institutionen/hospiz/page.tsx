@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import {
     Heart,
-    Building2,
+    Buildings,
     Check,
     Globe,
     MapPin,
     FileText,
     Clock,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Hospiz - Wohnen & Bauen in Wendessen',
@@ -87,7 +87,7 @@ export default function HospizPage() {
 
                             <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-l-4 border-purple-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center">
-                                    <Building2 className="w-6 h-6 mr-3" />
+                                    <Buildings className="w-6 h-6 mr-3" />
                                     Hospiz des Hospizvereins Wolfenbüttel
                                 </h3>
                                 <p className="text-lg text-gray-800 font-medium">
@@ -114,8 +114,9 @@ export default function HospizPage() {
                             </p>
 
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 p-6 rounded-2xl">
-                                <h4 className="text-xl font-bold text-green-700 mb-3">
-                                    🏡 Ausstattung & Lage
+                                <h4 className="text-xl font-bold text-green-700 mb-3 flex items-center">
+                                    <Buildings className="w-6 h-6 mr-2" />
+                                    Ausstattung & Lage
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
@@ -392,7 +393,7 @@ export default function HospizPage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-purple-50 to-blue-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-700 mb-6">
-                            Neues Leben für historische Mauern 💜
+                            Neues Leben für historische Mauern
                         </h3>
                         <p className="text-lg sm:text-xl text-gray-700 font-medium mb-4">
                             Das alte Gutshaus wird zu einem Ort der Würde,

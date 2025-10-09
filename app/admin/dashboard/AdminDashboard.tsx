@@ -6,7 +6,12 @@ import { CalendarEvent, NewsItem } from '@/lib/database';
 import Link from 'next/link';
 import EventModal from '@/app/components/EventModal';
 import NewsModal from '@/app/components/NewsModal';
-import { Calendar, Newspaper, Image as ImageIcon, Users } from 'lucide-react';
+import {
+    Calendar,
+    Newspaper,
+    ImageSquare,
+    UsersThree,
+} from '@phosphor-icons/react/dist/ssr';
 
 // Function to get category colors for news badges
 function getNewsCategoryColors(category: string): string {
@@ -154,7 +159,7 @@ export default function AdminDashboard({
                                 <div className="flex flex-col sm:flex-row sm:items-center">
                                     <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
                                         <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                            <ImageIcon className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                            <ImageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                         </div>
                                     </div>
                                     <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
@@ -178,7 +183,7 @@ export default function AdminDashboard({
                                 <div className="flex flex-col sm:flex-row sm:items-center">
                                     <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
                                         <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-md flex items-center justify-center">
-                                            <Users className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                            <UsersThree className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                         </div>
                                     </div>
                                     <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
@@ -348,14 +353,14 @@ export default function AdminDashboard({
                                     href="/admin/gallery"
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
-                                    <ImageIcon className="w-4 h-4 mr-2" />
+                                    <ImageSquare className="w-4 h-4 mr-2" />
                                     Galerie
                                 </Link>
                                 <Link
                                     href="/admin/portraits"
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
-                                    <Users className="w-4 h-4 mr-2" />
+                                    <UsersThree className="w-4 h-4 mr-2" />
                                     Portraits
                                 </Link>
                             </div>

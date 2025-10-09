@@ -1,7 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ImageIcon, Upload, User, FileText } from 'lucide-react';
+import {
+    X,
+    ImageSquare,
+    UploadSimple,
+    User,
+    FileText,
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 
 interface PortraitSubmissionModalProps {
@@ -158,7 +164,7 @@ export default function PortraitSubmissionModal({
                                 {/* Image Upload Section */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-3 text-center">
-                                        <ImageIcon className="w-4 h-4 inline mr-1" />
+                                        <ImageSquare className="w-4 h-4 inline mr-1" />
                                         Ihr Foto *
                                     </label>
 
@@ -198,7 +204,7 @@ export default function PortraitSubmissionModal({
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
                                             />
                                             <div className="w-full aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-green-400 transition-colors">
-                                                <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                                                <UploadSimple className="w-12 h-12 text-gray-400 mb-2" />
                                                 <p className="text-gray-600 text-center">
                                                     <span className="font-medium text-green-600">
                                                         Klicken Sie hier
@@ -318,7 +324,7 @@ export default function PortraitSubmissionModal({
                                         </>
                                     ) : (
                                         <>
-                                            <Upload className="w-5 h-5 mr-2" />
+                                            <UploadSimple className="w-5 h-5 mr-2" />
                                             Portrait einreichen
                                         </>
                                     )}

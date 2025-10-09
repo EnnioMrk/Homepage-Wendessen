@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../../../lib/auth';
 import { neon } from '@neondatabase/serverless';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -58,6 +59,10 @@ export async function PUT(
             publishedDate: result[0].publishedDate.toISOString(),
         };
 
+        // Revalidate pages that show news
+        revalidatePath('/');
+        revalidateTag('news');
+
         return NextResponse.json({ news: updatedNews });
     } catch (error) {
         console.error('Error updating news:', error);
@@ -98,6 +103,10 @@ export async function DELETE(
 
         // Delete from database
         await sql`DELETE FROM news WHERE id = ${id}`;
+
+        // Revalidate pages that show news
+        revalidatePath('/');
+        revalidateTag('news');
 
         return NextResponse.json({ success: true });
     } catch (error) {

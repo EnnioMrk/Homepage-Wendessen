@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Image as ImageIcon } from 'lucide-react';
+import { X, ImageSquare as ImageIcon } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import ImagePicker from './ImagePicker';
 

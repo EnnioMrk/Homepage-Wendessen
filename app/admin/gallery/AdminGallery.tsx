@@ -4,18 +4,18 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import {
-    Upload,
-    Search,
-    ArrowUpDown,
-    Edit3,
-    Trash2,
+    UploadSimple,
+    MagnifyingGlass,
+    ArrowsDownUp,
+    PencilSimple,
+    Trash,
     Eye,
-    Download,
+    DownloadSimple,
     ArrowLeft,
     X,
     Check,
-    AlertCircle,
-} from 'lucide-react';
+    WarningCircle,
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 
 interface GalleryImage {
@@ -282,7 +282,7 @@ export default function AdminGallery() {
                             onClick={() => fileInputRef.current?.click()}
                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
                         >
-                            <Upload size={16} className="mr-2" />
+                            <UploadSimple size={16} className="mr-2" />
                             Bild hochladen
                         </button>
                     </div>
@@ -295,7 +295,7 @@ export default function AdminGallery() {
                     <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1 relative">
-                                <Search
+                                <MagnifyingGlass
                                     size={20}
                                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                 />
@@ -310,7 +310,7 @@ export default function AdminGallery() {
                                 />
                             </div>
                             <div className="relative">
-                                <ArrowUpDown
+                                <ArrowsDownUp
                                     size={20}
                                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                                 />
@@ -330,7 +330,7 @@ export default function AdminGallery() {
 
                         {error && (
                             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md flex items-center">
-                                <AlertCircle size={16} className="mr-2" />
+                                <WarningCircle size={16} className="mr-2" />
                                 {error}
                                 <button
                                     onClick={() => setError(null)}
@@ -386,7 +386,7 @@ export default function AdminGallery() {
                                                     }}
                                                     className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
                                                 >
-                                                    <Edit3 size={16} />
+                                                    <PencilSimple size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -394,7 +394,7 @@ export default function AdminGallery() {
                                                     }
                                                     className="p-2 bg-white rounded-full hover:bg-red-100 text-red-600 hover:text-red-700"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash size={16} />
                                                 </button>
                                             </div>
                                         </div>
@@ -413,7 +413,7 @@ export default function AdminGallery() {
                     ) : (
                         <div className="bg-white shadow rounded-lg p-12 text-center">
                             <div className="text-gray-400 mb-4">
-                                <Upload size={48} className="mx-auto" />
+                                <UploadSimple size={48} className="mx-auto" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
                                 Keine Bilder gefunden
@@ -573,7 +573,7 @@ export default function AdminGallery() {
                                     </>
                                 ) : (
                                     <>
-                                        <Upload size={16} className="mr-2" />
+                                        <UploadSimple size={16} className="mr-2" />
                                         {selectedFiles.length === 1
                                             ? 'Hochladen'
                                             : `${selectedFiles.length} Bilder hochladen`}
@@ -658,7 +658,7 @@ export default function AdminGallery() {
                                 }}
                                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
                             >
-                                <Edit3 size={16} className="mr-2" />
+                                <PencilSimple size={16} className="mr-2" />
                                 Umbenennen
                             </button>
                             <a
@@ -666,7 +666,7 @@ export default function AdminGallery() {
                                 download={selectedImage.displayName}
                                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center"
                             >
-                                <Download size={16} className="mr-2" />
+                                <DownloadSimple size={16} className="mr-2" />
                                 Herunterladen
                             </a>
                         </div>

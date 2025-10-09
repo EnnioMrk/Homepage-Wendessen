@@ -285,8 +285,8 @@ npx bundlesize
 
 # Tree-shake unused code
 # Ensure imports are specific:
-// Bad: import * as lucide from 'lucide-react'
-// Good: import { Calendar, User } from 'lucide-react'
+// Bad: import * as icons from '@phosphor-icons/react'
+// Good: import { Calendar, User } from '@phosphor-icons/react/dist/ssr'
 ```
 
 #### Memory Leaks

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../../lib/auth';
 import { neon } from '@neondatabase/serverless';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -77,6 +78,10 @@ export async function POST(request: NextRequest) {
             ...result[0],
             publishedDate: result[0].publishedDate.toISOString(),
         };
+
+        // Revalidate pages that show news
+        revalidatePath('/');
+        revalidateTag('news');
 
         return NextResponse.json({ news: newNews });
     } catch (error) {

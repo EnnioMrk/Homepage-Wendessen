@@ -5,16 +5,16 @@ import LoadingSpinner from '@/app/components/LoadingSpinner';
 import {
     Cloud,
     Thermometer,
-    Droplets,
+    Drop,
     Wind,
-    TrendingUp,
+    TrendUp,
     Sun,
     CloudRain,
     Calendar,
     MapPin,
     Clock,
-    AlertTriangle,
-} from 'lucide-react';
+    Warning,
+} from '@phosphor-icons/react/dist/ssr';
 
 interface WeatherData {
     location: string;
@@ -138,7 +138,7 @@ export default function WetterPage() {
             <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="text-red-600 mb-4">
-                        <AlertTriangle className="w-16 h-16 mx-auto" />
+                        <Warning className="w-16 h-16 mx-auto" />
                     </div>
                     <p className="text-red-600 font-medium">{error}</p>
                 </div>
@@ -233,7 +233,7 @@ export default function WetterPage() {
                                 <h3 className="text-lg font-bold text-blue-800">
                                     Luftfeuchte
                                 </h3>
-                                <Droplets className="w-8 h-8 text-blue-600" />
+                                <Drop className="w-8 h-8 text-blue-600" />
                             </div>
                             <div className="text-center">
                                 <div className="text-4xl font-bold text-blue-700 mb-2">
@@ -285,7 +285,7 @@ export default function WetterPage() {
                                 <h3 className="text-lg font-bold text-purple-800">
                                     Luftdruck
                                 </h3>
-                                <TrendingUp className="w-8 h-8 text-purple-600" />
+                                <TrendUp className="w-8 h-8 text-purple-600" />
                             </div>
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-purple-700 mb-2">

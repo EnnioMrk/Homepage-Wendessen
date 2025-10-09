@@ -1,19 +1,19 @@
 import Image from 'next/image';
 import {
-    Shield,
-    Building,
+    Church,
+    Buildings,
     Clock,
     CheckCircle,
     Wrench,
     Hammer,
-    Music,
+    MusicNotesSimple,
     MapPin,
-    Mail,
-    Users,
+    EnvelopeSimple,
+    UsersThree,
     Plus,
     Heart,
     Globe,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Kirchbauverein St. Georg Wendessen - Dorfleben',
@@ -33,7 +33,7 @@ export default function KirchbauvereinsPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Shield className="w-8 h-8 sm:w-12 sm:h-12 text-blue-700" />
+                                <Church className="w-8 h-8 sm:w-12 sm:h-12 text-blue-700" />
                             </div>
                             <div className="text-left">
                                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
@@ -102,7 +102,7 @@ export default function KirchbauvereinsPage() {
                             {/* Foundation */}
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-blue-800 mb-3 flex items-center">
-                                    <Building className="w-6 h-6 mr-2" />
+                                    <Buildings className="w-6 h-6 mr-2" />
                                     Vereinsgründung
                                 </h3>
                                 <p className="text-lg">
@@ -209,7 +209,7 @@ export default function KirchbauvereinsPage() {
                                 </h3>
                                 <div className="bg-white p-6 rounded-xl border border-blue-200">
                                     <h4 className="font-semibold text-blue-800 text-xl mb-3">
-                                        🔔 Zwei neue Glocken für St. Georg
+                                        Zwei neue Glocken für St. Georg
                                         Wendessen!
                                     </h4>
                                     <p className="text-gray-700">
@@ -250,7 +250,7 @@ export default function KirchbauvereinsPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-white p-6 rounded-2xl shadow-lg">
                                     <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                                        <Music className="w-5 h-5 mr-2" />
+                                        <MusicNotesSimple className="w-5 h-5 mr-2" />
                                         Musikrichtungen
                                     </h4>
                                     <ul className="space-y-2 text-gray-600">
@@ -286,7 +286,7 @@ export default function KirchbauvereinsPage() {
 
                             <div className="bg-white p-6 rounded-2xl border-2 border-purple-200">
                                 <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                                    <Mail className="w-5 h-5 mr-2" />
+                                    <EnvelopeSimple className="w-5 h-5 mr-2" />
                                     Newsletter abonnieren
                                 </h4>
                                 <p className="text-gray-700 mb-3">
@@ -297,7 +297,7 @@ export default function KirchbauvereinsPage() {
                                     href="mailto:kirchbauverein.wendessen@gmail.com"
                                     className="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold"
                                 >
-                                    <Mail className="w-4 h-4 mr-1" />
+                                    <EnvelopeSimple className="w-4 h-4 mr-1" />
                                     kirchbauverein.wendessen@gmail.com
                                 </a>
                             </div>
@@ -316,7 +316,7 @@ export default function KirchbauvereinsPage() {
                         {/* Membership */}
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg">
                             <h3 className="text-2xl font-bold text-green-700 mb-6 flex items-center">
-                                <Users className="w-8 h-8 mr-3" />
+                                <UsersThree className="w-8 h-8 mr-3" />
                                 Jahresbeiträge
                             </h3>
 
@@ -399,7 +399,7 @@ export default function KirchbauvereinsPage() {
                             <div className="mt-6 bg-gradient-to-r from-blue-100 to-indigo-100 p-4 rounded-xl">
                                 <p className="text-blue-800 font-medium text-center">
                                     Jede Spende hilft bei der Erhaltung unserer
-                                    historischen Kirche! 🙏
+                                    historischen Kirche!
                                 </p>
                             </div>
                         </div>
@@ -444,7 +444,7 @@ export default function KirchbauvereinsPage() {
                                 href="mailto:kirchbauverein.wendessen@gmail.com"
                                 className="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                             >
-                                <Mail className="w-5 h-5 mr-2" />
+                                <EnvelopeSimple className="w-5 h-5 mr-2" />
                                 E-Mail schreiben
                             </a>
                         </div>

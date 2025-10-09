@@ -2,7 +2,7 @@
 
 import AdminPortraits from './AdminPortraits';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Users } from 'lucide-react';
+import { ArrowLeft, UsersThree } from '@phosphor-icons/react/dist/ssr';
 
 interface PortraitSubmission {
     id: number;
@@ -138,7 +138,7 @@ export default function AdminPortraitsPage() {
                             </a>
                             <div>
                                 <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                                    <Users className="w-8 h-8 mr-3 text-green-600" />
+                                    <UsersThree className="w-8 h-8 mr-3 text-green-600" />
                                     Portrait-Einreichungen
                                 </h1>
                                 <p className="text-sm text-gray-600 mt-1">

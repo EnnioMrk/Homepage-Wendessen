@@ -1,20 +1,19 @@
 import Image from 'next/image';
 import {
-    Flower2,
-    Maximize,
-    Zap,
-    DollarSign,
-    Smile,
-    Sprout,
-    Users,
+    Flower,
+    ArrowsOutSimple,
+    Lightning,
+    CurrencyDollar,
+    Smiley,
+    Plant,
+    UsersThree,
     FileText,
     Shield,
     User,
     Phone,
-    Fence,
-    Building2,
+    Buildings,
     Heart,
-} from 'lucide-react';
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Kleingärtner Wendessen - Dorfleben',
@@ -27,14 +26,14 @@ export default function KleingaertnerPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
             <div className="relative bg-gradient-to-r from-green-600 via-emerald-500 to-teal-600 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Features/Kleingärten.jpeg')] bg-cover bg-center opacity-30"></div>
+                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/Kleingärten.jpeg')] bg-cover bg-center opacity-30"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600/90 to-teal-600/90"></div>
 
                 <div className="relative z-10 container mx-auto px-4 text-center">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Fence className="w-8 h-8 sm:w-12 sm:h-12 text-green-600" />
+                                <Plant className="w-8 h-8 sm:w-12 sm:h-12 text-green-600" />
                             </div>
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
                                 Kleingärtnerverein
@@ -64,7 +63,7 @@ export default function KleingaertnerPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-green-100">
                             <Image
-                                src="/images/Features/Kleingärten.jpeg"
+                                src="/images/Vereinsleben/Kleingärten.jpeg"
                                 alt="Kleingärten Wendessen - Gartenanlage für Erholung und Arbeit"
                                 fill
                                 className="object-cover"
@@ -100,7 +99,7 @@ export default function KleingaertnerPage() {
                             {/* Garden Details */}
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-green-800 mb-3 flex items-center">
-                                    <Building2 className="w-6 h-6 mr-2" />
+                                    <Buildings className="w-6 h-6 mr-2" />
                                     Unsere Gartenanlage
                                 </h3>
                                 <p className="text-lg text-green-800">
@@ -150,7 +149,7 @@ export default function KleingaertnerPage() {
                             {/* Garden Size */}
                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Maximize className="w-8 h-8 text-white" />
+                                    <ArrowsOutSimple className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-green-700 mb-3">
                                     58 Gärten
@@ -162,7 +161,7 @@ export default function KleingaertnerPage() {
                             {/* Utilities */}
                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Zap className="w-8 h-8 text-white" />
+                                    <Lightning className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-blue-700 mb-3">
                                     Vollausstattung
@@ -174,7 +173,7 @@ export default function KleingaertnerPage() {
                             {/* Costs */}
                             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <DollarSign className="w-8 h-8 text-white" />
+                                    <CurrencyDollar className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-purple-700 mb-3">
                                     Sozialverträglich
@@ -186,7 +185,7 @@ export default function KleingaertnerPage() {
                             {/* Activities */}
                             <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Smile className="w-8 h-8 text-white" />
+                                    <Smiley className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-orange-700 mb-3">
                                     Körperliche Betätigung
@@ -198,7 +197,7 @@ export default function KleingaertnerPage() {
                             {/* Harvest */}
                             <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-600 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Sprout className="w-8 h-8 text-white" />
+                                    <Plant className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-yellow-700 mb-3">
                                     Eigene Ernte
@@ -210,7 +209,7 @@ export default function KleingaertnerPage() {
                             {/* Community */}
                             <div className="bg-gradient-to-br from-teal-50 to-green-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-teal-600 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Users className="w-8 h-8 text-white" />
+                                    <UsersThree className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-teal-700 mb-3">
                                     Gemeinschaft
@@ -295,18 +294,18 @@ export default function KleingaertnerPage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-3xl font-bold text-green-700 mb-6">
-                            Interesse an einem Kleingarten? 🌱
+                            Interesse an einem Kleingarten?
                         </h3>
                         <p className="text-xl text-gray-700 font-medium mb-4">
                             Kontaktieren Sie uns für weitere Informationen!
                         </p>
                         <div className="flex justify-center">
                             <div className="flex items-center space-x-2 text-green-600">
-                                <Fence className="w-6 h-6" />
+                                <Plant className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Gärtnern in Wendessen
                                 </span>
-                                <Flower2 className="w-6 h-6" />
+                                <Flower className="w-6 h-6" />
                             </div>
                         </div>
                     </div>

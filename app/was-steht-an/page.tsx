@@ -12,16 +12,16 @@ import {
     getCategoryDisplayName,
 } from '@/lib/event-utils';
 import {
-    Users,
-    Calendar as CalendarIcon,
-    Zap,
-    Music,
+    UsersThree,
+    CalendarBlank,
+    Lightning,
+    MusicNotesSimple,
     MapPin,
     Clock,
     X,
     User,
-    AlertCircle,
-} from 'lucide-react';
+    WarningCircle,
+} from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import Image from 'next/image';
 
@@ -127,17 +127,17 @@ export default function WasStehAnPage() {
     const getCategoryIcon = (category: string) => {
         switch (category) {
             case 'sitzung':
-                return <Users className="w-5 h-5" />;
+                return <UsersThree className="w-5 h-5" />;
             case 'veranstaltung':
-                return <CalendarIcon className="w-5 h-5" />;
+                return <CalendarBlank className="w-5 h-5" />;
             case 'sport':
-                return <Zap className="w-5 h-5" />;
+                return <Lightning className="w-5 h-5" />;
             case 'kultur':
-                return <Music className="w-5 h-5" />;
+                return <MusicNotesSimple className="w-5 h-5" />;
             case 'notfall':
-                return <span className="text-red-500">🚨</span>;
+                return <WarningCircle className="w-5 h-5 text-red-500" />;
             default:
-                return <CalendarIcon className="w-5 h-5" />;
+                return <CalendarBlank className="w-5 h-5" />;
         }
     };
 
@@ -152,7 +152,7 @@ export default function WasStehAnPage() {
                         <div className="max-w-4xl mx-auto">
                             <div className="flex items-center justify-center mb-6">
                                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <CalendarIcon className="w-8 h-8 text-indigo-600" />
+                                    <CalendarBlank className="w-8 h-8 text-indigo-600" />
                                 </div>
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                     Was steht an?
@@ -194,7 +194,7 @@ export default function WasStehAnPage() {
                         <div className="max-w-4xl mx-auto">
                             <div className="flex items-center justify-center mb-6">
                                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <CalendarIcon className="w-8 h-8 text-indigo-600" />
+                                    <CalendarBlank className="w-8 h-8 text-indigo-600" />
                                 </div>
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                     Was steht an?
@@ -213,7 +213,7 @@ export default function WasStehAnPage() {
                     <div className="max-w-6xl mx-auto">
                         <div className="bg-white rounded-3xl p-12 shadow-xl text-center">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <AlertCircle className="w-8 h-8 text-red-600" />
+                                <WarningCircle className="w-8 h-8 text-red-600" />
                             </div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">
                                 Fehler beim Laden
@@ -244,7 +244,7 @@ export default function WasStehAnPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <CalendarIcon className="w-8 h-8 text-indigo-600" />
+                                    <CalendarBlank className="w-8 h-8 text-indigo-600" />
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                 Was steht an?

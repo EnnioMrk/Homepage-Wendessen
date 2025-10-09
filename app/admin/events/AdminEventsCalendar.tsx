@@ -9,19 +9,19 @@ import { CalendarEvent } from '@/lib/database';
 import { getCategoryBackgroundColor } from '@/lib/event-utils';
 import EventModal from '@/app/components/EventModal';
 import {
-    Users,
-    Calendar as CalendarIcon,
-    Zap,
-    Music,
+    UsersThree,
+    CalendarBlank,
+    Lightning,
+    MusicNotesSimple,
     MapPin,
     Clock,
     X,
     User,
-    Edit,
-    Trash2,
-    Save,
-    Image as ImageIcon,
-} from 'lucide-react';
+    PencilSimple,
+    Trash,
+    FloppyDisk,
+    ImageSquare,
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import ImagePicker from '../../components/ImagePicker';
 
@@ -187,15 +187,15 @@ export default function AdminEventsCalendar({
     const getCategoryIcon = (category: string) => {
         switch (category) {
             case 'sitzung':
-                return <Users className="w-5 h-5" />;
+                return <UsersThree className="w-5 h-5" />;
             case 'veranstaltung':
-                return <CalendarIcon className="w-5 h-5" />;
+                return <CalendarBlank className="w-5 h-5" />;
             case 'sport':
-                return <Zap className="w-5 h-5" />;
+                return <Lightning className="w-5 h-5" />;
             case 'kultur':
-                return <Music className="w-5 h-5" />;
+                return <MusicNotesSimple className="w-5 h-5" />;
             default:
-                return <CalendarIcon className="w-5 h-5" />;
+                return <CalendarBlank className="w-5 h-5" />;
         }
     };
 
@@ -383,14 +383,14 @@ export default function AdminEventsCalendar({
                                             onClick={startEditing}
                                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
                                         >
-                                            <Edit className="w-4 h-4" />
+                                            <PencilSimple className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={handleDeleteEvent}
                                             disabled={loading}
                                             className="p-2 text-red-600 hover:bg-red-50 rounded-md"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash className="w-4 h-4" />
                                         </button>
                                     </>
                                 )}
@@ -583,7 +583,7 @@ export default function AdminEventsCalendar({
                                                 }
                                                 className="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
                                             >
-                                                <ImageIcon className="w-5 h-5 text-gray-400 mr-2" />
+                                                <ImageSquare className="w-5 h-5 text-gray-400 mr-2" />
                                                 <span className="text-gray-600">
                                                     Bild aus Galerie wählen
                                                 </span>
@@ -604,7 +604,7 @@ export default function AdminEventsCalendar({
                                         disabled={loading}
                                         className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
                                     >
-                                        <Save className="w-4 h-4 mr-2 inline" />
+                                        <FloppyDisk className="w-4 h-4 mr-2 inline" />
                                         Speichern
                                     </button>
                                 </div>

@@ -38,36 +38,6 @@ export default function WirSindWendessenSection() {
                         buttonHref="/hospiz"
                         buttonColor="red"
                     />
-
-                    <FeatureCard
-                        title="Sportangebot im Ort"
-                        description="Mittendrin statt nur dabei!"
-                        imageSrc="/images/Features/SV_Wendessen.JPG"
-                        imageAlt="SV Wendessen Sportangebot"
-                        buttonText="Mehr erfahren"
-                        buttonHref="/sport"
-                        buttonColor="blue"
-                    />
-
-                    <FeatureCard
-                        title="Freiwillige Feuerwehr"
-                        description="Wir geben dem Roten Hahn keine Chance!"
-                        imageSrc="/images/Features/Freiwillige_Feuerwehr.jpeg"
-                        imageAlt="Freiwillige Feuerwehr Wendessen"
-                        buttonText="Mehr erfahren"
-                        buttonHref="/feuerwehr"
-                        buttonColor="orange"
-                    />
-
-                    <FeatureCard
-                        title="Kleingärtner-Verein"
-                        description="Erholung im Grünen!"
-                        imageSrc="/images/Features/Kleingärten.jpeg"
-                        imageAlt="Kleingärtner-Verein Wendessen"
-                        buttonText="Mehr erfahren"
-                        buttonHref="/kleingarten"
-                        buttonColor="lime"
-                    />
                 </div>
 
                 {/* Tablet: Interesting asymmetrical layout */}
@@ -102,42 +72,6 @@ export default function WirSindWendessenSection() {
                         buttonColor="red"
                         className="mb-8"
                     />
-
-                    {/* Third Row: Three cards side by side */}
-                    <div className="grid grid-cols-3 gap-6">
-                        <FeatureCard
-                            title="Sportangebot im Ort"
-                            description="Mittendrin statt nur dabei!"
-                            imageSrc="/images/Features/SV_Wendessen.JPG"
-                            imageAlt="SV Wendessen Sportangebot"
-                            buttonText="Mehr erfahren"
-                            buttonHref="/sport"
-                            buttonColor="blue"
-                            className="h-80"
-                        />
-
-                        <FeatureCard
-                            title="Freiwillige Feuerwehr"
-                            description="Wir geben dem Roten Hahn keine Chance!"
-                            imageSrc="/images/Features/Freiwillige_Feuerwehr.jpeg"
-                            imageAlt="Freiwillige Feuerwehr Wendessen"
-                            buttonText="Mehr erfahren"
-                            buttonHref="/feuerwehr"
-                            buttonColor="orange"
-                            className="h-80"
-                        />
-
-                        <FeatureCard
-                            title="Kleingärtner-Verein"
-                            description="Erholung im Grünen!"
-                            imageSrc="/images/Features/Kleingärten.jpeg"
-                            imageAlt="Kleingärtner-Verein Wendessen"
-                            buttonText="Mehr erfahren"
-                            buttonHref="/kleingarten"
-                            buttonColor="lime"
-                            className="h-80"
-                        />
-                    </div>
                 </div>
 
                 {/* Desktop: Original layout */}

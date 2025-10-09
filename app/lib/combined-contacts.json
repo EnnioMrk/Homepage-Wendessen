@@ -109,7 +109,7 @@
                 "role": "Vakanzvertretung"
             }
         ],
-        "sources": ["app/dorfleben/kirche/page.tsx"]
+        "sources": ["app/dorfleben/institutionen/kirche/page.tsx"]
     },
     {
         "name": "Christine Spilleke",
@@ -125,7 +125,7 @@
                 "role": "Kirchenbüro"
             }
         ],
-        "sources": ["app/dorfleben/kirche/page.tsx"]
+        "sources": ["app/dorfleben/institutionen/kirche/page.tsx"]
     },
 
     {

@@ -1,16 +1,17 @@
 import Image from 'next/image';
 import {
-    Building2,
+    Buildings,
     MapPin,
-    Home,
-    Zap,
+    House,
+    Lightning,
     Train,
     Shield,
     Phone,
-    Mail,
-    Download,
+    EnvelopeSimple,
+    DownloadSimple,
     FileText,
-} from 'lucide-react';
+    Calendar,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Neubaugebiet Leipziger Allee - Wohnen & Bauen in Wendessen',
@@ -30,7 +31,7 @@ export default function NeubaugebietPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6 gap-4 sm:gap-6">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl flex-shrink-0">
-                                <Building2 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-emerald-600" />
+                                <Buildings className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-emerald-600" />
                             </div>
                             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white">
                                 Neubaugebiet
@@ -92,8 +93,9 @@ export default function NeubaugebietPage() {
                             </p>
 
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-500 p-6 rounded-2xl">
-                                <h4 className="text-xl font-bold text-blue-700 mb-3">
-                                    📅 Zeitplan
+                                <h4 className="text-xl font-bold text-blue-700 mb-3 flex items-center">
+                                    <Calendar className="w-6 h-6 mr-2" />
+                                    Zeitplan
                                 </h4>
                                 <p>
                                     <strong>Planungsphase:</strong> Aktuell
@@ -167,7 +169,7 @@ export default function NeubaugebietPage() {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                                 >
-                                    <Download className="w-5 h-5 mr-2" />
+                                    <DownloadSimple className="w-5 h-5 mr-2" />
                                     Bebauungsplan PDF herunterladen
                                 </a>
                             </div>
@@ -186,7 +188,7 @@ export default function NeubaugebietPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Zap className="w-8 h-8 text-white" />
+                                    <Lightning className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-emerald-800 mb-3">
                                     Zukunftsorientiert
@@ -241,7 +243,7 @@ export default function NeubaugebietPage() {
                         <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-emerald-500">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Home className="w-8 h-8 text-white" />
+                                    <House className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-foreground mb-2">
                                     Investor & Eigentümer
@@ -268,7 +270,7 @@ export default function NeubaugebietPage() {
                                         </a>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <Mail className="w-5 h-5 text-emerald-500" />
+                                        <EnvelopeSimple className="w-5 h-5 text-emerald-500" />
                                         <a
                                             href="mailto:stephan.malonnek@mgm-management.de"
                                             className="text-emerald-600 hover:text-emerald-800 transition-colors"
@@ -314,15 +316,15 @@ export default function NeubaugebietPage() {
                     {/* Closing Statement */}
                     <div className="text-center mt-16 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-8 shadow-lg">
                         <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-emerald-700 mb-6">
-                            Wendessen wächst weiter! 🏗️
+                            Wendessen wächst weiter!
                         </h3>
                         <p className="text-lg sm:text-xl text-gray-700 font-medium mb-4">
                             Neues Wohnen am Bahnhaltepunkt - Modern, nachhaltig,
                             zukunftsorientiert
                         </p>
-                        <div className="flex justify-center mt-6">
-                            <div className="flex items-center space-x-2 text-emerald-600">
-                                <Zap className="w-6 h-6" />
+                            <div className="flex justify-center mt-6">
+                                <div className="flex items-center space-x-2 text-emerald-600">
+                                    <Lightning className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Die Zukunft des Wohnens in Wendessen
                                 </span>
