@@ -205,8 +205,10 @@ export default function ContactPersonCard({
                         />
 
                         {/* Email */}
-                            <ContactInfoCard
-                                icon={<EnvelopeSimple className="w-6 h-6 text-white" />}
+                        <ContactInfoCard
+                            icon={
+                                <EnvelopeSimple className="w-6 h-6 text-white" />
+                            }
                             label="E-Mail"
                             value={contactInfo.email}
                             href={`mailto:${contactInfo.email}`}
@@ -215,8 +217,10 @@ export default function ContactPersonCard({
                         />
 
                         {/* Mobile Phone */}
-                            <ContactInfoCard
-                                icon={<DeviceMobile className="w-6 h-6 text-white" />}
+                        <ContactInfoCard
+                            icon={
+                                <DeviceMobile className="w-6 h-6 text-white" />
+                            }
                             label="Mobil (WhatsApp)"
                             value={contactInfo.mobile}
                             href={`tel:${contactInfo.mobile}`}

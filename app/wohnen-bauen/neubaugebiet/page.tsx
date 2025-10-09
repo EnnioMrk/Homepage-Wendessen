@@ -322,9 +322,9 @@ export default function NeubaugebietPage() {
                             Neues Wohnen am Bahnhaltepunkt - Modern, nachhaltig,
                             zukunftsorientiert
                         </p>
-                            <div className="flex justify-center mt-6">
-                                <div className="flex items-center space-x-2 text-emerald-600">
-                                    <Lightning className="w-6 h-6" />
+                        <div className="flex justify-center mt-6">
+                            <div className="flex items-center space-x-2 text-emerald-600">
+                                <Lightning className="w-6 h-6" />
                                 <span className="font-semibold">
                                     Die Zukunft des Wohnens in Wendessen
                                 </span>

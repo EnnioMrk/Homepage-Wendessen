@@ -417,7 +417,9 @@ export default function AdminNews() {
                             </div>
                         ) : (
                             <div className="text-center py-12">
-                                <div className="text-gray-400 mb-4">Keine Nachrichten</div>
+                                <div className="text-gray-400 mb-4">
+                                    Keine Nachrichten
+                                </div>
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                                     Keine Nachrichten gefunden
                                 </h3>

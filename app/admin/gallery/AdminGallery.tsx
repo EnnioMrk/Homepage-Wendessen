@@ -573,7 +573,10 @@ export default function AdminGallery() {
                                     </>
                                 ) : (
                                     <>
-                                        <UploadSimple size={16} className="mr-2" />
+                                        <UploadSimple
+                                            size={16}
+                                            className="mr-2"
+                                        />
                                         {selectedFiles.length === 1
                                             ? 'Hochladen'
                                             : `${selectedFiles.length} Bilder hochladen`}

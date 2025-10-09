@@ -1,5 +1,9 @@
 import OrtsratMemberCard from '../../../components/OrtsratMemberCard';
-import { UsersThree, Buildings, Lightning } from '@phosphor-icons/react/dist/ssr';
+import {
+    UsersThree,
+    Buildings,
+    Lightning,
+} from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
     title: 'Ortsratsmitglieder - Dorfleben Wendessen',

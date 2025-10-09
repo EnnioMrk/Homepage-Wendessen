@@ -500,7 +500,7 @@ export default function AdminPortraits({
                                     }
                                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                 >
-                                        <Trash className="w-4 h-4 mr-2" />
+                                    <Trash className="w-4 h-4 mr-2" />
                                     Löschen
                                 </button>
                             </div>

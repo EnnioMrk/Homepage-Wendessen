@@ -244,7 +244,7 @@ export default function WasStehAnPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <CalendarBlank className="w-8 h-8 text-indigo-600" />
+                                <CalendarBlank className="w-8 h-8 text-indigo-600" />
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                 Was steht an?
