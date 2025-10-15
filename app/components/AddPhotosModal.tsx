@@ -247,6 +247,7 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                                 {photos.map((photo, index) => (
                                     <div key={index} className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                                         <div className="relative aspect-video bg-gray-200">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={photo.preview}
                                                 alt={`Preview ${index + 1}`}

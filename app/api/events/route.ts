@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
 import { requirePermission } from '@/lib/permissions';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { getCurrentAdminUser } from '@/lib/auth';
 
 export async function GET() {
     try {

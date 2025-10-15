@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cancelEvent, uncancelEvent, getEventById } from '@/lib/database';
-import { requirePermission, requireAnyPermission, hasRole } from '@/lib/permissions';
+import { requireAnyPermission } from '@/lib/permissions';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function POST(
@@ -29,8 +29,8 @@ export async function POST(
         try {
             user = await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
             console.log('User authenticated:', user.username, 'Role:', user.roleName);
-        } catch (permError: any) {
-            console.error('Permission check failed:', permError.message);
+        } catch (permError: unknown) {
+            console.error('Permission check failed:', (permError as Error).message);
             throw permError;
         }
         
@@ -52,19 +52,21 @@ export async function POST(
             message: 'Event cancelled successfully',
             event: cancelledEvent,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API Error cancelling event:', error);
-        console.error('Error stack:', error.stack);
+        console.error('Error stack:', (error as Error).stack);
         
-        if (error.message?.includes('Forbidden') || error.message?.includes('Unauthorized')) {
+        const errorMessage = (error as Error).message || 'Unknown error';
+        
+        if (errorMessage.includes('Forbidden') || errorMessage.includes('Unauthorized')) {
             return NextResponse.json(
-                { error: error.message },
-                { status: error.message.includes('Unauthorized') ? 401 : 403 }
+                { error: errorMessage },
+                { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
             );
         }
         
         return NextResponse.json(
-            { error: `Failed to cancel event: ${error.message || 'Unknown error'}` },
+            { error: `Failed to cancel event: ${errorMessage}` },
             { status: 500 }
         );
     }
@@ -87,7 +89,7 @@ export async function DELETE(
         }
 
         // Only editors with cancel permission can uncancel
-        const user = await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
+        await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
 
         const uncancelledEvent = await uncancelEvent(id);
 
@@ -99,13 +101,15 @@ export async function DELETE(
             message: 'Event restored successfully',
             event: uncancelledEvent,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API Error restoring event:', error);
         
-        if (error.message.includes('Forbidden') || error.message.includes('Unauthorized')) {
+        const errorMessage = (error as Error).message || 'Unknown error';
+        
+        if (errorMessage.includes('Forbidden') || errorMessage.includes('Unauthorized')) {
             return NextResponse.json(
-                { error: error.message },
-                { status: error.message.includes('Unauthorized') ? 401 : 403 }
+                { error: errorMessage },
+                { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
             );
         }
         

@@ -23,7 +23,6 @@ export default function AdminUsersClient() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showPermissionsModal, setShowPermissionsModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(null);
-    const router = useRouter();
 
     const loadUsers = async () => {
         try {

@@ -118,13 +118,15 @@ export async function DELETE(
             { message: 'Event deleted successfully' },
             { status: 200 }
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('API Error deleting event:', error);
         
-        if (error.message?.includes('Forbidden') || error.message?.includes('Unauthorized')) {
+        const errorMessage = (error as Error).message || 'Unknown error';
+        
+        if (errorMessage.includes('Forbidden') || errorMessage.includes('Unauthorized')) {
             return NextResponse.json(
-                { error: error.message },
-                { status: error.message.includes('Unauthorized') ? 401 : 403 }
+                { error: errorMessage },
+                { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
             );
         }
         
