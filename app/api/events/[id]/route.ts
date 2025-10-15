@@ -5,7 +5,7 @@ import {
     deleteEvent,
     CalendarEvent,
 } from '@/lib/database';
-import { isAuthenticated } from '@/lib/auth';
+import { requirePermission } from '@/lib/permissions';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function GET(
@@ -38,14 +38,8 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Check authentication for updating events
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        // Check permission for updating events
+        await requirePermission('events.edit');
 
         const eventData = await request.json();
         const { id } = await params;
@@ -99,14 +93,9 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Check authentication for deleting events
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        // Only Administrators (admin role) can delete events permanently
+        // Editors and Verein users should use cancel instead
+        await requirePermission('events.delete');
 
         const { id } = await params;
 
@@ -129,8 +118,16 @@ export async function DELETE(
             { message: 'Event deleted successfully' },
             { status: 200 }
         );
-    } catch (error) {
+    } catch (error: any) {
         console.error('API Error deleting event:', error);
+        
+        if (error.message?.includes('Forbidden') || error.message?.includes('Unauthorized')) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.message.includes('Unauthorized') ? 401 : 403 }
+            );
+        }
+        
         return NextResponse.json(
             { error: 'Failed to delete event' },
             { status: 500 }

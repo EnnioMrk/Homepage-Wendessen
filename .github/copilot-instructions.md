@@ -132,6 +132,7 @@ await sql`CREATE INDEX IF NOT EXISTS idx_name ON table(column);`;
 -   Color scheme: `primary`, `secondary`, `accent` classes defined in config
 -   Responsive breakpoints: Mobile-first design approach
 -   Component-specific color mappings (e.g., event categories have specific badge colors)
+-   **IMPORTANT**: Always use `text-gray-900` for input values and `text-gray-700` for labels to ensure proper contrast and readability. Never use light gray colors (`text-gray-400`, `text-gray-500`) for user input text
 
 ## Common Patterns to Follow
 

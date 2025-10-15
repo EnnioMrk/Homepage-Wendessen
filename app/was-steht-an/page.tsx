@@ -31,13 +31,20 @@ const localizer = momentLocalizer(moment);
 
 // Custom event component
 const EventComponent = ({ event }: { event: CalendarEvent }) => {
+    const isCancelled = event.isCancelled;
+    
     return (
         <div
-            className={`${getCategoryBackgroundColor(
-                event.category || 'sonstiges'
-            )} text-white p-1 rounded text-xs font-medium overflow-hidden`}
+            className={`${
+                isCancelled 
+                    ? 'bg-gray-400 line-through opacity-70' 
+                    : getCategoryBackgroundColor(event.category || 'sonstiges')
+            } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
-            <div className="truncate">{event.title}</div>
+            <div className="truncate">
+                {isCancelled && '🚫 '}
+                {event.title}
+            </div>
         </div>
     );
 };
@@ -465,6 +472,22 @@ export default function WasStehAnPage() {
                             )}
 
                             <div className="space-y-4">
+                                {selectedEvent.isCancelled && (
+                                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                                        <div className="flex items-start">
+                                            <WarningCircle className="w-5 h-5 text-red-600 mt-0.5 mr-3" />
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-red-900 mb-1">
+                                                    🚫 Dieser Termin wurde abgesagt
+                                                </h4>
+                                                <p className="text-xs text-red-700">
+                                                    Bitte beachten Sie, dass diese Veranstaltung nicht stattfindet.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                
                                 <div className="flex items-center space-x-3">
                                     <div
                                         className={`p-2 rounded-lg ${getCategoryBadgeClasses(

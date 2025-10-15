@@ -19,6 +19,14 @@ This documentation is organized into separate files for easy navigation:
 -   **[API Documentation](./11-api-documentation.md)** - Endpoints and data formats
 -   **[FAQ & Resources](./12-faq-resources.md)** - Tips, limitations, and references
 
+## 🔐 Security & Permissions
+
+-   **[Permission Security System](./PERMISSION_SECURITY.md)** - Complete permission system documentation
+-   **[Verein Roles Guide](./VEREIN_ROLES.md)** - Setup and usage of Verein-specific roles
+-   **[Role Comparison Matrix](./ROLE_COMPARISON.md)** - Quick reference for all roles and permissions
+-   **[Quick Admin Guide](./QUICK_ADMIN_GUIDE.md)** - Step-by-step guide for creating Verein users
+-   **[Implementation Summary](./VEREIN_IMPLEMENTATION_SUMMARY.md)** - Overview of what was implemented
+
 ## 🚀 Quick Start
 
 1. **New to the project?** Start with [Project Overview](./01-project-overview.md)
@@ -26,6 +34,8 @@ This documentation is organized into separate files for easy navigation:
 3. **Need to understand the code?** Check [Code Walkthrough](./06-code-walkthrough.md)
 4. **Adding new features?** Read [Extending the Project](./10-extending-project.md)
 5. **Having issues?** Visit [Debugging Guide](./07-debugging-guide.md)
+6. **Working with permissions?** See [Permission Security System](./PERMISSION_SECURITY.md)
+7. **Setting up Verein roles?** Check [Verein Roles Guide](./VEREIN_ROLES.md)
 
 ## 📋 Prerequisites
 

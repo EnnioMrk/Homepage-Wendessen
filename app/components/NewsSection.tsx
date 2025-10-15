@@ -20,6 +20,7 @@ export default async function NewsSection() {
                         key={item.id}
                         category={item.category}
                         title={item.title}
+                        publishedDate={item.publishedDate}
                     />
                 ))}
             </div>

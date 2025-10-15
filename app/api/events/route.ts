@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
-import { isAuthenticated } from '@/lib/auth';
+import { requirePermission } from '@/lib/permissions';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { getCurrentAdminUser } from '@/lib/auth';
 
 export async function GET() {
     try {
@@ -23,14 +24,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
     try {
-        // Check authentication for creating events
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        // Check permission for creating events
+        await requirePermission('events.create');
 
         const eventData = await request.json();
 

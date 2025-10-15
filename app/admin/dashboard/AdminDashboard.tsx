@@ -11,6 +11,7 @@ import {
     Newspaper,
     ImageSquare,
     UsersThree,
+    UserGear,
 } from '@phosphor-icons/react/dist/ssr';
 
 // Function to get category colors for news badges
@@ -334,7 +335,7 @@ export default function AdminDashboard({
                             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                                 Schnellzugriff
                             </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                 <button
                                     onClick={() => setShowEventModal(true)}
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -354,7 +355,14 @@ export default function AdminDashboard({
                                     className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                     <ImageSquare className="w-4 h-4 mr-2" />
-                                    Galerie
+                                    Admin Galerie
+                                </Link>
+                                <Link
+                                    href="/admin/shared-gallery"
+                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    <ImageSquare className="w-4 h-4 mr-2" />
+                                    Impressionen
                                 </Link>
                                 <Link
                                     href="/admin/portraits"
@@ -364,6 +372,36 @@ export default function AdminDashboard({
                                     Portraits
                                 </Link>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Admin Users Section */}
+                    <div className="mt-8 bg-white shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <div className="flex items-center">
+                                    <UserGear className="w-6 h-6 text-primary mr-2" />
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                        Admin-Benutzer
+                                    </h3>
+                                </div>
+                                <Link
+                                    href="/admin/users"
+                                    className="text-sm text-primary hover:text-primary-dark font-medium"
+                                >
+                                    Alle verwalten →
+                                </Link>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Verwalten Sie Admin-Benutzer und deren Zugriffsrechte. Neue Admins erhalten ein automatisch generiertes 6-stelliges Passwort, das beim ersten Login geändert werden muss.
+                            </p>
+                            <Link
+                                href="/admin/users"
+                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark"
+                            >
+                                <UserGear className="w-4 h-4 mr-2" />
+                                Benutzer verwalten
+                            </Link>
                         </div>
                     </div>
                 </div>

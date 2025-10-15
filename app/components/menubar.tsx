@@ -379,6 +379,14 @@ export function MenubarDemo() {
             </MenubarPrimitive.Menu>
 
             <MenubarPrimitive.Menu>
+                <Link href="/impressionen" passHref>
+                    <MenubarTrigger className="font-semibold">
+                        IMPRESSIONEN
+                    </MenubarTrigger>
+                </Link>
+            </MenubarPrimitive.Menu>
+
+            <MenubarPrimitive.Menu>
                 <MenubarTrigger className="font-semibold">
                     KONTAKT
                 </MenubarTrigger>

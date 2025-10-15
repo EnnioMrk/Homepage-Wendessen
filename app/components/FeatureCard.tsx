@@ -17,7 +17,11 @@ interface FeatureCardProps {
         | 'lime'
         | 'pink'
         | 'indigo'
-        | 'emerald';
+        | 'emerald'
+        | 'violet'
+        | 'teal'
+        | 'cyan'
+        | 'yellow';
     isTextOnly?: boolean;
     className?: string;
 }
@@ -32,6 +36,10 @@ const buttonColorClasses = {
     indigo: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700',
     emerald:
         'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700',
+    violet: 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700',
+    teal: 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700',
+    cyan: 'bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-700 hover:to-sky-700',
+    yellow: 'bg-gradient-to-r from-yellow-500 to-orange-400 hover:from-yellow-600 hover:to-orange-500',
 };
 
 export default function FeatureCard({

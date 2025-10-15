@@ -3,7 +3,7 @@ import { isAuthenticated } from '@/lib/auth';
 import {
     getEvents,
     getNews,
-    getGalleryImageCount,
+    getSharedGalleryImageCount,
     getPortraitSubmissions,
     CalendarEvent,
     NewsItem,
@@ -52,7 +52,7 @@ export default async function AdminDashboardPage() {
     }
 
     try {
-        galleryCount = await getGalleryImageCount();
+        galleryCount = await getSharedGalleryImageCount();
     } catch (error) {
         console.error('Failed to fetch gallery count:', error);
         galleryError = 'Failed to load gallery count';

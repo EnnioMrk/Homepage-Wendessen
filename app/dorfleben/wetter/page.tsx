@@ -398,6 +398,16 @@ export default function WetterPage() {
                             Wetterstation in Wendessen erfasst und alle 5
                             Minuten aktualisiert.
                         </p>
+                        <p className="text-gray-600 mb-4">
+                            <a
+                                href="https://www.wetterstation.ws/2cms/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 underline"
+                            >
+                                https://www.wetterstation.ws/2cms/
+                            </a>
+                        </p>
                         <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
                             <div className="flex items-center space-x-1">
                                 <MapPin className="w-4 h-4" />

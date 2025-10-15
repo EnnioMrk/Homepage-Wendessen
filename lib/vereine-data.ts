@@ -14,7 +14,11 @@ export interface Verein {
         | 'lime'
         | 'pink'
         | 'indigo'
-        | 'emerald';
+        | 'emerald'
+        | 'violet'
+        | 'teal'
+        | 'cyan'
+        | 'yellow';
 }
 
 export const vereineData: Verein[] = [
@@ -32,11 +36,22 @@ export const vereineData: Verein[] = [
         id: 'feuerwehr',
         title: 'Freiwillige Feuerwehr',
         description: 'Wir geben dem Roten Hahn keine Chance!',
-        imageSrc: '/images/Vereinsleben/Freiwillige_Feuerwehr.jpeg',
+        // Updated to an existing image in the repository
+        imageSrc: '/images/Vereinsleben/Freiwillige_Feuerwehr.jpg',
         imageAlt: 'Freiwillige Feuerwehr Wendessen',
         buttonText: 'Mehr erfahren',
         buttonHref: '/dorfleben/vereine/feuerwehr',
         buttonColor: 'red',
+    },
+    {
+        id: 'jugendfeuerwehr',
+        title: 'Jugendfeuerwehr',
+        description: 'Spaß, Action und feuerwehrtechnisches Wissen für Kinder und Jugendliche.',
+        imageSrc: '/images/Vereinsleben/Jugendfeuerwehr.jpeg',
+        imageAlt: 'Jugendfeuerwehr Wendessen in Aktion',
+        buttonText: 'Mehr erfahren',
+        buttonHref: '/dorfleben/vereine/jugendfeuerwehr',
+        buttonColor: 'orange',
     },
     {
         id: 'kleingaertner',
@@ -66,6 +81,16 @@ export const vereineData: Verein[] = [
         imageAlt: 'Initiative Spritzenhaus Wendessen',
         buttonText: 'Mehr erfahren',
         buttonHref: '/dorfleben/vereine/spritzenhaus',
-        buttonColor: 'emerald',
+        buttonColor: 'teal',
+    },
+    {
+        id: 'schuetzenverein',
+        title: 'Schützenverein',
+        description: 'Tradition, Gemeinschaft und sportliches Schießen.',
+        imageSrc: '/images/Vereinsleben/schuetzenverein.jpg',
+        imageAlt: 'Schützenverein Wendessen',
+        buttonText: 'Mehr erfahren',
+        buttonHref: '/dorfleben/vereine/schuetzenverein',
+        buttonColor: 'violet',
     },
 ];

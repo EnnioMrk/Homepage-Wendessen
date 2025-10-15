@@ -8,7 +8,12 @@
         "start": "bun run --bun next start",
         "lint": "bun run --bun next lint",
         "setup-gallery": "bun run --bun scripts/create-gallery-table.ts",
-        "setup-contacts": "bun run --bun scripts/setup-contacts.ts"
+        "setup-contacts": "bun run --bun scripts/setup-contacts.ts",
+        "setup-shared-gallery": "bun run --bun scripts/setup-shared-gallery.ts",
+        "setup-admin-users": "bun run --bun scripts/setup-admin-users.ts",
+        "setup-roles-permissions": "bun run --bun scripts/setup-roles-permissions.ts",
+        "setup-verein-roles": "bun run --bun scripts/setup-verein-roles.ts",
+        "add-event-cancellation": "bun run --bun scripts/add-event-cancellation.ts"
     },
     "dependencies": {
         "@neondatabase/serverless": "^1.0.1",
@@ -17,7 +22,9 @@
         "@types/react-big-calendar": "^1.16.2",
         "@vercel/analytics": "^1.5.0",
         "@vercel/speed-insights": "^1.2.0",
+        "bcryptjs": "^3.0.2",
         "clsx": "^2.1.1",
+        "exifr": "^7.1.3",
         "minimatch": "^10.0.3",
         "moment": "^2.30.1",
         "next": "15.3.2",
@@ -29,6 +36,7 @@
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
+        "@types/bcryptjs": "^3.0.0",
         "@types/minimatch": "^6.0.0",
         "@types/node": "^20",
         "@types/react": "^19",

@@ -206,6 +206,15 @@ export default function MobileNavbar() {
                             </Link>
                         </li>
                         <li>
+                            <Link
+                                href="/impressionen"
+                                className="block py-2 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                onClick={() => setOpen(false)}
+                            >
+                                IMPRESSIONEN
+                            </Link>
+                        </li>
+                        <li>
                             <span className="block py-2 px-2 font-semibold text-foreground">
                                 KONTAKT
                             </span>

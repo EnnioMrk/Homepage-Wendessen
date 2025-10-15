@@ -25,6 +25,7 @@ export default async function EventsSection() {
                             imageSrc={event.imageUrl}
                             imageAlt={event.title}
                             hasImage={!!event.imageUrl}
+                            isCancelled={event.isCancelled}
                         />
                     ))}
                 </div>

@@ -594,7 +594,7 @@ export default function SVWendessenPage() {
                         {/* Club Host */}
                         <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-red-500">
                             <h3 className="text-lg font-bold text-red-700 mb-3">
-                                🍺 Vereinswirt
+                                Vereinswirt
                             </h3>
                             <div className="space-y-3">
                                 <div>

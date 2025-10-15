@@ -9,6 +9,7 @@ interface EventCardProps {
     imageSrc?: string;
     imageAlt: string;
     hasImage?: boolean;
+    isCancelled?: boolean;
 }
 
 export default function EventCard({
@@ -19,9 +20,12 @@ export default function EventCard({
     imageSrc,
     imageAlt,
     hasImage = true,
+    isCancelled = false,
 }: EventCardProps) {
     return (
-        <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-200">
+        <div className={`group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border ${
+            isCancelled ? 'border-red-300 opacity-75' : 'border-gray-200'
+        }`}>
             {hasImage && imageSrc ? (
                 <>
                     <div className="relative h-64 overflow-hidden">
@@ -39,7 +43,16 @@ export default function EventCard({
                         </div>
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <h3 className="text-xl font-bold mb-2 group-hover:text-accent transition-colors duration-300 drop-shadow-lg">
+                        {isCancelled && (
+                            <div className="mb-2">
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-600 text-white">
+                                    🚫 ABGESAGT
+                                </span>
+                            </div>
+                        )}
+                        <h3 className={`text-xl font-bold mb-2 group-hover:text-accent transition-colors duration-300 drop-shadow-lg ${
+                            isCancelled ? 'line-through' : ''
+                        }`}>
                             {title}
                         </h3>
                         <p className="text-sm opacity-90 mb-1 drop-shadow-md">
@@ -62,7 +75,16 @@ export default function EventCard({
                             <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Calendar className="w-8 h-8 text-gray-600" />
                             </div>
-                            <h3 className="text-xl font-bold mb-2 group-hover:text-gray-900 transition-colors duration-300">
+                            {isCancelled && (
+                                <div className="mb-2">
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-600 text-white">
+                                        🚫 ABGESAGT
+                                    </span>
+                                </div>
+                            )}
+                            <h3 className={`text-xl font-bold mb-2 group-hover:text-gray-900 transition-colors duration-300 ${
+                                isCancelled ? 'line-through' : ''
+                            }`}>
                                 {title}
                             </h3>
                             <p className="text-sm opacity-80 mb-1">

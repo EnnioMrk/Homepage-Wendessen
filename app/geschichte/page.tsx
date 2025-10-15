@@ -414,13 +414,19 @@ export default function GeschichtePage() {
                                 Jahre Geschichte zurück und schauen optimistisch
                                 in die Zukunft.
                             </p>
-                            <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                            <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-8">
                                 <div className="flex items-center space-x-2 text-amber-600">
                                     <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
                                     <span className="text-lg sm:text-xl md:text-2xl font-bold text-center sm:text-left">
                                         Wendessen - Tradition trifft Zukunft
                                     </span>
                                 </div>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-lg mt-8">
+                                <p className="text-base sm:text-lg text-gray-600">
+                                    <strong className="text-amber-700">Ortsheimatpfleger:</strong>{' '}
+                                    Erich Isensee
+                                </p>
                             </div>
                         </div>
                     </div>

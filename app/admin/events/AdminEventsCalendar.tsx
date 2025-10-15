@@ -21,6 +21,8 @@ import {
     Trash,
     FloppyDisk,
     ImageSquare,
+    ProhibitInset,
+    ArrowCounterClockwise,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import ImagePicker from '../../components/ImagePicker';
@@ -69,13 +71,20 @@ const defaultEventForm: EventFormData = {
 
 // Custom event component
 const EventComponent = ({ event }: { event: CalendarEvent }) => {
+    const isCancelled = event.isCancelled;
+    
     return (
         <div
-            className={`${getCategoryBackgroundColor(
-                event.category || 'sonstiges'
-            )} text-white p-1 rounded text-xs font-medium overflow-hidden`}
+            className={`${
+                isCancelled 
+                    ? 'bg-gray-400 line-through opacity-70' 
+                    : getCategoryBackgroundColor(event.category || 'sonstiges')
+            } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
-            <div className="truncate">{event.title}</div>
+            <div className="truncate">
+                {isCancelled && '🚫 '}
+                {event.title}
+            </div>
         </div>
     );
 };
@@ -276,7 +285,7 @@ export default function AdminEventsCalendar({
     const handleDeleteEvent = async () => {
         if (!selectedEvent) return;
 
-        if (!confirm('Möchten Sie diesen Termin wirklich löschen?')) return;
+        if (!confirm('Möchten Sie diesen Termin wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
 
         setLoading(true);
         try {
@@ -290,12 +299,69 @@ export default function AdminEventsCalendar({
                 setShowEventModal(false);
                 setSelectedEvent(null);
             } else {
+                const errorData = await response.json();
                 console.error('Delete failed with status:', response.status);
-                alert('Fehler beim Löschen des Termins');
+                alert(errorData.error || 'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.');
             }
         } catch (error) {
             console.error('Error deleting event:', error);
             alert('Fehler beim Löschen des Termins');
+        }
+        setLoading(false);
+    };
+
+    const handleCancelEvent = async () => {
+        if (!selectedEvent) return;
+
+        if (!confirm('Möchten Sie diesen Termin absagen? Der Termin bleibt sichtbar, wird aber als abgesagt markiert.')) return;
+
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/events/${selectedEvent.id}/cancel`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                // Refresh events from parent component
+                await onEventsUpdate?.();
+                setShowEventModal(false);
+                setSelectedEvent(null);
+            } else {
+                const errorData = await response.json();
+                console.error('Cancel failed with status:', response.status);
+                alert(errorData.error || 'Fehler beim Absagen des Termins');
+            }
+        } catch (error) {
+            console.error('Error cancelling event:', error);
+            alert('Fehler beim Absagen des Termins');
+        }
+        setLoading(false);
+    };
+
+    const handleRestoreEvent = async () => {
+        if (!selectedEvent) return;
+
+        if (!confirm('Möchten Sie diesen Termin wiederherstellen?')) return;
+
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/events/${selectedEvent.id}/cancel`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                // Refresh events from parent component
+                await onEventsUpdate?.();
+                setShowEventModal(false);
+                setSelectedEvent(null);
+            } else {
+                const errorData = await response.json();
+                console.error('Restore failed with status:', response.status);
+                alert(errorData.error || 'Fehler beim Wiederherstellen des Termins');
+            }
+        } catch (error) {
+            console.error('Error restoring event:', error);
+            alert('Fehler beim Wiederherstellen des Termins');
         }
         setLoading(false);
     };
@@ -371,24 +437,53 @@ export default function AdminEventsCalendar({
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-start mb-6">
-                            <h3 className="text-xl font-bold text-gray-900">
-                                {isEditing
-                                    ? 'Termin bearbeiten'
-                                    : selectedEvent.title}
-                            </h3>
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900">
+                                    {isEditing
+                                        ? 'Termin bearbeiten'
+                                        : selectedEvent.title}
+                                </h3>
+                                {selectedEvent.isCancelled && !isEditing && (
+                                    <span className="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <ProhibitInset className="w-3 h-3 mr-1" />
+                                        Abgesagt
+                                    </span>
+                                )}
+                            </div>
                             <div className="flex items-center space-x-2">
                                 {!isEditing && (
                                     <>
                                         <button
                                             onClick={startEditing}
                                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+                                            title="Bearbeiten"
                                         >
                                             <PencilSimple className="w-4 h-4" />
                                         </button>
+                                        {selectedEvent.isCancelled ? (
+                                            <button
+                                                onClick={handleRestoreEvent}
+                                                disabled={loading}
+                                                className="p-2 text-green-600 hover:bg-green-50 rounded-md"
+                                                title="Termin wiederherstellen"
+                                            >
+                                                <ArrowCounterClockwise className="w-4 h-4" />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={handleCancelEvent}
+                                                disabled={loading}
+                                                className="p-2 text-orange-600 hover:bg-orange-50 rounded-md"
+                                                title="Termin absagen"
+                                            >
+                                                <ProhibitInset className="w-4 h-4" />
+                                            </button>
+                                        )}
                                         <button
                                             onClick={handleDeleteEvent}
                                             disabled={loading}
                                             className="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                                            title="Termin dauerhaft löschen (nur für Administratoren)"
                                         >
                                             <Trash className="w-4 h-4" />
                                         </button>
@@ -611,6 +706,29 @@ export default function AdminEventsCalendar({
                             </div>
                         ) : (
                             <div className="space-y-4">
+                                {selectedEvent.isCancelled && (
+                                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                                        <div className="flex items-start">
+                                            <ProhibitInset className="w-5 h-5 text-red-600 mt-0.5 mr-3" />
+                                            <div>
+                                                <h4 className="text-sm font-semibold text-red-900 mb-1">
+                                                    Dieser Termin wurde abgesagt
+                                                </h4>
+                                                {selectedEvent.cancelledBy && (
+                                                    <p className="text-xs text-red-700">
+                                                        Abgesagt von: {selectedEvent.cancelledBy}
+                                                    </p>
+                                                )}
+                                                {selectedEvent.cancelledAt && (
+                                                    <p className="text-xs text-red-700">
+                                                        Am: {moment(selectedEvent.cancelledAt).format('DD.MM.YYYY, HH:mm')} Uhr
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                
                                 <div className="flex items-center space-x-3">
                                     <div
                                         className={`p-2 rounded-lg ${
