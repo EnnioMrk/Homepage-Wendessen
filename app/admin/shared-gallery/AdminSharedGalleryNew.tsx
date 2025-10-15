@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
@@ -56,11 +56,7 @@ export default function AdminSharedGallery() {
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectAction, setRejectAction] = useState<'all' | 'selected'>('all');
 
-    useEffect(() => {
-        fetchSubmissionGroups();
-    }, [filter]);
-
-    const fetchSubmissionGroups = async () => {
+    const fetchSubmissionGroups = useCallback(async () => {
         try {
             setLoading(true);
             
@@ -89,7 +85,11 @@ export default function AdminSharedGallery() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filter]);
+
+    useEffect(() => {
+        fetchSubmissionGroups();
+    }, [fetchSubmissionGroups]);
 
     const handleApproveAll = async (groupId: string) => {
         if (!confirm('Möchten Sie alle Fotos dieser Einreichung freigeben?')) return;
@@ -269,7 +269,12 @@ export default function AdminSharedGallery() {
 
         try {
             const action = rejectAction === 'all' ? 'reject-all' : 'reject-selected';
-            const body: any = { action, reason: rejectionReason || undefined };
+            const body: {
+                action: string;
+                reason?: string;
+                submissionGroupId?: string;
+                imageIds?: string[];
+            } = { action, reason: rejectionReason || undefined };
 
             if (rejectAction === 'all' && selectedGroup) {
                 body.submissionGroupId = selectedGroup.submissionGroupId;
@@ -693,10 +698,8 @@ export default function AdminSharedGallery() {
                                 {selectedImages.size > 0 && (() => {
                                     const selectedImagesData = selectedGroup.images.filter(img => selectedImages.has(img.id));
                                     const hasApproved = selectedImagesData.some(img => img.status === 'approved');
-                                    const hasPending = selectedImagesData.some(img => img.status === 'pending');
                                     const hasRejected = selectedImagesData.some(img => img.status === 'rejected');
                                     const allApproved = selectedImagesData.every(img => img.status === 'approved');
-                                    const allPending = selectedImagesData.every(img => img.status === 'pending');
                                     const allRejected = selectedImagesData.every(img => img.status === 'rejected');
                                     
                                     return (

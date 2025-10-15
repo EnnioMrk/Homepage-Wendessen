@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
@@ -31,11 +31,7 @@ export default function AdminSharedGalleryReports() {
     const [viewingImage, setViewingImage] = useState<GalleryReport | null>(null);
     const [disapproving, setDisapproving] = useState(false);
 
-    useEffect(() => {
-        fetchReports();
-    }, [filter]);
-
-    const fetchReports = async () => {
+    const fetchReports = useCallback(async () => {
         try {
             setLoading(true);
             
@@ -64,7 +60,11 @@ export default function AdminSharedGalleryReports() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filter]);
+
+    useEffect(() => {
+        fetchReports();
+    }, [fetchReports]);
 
     const handleUpdateStatus = async (reportId: string, status: 'reviewed' | 'dismissed') => {
         setProcessing(reportId);

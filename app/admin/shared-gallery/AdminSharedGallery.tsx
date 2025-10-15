@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
@@ -42,11 +42,7 @@ export default function AdminSharedGallery() {
     const [rejectionReason, setRejectionReason] = useState('');
     const [showRejectModal, setShowRejectModal] = useState(false);
 
-    useEffect(() => {
-        fetchSubmissions();
-    }, [filter]);
-
-    const fetchSubmissions = async () => {
+    const fetchSubmissions = useCallback(async () => {
         try {
             setLoading(true);
             const url = filter === 'all' 
@@ -66,7 +62,11 @@ export default function AdminSharedGallery() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filter]);
+
+    useEffect(() => {
+        fetchSubmissions();
+    }, [fetchSubmissions]);
 
     const handleApprove = async (id: string) => {
         if (!confirm('Möchten Sie dieses Foto freigeben?')) return;
