@@ -1,8 +1,4 @@
 import { getCurrentAdminUser, AdminUser } from './auth';
-import { getAllPermissions, getAllRoles, Role, Permission } from './database';
-
-// Cache for role permissions mapping
-let rolePermissionsCache: Map<string, string[]> | null = null;
 
 // Define role-permission mappings
 const ROLE_PERMISSIONS: Record<string, string[]> = {

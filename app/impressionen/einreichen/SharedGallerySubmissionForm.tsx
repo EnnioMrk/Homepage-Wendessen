@@ -23,8 +23,6 @@ export default function SharedGallerySubmissionForm() {
         submitterEmail: '',
     });
     const [photos, setPhotos] = useState<PhotoData[]>([]);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);

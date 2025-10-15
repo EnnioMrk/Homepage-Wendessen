@@ -354,9 +354,9 @@ export async function cancelEvent(
         }
 
         return convertToCalendarEvent(result[0]);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error cancelling event in database:', error);
-        console.error('Error message:', error.message);
+        console.error('Error message:', (error as Error).message);
         console.error('Error details:', error);
         throw error;
     }

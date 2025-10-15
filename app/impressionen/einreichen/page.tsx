@@ -18,7 +18,7 @@ export default function ImpessionenEinreichenPage() {
                     </h1>
                     <div className="w-32 h-2 bg-white mx-auto mb-6"></div>
                     <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto">
-                        Teilen Sie Ihre schönsten Momente aus Wendessen mit der Gemeinschaft
+                                                Teilen Sie Ihre schönsten Momente aus Wendessen! Ob Dorffest, Landschaft oder besondere Ereignisse &ndash; wir freuen uns über Ihre Fotos.
                     </p>
                 </div>
             </div>
