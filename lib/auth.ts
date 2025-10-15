@@ -229,6 +229,11 @@ export function requireAuth(request: NextRequest): NextResponse | null {
         return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
+    // Check if user must change password (but allow access to change-password page)
+    if (sessionData.mustChangePassword && !request.nextUrl.pathname.startsWith('/admin/change-password')) {
+        return NextResponse.redirect(new URL('/admin/change-password', request.url));
+    }
+
     return null; // User is authenticated
 }
 
