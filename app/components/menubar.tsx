@@ -13,7 +13,7 @@ const Menubar = React.forwardRef<
     <MenubarPrimitive.Root
         ref={ref}
         className={cn(
-            'flex h-14 items-center space-x-1 rounded-md border border-border bg-background p-1 shadow-sm',
+            'flex h-14 items-center space-x-1 rounded-md bg-background p-1',
             className
         )}
         {...props}
@@ -218,6 +218,14 @@ const dorflebenItems = [
                 href: '/dorfleben/vereine/schuetzenverein',
             },
             { title: 'SV Wendessen', href: '/dorfleben/vereine/sv-wendessen' },
+            {
+                title: 'Evang. Seniorenkreis',
+                href: '/dorfleben/vereine/seniorenkreis',
+            },
+            {
+                title: 'Evang. Frauenhilfe',
+                href: '/dorfleben/vereine/frauenhilfe',
+            },
         ],
     },
     {

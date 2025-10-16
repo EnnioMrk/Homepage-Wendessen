@@ -18,7 +18,8 @@ export async function GET() {
 
         // Get news from database
         const result = await sql`
-            SELECT id, title, content, category, published_date as "publishedDate"
+            SELECT id, title, content, category, published_date as "publishedDate",
+                   article_id as "articleId"
             FROM news 
             ORDER BY published_date DESC
         `;
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { title, content, category } = await request.json();
+        const { title, content, category, contentJson } = await request.json();
 
         if (!title?.trim()) {
             return NextResponse.json(
@@ -65,13 +66,31 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Generate a unique 32-bit article ID (8 hex characters)
+        const crypto = await import('crypto');
+        let articleId = crypto.randomBytes(4).toString('hex');
+        
+        // Ensure uniqueness
+        let exists = true;
+        while (exists) {
+            const check = await sql`SELECT id FROM news WHERE article_id = ${articleId}`;
+            if (check.length === 0) {
+                exists = false;
+            } else {
+                articleId = crypto.randomBytes(4).toString('hex');
+            }
+        }
+
         // Insert into database
         const result = await sql`
-            INSERT INTO news (title, content, category)
-            VALUES (${title.trim()}, ${
-            content?.trim() || null
-        }, ${category.trim()})
-            RETURNING id, title, content, category, published_date as "publishedDate"
+            INSERT INTO news (title, content, category, article_id)
+            VALUES (
+                ${title.trim()}, 
+                ${contentJson || null}, 
+                ${category.trim()},
+                ${articleId}
+            )
+            RETURNING id, title, content, category, published_date as "publishedDate", article_id
         `;
 
         const newNews = {

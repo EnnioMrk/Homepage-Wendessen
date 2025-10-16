@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { isAuthenticated, getSessionData } from '@/lib/auth';
+import { isAuthenticated, getSessionData, getCurrentAdminUser } from '@/lib/auth';
+import { hasPermission } from '@/lib/permissions';
 import {
     getEvents,
     getNews,
@@ -33,7 +34,10 @@ export default async function AdminDashboardPage() {
         redirect('/admin/change-password');
     }
 
-    // Fetch data for the dashboard
+    // Get current user for permission checking
+    const currentUser = await getCurrentAdminUser();
+
+    // Fetch data for the dashboard based on permissions
     let events: CalendarEvent[] = [];
     let news: NewsItem[] = [];
     let galleryCount = 0;
@@ -43,32 +47,48 @@ export default async function AdminDashboardPage() {
     let galleryError: string | undefined;
     let portraitsError: string | undefined;
 
-    try {
-        events = await getEvents();
-    } catch (error) {
-        console.error('Failed to fetch events:', error);
-        eventsError = 'Failed to load events';
+    // Check permissions before fetching data
+    const canViewEvents = hasPermission(currentUser, 'events.view');
+    const canViewNews = hasPermission(currentUser, 'news.view');
+    const canViewAdminGallery = hasPermission(currentUser, 'gallery.view');
+    const canViewSharedGallery = hasPermission(currentUser, 'shared_gallery.view');
+    const canViewPortraits = hasPermission(currentUser, 'portraits.view');
+    const canViewArchive = hasPermission(currentUser, 'archive.view');
+
+    if (canViewEvents) {
+        try {
+            events = await getEvents();
+        } catch (error) {
+            console.error('Failed to fetch events:', error);
+            eventsError = 'Failed to load events';
+        }
     }
 
-    try {
-        news = await getNews();
-    } catch (error) {
-        console.error('Failed to fetch news:', error);
-        newsError = 'Failed to load news';
+    if (canViewNews) {
+        try {
+            news = await getNews();
+        } catch (error) {
+            console.error('Failed to fetch news:', error);
+            newsError = 'Failed to load news';
+        }
     }
 
-    try {
-        galleryCount = await getSharedGalleryImageCount();
-    } catch (error) {
-        console.error('Failed to fetch gallery count:', error);
-        galleryError = 'Failed to load gallery count';
+    if (canViewSharedGallery) {
+        try {
+            galleryCount = await getSharedGalleryImageCount();
+        } catch (error) {
+            console.error('Failed to fetch gallery count:', error);
+            galleryError = 'Failed to load gallery count';
+        }
     }
 
-    try {
-        portraitsCount = await getPortraitsCount();
-    } catch (error) {
-        console.error('Failed to fetch portraits count:', error);
-        portraitsError = 'Failed to load portraits count';
+    if (canViewPortraits) {
+        try {
+            portraitsCount = await getPortraitsCount();
+        } catch (error) {
+            console.error('Failed to fetch portraits count:', error);
+            portraitsError = 'Failed to load portraits count';
+        }
     }
 
     return (
@@ -81,6 +101,15 @@ export default async function AdminDashboardPage() {
             newsError={newsError}
             galleryError={galleryError}
             portraitsError={portraitsError}
+            canViewEvents={canViewEvents}
+            canViewNews={canViewNews}
+            canViewAdminGallery={canViewAdminGallery}
+            canViewSharedGallery={canViewSharedGallery}
+            canViewPortraits={canViewPortraits}
+            canViewArchive={canViewArchive}
+            canManageEvents={hasPermission(currentUser, 'events.create') || hasPermission(currentUser, 'verein.events.create')}
+            canManageNews={hasPermission(currentUser, 'news.create')}
+            canManageUsers={hasPermission(currentUser, 'users.view')}
         />
     );
 }

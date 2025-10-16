@@ -8,6 +8,7 @@ interface AdminUser {
     roleName?: string;
     roleDisplayName?: string;
     customPermissions: string[];
+    vereinId?: string | null;
 }
 
 interface PermissionsContextType {
@@ -16,14 +17,13 @@ interface PermissionsContextType {
     hasPermission: (permission: string) => boolean;
     hasAnyPermission: (permissions: string[]) => boolean;
     hasAllPermissions: (permissions: string[]) => boolean;
-    hasRole: (roleName: string) => boolean;
     refresh: () => Promise<void>;
 }
 
 const PermissionsContext = createContext<PermissionsContextType | undefined>(undefined);
 
-// Role-permission mappings (same as server-side)
-const ROLE_PERMISSIONS: Record<string, string[]> = {
+// Role default permissions (same as server-side, used as templates)
+export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
     super_admin: ['*'],
     admin: [
         'users.view', 'users.create', 'users.edit', 'users.delete',
@@ -31,7 +31,7 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
         'news.view', 'news.create', 'news.edit', 'news.delete',
         'gallery.view', 'gallery.upload', 'gallery.edit', 'gallery.delete',
         'shared_gallery.view', 'shared_gallery.approve', 'shared_gallery.reject',
-        'portraits.view', 'portraits.approve', 'portraits.reject',
+        'portraits.view', 'portraits.edit', 'portraits.delete',
         'settings.view', 'settings.edit',
     ],
     editor: [
@@ -42,58 +42,53 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     moderator: [
         'events.view', 'news.view', 'gallery.view',
         'shared_gallery.view', 'shared_gallery.approve', 'shared_gallery.reject',
-        'portraits.view', 'portraits.approve', 'portraits.reject',
+        'portraits.view', 'portraits.edit',
     ],
+    vereinsverwalter: [
+        'verein.events.create',
+        'verein.events.edit',
+        'verein.events.cancel',
+        'gallery.view',
+        'gallery.upload',
+        'gallery.edit',
+    ],
+    no_permissions: [],
 };
 
-// Default permissions for Verein roles
-const VEREIN_DEFAULT_PERMISSIONS = [
-    'verein.events.create',
-    'verein.events.edit',
-    'verein.events.cancel',
-    'verein.news.create',
-    'verein.news.edit',
-    'verein.news.delete',
-    'verein.gallery.upload',
-    'verein.gallery.edit',
-    'verein.gallery.delete',
-];
-
-function isVereinRole(roleName: string): boolean {
-    return roleName.startsWith('verein_');
+/**
+ * Get default permissions for a role (used as template)
+ */
+export function getRoleDefaultPermissions(roleName: string): string[] {
+    return ROLE_DEFAULT_PERMISSIONS[roleName] || [];
 }
 
-function getRolePermissions(roleName: string): string[] {
-    if (ROLE_PERMISSIONS[roleName]) {
-        return ROLE_PERMISSIONS[roleName];
-    }
-    
-    if (isVereinRole(roleName)) {
-        return VEREIN_DEFAULT_PERMISSIONS;
-    }
-    
-    return [];
-}
-
+/**
+ * Check if a user has a specific permission
+ * Now purely permission-based - roles are just for organizing/grouping
+ */
 function checkPermission(user: AdminUser | null, permission: string): boolean {
     if (!user) return false;
     
-    if (user.roleName === 'super_admin') {
+    // Check if user has wildcard permission
+    if (user.customPermissions && user.customPermissions.includes('*')) {
         return true;
     }
     
+    // Check for exact permission match
     if (user.customPermissions && user.customPermissions.includes(permission)) {
         return true;
     }
     
-    if (user.roleName) {
-        const rolePermissions = getRolePermissions(user.roleName);
-        if (rolePermissions.includes('*') || rolePermissions.includes(permission)) {
+    // Check for category-level wildcard (e.g., 'events.*' allows 'events.create')
+    if (user.customPermissions) {
+        const [category] = permission.split('.');
+        if (user.customPermissions.includes(`${category}.*`)) {
             return true;
         }
-        
-        const [category] = permission.split('.');
-        if (rolePermissions.includes(`${category}.*`)) {
+
+        // Check if user has verein.* permission for the general permission
+        // Only grant .view permissions automatically if user has verein permissions in that category
+        if (permission.endsWith('.view') && user.customPermissions.some(p => p.startsWith(`verein.${category}.`))) {
             return true;
         }
     }
@@ -134,7 +129,6 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
             permissions.some(p => checkPermission(user, p)),
         hasAllPermissions: (permissions: string[]) => 
             permissions.every(p => checkPermission(user, p)),
-        hasRole: (roleName: string) => user?.roleName === roleName,
         refresh: loadUser,
     };
 

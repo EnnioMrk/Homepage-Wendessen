@@ -5,7 +5,7 @@ import {
     deleteEvent,
     CalendarEvent,
 } from '@/lib/database';
-import { requirePermission } from '@/lib/permissions';
+import { requireAnyPermission } from '@/lib/permissions';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function GET(
@@ -38,10 +38,6 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Check permission for updating events
-        await requirePermission('events.edit');
-
-        const eventData = await request.json();
         const { id } = await params;
 
         // Check if event exists
@@ -52,6 +48,25 @@ export async function PUT(
                 { status: 404 }
             );
         }
+
+        // Check permission for updating events
+        const user = await requireAnyPermission(['events.edit', 'verein.events.edit']);
+        
+        // If user has verein permission, verify they can only edit their own verein's events
+        const hasGeneralPermission = user.customPermissions?.includes('events.edit') || user.customPermissions?.includes('events.*') || user.customPermissions?.includes('*');
+        const hasVereinPermission = user.customPermissions?.includes('verein.events.edit') || user.customPermissions?.includes('verein.events.*') || user.customPermissions?.includes('verein.*');
+        
+        if (!hasGeneralPermission && hasVereinPermission) {
+            // User only has verein permission, check if they can edit this event
+            if (!user.vereinId || !existingEvent.vereinId || user.vereinId !== existingEvent.vereinId) {
+                return NextResponse.json(
+                    { error: 'Forbidden: You can only edit events from your own Verein' },
+                    { status: 403 }
+                );
+            }
+        }
+
+        const eventData = await request.json();
 
         // Prepare update data
         const updateData: Partial<Omit<CalendarEvent, 'id'>> = {};
@@ -93,10 +108,6 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Only Administrators (admin role) can delete events permanently
-        // Editors and Verein users should use cancel instead
-        await requirePermission('events.delete');
-
         const { id } = await params;
 
         // Check if event exists
@@ -106,6 +117,24 @@ export async function DELETE(
                 { error: 'Event not found' },
                 { status: 404 }
             );
+        }
+
+        // Only Administrators (admin role) can delete events permanently
+        // Editors and Verein users should use cancel instead
+        const user = await requireAnyPermission(['events.delete', 'verein.events.delete']);
+        
+        // If user has verein permission, verify they can only delete their own verein's events
+        const hasGeneralPermission = user.customPermissions?.includes('events.delete') || user.customPermissions?.includes('events.*') || user.customPermissions?.includes('*');
+        const hasVereinPermission = user.customPermissions?.includes('verein.events.delete') || user.customPermissions?.includes('verein.events.*') || user.customPermissions?.includes('verein.*');
+        
+        if (!hasGeneralPermission && hasVereinPermission) {
+            // User only has verein permission, check if they can delete this event
+            if (!user.vereinId || !existingEvent.vereinId || user.vereinId !== existingEvent.vereinId) {
+                return NextResponse.json(
+                    { error: 'Forbidden: You can only delete events from your own Verein' },
+                    { status: 403 }
+                );
+            }
         }
 
         await deleteEvent(id);

@@ -13,8 +13,23 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import { AdminUserRecord } from '@/lib/database';
 import PermissionsModal from '@/app/components/PermissionsModal';
+import { usePermissions } from '@/lib/usePermissions';
+
+// Vereine data for display
+const VEREINE_MAP: Record<string, string> = {
+    'sv-wendessen': 'SV Wendessen',
+    'feuerwehr': 'Freiwillige Feuerwehr',
+    'jugendfeuerwehr': 'Jugendfeuerwehr',
+    'kleingaertner': 'Kleingärtner-Verein',
+    'kirchbauverein': 'Kirchbauverein',
+    'initiative-spritzenhaus': 'Initiative Spritzenhaus',
+    'schuetzenverein': 'Schützenverein',
+    'seniorenkreis': 'Evang. Seniorenkreis',
+    'frauenhilfe': 'Evang. Frauenhilfe',
+};
 
 export default function AdminUsersClient() {
+    const { hasPermission } = usePermissions();
     const [users, setUsers] = useState<AdminUserRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -22,6 +37,10 @@ export default function AdminUsersClient() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showPermissionsModal, setShowPermissionsModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(null);
+
+    const canCreate = hasPermission('users.create');
+    const canEdit = hasPermission('users.edit');
+    const canDelete = hasPermission('users.delete');
 
     const loadUsers = async () => {
         try {
@@ -99,13 +118,15 @@ export default function AdminUsersClient() {
                                 Admin-Benutzer
                             </h1>
                         </div>
-                        <button
-                            onClick={() => setShowCreateModal(true)}
-                            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Neuer Admin
-                        </button>
+                        {canCreate && (
+                            <button
+                                onClick={() => setShowCreateModal(true)}
+                                className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
+                            >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Neuer Admin
+                            </button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -147,6 +168,11 @@ export default function AdminUsersClient() {
                                                                 {user.roleDisplayName}
                                                             </span>
                                                         )}
+                                                        {user.vereinId && (
+                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                                {VEREINE_MAP[user.vereinId] || user.vereinId}
+                                                            </span>
+                                                        )}
                                                         {user.mustChangePassword && (
                                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                                 Passwort ändern
@@ -177,20 +203,24 @@ export default function AdminUsersClient() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2">
-                                                <button
-                                                    onClick={() => handlePermissionsClick(user)}
-                                                    className="text-primary hover:text-primary-dark"
-                                                    title="Berechtigungen bearbeiten"
-                                                >
-                                                    <Gear className="w-5 h-5" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteClick(user)}
-                                                    className="text-red-600 hover:text-red-800"
-                                                    title="Benutzer löschen"
-                                                >
-                                                    <Trash className="w-5 h-5" />
-                                                </button>
+                                                {canEdit && (
+                                                    <button
+                                                        onClick={() => handlePermissionsClick(user)}
+                                                        className="text-primary hover:text-primary-dark"
+                                                        title="Berechtigungen bearbeiten"
+                                                    >
+                                                        <Gear className="w-5 h-5" />
+                                                    </button>
+                                                )}
+                                                {canDelete && (
+                                                    <button
+                                                        onClick={() => handleDeleteClick(user)}
+                                                        className="text-red-600 hover:text-red-800"
+                                                        title="Benutzer löschen"
+                                                    >
+                                                        <Trash className="w-5 h-5" />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </li>
@@ -277,13 +307,27 @@ function CreateUserModal({
     onSuccess: () => void;
 }) {
     const [username, setUsername] = useState('');
-    const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>();
+    const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>(undefined);
+    const [selectedVereinId, setSelectedVereinId] = useState<string>('');
     const [roles, setRoles] = useState<Role[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     const [isLoadingRoles, setIsLoadingRoles] = useState(true);
     const [error, setError] = useState('');
     const [initialPassword, setInitialPassword] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
+
+    // Vereine data
+    const vereine = [
+        { id: 'sv-wendessen', name: 'SV Wendessen' },
+        { id: 'feuerwehr', name: 'Freiwillige Feuerwehr' },
+        { id: 'jugendfeuerwehr', name: 'Jugendfeuerwehr' },
+        { id: 'kleingaertner', name: 'Kleingärtner-Verein' },
+        { id: 'kirchbauverein', name: 'Kirchbauverein' },
+        { id: 'initiative-spritzenhaus', name: 'Initiative Spritzenhaus' },
+        { id: 'schuetzenverein', name: 'Schützenverein' },
+        { id: 'seniorenkreis', name: 'Evang. Seniorenkreis' },
+        { id: 'frauenhilfe', name: 'Evang. Frauenhilfe' },
+    ];
 
     useEffect(() => {
         const loadRoles = async () => {
@@ -318,7 +362,11 @@ function CreateUserModal({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, roleId: selectedRoleId }),
+                body: JSON.stringify({ 
+                    username, 
+                    roleId: selectedRoleId,
+                    vereinId: selectedVereinId || undefined,
+                }),
             });
 
             const data = await response.json();
@@ -447,6 +495,31 @@ function CreateUserModal({
                             )}
                             <p className="mt-1 text-xs text-gray-500">
                                 Bestimmt die Grundberechtigungen des Benutzers
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="verein"
+                                className="block text-sm font-medium text-gray-700"
+                            >
+                                Verein (Optional)
+                            </label>
+                            <select
+                                id="verein"
+                                value={selectedVereinId}
+                                onChange={(e) => setSelectedVereinId(e.target.value)}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                            >
+                                <option value="">Kein Verein</option>
+                                {vereine.map((verein) => (
+                                    <option key={verein.id} value={verein.id}>
+                                        {verein.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="mt-1 text-xs text-gray-500">
+                                Ordnet den Admin einem spezifischen Verein zu
                             </p>
                         </div>
 

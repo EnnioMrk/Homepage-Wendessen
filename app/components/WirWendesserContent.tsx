@@ -173,15 +173,17 @@ export default function WirWendesserContent() {
                             </div>
 
                             <div className="space-y-6 text-gray-700 leading-relaxed text-center">
-                                <p className="text-lg">
-                                    Einige von uns wollen wir künftig an dieser
-                                    Stelle kurz vorstellen.
-                                    <strong>
-                                        {' '}
-                                        Wer sind sie, was bewegt sie, was
-                                        wünschen sie sich?
-                                    </strong>
-                                </p>
+                                {approvedPortraits.length === 0 && (
+                                    <p className="text-lg">
+                                        Einige von uns wollen wir künftig an dieser
+                                        Stelle kurz vorstellen.
+                                        <strong>
+                                            {' '}
+                                            Wer sind sie, was bewegt sie, was
+                                            wünschen sie sich?
+                                        </strong>
+                                    </p>
+                                )}
 
                                 {/* Approved Portraits Display */}
                                 {isLoading ? (

@@ -21,6 +21,7 @@ interface PermissionsModalProps {
 
 export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: PermissionsModalProps) {
     const [permissions, setPermissions] = useState<Record<string, Permission[]>>({});
+    const [rolePermissions, setRolePermissions] = useState<string[]>([]);
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>(user.customPermissions || []);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -29,6 +30,7 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
     useEffect(() => {
         if (isOpen) {
             loadPermissions();
+            loadRolePermissions();
             setSelectedPermissions(user.customPermissions || []);
         }
     }, [isOpen, user]);
@@ -49,14 +51,49 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
         }
     };
 
+    const loadRolePermissions = async () => {
+        try {
+            const response = await fetch(`/api/admin/users/${user.id}/role-permissions`);
+            if (response.ok) {
+                const data = await response.json();
+                setRolePermissions(data.rolePermissions || []);
+            }
+        } catch (err) {
+            console.error('Error loading role permissions:', err);
+        }
+    };
+
     const handleTogglePermission = (permissionName: string) => {
         setSelectedPermissions(prev => {
             if (prev.includes(permissionName)) {
+                // When removing a permission, check if it's a view permission
+                // If so, remove all related action permissions in the same category
+                if (permissionName.endsWith('.view')) {
+                    const [category] = permissionName.split('.');
+                    return prev.filter(p => !p.startsWith(`${category}.`));
+                }
                 return prev.filter(p => p !== permissionName);
             } else {
+                // When adding a permission, automatically add the view permission for that category
+                const [category] = permissionName.split('.');
+                const viewPermission = `${category}.view`;
+                
+                // If it's not a view permission and view permission isn't already selected, add it
+                if (!permissionName.endsWith('.view') && !prev.includes(viewPermission)) {
+                    return [...prev, viewPermission, permissionName];
+                }
+                
                 return [...prev, permissionName];
             }
         });
+    };
+
+    const isPermissionChecked = (permissionName: string) => {
+        return selectedPermissions.includes(permissionName);
+    };
+
+    const isPermissionFromRole = (permissionName: string) => {
+        return rolePermissions.includes(permissionName);
     };
 
     const handleSave = async () => {
@@ -98,6 +135,7 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
         gallery: 'Galerie',
         shared_gallery: 'Impressionen',
         portraits: 'Portraits',
+        archive: 'Archiv',
         settings: 'Einstellungen',
         other: 'Sonstige',
     };
@@ -136,8 +174,8 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
                     {/* Info Box */}
                     <div className="mb-6 bg-blue-50 border border-blue-200 rounded-md p-4">
                         <p className="text-sm text-blue-800">
-                            <strong>Hinweis:</strong> Diese Berechtigungen werden zusätzlich zu den Rollenberechtigungen gewährt. 
-                            Die Berechtigungsprüfung ist noch nicht aktiv und dient aktuell nur zur Verwaltung.
+                            <strong>Hinweis:</strong> Berechtigungen mit Rollensymbol <ShieldCheck className="w-4 h-4 inline text-primary" /> sind Standard-Berechtigungen der Rolle. 
+                            Sie können diese entfernen oder zusätzliche Berechtigungen hinzufügen. Die Anzahl der zusätzlichen Berechtigungen wird berechnet.
                         </p>
                     </div>
 
@@ -160,29 +198,47 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
                                         {categoryNames[category] || category}
                                     </h4>
                                     <div className="space-y-2">
-                                        {perms.map((permission) => (
-                                            <label
-                                                key={permission.id}
-                                                className="flex items-start cursor-pointer hover:bg-gray-50 p-2 rounded"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedPermissions.includes(permission.name)}
-                                                    onChange={() => handleTogglePermission(permission.name)}
-                                                    className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                                                />
-                                                <div className="ml-3 flex-1">
-                                                    <span className="text-sm font-medium text-gray-900">
-                                                        {permission.displayName}
-                                                    </span>
-                                                    {permission.description && (
-                                                        <p className="text-xs text-gray-500">
-                                                            {permission.description}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </label>
-                                        ))}
+                                        {perms.map((permission) => {
+                                            const isFromRole = isPermissionFromRole(permission.name);
+                                            return (
+                                                <label
+                                                    key={permission.id}
+                                                    className={`flex items-start p-2 rounded cursor-pointer hover:bg-gray-50 ${
+                                                        isFromRole ? 'bg-blue-50' : ''
+                                                    }`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isPermissionChecked(permission.name)}
+                                                        onChange={() => handleTogglePermission(permission.name)}
+                                                        className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                                    />
+                                                    <div className="ml-3 flex-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`text-sm font-medium ${
+                                                                isFromRole ? 'text-blue-900' : 'text-gray-900'
+                                                            }`}>
+                                                                {permission.displayName}
+                                                            </span>
+                                                            {isFromRole && (
+                                                                <ShieldCheck 
+                                                                    className="w-4 h-4 text-primary flex-shrink-0" 
+                                                                    title="Standard-Berechtigung der Rolle" 
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        {permission.description && (
+                                                            <p className={`text-xs ${
+                                                                isFromRole ? 'text-blue-700' : 'text-gray-500'
+                                                            }`}>
+                                                                {permission.description}
+                                                                {isFromRole && ' (Standard-Berechtigung)'}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </label>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             ))}
@@ -192,9 +248,12 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
 
                 {/* Footer */}
                 <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-between items-center">
-                    <p className="text-sm text-gray-600">
-                        {selectedPermissions.length} Berechtigung(en) ausgewählt
-                    </p>
+                    <div className="text-sm text-gray-600">
+                        <p>{selectedPermissions.length} Berechtigung(en) insgesamt</p>
+                        <p className="text-xs text-gray-500">
+                            {selectedPermissions.filter(p => !rolePermissions.includes(p)).length} zusätzliche Berechtigung(en)
+                        </p>
+                    </div>
                     <div className="flex space-x-3">
                         <button
                             onClick={onClose}

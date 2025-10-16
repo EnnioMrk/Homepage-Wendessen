@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAuthenticated } from '../../../../lib/auth';
+import { requirePermission } from '../../../../lib/permissions';
 import { uploadToBlob } from '../../../../lib/blob-utils';
 import { neon } from '@neondatabase/serverless';
 
@@ -10,13 +10,7 @@ const sql = neon(process.env.DATABASE_URL!);
 // GET - List all images
 export async function GET() {
     try {
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        await requirePermission('gallery.view');
 
         // Get images from database
         const result = await sql`
@@ -44,13 +38,7 @@ export async function GET() {
 // POST - Upload new image
 export async function POST(request: NextRequest) {
     try {
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        await requirePermission('gallery.upload');
 
         const formData = await request.formData();
         const file = formData.get('file') as File;

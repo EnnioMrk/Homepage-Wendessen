@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { CalendarEvent } from '@/lib/database';
 import { getCategoryBackgroundColor } from '@/lib/event-utils';
 import EventModal from '@/app/components/EventModal';
+import { usePermissions } from '@/lib/usePermissions';
 import {
     UsersThree,
     CalendarBlank,
@@ -91,15 +92,26 @@ const EventComponent = ({ event }: { event: CalendarEvent }) => {
 
 // Custom agenda event component
 const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
+    const isCancelled = event.isCancelled;
+    
     return (
-        <div className="flex items-center space-x-3">
+        <div className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''}`}>
             <div
-                className={`w-3 h-3 rounded-full ${getCategoryBackgroundColor(
-                    event.category || 'sonstiges'
-                )}`}
+                className={`w-3 h-3 rounded-full ${
+                    isCancelled 
+                        ? 'bg-gray-400' 
+                        : getCategoryBackgroundColor(event.category || 'sonstiges')
+                }`}
             ></div>
             <div className="flex-1">
-                <div className="font-medium text-gray-900">{event.title}</div>
+                <div className={`font-medium ${
+                    isCancelled 
+                        ? 'text-gray-500 line-through' 
+                        : 'text-gray-900'
+                }`}>
+                    {isCancelled && '🚫 '}
+                    {event.title}
+                </div>
                 {event.location && (
                     <div className="text-sm text-gray-500">
                         {event.location}
@@ -110,6 +122,11 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                         Veranstalter: {event.organizer}
                     </div>
                 )}
+                {isCancelled && event.cancelledAt && (
+                    <div className="text-xs text-red-600 mt-1">
+                        Abgesagt
+                    </div>
+                )}
             </div>
             <div className="text-right">
                 <div className="text-sm font-medium text-gray-900">
@@ -118,7 +135,9 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                 </div>
                 <span
                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${
-                        event.category === 'sitzung'
+                        isCancelled
+                            ? 'bg-gray-100 text-gray-600'
+                            : event.category === 'sitzung'
                             ? 'bg-blue-100 text-blue-800'
                             : event.category === 'veranstaltung'
                             ? 'bg-green-100 text-green-800'
@@ -131,7 +150,9 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                             : 'bg-gray-100 text-gray-800'
                     }`}
                 >
-                    {event.category === 'sitzung'
+                    {isCancelled
+                        ? 'Abgesagt'
+                        : event.category === 'sitzung'
                         ? 'Sitzung'
                         : event.category === 'veranstaltung'
                         ? 'Veranstaltung'
@@ -154,6 +175,8 @@ export default function AdminEventsCalendar({
     setShowCreateModal,
     onEventsUpdate,
 }: AdminEventsCalendarProps) {
+    const { hasPermission, user } = usePermissions();
+    
     // State for events that updates when initialEvents changes
     const [events, setEvents] = useState<CalendarEvent[]>(() =>
         initialEvents.map((event) => ({
@@ -162,6 +185,70 @@ export default function AdminEventsCalendar({
             end: new Date(event.end),
         }))
     );
+
+    // Check if user can edit/cancel this specific event
+    const canEditEvent = (event: CalendarEvent) => {
+        // First check if user has general events.edit permission
+        if (hasPermission('events.edit')) {
+            return true;
+        }
+        
+        // If not, check if user has verein-specific edit permission
+        if (!hasPermission('verein.events.edit')) {
+            return false;
+        }
+        
+        // User has verein permission - check if event belongs to their verein
+        // Both user and event must have vereinId, and they must match
+        if (user?.vereinId && event.vereinId && event.vereinId === user.vereinId) {
+            return true;
+        }
+        
+        // Event doesn't belong to a verein or doesn't match user's verein
+        return false;
+    };
+
+    const canCancelEvent = (event: CalendarEvent) => {
+        // First check if user has general events.cancel permission
+        if (hasPermission('events.cancel')) {
+            return true;
+        }
+        
+        // If not, check if user has verein-specific cancel permission
+        if (!hasPermission('verein.events.cancel')) {
+            return false;
+        }
+        
+        // User has verein permission - check if event belongs to their verein
+        // Both user and event must have vereinId, and they must match
+        if (user?.vereinId && event.vereinId && event.vereinId === user.vereinId) {
+            return true;
+        }
+        
+        // Event doesn't belong to a verein or doesn't match user's verein
+        return false;
+    };
+
+    const canDeleteEvent = (event: CalendarEvent) => {
+        // First check if user has general events.delete permission
+        if (hasPermission('events.delete')) {
+            return true;
+        }
+        
+        // If not, check if user has verein-specific delete permission
+        if (!hasPermission('verein.events.delete')) {
+            return false;
+        }
+        
+        // User has verein permission - check if event belongs to their verein
+        // Both user and event must have vereinId, and they must match
+        if (user?.vereinId && event.vereinId && event.vereinId === user.vereinId) {
+            return true;
+        }
+        
+        // Event doesn't belong to a verein or doesn't match user's verein
+        return false;
+    };
 
     // Update events when initialEvents changes
     useEffect(() => {
@@ -407,6 +494,7 @@ export default function AdminEventsCalendar({
                     onView={setView}
                     view={view}
                     date={date}
+                    length={365}
                     selectable
                     components={{
                         event: EventComponent,
@@ -453,40 +541,46 @@ export default function AdminEventsCalendar({
                             <div className="flex items-center space-x-2">
                                 {!isEditing && (
                                     <>
-                                        <button
-                                            onClick={startEditing}
-                                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                                            title="Bearbeiten"
-                                        >
-                                            <PencilSimple className="w-4 h-4" />
-                                        </button>
-                                        {selectedEvent.isCancelled ? (
+                                        {canEditEvent(selectedEvent) && (
                                             <button
-                                                onClick={handleRestoreEvent}
-                                                disabled={loading}
-                                                className="p-2 text-green-600 hover:bg-green-50 rounded-md"
-                                                title="Termin wiederherstellen"
+                                                onClick={startEditing}
+                                                className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+                                                title="Bearbeiten"
                                             >
-                                                <ArrowCounterClockwise className="w-4 h-4" />
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={handleCancelEvent}
-                                                disabled={loading}
-                                                className="p-2 text-orange-600 hover:bg-orange-50 rounded-md"
-                                                title="Termin absagen"
-                                            >
-                                                <ProhibitInset className="w-4 h-4" />
+                                                <PencilSimple className="w-4 h-4" />
                                             </button>
                                         )}
-                                        <button
-                                            onClick={handleDeleteEvent}
-                                            disabled={loading}
-                                            className="p-2 text-red-600 hover:bg-red-50 rounded-md"
-                                            title="Termin dauerhaft löschen (nur für Administratoren)"
-                                        >
-                                            <Trash className="w-4 h-4" />
-                                        </button>
+                                        {canCancelEvent(selectedEvent) && (
+                                            selectedEvent.isCancelled ? (
+                                                <button
+                                                    onClick={handleRestoreEvent}
+                                                    disabled={loading}
+                                                    className="p-2 text-green-600 hover:bg-green-50 rounded-md"
+                                                    title="Termin wiederherstellen"
+                                                >
+                                                    <ArrowCounterClockwise className="w-4 h-4" />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleCancelEvent}
+                                                    disabled={loading}
+                                                    className="p-2 text-orange-600 hover:bg-orange-50 rounded-md"
+                                                    title="Termin absagen"
+                                                >
+                                                    <ProhibitInset className="w-4 h-4" />
+                                                </button>
+                                            )
+                                        )}
+                                        {canDeleteEvent(selectedEvent) && (
+                                            <button
+                                                onClick={handleDeleteEvent}
+                                                disabled={loading}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                                                title="Termin dauerhaft löschen (nur für Administratoren)"
+                                            >
+                                                <Trash className="w-4 h-4" />
+                                            </button>
+                                        )}
                                     </>
                                 )}
                                 <button
@@ -921,6 +1015,25 @@ export default function AdminEventsCalendar({
 
                 .calendar-container .rbc-slot-selection {
                     background-color: rgba(99, 102, 241, 0.1);
+                }
+
+                /* Make agenda view scrollable */
+                .calendar-container .rbc-agenda-view {
+                    max-height: 600px;
+                    overflow-y: auto;
+                }
+
+                .calendar-container .rbc-agenda-table {
+                    width: 100%;
+                }
+
+                /* Sticky header for agenda view */
+                .calendar-container .rbc-agenda-view table > thead {
+                    position: sticky;
+                    top: 0;
+                    background-color: white;
+                    z-index: 10;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             `}</style>
         </div>

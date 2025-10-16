@@ -1,23 +1,27 @@
 'use client';
 
 import { getCategoryColorClasses } from '@/lib/news-utils';
+import Link from 'next/link';
+import { ArrowRight } from '@phosphor-icons/react';
 
 interface NewsCardProps {
     category: string;
     title: string;
     publishedDate: Date;
+    articleId?: string;
 }
 
-export default function NewsCard({ category, title, publishedDate }: NewsCardProps) {
+export default function NewsCard({ category, title, publishedDate, articleId }: NewsCardProps) {
     const colors = getCategoryColorClasses(category);
-    const formattedDate = publishedDate.toLocaleDateString('de-DE', {
+    const date = new Date(publishedDate);
+    const formattedDate = date.toLocaleDateString('de-DE', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric'
     });
 
-    return (
-        <div className="relative rounded-lg shadow-lg border border-gray-200 bg-white hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col">
+    const cardContent = (
+        <div className="relative rounded-lg shadow-lg border border-gray-200 bg-white hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full">
             <div
                 className="h-1"
                 style={{ backgroundColor: colors.borderColor, opacity: 0.7 }}
@@ -41,7 +45,7 @@ export default function NewsCard({ category, title, publishedDate }: NewsCardPro
                     </span>
                 </div>
                 <h3
-                    className="text-sm md:text-base lg:text-lg font-semibold text-gray-900 mb-2 md:mb-3 transition-colors duration-200 group-hover:text-opacity-90"
+                    className="text-sm md:text-base lg:text-lg font-semibold text-gray-900 mb-2 md:mb-3 transition-colors duration-200 group-hover:text-opacity-90 flex-grow"
                     style={
                         {
                             '--hover-color': colors.hoverColor,
@@ -56,7 +60,25 @@ export default function NewsCard({ category, title, publishedDate }: NewsCardPro
                 >
                     {title}
                 </h3>
+                {articleId && (
+                    <div className="mt-auto pt-2">
+                        <span className="inline-flex items-center text-xs font-medium text-primary group-hover:text-primary-dark transition-colors">
+                            Artikel lesen
+                            <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );
+
+    if (articleId) {
+        return (
+            <Link href={`/neuigkeiten/${articleId}`} className="block h-full">
+                {cardContent}
+            </Link>
+        );
+    }
+
+    return cardContent;
 }

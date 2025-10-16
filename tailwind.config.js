@@ -9,11 +9,12 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // Primary colors
+                // Primary colors (from BackgroundElements)
                 primary: {
-                    DEFAULT: '#7FB069', // Fresh green
-                    light: '#9BC88A',
-                    dark: '#4D7639',
+                    DEFAULT: '#5FA87B', // Lighter, more muted green
+                    light: '#7DBB96',
+                    dark: '#4A8A66',
+                    darker: '#3A6F52',
                     foreground: '#FFFFFF',
                 },
                 // Secondary colors (was accent)

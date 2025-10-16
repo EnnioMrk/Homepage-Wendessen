@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Descendant } from 'slate';
+import EnhancedRichTextEditor from './EnhancedRichTextEditor';
 
 interface NewsModalProps {
     isOpen: boolean;
@@ -9,6 +11,13 @@ interface NewsModalProps {
     title?: string;
 }
 
+const initialEditorValue: Descendant[] = [
+    {
+        type: 'paragraph',
+        children: [{ text: '' }],
+    },
+];
+
 export default function NewsModal({
     isOpen,
     onClose,
@@ -16,6 +25,8 @@ export default function NewsModal({
     title = 'Neue Nachricht hinzufügen',
 }: NewsModalProps) {
     const [isLoading, setIsLoading] = useState(false);
+    const [articleContent, setArticleContent] = useState<Descendant[]>(initialEditorValue);
+    const [newsTitle, setNewsTitle] = useState('');
 
     if (!isOpen) return null;
 
@@ -28,6 +39,7 @@ export default function NewsModal({
             title: formData.get('title'),
             content: formData.get('content'),
             category: formData.get('category'),
+            contentJson: JSON.stringify(articleContent),
         };
 
         try {
@@ -44,6 +56,8 @@ export default function NewsModal({
                 }
                 // Reset form
                 (e.target as HTMLFormElement).reset();
+                setNewsTitle('');
+                setArticleContent(initialEditorValue);
             } else {
                 console.error('Failed to create news');
             }
@@ -62,7 +76,7 @@ export default function NewsModal({
                     onClick={onClose}
                 ></div>
 
-                <div className="relative inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full mx-4">
+                <div className="relative inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                     <form onSubmit={handleSubmit}>
                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <h3 className="text-lg font-medium text-gray-900 mb-4">
@@ -70,43 +84,59 @@ export default function NewsModal({
                             </h3>
 
                             <div className="space-y-4">
-                                <input
-                                    name="title"
-                                    type="text"
-                                    placeholder="Titel"
-                                    required
-                                    disabled={isLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
-                                />
+                                <div>
+                                    <input
+                                        name="title"
+                                        type="text"
+                                        placeholder="Titel"
+                                        required
+                                        disabled={isLoading}
+                                        value={newsTitle}
+                                        onChange={(e) => setNewsTitle(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
+                                    />
+                                </div>
 
-                                <textarea
-                                    name="content"
-                                    placeholder="Inhalt"
-                                    rows={6}
-                                    required
-                                    disabled={isLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
-                                />
+                                <div>
+                                    <textarea
+                                        name="content"
+                                        placeholder="Kurzbeschreibung (wird auf der Startseite angezeigt)"
+                                        rows={3}
+                                        required
+                                        disabled={isLoading}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
+                                    />
+                                </div>
 
-                                <select
-                                    name="category"
-                                    required
-                                    disabled={isLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
-                                >
-                                    <option value="">Kategorie wählen</option>
-                                    <option value="Bildung">Bildung</option>
-                                    <option value="Gemeinschaft">
-                                        Gemeinschaft
-                                    </option>
-                                    <option value="Feuerwehr">Feuerwehr</option>
-                                    <option value="Digital">Digital</option>
-                                    <option value="Sport">Sport</option>
-                                    <option value="Kultur">Kultur</option>
-                                    <option value="Verwaltung">
-                                        Verwaltung
-                                    </option>
-                                </select>
+                                <div>
+                                    <select
+                                        name="category"
+                                        required
+                                        disabled={isLoading}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
+                                    >
+                                        <option value="">Kategorie wählen</option>
+                                        <option value="Bildung">Bildung</option>
+                                        <option value="Gemeinschaft">Gemeinschaft</option>
+                                        <option value="Feuerwehr">Feuerwehr</option>
+                                        <option value="Digital">Digital</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Kultur">Kultur</option>
+                                        <option value="Verwaltung">Verwaltung</option>
+                                    </select>
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Artikel-Inhalt
+                                    </label>
+                                    <EnhancedRichTextEditor
+                                        value={articleContent}
+                                        onChange={setArticleContent}
+                                        placeholder="Schreiben Sie hier den vollständigen Artikel..."
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
 

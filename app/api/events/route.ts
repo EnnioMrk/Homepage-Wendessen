@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
-import { requirePermission } from '@/lib/permissions';
+import { requireAnyPermission } from '@/lib/permissions';
+import { getCurrentAdminUser } from '@/lib/auth';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function GET() {
@@ -24,7 +25,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         // Check permission for creating events
-        await requirePermission('events.create');
+        await requireAnyPermission(['events.create', 'verein.events.create']);
 
         const eventData = await request.json();
 
@@ -36,6 +37,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Get current user to set vereinId if they're a vereinsverwalter
+        const currentUser = await getCurrentAdminUser();
+        const vereinId = currentUser?.vereinId || eventData.vereinId || null;
+
         // Create the event
         const newEvent: Omit<CalendarEvent, 'id'> = {
             title: eventData.title,
@@ -46,6 +51,7 @@ export async function POST(request: NextRequest) {
             category: eventData.category || 'sonstiges',
             organizer: eventData.organizer || '',
             imageUrl: eventData.imageUrl || '',
+            vereinId: vereinId,
         };
 
         const createdEvent = await createEvent(newEvent);

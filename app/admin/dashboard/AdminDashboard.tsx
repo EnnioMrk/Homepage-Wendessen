@@ -12,6 +12,7 @@ import {
     ImageSquare,
     UsersThree,
     UserGear,
+    Article,
 } from '@phosphor-icons/react/dist/ssr';
 
 // Function to get category colors for news badges
@@ -38,6 +39,15 @@ interface AdminDashboardProps {
     newsError?: string;
     galleryError?: string;
     portraitsError?: string;
+    canViewEvents: boolean;
+    canViewNews: boolean;
+    canViewAdminGallery: boolean;
+    canViewSharedGallery: boolean;
+    canViewPortraits: boolean;
+    canViewArchive: boolean;
+    canManageEvents: boolean;
+    canManageNews: boolean;
+    canManageUsers: boolean;
 }
 
 export default function AdminDashboard({
@@ -49,6 +59,15 @@ export default function AdminDashboard({
     newsError,
     galleryError,
     portraitsError,
+    canViewEvents,
+    canViewNews,
+    canViewAdminGallery,
+    canViewSharedGallery,
+    canViewPortraits,
+    canViewArchive,
+    canManageEvents,
+    canManageNews,
+    canManageUsers,
 }: AdminDashboardProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showEventModal, setShowEventModal] = useState(false);
@@ -84,12 +103,6 @@ export default function AdminDashboard({
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                            <Link
-                                href="/"
-                                className="text-center sm:text-left text-gray-600 hover:text-gray-900 px-3 py-2 sm:px-0 sm:py-0 text-sm font-medium border border-gray-300 rounded-md sm:border-none hover:bg-gray-50 sm:hover:bg-transparent transition-colors"
-                            >
-                                Website anzeigen
-                            </Link>
                             <button
                                 onClick={handleLogout}
                                 disabled={isLoggingOut}
@@ -107,107 +120,117 @@ export default function AdminDashboard({
                 <div className="px-4 py-6 sm:px-0">
                     {/* Overview Cards */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-3 sm:p-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center">
-                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                        {canViewEvents && (
+                            <div className="bg-white overflow-hidden shadow rounded-lg">
+                                <div className="p-3 sm:p-5">
+                                    <div className="flex flex-col sm:flex-row sm:items-center">
+                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                                                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                        <dl>
-                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                Termine
-                                            </dt>
-                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                {eventsError
-                                                    ? 'Fehler'
-                                                    : events.length}
-                                            </dd>
-                                        </dl>
+                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
+                                            <dl>
+                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+                                                    Termine
+                                                </dt>
+                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
+                                                    {eventsError
+                                                        ? 'Fehler'
+                                                        : events.length}
+                                                </dd>
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-3 sm:p-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center">
-                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-md flex items-center justify-center">
-                                            <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                        {canViewNews && (
+                            <div className="bg-white overflow-hidden shadow rounded-lg">
+                                <div className="p-3 sm:p-5">
+                                    <div className="flex flex-col sm:flex-row sm:items-center">
+                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-md flex items-center justify-center">
+                                                <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                        <dl>
-                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                Nachrichten
-                                            </dt>
-                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                {newsError
-                                                    ? 'Fehler'
-                                                    : news.length}
-                                            </dd>
-                                        </dl>
+                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
+                                            <dl>
+                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+                                                    Nachrichten
+                                                </dt>
+                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
+                                                    {newsError
+                                                        ? 'Fehler'
+                                                        : news.length}
+                                                </dd>
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-3 sm:p-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center">
-                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                            <ImageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                        {canViewSharedGallery && (
+                            <div className="bg-white overflow-hidden shadow rounded-lg">
+                                <div className="p-3 sm:p-5">
+                                    <div className="flex flex-col sm:flex-row sm:items-center">
+                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                                                <ImageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                        <dl>
-                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                Bilder
-                                            </dt>
-                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                {galleryError
-                                                    ? 'Fehler'
-                                                    : galleryCount}
-                                            </dd>
-                                        </dl>
+                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
+                                            <dl>
+                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+                                                    Impressionen
+                                                </dt>
+                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
+                                                    {galleryError
+                                                        ? 'Fehler'
+                                                        : galleryCount}
+                                                </dd>
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="p-3 sm:p-5">
-                                <div className="flex flex-col sm:flex-row sm:items-center">
-                                    <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-md flex items-center justify-center">
-                                            <UsersThree className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                        {canViewPortraits && (
+                            <div className="bg-white overflow-hidden shadow rounded-lg">
+                                <div className="p-3 sm:p-5">
+                                    <div className="flex flex-col sm:flex-row sm:items-center">
+                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
+                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-md flex items-center justify-center">
+                                                <UsersThree className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                        <dl>
-                                            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                Portraits
-                                            </dt>
-                                            <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                {portraitsError
-                                                    ? 'Fehler'
-                                                    : portraitsCount}
-                                            </dd>
-                                        </dl>
+                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
+                                            <dl>
+                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
+                                                    Portraits
+                                                </dt>
+                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
+                                                    {portraitsError
+                                                        ? 'Fehler'
+                                                        : portraitsCount}
+                                                </dd>
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Recent Content */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Recent Events */}
-                        <div className="bg-white shadow rounded-lg">
+                    {(canViewEvents || canViewNews) && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Recent Events */}
+                            {canViewEvents && (
+                                <div className="bg-white shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -272,9 +295,11 @@ export default function AdminDashboard({
                                 )}
                             </div>
                         </div>
+                        )}
 
                         {/* Recent News */}
-                        <div className="bg-white shadow rounded-lg">
+                        {canViewNews && (
+                            <div className="bg-white shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
                                     <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -327,83 +352,177 @@ export default function AdminDashboard({
                                 )}
                             </div>
                         </div>
-                    </div>
+                        )}
+                        </div>
+                    )}
 
                     {/* Quick Actions */}
-                    <div className="mt-8 bg-white shadow rounded-lg">
-                        <div className="px-4 py-5 sm:p-6">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                                Schnellzugriff
+                    {(canManageEvents || canManageNews || canManageUsers) && (
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
+                                Schnellaktionen
                             </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* Add Event */}
+                            {canManageEvents && (
                                 <button
                                     onClick={() => setShowEventModal(true)}
-                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500 text-left"
                                 >
-                                    <Calendar className="w-4 h-4 mr-2" />
-                                    Termin hinzufügen
+                                    <div className="flex items-center mb-3">
+                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <Calendar className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                            Neuer Termin
+                                        </h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        Termin erstellen und veröffentlichen
+                                    </p>
                                 </button>
-                                <button
-                                    onClick={() => setShowNewsModal(true)}
-                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                                >
-                                    <Newspaper className="w-4 h-4 mr-2" />
-                                    Nachricht hinzufügen
-                                </button>
-                                <Link
-                                    href="/admin/gallery"
-                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                                >
-                                    <ImageSquare className="w-4 h-4 mr-2" />
-                                    Admin Galerie
-                                </Link>
-                                <Link
-                                    href="/admin/shared-gallery"
-                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                                >
-                                    <ImageSquare className="w-4 h-4 mr-2" />
-                                    Impressionen
-                                </Link>
-                                <Link
-                                    href="/admin/portraits"
-                                    className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                                >
-                                    <UsersThree className="w-4 h-4 mr-2" />
-                                    Portraits
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
+                            )}
 
-                    {/* Admin Users Section */}
-                    <div className="mt-8 bg-white shadow rounded-lg">
-                        <div className="px-4 py-5 sm:p-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <div className="flex items-center">
-                                    <UserGear className="w-6 h-6 text-primary mr-2" />
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                        Admin-Benutzer
-                                    </h3>
-                                </div>
+                            {/* Add News */}
+                            {canManageNews && (
+                                <Link
+                                    href="/admin/news/erstellen"
+                                    className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500 text-left block"
+                                >
+                                    <div className="flex items-center mb-3">
+                                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <Newspaper className="w-5 h-5 text-green-600" />
+                                        </div>
+                                        <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                            Neue Nachricht
+                                        </h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        Nachricht erstellen und veröffentlichen
+                                    </p>
+                                </Link>
+                            )}
+
+                            {/* Admin Users */}
+                            {canManageUsers && (
                                 <Link
                                     href="/admin/users"
-                                    className="text-sm text-primary hover:text-primary-dark font-medium"
+                                    className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-primary block"
                                 >
-                                    Alle verwalten →
+                                    <div className="flex items-center mb-3">
+                                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                            <UserGear className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                            Benutzer
+                                        </h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        Admins und Rechte verwalten
+                                    </p>
                                 </Link>
-                            </div>
-                            <p className="text-sm text-gray-600 mb-4">
-                                Verwalten Sie Admin-Benutzer und deren Zugriffsrechte. Neue Admins erhalten ein automatisch generiertes 6-stelliges Passwort, das beim ersten Login geändert werden muss.
-                            </p>
-                            <Link
-                                href="/admin/users"
-                                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark"
-                            >
-                                <UserGear className="w-4 h-4 mr-2" />
-                                Benutzer verwalten
-                            </Link>
+                            )}
                         </div>
-                    </div>
+                        </div>
+                    )}
+
+                    {/* Content Management */}
+                    {(canViewAdminGallery || canViewSharedGallery || canViewPortraits || canViewArchive) && (
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
+                                Inhalte verwalten
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* Gallery */}
+                                {canViewAdminGallery && (
+                                    <Link
+                                        href="/admin/gallery"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                    <ImageSquare className="w-5 h-5 text-purple-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Admin Galerie
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Bilder für Inhalte hochladen
+                                        </p>
+                                    </Link>
+                                )}
+
+                                {/* Shared Gallery */}
+                                {canViewSharedGallery && (
+                                    <Link
+                                        href="/admin/shared-gallery"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                                                    <ImageSquare className="w-5 h-5 text-pink-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Impressionen
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Von Bürgern eingereichte Fotos
+                                        </p>
+                                    </Link>
+                                )}
+
+                                {/* Portraits */}
+                                {canViewPortraits && (
+                                    <Link
+                                        href="/admin/portraits"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                                    <UsersThree className="w-5 h-5 text-emerald-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Portraits
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Wir Wendessener - Einwohner stellen sich vor
+                                        </p>
+                                    </Link>
+                                )}
+
+                                {/* Archive */}
+                                {canViewArchive && (
+                                    <Link
+                                        href="/admin/archiv"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center">
+                                                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                                    <Article className="w-5 h-5 text-amber-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Archiv
+                                                </h4>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Historische Dokumente verwalten
+                                        </p>
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
 

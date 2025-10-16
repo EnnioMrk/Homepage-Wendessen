@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import Link from 'next/link';
 import {
     Plus,
     MagnifyingGlass,
@@ -16,6 +17,7 @@ import {
     WarningCircle,
     Calendar,
     Tag,
+    Article,
 } from '@phosphor-icons/react/dist/ssr';
 
 interface NewsItem {
@@ -24,6 +26,7 @@ interface NewsItem {
     content?: string;
     category: string;
     publishedDate: string;
+    articleId?: string;
 }
 
 export default function AdminNews() {
@@ -256,13 +259,13 @@ export default function AdminNews() {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setIsCreating(true)}
+                        <Link
+                            href="/admin/news/erstellen"
                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
                         >
                             <Plus size={16} className="mr-2" />
                             Nachricht erstellen
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </header>
@@ -345,7 +348,7 @@ export default function AdminNews() {
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
+                                                <div className="flex items-center gap-3 mb-2 flex-wrap">
                                                     <h3 className="text-lg font-medium text-gray-900">
                                                         {item.title}
                                                     </h3>
@@ -368,10 +371,21 @@ export default function AdminNews() {
                                                 </div>
                                                 {item.content && (
                                                     <p className="text-gray-600 text-sm line-clamp-2">
-                                                        {item.content.substring(
-                                                            0,
-                                                            200
-                                                        )}
+                                                        {(() => {
+                                                            try {
+                                                                const parsed = typeof item.content === 'string' 
+                                                                    ? JSON.parse(item.content) 
+                                                                    : item.content;
+                                                                if (Array.isArray(parsed) && parsed[0]?.children?.[0]?.text) {
+                                                                    return parsed[0].children.map((child: any) => child.text).join(' ').substring(0, 200);
+                                                                }
+                                                                return 'Vorschau nicht verfügbar';
+                                                            } catch {
+                                                                return typeof item.content === 'string' 
+                                                                    ? item.content.substring(0, 200) 
+                                                                    : 'Vorschau nicht verfügbar';
+                                                            }
+                                                        })()}
                                                         ...
                                                     </p>
                                                 )}
@@ -385,23 +399,13 @@ export default function AdminNews() {
                                                 >
                                                     <Eye size={16} />
                                                 </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedNews(item);
-                                                        setFormData({
-                                                            title: item.title,
-                                                            content:
-                                                                item.content ||
-                                                                '',
-                                                            category:
-                                                                item.category,
-                                                        });
-                                                        setIsEditing(true);
-                                                    }}
-                                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
+                                                <Link
+                                                    href={`/admin/news/bearbeiten/${item.id}`}
+                                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full inline-block"
+                                                    title="Bearbeiten"
                                                 >
                                                     <PencilSimple size={16} />
-                                                </button>
+                                                </Link>
                                                 <button
                                                     onClick={() =>
                                                         handleDelete(item.id)
@@ -427,13 +431,13 @@ export default function AdminNews() {
                                     Es wurden noch keine Nachrichten erstellt
                                     oder Ihre Suche ergab keine Treffer.
                                 </p>
-                                <button
-                                    onClick={() => setIsCreating(true)}
+                                <Link
+                                    href="/admin/news/erstellen"
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center mx-auto"
                                 >
                                     <Plus size={16} className="mr-2" />
                                     Erste Nachricht erstellen
-                                </button>
+                                </Link>
                             </div>
                         )}
                     </div>

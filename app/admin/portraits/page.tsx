@@ -2,7 +2,8 @@
 
 import AdminPortraits from './AdminPortraits';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, UsersThree } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeft, UsersThree, Warning } from '@phosphor-icons/react/dist/ssr';
+import { usePermissions } from '@/lib/usePermissions';
 
 interface PortraitSubmission {
     id: number;
@@ -17,6 +18,7 @@ interface PortraitSubmission {
 }
 
 export default function AdminPortraitsPage() {
+    const { hasPermission, loading: permissionsLoading } = usePermissions();
     const [submissions, setSubmissions] = useState<PortraitSubmission[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -79,7 +81,7 @@ export default function AdminPortraitsPage() {
         checkAuthAndLoadSubmissions();
     }, []);
 
-    if (loading) {
+    if (loading || permissionsLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -87,6 +89,30 @@ export default function AdminPortraitsPage() {
                     <p className="text-gray-600">
                         Lade Portrait-Einreichungen...
                     </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!hasPermission('portraits.view')) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center max-w-md">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Warning className="w-8 h-8 text-red-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                        Keine Berechtigung
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        Sie haben keine Berechtigung, Portraits zu verwalten.
+                    </p>
+                    <a
+                        href="/admin/dashboard"
+                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
+                    >
+                        ← Zurück zum Dashboard
+                    </a>
                 </div>
             </div>
         );

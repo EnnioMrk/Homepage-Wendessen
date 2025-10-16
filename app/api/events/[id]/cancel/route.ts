@@ -25,13 +25,22 @@ export async function POST(
         console.log('Event found, checking permissions...');
         
         // Check permission - editors and Verein users can cancel events
-        let user;
-        try {
-            user = await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
-            console.log('User authenticated:', user.username, 'Role:', user.roleName);
-        } catch (permError: unknown) {
-            console.error('Permission check failed:', (permError as Error).message);
-            throw permError;
+        const user = await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
+        console.log('User authenticated:', user.username, 'Role:', user.roleName, 'VereinId:', user.vereinId);
+        
+        // If user has verein permission, verify they can only cancel their own verein's events
+        const hasGeneralPermission = user.customPermissions?.includes('events.cancel') || user.customPermissions?.includes('events.*') || user.customPermissions?.includes('*');
+        const hasVereinPermission = user.customPermissions?.includes('verein.events.cancel') || user.customPermissions?.includes('verein.events.*') || user.customPermissions?.includes('verein.*');
+        
+        if (!hasGeneralPermission && hasVereinPermission) {
+            // User only has verein permission, check if they can cancel this event
+            if (!user.vereinId || !existingEvent.vereinId || user.vereinId !== existingEvent.vereinId) {
+                console.log('Verein mismatch - User vereinId:', user.vereinId, 'Event vereinId:', existingEvent.vereinId);
+                return NextResponse.json(
+                    { error: 'Forbidden: You can only cancel events from your own Verein' },
+                    { status: 403 }
+                );
+            }
         }
         
         console.log('User has permission, cancelling event. User:', user.username);
@@ -89,7 +98,21 @@ export async function DELETE(
         }
 
         // Only editors with cancel permission can uncancel
-        await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
+        const user = await requireAnyPermission(['events.cancel', 'verein.events.cancel']);
+        
+        // If user has verein permission, verify they can only restore their own verein's events
+        const hasGeneralPermission = user.customPermissions?.includes('events.cancel') || user.customPermissions?.includes('events.*') || user.customPermissions?.includes('*');
+        const hasVereinPermission = user.customPermissions?.includes('verein.events.cancel') || user.customPermissions?.includes('verein.events.*') || user.customPermissions?.includes('verein.*');
+        
+        if (!hasGeneralPermission && hasVereinPermission) {
+            // User only has verein permission, check if they can restore this event
+            if (!user.vereinId || !existingEvent.vereinId || user.vereinId !== existingEvent.vereinId) {
+                return NextResponse.json(
+                    { error: 'Forbidden: You can only restore events from your own Verein' },
+                    { status: 403 }
+                );
+            }
+        }
 
         const uncancelledEvent = await uncancelEvent(id);
 

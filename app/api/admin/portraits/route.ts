@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAuthenticated } from '@/lib/auth';
+import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
+import { hasPermission } from '@/lib/permissions';
 import {
     getPortraitSubmissions,
     updatePortraitStatus,
@@ -16,6 +17,14 @@ export async function GET() {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
+            );
+        }
+
+        const user = await getCurrentAdminUser();
+        if (!hasPermission(user, 'portraits.view')) {
+            return NextResponse.json(
+                { message: 'Keine Berechtigung' },
+                { status: 403 }
             );
         }
 
@@ -48,6 +57,14 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
+        const user = await getCurrentAdminUser();
+        if (!hasPermission(user, 'portraits.edit')) {
+            return NextResponse.json(
+                { message: 'Keine Berechtigung' },
+                { status: 403 }
+            );
+        }
+
         const { id, action } = await request.json();
 
         if (!id || !action) {
@@ -57,14 +74,14 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
-        if (!['approve', 'reject'].includes(action)) {
+        if (!['approve', 'reject', 'reset'].includes(action)) {
             return NextResponse.json(
                 { message: 'Ungültige Aktion' },
                 { status: 400 }
             );
         }
 
-        const status = action === 'approve' ? 'approved' : 'rejected';
+        const status = action === 'approve' ? 'approved' : action === 'reset' ? 'pending' : 'rejected';
         const submission = await updatePortraitStatus(id, status, 'admin');
 
         // If rejecting, trigger cleanup of old rejected portraits
@@ -90,16 +107,15 @@ export async function PATCH(request: NextRequest) {
         // Revalidate the portraits cache
         revalidateTag('portraits');
 
+        const actionText = action === 'approve' ? 'approved' : action === 'reset' ? 'reset to pending' : 'rejected';
+        const messageText = action === 'approve' ? 'freigegeben' : action === 'reset' ? 'zurückgesetzt' : 'abgelehnt';
+
         console.log(
-            `Portrait submission ${id} ${
-                action === 'approve' ? 'approved' : 'rejected'
-            } by admin`
+            `Portrait submission ${id} ${actionText} by admin`
         );
 
         return NextResponse.json({
-            message: `Einreichung erfolgreich ${
-                action === 'approve' ? 'freigegeben' : 'abgelehnt'
-            }`,
+            message: `Einreichung erfolgreich ${messageText}`,
             submission: {
                 ...submission,
                 submittedAt: submission.submittedAt.toISOString(),
@@ -122,6 +138,14 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
                 { status: 401 }
+            );
+        }
+
+        const user = await getCurrentAdminUser();
+        if (!hasPermission(user, 'portraits.delete')) {
+            return NextResponse.json(
+                { message: 'Keine Berechtigung' },
+                { status: 403 }
             );
         }
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import { usePermissions } from '@/lib/usePermissions';
 import {
     UploadSimple,
     MagnifyingGlass,
@@ -32,6 +33,12 @@ interface GalleryImage {
 export default function AdminGallery() {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { hasPermission } = usePermissions();
+
+    // Check permissions
+    const canUpload = hasPermission('gallery.upload');
+    const canEdit = hasPermission('gallery.edit');
+    const canDelete = hasPermission('gallery.delete');
 
     const [images, setImages] = useState<GalleryImage[]>([]);
     const [loading, setLoading] = useState(true);
@@ -278,13 +285,15 @@ export default function AdminGallery() {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
-                        >
-                            <UploadSimple size={16} className="mr-2" />
-                            Bild hochladen
-                        </button>
+                        {canUpload && (
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
+                            >
+                                <UploadSimple size={16} className="mr-2" />
+                                Bild hochladen
+                            </button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -376,26 +385,30 @@ export default function AdminGallery() {
                                                 >
                                                     <Eye size={16} />
                                                 </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedImage(image);
-                                                        setNewName(
-                                                            image.displayName
-                                                        );
-                                                        setIsRenaming(true);
-                                                    }}
-                                                    className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
-                                                >
-                                                    <PencilSimple size={16} />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(image.id)
-                                                    }
-                                                    className="p-2 bg-white rounded-full hover:bg-red-100 text-red-600 hover:text-red-700"
-                                                >
-                                                    <Trash size={16} />
-                                                </button>
+                                                {canEdit && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedImage(image);
+                                                            setNewName(
+                                                                image.displayName
+                                                            );
+                                                            setIsRenaming(true);
+                                                        }}
+                                                        className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
+                                                    >
+                                                        <PencilSimple size={16} />
+                                                    </button>
+                                                )}
+                                                {canDelete && (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDelete(image.id)
+                                                        }
+                                                        className="p-2 bg-white rounded-full hover:bg-red-100 text-red-600 hover:text-red-700"
+                                                    >
+                                                        <Trash size={16} />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -423,7 +436,7 @@ export default function AdminGallery() {
                                     ? 'Keine Bilder entsprechen Ihren Suchkriterien.'
                                     : 'Laden Sie Ihr erstes Bild hoch, um zu beginnen.'}
                             </p>
-                            {!searchTerm && (
+                            {!searchTerm && canUpload && (
                                 <button
                                     onClick={() =>
                                         fileInputRef.current?.click()
@@ -654,16 +667,18 @@ export default function AdminGallery() {
                         </div>
 
                         <div className="flex justify-end space-x-3 mt-6">
-                            <button
-                                onClick={() => {
-                                    setNewName(selectedImage.displayName);
-                                    setIsRenaming(true);
-                                }}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
-                            >
-                                <PencilSimple size={16} className="mr-2" />
-                                Umbenennen
-                            </button>
+                            {canEdit && (
+                                <button
+                                    onClick={() => {
+                                        setNewName(selectedImage.displayName);
+                                        setIsRenaming(true);
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
+                                >
+                                    <PencilSimple size={16} className="mr-2" />
+                                    Umbenennen
+                                </button>
+                            )}
                             <a
                                 href={selectedImage.url}
                                 download={selectedImage.displayName}

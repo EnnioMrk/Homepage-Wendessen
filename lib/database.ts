@@ -45,6 +45,7 @@ export interface CalendarEvent {
     isCancelled?: boolean;
     cancelledAt?: Date;
     cancelledBy?: string;
+    vereinId?: string;
 }
 
 export interface DatabaseNews {
@@ -60,9 +61,10 @@ export interface DatabaseNews {
 export interface NewsItem {
     id: string;
     title: string;
-    content?: string;
+    content?: unknown; // Slate.js content (JSON)
     category: string;
     publishedDate: Date;
+    articleId: string;
 }
 
 // Contacts types
@@ -121,6 +123,7 @@ function convertToCalendarEvent(
         isCancelled: dbEvent.is_cancelled ? Boolean(dbEvent.is_cancelled) : undefined,
         cancelledAt: dbEvent.cancelled_at ? new Date(String(dbEvent.cancelled_at)) : undefined,
         cancelledBy: dbEvent.cancelled_by ? String(dbEvent.cancelled_by) : undefined,
+        vereinId: dbEvent.verein_id ? String(dbEvent.verein_id) : undefined,
     };
 }
 
@@ -129,9 +132,10 @@ function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
     return {
         id: String(dbNews.id),
         title: String(dbNews.title),
-        content: dbNews.content ? String(dbNews.content) : undefined,
+        content: dbNews.content || undefined,
         category: String(dbNews.category),
         publishedDate: new Date(String(dbNews.published_date)),
+        articleId: String(dbNews.article_id),
     };
 }
 
@@ -228,7 +232,7 @@ export async function createEvent(
 ): Promise<CalendarEvent> {
     try {
         const result = await sql`
-      INSERT INTO events (title, description, start_date, end_date, location, category, organizer, image_url)
+      INSERT INTO events (title, description, start_date, end_date, location, category, organizer, image_url, verein_id)
       VALUES (
         ${event.title}, 
         ${event.description || null}, 
@@ -237,7 +241,8 @@ export async function createEvent(
         ${event.location || null}, 
         ${event.category}, 
         ${event.organizer || null},
-        ${event.imageUrl || null}
+        ${event.imageUrl || null},
+        ${event.vereinId || null}
       )
       RETURNING *
     `;
@@ -294,6 +299,11 @@ export async function updateEvent(
                     event.imageUrl !== undefined
                         ? event.imageUrl || null
                         : sql`image_url`
+                },
+                verein_id = ${
+                    event.vereinId !== undefined
+                        ? event.vereinId || null
+                        : sql`verein_id`
                 },
                 updated_at = ${new Date().toISOString()}
             WHERE id = ${id}
@@ -461,6 +471,29 @@ export async function getNewsByCategory(category: string): Promise<NewsItem[]> {
         throw new Error('Failed to fetch news by category from database');
     }
 }
+
+// Get archived news (older than most recent 4)
+export const getArchivedNews = unstable_cache(
+    async (): Promise<NewsItem[]> => {
+        try {
+            const news = await sql`
+          SELECT * FROM news 
+          ORDER BY published_date DESC
+          OFFSET 4
+        `;
+
+            return news.map(convertToNewsItem);
+        } catch (error) {
+            console.error('Error fetching archived news:', error);
+            throw new Error('Failed to fetch archived news from database');
+        }
+    },
+    ['archived-news'],
+    {
+        tags: ['news'],
+        revalidate: 3600, // Revalidate every hour as fallback
+    }
+);
 
 // Create a new news item
 export async function createNews(
@@ -1345,6 +1378,7 @@ export interface AdminUserRecord {
     roleName?: string;
     roleDisplayName?: string;
     customPermissions: string[];
+    vereinId?: string;
 }
 
 function convertToAdminUserRecord(row: Record<string, unknown>): AdminUserRecord {
@@ -1358,6 +1392,7 @@ function convertToAdminUserRecord(row: Record<string, unknown>): AdminUserRecord
         roleId: row.role_id ? Number(row.role_id) : undefined,
         roleName: row.role_name ? String(row.role_name) : undefined,
         roleDisplayName: row.role_display_name ? String(row.role_display_name) : undefined,
+        vereinId: row.verein_id ? String(row.verein_id) : undefined,
         customPermissions: row.custom_permissions 
             ? (Array.isArray(row.custom_permissions) 
                 ? row.custom_permissions 
@@ -1377,6 +1412,7 @@ export async function getAllAdminUsers(): Promise<AdminUserRecord[]> {
                 u.updated_at, 
                 u.last_login,
                 u.role_id,
+                u.verein_id,
                 u.custom_permissions,
                 r.name as role_name,
                 r.display_name as role_display_name
@@ -1402,6 +1438,7 @@ export async function getAdminUserById(id: number): Promise<AdminUserRecord | nu
                 u.updated_at, 
                 u.last_login,
                 u.role_id,
+                u.verein_id,
                 u.custom_permissions,
                 r.name as role_name,
                 r.display_name as role_display_name

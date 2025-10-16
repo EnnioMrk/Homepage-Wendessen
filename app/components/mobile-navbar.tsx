@@ -45,6 +45,14 @@ const dorflebenItems = [
                 href: '/dorfleben/vereine/schuetzenverein',
             },
             { title: 'SV Wendessen', href: '/dorfleben/vereine/sv-wendessen' },
+            {
+                title: 'Evang. Seniorenkreis',
+                href: '/dorfleben/vereine/seniorenkreis',
+            },
+            {
+                title: 'Evang. Frauenhilfe',
+                href: '/dorfleben/vereine/frauenhilfe',
+            },
         ],
     },
     { title: 'Kirche', href: '/dorfleben/institutionen/kirche' },

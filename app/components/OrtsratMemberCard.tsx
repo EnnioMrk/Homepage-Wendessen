@@ -8,14 +8,13 @@ interface OrtsratMemberCardProps {
     party: string;
     imageSrc: string;
     imageAlt: string;
-    isLeader?: boolean;
     contactSlug?: string;
 }
 
 const partyColors: { [key: string]: string } = {
     'SPD': 'from-red-600 to-red-700',
     'FDP': 'from-yellow-500 to-yellow-600',
-    'CDU': 'from-gray-700 to-gray-800',
+    'CDU': 'from-blue-600 to-blue-700',
     'parteilos': 'from-gray-500 to-gray-600',
     "parteilos (aufgestellt für B'90)": 'from-green-600 to-green-700',
     'parteilos (aufgestellt für CDU)': 'from-blue-600 to-blue-700',
@@ -27,26 +26,14 @@ export default function OrtsratMemberCard({
     party,
     imageSrc,
     imageAlt,
-    isLeader = false,
     contactSlug,
 }: OrtsratMemberCardProps) {
     const partyGradient = partyColors[party] || 'from-gray-500 to-gray-600';
 
     const CardContent = () => (
         <div
-            className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 bg-white transform hover:-translate-y-2 ${
-                isLeader ? 'ring-4 ring-primary/50 ring-opacity-75' : ''
-            } ${contactSlug ? 'cursor-pointer' : ''}`}
+            className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 bg-white transform hover:-translate-y-2 ${contactSlug ? 'cursor-pointer' : ''}`}
         >
-            {/* Leader Badge */}
-            {isLeader && (
-                <div className="absolute top-4 left-4 z-20">
-                    <div className="bg-gradient-to-r from-primary to-accent px-3 py-1 rounded-full text-white text-xs font-bold shadow-lg">
-                        <CrownSimple className="w-3 h-3 inline-block mr-1" />
-                        LEITUNG
-                    </div>
-                </div>
-            )}
 
             {/* Profile Image */}
             <div className="relative h-80 overflow-hidden">

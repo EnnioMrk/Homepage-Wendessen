@@ -19,6 +19,7 @@ export async function GET() {
                 roleName: user.roleName,
                 roleDisplayName: user.roleDisplayName,
                 customPermissions: user.customPermissions || [],
+                vereinId: user.vereinId || null,
             },
         });
     } catch (error) {

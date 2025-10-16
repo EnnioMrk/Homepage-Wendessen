@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAuthenticated } from '../../../../../lib/auth';
+import { requirePermission } from '../../../../../lib/permissions';
 import { deleteFromBlob } from '../../../../../lib/blob-utils';
 import { neon } from '@neondatabase/serverless';
 
@@ -13,13 +13,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        await requirePermission('gallery.edit');
 
         const { id } = await params;
         const { displayName } = await request.json();
@@ -68,13 +62,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const authenticated = await isAuthenticated();
-        if (!authenticated) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        await requirePermission('gallery.delete');
 
         const { id } = await params;
 

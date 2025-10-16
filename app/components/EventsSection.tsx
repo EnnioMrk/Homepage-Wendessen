@@ -8,26 +8,29 @@ export default async function EventsSection() {
         return (
             <div className="mb-32 mt-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {events.map((event) => (
-                        <EventCard
-                            key={event.id}
-                            title={event.title}
-                            location={event.location || 'Wendessen'}
-                            time={event.start.toLocaleTimeString('de-DE', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}
-                            date={event.start.toLocaleDateString('de-DE', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                            })}
-                            imageSrc={event.imageUrl}
-                            imageAlt={event.title}
-                            hasImage={!!event.imageUrl}
-                            isCancelled={event.isCancelled}
-                        />
-                    ))}
+                    {events.map((event) => {
+                        const startDate = new Date(event.start);
+                        return (
+                            <EventCard
+                                key={event.id}
+                                title={event.title}
+                                location={event.location || 'Wendessen'}
+                                time={startDate?.toLocaleTimeString('de-DE', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })}
+                                date={startDate?.toLocaleDateString('de-DE', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                })}
+                                imageSrc={event.imageUrl}
+                                imageAlt={event.title}
+                                hasImage={!!event.imageUrl}
+                                isCancelled={event.isCancelled}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         );

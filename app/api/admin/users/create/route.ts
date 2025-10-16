@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requirePermission } from '@/lib/permissions';
+import { requirePermission, getRoleDefaultPermissions } from '@/lib/permissions';
 import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     try {
         await requirePermission('users.create');
 
-        const { username, roleId } = await request.json();
+        const { username, roleId, vereinId } = await request.json();
 
         if (!username || typeof username !== 'string') {
             return NextResponse.json(
@@ -43,26 +43,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // If no roleId provided, get the default 'admin' role
-        let finalRoleId = roleId;
-        if (!finalRoleId) {
-            const defaultRole = await sql`
-                SELECT id FROM roles WHERE name = 'admin' LIMIT 1
-            `;
-            if (defaultRole.length > 0) {
-                finalRoleId = Number(defaultRole[0].id);
-            }
-        }
-
         // Generate initial password
         const initialPassword = generateInitialPassword();
         const hashedPassword = await bcrypt.hash(initialPassword, 10);
 
-        // Create the admin user
+        // Get role name to assign default permissions
+        let defaultPermissions: string[] = [];
+        let finalRoleId = roleId || null;
+        
+        if (finalRoleId) {
+            const roleResult = await sql`
+                SELECT name FROM roles WHERE id = ${finalRoleId} LIMIT 1
+            `;
+            if (roleResult.length > 0) {
+                const roleName = String(roleResult[0].name);
+                defaultPermissions = getRoleDefaultPermissions(roleName);
+            }
+        }
+        // If no roleId provided, user gets empty permissions array
+
+        // Create the admin user with default permissions assigned
         const result = await sql`
-            INSERT INTO admin_users (username, password_hash, must_change_password, role_id)
-            VALUES (${username}, ${hashedPassword}, true, ${finalRoleId || null})
-            RETURNING id, username, must_change_password, created_at, role_id
+            INSERT INTO admin_users (username, password_hash, must_change_password, role_id, verein_id, custom_permissions)
+            VALUES (${username}, ${hashedPassword}, true, ${finalRoleId}, ${vereinId || null}, ${JSON.stringify(defaultPermissions)})
+            RETURNING id, username, must_change_password, created_at, role_id, verein_id
         `;
 
         const newUser = result[0];
@@ -74,6 +78,7 @@ export async function POST(request: NextRequest) {
                 mustChangePassword: Boolean(newUser.must_change_password),
                 createdAt: new Date(String(newUser.created_at)),
                 roleId: newUser.role_id ? Number(newUser.role_id) : undefined,
+                vereinId: newUser.verein_id ? String(newUser.verein_id) : undefined,
             },
             initialPassword, // Return this only once for the admin to share with the new user
         });

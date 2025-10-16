@@ -2,10 +2,12 @@
 
 import AdminEventsCalendar from './AdminEventsCalendar';
 import { useState, useEffect } from 'react';
-import { Plus, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Plus, ArrowLeft, Warning } from '@phosphor-icons/react/dist/ssr';
 import { CalendarEvent } from '@/lib/database';
+import { usePermissions } from '@/lib/usePermissions';
 
 export default function AdminEventsPage() {
+    const { hasPermission, loading: permissionsLoading } = usePermissions();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -68,12 +70,36 @@ export default function AdminEventsPage() {
         checkAuthAndLoadEvents();
     }, []);
 
-    if (loading) {
+    if (loading || permissionsLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
                     <p className="text-gray-600">Lade Termine...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!hasPermission('events.view')) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center max-w-md">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Warning className="w-8 h-8 text-red-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                        Keine Berechtigung
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        Sie haben keine Berechtigung, Termine zu verwalten.
+                    </p>
+                    <a
+                        href="/admin/dashboard"
+                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
+                    >
+                        ← Zurück zum Dashboard
+                    </a>
                 </div>
             </div>
         );

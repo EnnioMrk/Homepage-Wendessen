@@ -1,7 +1,7 @@
 import { getCurrentAdminUser, AdminUser } from './auth';
 
-// Define role-permission mappings
-const ROLE_PERMISSIONS: Record<string, string[]> = {
+// Define role default permissions (used as templates at user creation)
+export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
     super_admin: ['*'], // Super admin has all permissions
     admin: [
         // Users
@@ -14,6 +14,7 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
         'events.create',
         'events.edit',
         'events.delete',
+        'events.cancel',
         // News
         'news.view',
         'news.create',
@@ -30,8 +31,13 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
         'shared_gallery.reject',
         // Portraits
         'portraits.view',
-        'portraits.approve',
-        'portraits.reject',
+        'portraits.edit',
+        'portraits.delete',
+        // Archive
+        'archive.view',
+        'archive.create',
+        'archive.edit',
+        'archive.delete',
         // Settings
         'settings.view',
         'settings.edit',
@@ -50,6 +56,10 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
         'gallery.view',
         'gallery.upload',
         'gallery.edit',
+        // Archive
+        'archive.view',
+        'archive.create',
+        'archive.edit',
     ],
     moderator: [
         // View only for content
@@ -61,76 +71,57 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
         'shared_gallery.approve',
         'shared_gallery.reject',
         'portraits.view',
-        'portraits.approve',
-        'portraits.reject',
+        'portraits.edit',
+    ],
+    vereinsverwalter: [
+        // Verein-specific permissions
+        'verein.events.create',
+        'verein.events.edit',
+        'verein.events.cancel',
+        // Gallery permissions
+        'gallery.view',
+        'gallery.upload',
+        'gallery.edit',
+    ],
+    no_permissions: [
+        // No permissions - for testing permission restrictions
     ],
 };
 
-// Default permissions for Verein roles (roles starting with 'verein_')
-const VEREIN_DEFAULT_PERMISSIONS = [
-    'verein.events.create',
-    'verein.events.edit',
-    'verein.events.cancel',
-    'verein.news.create',
-    'verein.news.edit',
-    'verein.news.delete',
-    'verein.gallery.upload',
-    'verein.gallery.edit',
-    'verein.gallery.delete',
-];
-
 /**
- * Check if a role is a Verein role
+ * Get default permissions for a role (used as template)
  */
-function isVereinRole(roleName: string): boolean {
-    return roleName.startsWith('verein_');
-}
-
-/**
- * Get all permissions for a role
- */
-function getRolePermissions(roleName: string): string[] {
-    // Check standard roles first
-    if (ROLE_PERMISSIONS[roleName]) {
-        return ROLE_PERMISSIONS[roleName];
-    }
-    
-    // Check if it's a Verein role
-    if (isVereinRole(roleName)) {
-        return VEREIN_DEFAULT_PERMISSIONS;
-    }
-    
-    return [];
+export function getRoleDefaultPermissions(roleName: string): string[] {
+    return ROLE_DEFAULT_PERMISSIONS[roleName] || [];
 }
 
 /**
  * Check if a user has a specific permission
+ * Now purely permission-based - roles are just for organizing/grouping
  */
 export function hasPermission(user: AdminUser | null, permission: string): boolean {
     if (!user) return false;
 
-    // Super admin always has all permissions
-    if (user.roleName === 'super_admin') {
+    // Check if user has wildcard permission
+    if (user.customPermissions && user.customPermissions.includes('*')) {
         return true;
     }
 
-    // Check custom permissions first
+    // Check for exact permission match
     if (user.customPermissions && user.customPermissions.includes(permission)) {
         return true;
     }
 
-    // Check role-based permissions
-    if (user.roleName) {
-        const rolePermissions = getRolePermissions(user.roleName);
-        
-        // Check for wildcard or specific permission
-        if (rolePermissions.includes('*') || rolePermissions.includes(permission)) {
+    // Check for category-level wildcard (e.g., 'events.*' allows 'events.create')
+    if (user.customPermissions) {
+        const [category] = permission.split('.');
+        if (user.customPermissions.includes(`${category}.*`)) {
             return true;
         }
 
-        // Check for category-level wildcard (e.g., 'events.*' allows 'events.create')
-        const [category] = permission.split('.');
-        if (rolePermissions.includes(`${category}.*`)) {
+        // Check if user has verein.* permission for the general permission
+        // Only grant .view permissions automatically if user has verein permissions in that category
+        if (permission.endsWith('.view') && user.customPermissions.some(p => p.startsWith(`verein.${category}.`))) {
             return true;
         }
     }
@@ -204,58 +195,39 @@ export async function requireAllPermissions(permissions: string[]): Promise<Admi
 }
 
 /**
- * Check if user has a specific role
+ * Get default permissions for a user's role (used for calculating extras)
  */
-export function hasRole(user: AdminUser | null, roleName: string): boolean {
-    if (!user) return false;
-    return user.roleName === roleName;
+export function getRoleDefaultPermissionsForUser(user: AdminUser | null): string[] {
+    if (!user || !user.roleName) return [];
+    return getRoleDefaultPermissions(user.roleName);
 }
 
 /**
- * Check if user has any of the specified roles
- */
-export function hasAnyRole(user: AdminUser | null, roleNames: string[]): boolean {
-    if (!user) return false;
-    return roleNames.some(roleName => hasRole(user, roleName));
-}
-
-/**
- * Check if user belongs to a Verein
- */
-export function isVereinUser(user: AdminUser | null): boolean {
-    if (!user || !user.roleName) return false;
-    return isVereinRole(user.roleName);
-}
-
-/**
- * Get the Verein ID from a Verein role name
- * Example: 'verein_sv-wendessen' returns 'sv-wendessen'
- */
-export function getVereinIdFromRole(roleName: string): string | null {
-    if (!isVereinRole(roleName)) return null;
-    return roleName.replace('verein_', '');
-}
-
-/**
- * Get all permissions for the current user (combined role + custom)
+ * Get all permissions for the current user
+ * Now stored directly in customPermissions (no more role-based inheritance)
  */
 export function getUserPermissions(user: AdminUser | null): string[] {
     if (!user) return [];
+    return user.customPermissions || [];
+}
 
-    const permissions = new Set<string>();
-
-    // Add role permissions
-    if (user.roleName) {
-        const rolePerms = getRolePermissions(user.roleName);
-        rolePerms.forEach(perm => permissions.add(perm));
+/**
+ * Calculate extra permissions beyond role defaults
+ * Used for UI display to show which permissions are additional
+ */
+export function getExtraPermissions(user: AdminUser | null): string[] {
+    if (!user) return [];
+    
+    const userPerms = new Set(user.customPermissions || []);
+    const defaultPerms = new Set(getRoleDefaultPermissions(user.roleName || ''));
+    
+    // Wildcard permissions are always considered extra
+    if (userPerms.has('*')) {
+        return ['*'];
     }
-
-    // Add custom permissions
-    if (user.customPermissions) {
-        user.customPermissions.forEach(perm => permissions.add(perm));
-    }
-
-    return Array.from(permissions);
+    
+    // Return permissions that are not in the default set
+    return Array.from(userPerms).filter(perm => !defaultPerms.has(perm));
 }
 
 /**
@@ -268,6 +240,7 @@ export const PERMISSION_CATEGORIES = {
     gallery: 'Galerie',
     shared_gallery: 'Impressionen',
     portraits: 'Portraits',
+    archive: 'Archiv',
     settings: 'Einstellungen',
     verein: 'Vereinsverwaltung',
 } as const;

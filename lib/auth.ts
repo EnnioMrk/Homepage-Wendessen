@@ -16,6 +16,7 @@ export interface AdminUser {
     roleName?: string;
     roleDisplayName?: string;
     customPermissions?: string[];
+    vereinId?: string;
 }
 
 export interface SessionData {
@@ -24,6 +25,7 @@ export interface SessionData {
     mustChangePassword: boolean;
     roleId?: number;
     roleName?: string;
+    vereinId?: string;
     timestamp: number;
 }
 
@@ -52,6 +54,7 @@ export async function getAdminUserByUsername(username: string): Promise<AdminUse
                 u.created_at, 
                 u.last_login,
                 u.role_id,
+                u.verein_id,
                 u.custom_permissions,
                 r.name as role_name,
                 r.display_name as role_display_name
@@ -72,6 +75,7 @@ export async function getAdminUserByUsername(username: string): Promise<AdminUse
             roleId: row.role_id ? Number(row.role_id) : undefined,
             roleName: row.role_name ? String(row.role_name) : undefined,
             roleDisplayName: row.role_display_name ? String(row.role_display_name) : undefined,
+            vereinId: row.verein_id ? String(row.verein_id) : undefined,
             customPermissions: row.custom_permissions 
                 ? (Array.isArray(row.custom_permissions) 
                     ? row.custom_permissions 
@@ -148,6 +152,7 @@ export async function createSession(user: AdminUser): Promise<string> {
         mustChangePassword: user.mustChangePassword,
         roleId: user.roleId,
         roleName: user.roleName,
+        vereinId: user.vereinId,
         timestamp: Date.now(),
     };
     

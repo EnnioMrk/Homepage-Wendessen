@@ -11,8 +11,10 @@ import {
     XCircle,
     EnvelopeSimple,
     Calendar,
+    ArrowCounterClockwise,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
+import { usePermissions } from '@/lib/usePermissions';
 
 interface PortraitSubmission {
     id: number;
@@ -35,12 +37,16 @@ export default function AdminPortraits({
     submissions,
     onSubmissionsUpdate,
 }: AdminPortraitsProps) {
+    const { hasPermission } = usePermissions();
     const [selectedSubmission, setSelectedSubmission] =
         useState<PortraitSubmission | null>(null);
     const [filterStatus, setFilterStatus] = useState<
         'all' | 'pending' | 'approved' | 'rejected'
     >('all');
     const [isActionLoading, setIsActionLoading] = useState<number | null>(null);
+
+    const canEdit = hasPermission('portraits.edit');
+    const canDelete = hasPermission('portraits.delete');
 
     const getImageUrl = (submission: PortraitSubmission): string => {
         return `data:${submission.imageMimeType};base64,${submission.imageData}`;
@@ -94,6 +100,30 @@ export default function AdminPortraits({
         } catch (error) {
             console.error('Error rejecting submission:', error);
             alert('Fehler beim Ablehnen der Einreichung');
+        } finally {
+            setIsActionLoading(null);
+        }
+    };
+
+    const handleReset = async (id: number) => {
+        setIsActionLoading(id);
+        try {
+            const response = await fetch('/api/admin/portraits', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, action: 'reset' }),
+            });
+
+            if (response.ok) {
+                onSubmissionsUpdate();
+                setSelectedSubmission(null);
+            } else {
+                const error = await response.json();
+                alert(`Fehler: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error resetting submission:', error);
+            alert('Fehler beim Zurücksetzen der Einreichung');
         } finally {
             setIsActionLoading(null);
         }
@@ -321,7 +351,7 @@ export default function AdminPortraits({
                                         Details
                                     </button>
 
-                                    {submission.status === 'pending' && (
+                                    {submission.status === 'pending' && canEdit && (
                                         <>
                                             <button
                                                 onClick={() =>
@@ -350,17 +380,81 @@ export default function AdminPortraits({
                                         </>
                                     )}
 
-                                    <button
-                                        onClick={() =>
-                                            handleDelete(submission.id)
-                                        }
-                                        disabled={
-                                            isActionLoading === submission.id
-                                        }
-                                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                    >
-                                        <Trash className="w-4 h-4" />
-                                    </button>
+                                    {submission.status === 'approved' && canEdit && (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    handleReset(submission.id)
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
+                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                title="Zurücksetzen auf Wartend"
+                                            >
+                                                <ArrowCounterClockwise className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleReject(submission.id)
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
+                                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                title="Ablehnen"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {submission.status === 'rejected' && canEdit && (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    handleReset(submission.id)
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
+                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                title="Zurücksetzen auf Wartend"
+                                            >
+                                                <ArrowCounterClockwise className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleApprove(submission.id)
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
+                                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                title="Freigeben"
+                                            >
+                                                <Check className="w-4 h-4" />
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {canDelete && (
+                                        <button
+                                            onClick={() =>
+                                                handleDelete(submission.id)
+                                            }
+                                            disabled={
+                                                isActionLoading === submission.id
+                                            }
+                                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                        >
+                                            <Trash className="w-4 h-4" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -456,7 +550,7 @@ export default function AdminPortraits({
 
                             {/* Actions */}
                             <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                                {selectedSubmission.status === 'pending' && (
+                                {selectedSubmission.status === 'pending' && canEdit && (
                                     <>
                                         <button
                                             onClick={() =>
@@ -490,19 +584,89 @@ export default function AdminPortraits({
                                         </button>
                                     </>
                                 )}
-                                <button
-                                    onClick={() =>
-                                        handleDelete(selectedSubmission.id)
-                                    }
-                                    disabled={
-                                        isActionLoading ===
-                                        selectedSubmission.id
-                                    }
-                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                >
-                                    <Trash className="w-4 h-4 mr-2" />
-                                    Löschen
-                                </button>
+                                {selectedSubmission.status === 'approved' && canEdit && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                handleReset(
+                                                    selectedSubmission.id
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                                            Zurücksetzen
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleReject(
+                                                    selectedSubmission.id
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <X className="w-4 h-4 mr-2" />
+                                            Ablehnen
+                                        </button>
+                                    </>
+                                )}
+                                {selectedSubmission.status === 'rejected' && canEdit && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                handleReset(
+                                                    selectedSubmission.id
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                                            Zurücksetzen
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleApprove(
+                                                    selectedSubmission.id
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <Check className="w-4 h-4 mr-2" />
+                                            Freigeben
+                                        </button>
+                                    </>
+                                )}
+                                {canDelete && (
+                                    <button
+                                        onClick={() =>
+                                            handleDelete(selectedSubmission.id)
+                                        }
+                                        disabled={
+                                            isActionLoading ===
+                                            selectedSubmission.id
+                                        }
+                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                    >
+                                        <Trash className="w-4 h-4 mr-2" />
+                                        Löschen
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>

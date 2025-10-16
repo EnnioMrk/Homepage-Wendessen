@@ -5,6 +5,51 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 
 const sql = neon(process.env.DATABASE_URL!);
 
+// GET - Get single news item
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const authenticated = await isAuthenticated();
+        if (!authenticated) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        const { id } = await params;
+
+        const result = await sql`
+            SELECT id, title, content, category, published_date as "publishedDate", 
+                   article_id as "articleId", content_json as "contentJson"
+            FROM news
+            WHERE id = ${id}
+        `;
+
+        if (result.length === 0) {
+            return NextResponse.json(
+                { error: 'News not found' },
+                { status: 404 }
+            );
+        }
+
+        const news = {
+            ...result[0],
+            publishedDate: result[0].publishedDate.toISOString(),
+        };
+
+        return NextResponse.json({ news });
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
+    }
+}
+
 // PUT - Update news
 export async function PUT(
     request: NextRequest,
@@ -20,7 +65,7 @@ export async function PUT(
         }
 
         const { id } = await params;
-        const { title, content, category } = await request.json();
+        const { title, content, category, contentJson } = await request.json();
 
         if (!title?.trim()) {
             return NextResponse.json(
@@ -42,9 +87,11 @@ export async function PUT(
             SET title = ${title.trim()}, 
                 content = ${content?.trim() || null}, 
                 category = ${category.trim()},
+                content_json = ${contentJson || null},
                 updated_at = ${new Date().toISOString()}
             WHERE id = ${id}
-            RETURNING id, title, content, category, published_date as "publishedDate"
+            RETURNING id, title, content, category, published_date as "publishedDate", 
+                      article_id as "articleId"
         `;
 
         if (result.length === 0) {

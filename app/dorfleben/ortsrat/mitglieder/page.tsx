@@ -18,7 +18,6 @@ const ortsratMembers = [
         party: 'SPD',
         imageSrc: '/images/Ortsrat/Andreas_Rink.JPG',
         imageAlt: 'Andreas Rink - Ortsbürgermeister',
-        isLeader: true,
         contactSlug: 'andreas-rink',
     },
     {
@@ -27,7 +26,6 @@ const ortsratMembers = [
         party: 'FDP',
         imageSrc: '/images/Ortsrat/Christina_Balder.jpg',
         imageAlt: 'Christina Balder - stellvertretende Ortsbürgermeisterin',
-        isLeader: true,
         contactSlug: 'christina-balder',
     },
     {
@@ -73,10 +71,6 @@ const ortsratMembers = [
 ];
 
 export default function OrtsratMitgliederPage() {
-    // Separate leaders from regular members
-    const leaders = ortsratMembers.filter((member) => member.isLeader);
-    const regularMembers = ortsratMembers.filter((member) => !member.isLeader);
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
@@ -106,20 +100,10 @@ export default function OrtsratMitgliederPage() {
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">
-                {/* Leadership Section */}
+                {/* All Members Section */}
                 <div className="mb-20">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ortsleitung
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Die Führung unserer Gemeinde
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        {leaders.map((member) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {ortsratMembers.map((member) => (
                             <OrtsratMemberCard
                                 key={member.name}
                                 name={member.name}
@@ -127,35 +111,6 @@ export default function OrtsratMitgliederPage() {
                                 party={member.party}
                                 imageSrc={member.imageSrc}
                                 imageAlt={member.imageAlt}
-                                isLeader={member.isLeader}
-                                contactSlug={member.contactSlug}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Regular Members Section */}
-                <div>
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ortsratsmitglieder
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-secondary to-accent mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Unsere engagierten Vertreter aus der Gemeinschaft
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                        {regularMembers.map((member) => (
-                            <OrtsratMemberCard
-                                key={member.name}
-                                name={member.name}
-                                position={member.position}
-                                party={member.party}
-                                imageSrc={member.imageSrc}
-                                imageAlt={member.imageAlt}
-                                isLeader={member.isLeader}
                                 contactSlug={member.contactSlug}
                             />
                         ))}

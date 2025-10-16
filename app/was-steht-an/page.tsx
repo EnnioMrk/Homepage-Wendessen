@@ -51,27 +51,45 @@ const EventComponent = ({ event }: { event: CalendarEvent }) => {
 
 // Custom agenda event component
 const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
+    const isCancelled = event.isCancelled;
+    
     return (
-        <div className="flex items-center space-x-3">
+        <div className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''}`}>
             <div
-                className={`w-3 h-3 rounded-full ${getCategoryBackgroundColor(
-                    event.category || 'sonstiges'
-                )}`}
+                className={`w-3 h-3 rounded-full ${
+                    isCancelled 
+                        ? 'bg-gray-400' 
+                        : getCategoryBackgroundColor(event.category || 'sonstiges')
+                }`}
             ></div>
             <div className="flex-1">
-                <div className="font-medium text-gray-900">{event.title}</div>
+                <div className={`font-medium ${
+                    isCancelled 
+                        ? 'text-gray-500 line-through' 
+                        : 'text-gray-900'
+                }`}>
+                    {isCancelled && '🚫 '}
+                    {event.title}
+                </div>
                 {event.location && (
                     <div className="text-sm text-gray-500">
                         {event.location}
                     </div>
                 )}
+                {isCancelled && event.cancelledAt && (
+                    <div className="text-xs text-red-600 mt-1">
+                        Abgesagt
+                    </div>
+                )}
             </div>
             <span
-                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadgeClasses(
-                    event.category || 'sonstiges'
-                )}`}
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    isCancelled 
+                        ? 'bg-gray-100 text-gray-600' 
+                        : getCategoryBadgeClasses(event.category || 'sonstiges')
+                }`}
             >
-                {getCategoryDisplayName(event.category || 'sonstiges')}
+                {isCancelled ? 'Abgesagt' : getCategoryDisplayName(event.category || 'sonstiges')}
             </span>
         </div>
     );
@@ -100,14 +118,27 @@ export default function WasStehAnPage() {
                 }
 
                 const eventsData = await response.json();
-                // Convert date strings back to Date objects
-                const parsedEvents = eventsData.map((event: CalendarEvent) => ({
-                    ...event,
-                    start: new Date(event.start),
-                    end: new Date(event.end),
-                }));
+                
+                // Calculate date range: today to +1 year
+                const now = new Date();
+                const oneYearFromNow = new Date(now);
+                oneYearFromNow.setFullYear(now.getFullYear() + 1);
+                
+                // Convert date strings back to Date objects and filter to next year only
+                const parsedEvents = eventsData
+                    .map((event: CalendarEvent) => ({
+                        ...event,
+                        start: new Date(event.start),
+                        end: new Date(event.end),
+                    }))
+                    .filter((event: CalendarEvent) => 
+                        event.start >= now && event.start <= oneYearFromNow
+                    );
 
                 setEvents(parsedEvents);
+
+                // Keep calendar on current month by default
+                setDate(now);
             } catch (err) {
                 console.error('Error fetching events:', err);
                 setError('Fehler beim Laden der Termine');
@@ -330,6 +361,7 @@ export default function WasStehAnPage() {
                             onView={handleViewChange}
                             view={view}
                             date={date}
+                            length={365}
                             components={{
                                 event: EventComponent,
                                 agenda: {
@@ -628,6 +660,25 @@ export default function WasStehAnPage() {
 
                 .calendar-container .rbc-slot-selection {
                     background-color: rgba(99, 102, 241, 0.1);
+                }
+
+                /* Make agenda view scrollable */
+                .calendar-container .rbc-agenda-view {
+                    max-height: 600px;
+                    overflow-y: auto;
+                }
+
+                .calendar-container .rbc-agenda-table {
+                    width: 100%;
+                }
+
+                /* Sticky header for agenda view */
+                .calendar-container .rbc-agenda-view table > thead {
+                    position: sticky;
+                    top: 0;
+                    background-color: white;
+                    z-index: 10;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             `}</style>
         </div>

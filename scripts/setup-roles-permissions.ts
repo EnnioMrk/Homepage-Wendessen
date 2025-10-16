@@ -105,8 +105,8 @@ async function setupRolesAndPermissions() {
                 
                 -- Portraits Management
                 ('portraits.view', 'Portraits anzeigen', 'Kann Portrait-Einreichungen einsehen', 'portraits'),
-                ('portraits.approve', 'Portraits genehmigen', 'Kann Portraits genehmigen', 'portraits'),
-                ('portraits.reject', 'Portraits ablehnen', 'Kann Portraits ablehnen', 'portraits'),
+                ('portraits.edit', 'Portraits bearbeiten', 'Kann Portraits bearbeiten und genehmigen/ablehnen', 'portraits'),
+                ('portraits.delete', 'Portraits löschen', 'Kann Portraits löschen', 'portraits'),
                 
                 -- Settings & Configuration
                 ('settings.view', 'Einstellungen anzeigen', 'Kann Einstellungen einsehen', 'settings'),

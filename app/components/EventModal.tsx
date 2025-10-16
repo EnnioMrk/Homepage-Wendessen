@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, ImageSquare as ImageIcon } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import ImagePicker from './ImagePicker';
+import { usePermissions } from '@/lib/usePermissions';
 
 interface EventModalProps {
     isOpen: boolean;
@@ -22,6 +23,20 @@ interface EventModalProps {
     };
 }
 
+// Vereine data for dropdown
+const VEREINE_OPTIONS = [
+    { id: '', label: 'Kein Verein' },
+    { id: 'sv-wendessen', label: 'SV Wendessen' },
+    { id: 'feuerwehr', label: 'Freiwillige Feuerwehr' },
+    { id: 'jugendfeuerwehr', label: 'Jugendfeuerwehr' },
+    { id: 'kleingaertner', label: 'Kleingärtner-Verein' },
+    { id: 'kirchbauverein', label: 'Kirchbauverein' },
+    { id: 'initiative-spritzenhaus', label: 'Initiative Spritzenhaus' },
+    { id: 'schuetzenverein', label: 'Schützenverein' },
+    { id: 'seniorenkreis', label: 'Evang. Seniorenkreis' },
+    { id: 'frauenhilfe', label: 'Evang. Frauenhilfe' },
+];
+
 export default function EventModal({
     isOpen,
     onClose,
@@ -29,9 +44,23 @@ export default function EventModal({
     title = 'Neuen Termin hinzufügen',
     initialValues,
 }: EventModalProps) {
+    const { hasPermission, user } = usePermissions();
     const [isLoading, setIsLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);
     const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl || '');
+    const [selectedVereinId, setSelectedVereinId] = useState('');
+
+    // Update selectedVereinId when user data is available
+    useEffect(() => {
+        if (user?.vereinId) {
+            setSelectedVereinId(user.vereinId);
+        }
+    }, [user?.vereinId]);
+
+    // Determine if user can select verein or if it's fixed
+    const hasGeneralCreatePermission = hasPermission('events.create');
+    const hasVereinCreatePermission = hasPermission('verein.events.create');
+    const canSelectVerein = hasGeneralCreatePermission;
 
     if (!isOpen) return null;
 
@@ -78,6 +107,7 @@ export default function EventModal({
             category: formData.get('category'),
             organizer: formData.get('organizer'),
             imageUrl: imageUrl,
+            vereinId: formData.get('vereinId') || null,
         };
 
         try {
@@ -228,6 +258,31 @@ export default function EventModal({
                                     defaultValue={initialValues?.location || ''}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
                                 />
+                                {/* Verein Selection */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Verein
+                                    </label>
+                                    <select
+                                        name="vereinId"
+                                        disabled={isLoading || !canSelectVerein}
+                                        value={selectedVereinId}
+                                        onChange={(e) => setSelectedVereinId(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
+                                    >
+                                        {VEREINE_OPTIONS.map((verein) => (
+                                            <option key={verein.id} value={verein.id}>
+                                                {verein.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {!canSelectVerein && hasVereinCreatePermission && (
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            Als Vereinsverwalter können Sie nur Events für Ihren Verein erstellen.
+                                        </p>
+                                    )}
+                                </div>
+
                                 <select
                                     name="category"
                                     disabled={isLoading}
