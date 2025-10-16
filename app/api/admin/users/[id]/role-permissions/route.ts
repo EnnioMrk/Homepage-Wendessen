@@ -7,12 +7,11 @@ import { getAdminUserById } from '@/lib/database';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await requirePermission('users.view');
-
-        const { id } = params;
+        const { id } = await params;
         const userId = parseInt(id);
         if (isNaN(userId)) {
             return NextResponse.json(
