@@ -33,20 +33,12 @@ type CustomElement =
     | ImageElement;
 type CustomText = { text: string; bold?: boolean; italic?: boolean; underline?: boolean };
 
-declare module 'slate' {
-    interface CustomTypes {
-        Editor: BaseEditor & ReactEditor;
-        Element: CustomElement;
-        Text: CustomText;
-    }
-}
-
 interface Props { value: Descendant[]; onChange: (v: Descendant[]) => void; placeholder?: string }
 const HOTKEYS: Record<string, string> = { 'mod+b': 'bold', 'mod+i': 'italic', 'mod+u': 'underline' };
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
 export default function EnhancedRichTextEditor({ value, onChange, placeholder = 'Artikel-Inhalt hier schreiben...' }: Props) {
-    const editor = useMemo(() => withHistory(withReact(createEditor() as any)), []);
+    const editor = useMemo<Editor>(() => withHistory(withReact(createEditor() as unknown as Editor)), []);
 
     useEffect(() => {
         // ensure editor has initial children when value is empty
@@ -87,11 +79,11 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
             case 'bulleted-list': return <ul {...props.attributes} className="list-disc list-inside mb-4">{props.children}</ul>;
             case 'numbered-list': return <ol {...props.attributes} className="list-decimal list-inside mb-4">{props.children}</ol>;
             case 'list-item': return <li {...props.attributes} className="mb-1">{props.children}</li>;
-            case 'link': {
-                const maybe: any = el;
-                const href = typeof maybe.url === 'string' ? maybe.url : '#';
-                return <a {...props.attributes} href={href} className="text-primary underline hover:text-primary-dark">{props.children}</a>;
-            }
+                case 'link': {
+                    const maybe = el as { url?: unknown };
+                    const href = typeof maybe.url === 'string' ? maybe.url : '#';
+                    return <a {...props.attributes} href={href} className="text-primary underline hover:text-primary-dark">{props.children}</a>;
+                }
             case 'image': {
                 const img = el as ImageElement;
                 return (
@@ -121,33 +113,40 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
 
     const isBlockActive = (ed: Editor, format: string) => {
         const { selection } = ed; if (!selection) return false;
-        const [match] = Array.from(Editor.nodes(ed, { at: Editor.unhangRange(ed, selection), match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && (n as any).type === format }));
+        const [match] = Array.from(Editor.nodes(ed, { at: Editor.unhangRange(ed, selection), match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && ((n as SlateElement).type === format) }));
         return !!match;
     };
 
     const toggleBlock = (format: string) => {
         const isActive = isBlockActive(editor, format);
         const isList = LIST_TYPES.includes(format);
-        Transforms.unwrapNodes(editor as any, { match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && LIST_TYPES.includes(((n as any).type as string) || ''), split: true });
+        Transforms.unwrapNodes(editor, { match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && LIST_TYPES.includes(((n as SlateElement).type as string) || ''), split: true });
         const possible = ['paragraph', 'heading-one', 'heading-two', 'bulleted-list', 'numbered-list', 'list-item', 'link', 'image'];
         const formatStr = String(format);
         const chosen = isActive ? 'paragraph' : isList ? 'list-item' : (possible.includes(formatStr) ? formatStr : 'paragraph');
-        Transforms.setNodes(editor as any, { type: chosen } as any);
-        if (!isActive && isList) Transforms.wrapNodes(editor as any, { type: format, children: [] } as any);
+        const newProps = { type: chosen as CustomElement['type'] };
+        Transforms.setNodes(editor, newProps as unknown as Partial<SlateElement>);
+        if (!isActive && isList) {
+            const block: CustomElement = { type: format as 'numbered-list' | 'bulleted-list', children: [] } as CustomElement;
+            Transforms.wrapNodes(editor, block as unknown as SlateElement);
+        }
     };
 
     const insertLink = (url: string) => {
         if (!url) return;
-        const { selection } = editor as Editor & { selection: any };
+        const selection = editor.selection;
         const isCollapsed = !selection || (selection.anchor && selection.focus && selection.anchor.path === selection.focus.path && selection.anchor.offset === selection.focus.offset);
-        if (isCollapsed) Transforms.insertNodes(editor as any, { type: 'link', url, children: [{ text: url }] } as any);
-        else Transforms.wrapNodes(editor as any, { type: 'link', url, children: [] } as any, { split: true });
+        const linkEl: CustomElement = { type: 'link', url, children: [{ text: url }] } as CustomElement;
+        const linkWrap: CustomElement = { type: 'link', url, children: [] } as CustomElement;
+        if (isCollapsed) Transforms.insertNodes(editor, linkEl as unknown as SlateElement);
+        else Transforms.wrapNodes(editor, linkWrap as unknown as SlateElement, { split: true });
     };
 
     const insertImage = (url: string, alt?: string) => {
         const image: ImageElement = { type: 'image', url, alt, children: [{ text: '' }] };
-        Transforms.insertNodes(editor as any, image as any);
-        Transforms.insertNodes(editor as any, { type: 'paragraph', children: [{ text: '' }] } as any);
+        Transforms.insertNodes(editor, image as unknown as SlateElement);
+        const para: CustomElement = { type: 'paragraph', children: [{ text: '' }] } as CustomElement;
+        Transforms.insertNodes(editor, para as unknown as SlateElement);
         setShowGalleryModal(false);
         setGallerySearch('');
     };
@@ -171,7 +170,7 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
                     {showLinkInput && (<div className="flex items-center gap-2 ml-2"><input type="url" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." className="px-2 py-1 border border-gray-300 rounded text-sm w-64 text-gray-900" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); insertLink(linkUrl); setShowLinkInput(false); setLinkUrl(''); } }} /><button type="button" onClick={() => { insertLink(linkUrl); setShowLinkInput(false); setLinkUrl(''); }} className="px-3 py-1 bg-primary text-white rounded text-sm hover:bg-primary-dark">OK</button></div>)}
                 </div>
 
-                <Slate editor={editor as any} initialValue={value} onChange={onChange}>
+                <Slate editor={editor} initialValue={value} onChange={onChange}>
                     <Editable renderElement={renderElement} renderLeaf={renderLeaf} placeholder={placeholder} className="p-4 h-full focus:outline-none text-gray-900 overflow-y-auto overflow-x-hidden break-words" onKeyDown={(event) => { for (const hotkey in HOTKEYS) { if (isHotkey(hotkey, event as unknown as KeyboardEvent)) { event.preventDefault(); const mark = HOTKEYS[hotkey]; toggleMark(mark); } } }} />
                 </Slate>
             </div>
