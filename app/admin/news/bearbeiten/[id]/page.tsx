@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Descendant } from 'slate';
 import { ArrowLeft, Eye, Check, X } from '@phosphor-icons/react';
 import Link from 'next/link';
@@ -26,8 +26,10 @@ interface NewsArticle {
     articleId: string;
 }
 
-export default function EditNewsPage({ params }: { params: { id: string } }) {
+export default function EditNewsPage() {
     const router = useRouter();
+    const params = useParams();
+    const id = params?.id as string | undefined;
     const [step, setStep] = useState<'editing' | 'preview'>('editing');
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -42,10 +44,14 @@ export default function EditNewsPage({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         let mounted = true;
+        if (!id) {
+            // wait for id to be available from useParams
+            return;
+        }
 
         (async () => {
             try {
-                const response = await fetch(`/api/admin/news/${params.id}`);
+                const response = await fetch(`/api/admin/news/${id}`);
                 if (response.ok) {
                     const data = await response.json();
                     const article = data.news;
@@ -79,14 +85,14 @@ export default function EditNewsPage({ params }: { params: { id: string } }) {
         return () => {
             mounted = false;
         };
-    }, [params.id]);
+    }, [id]);
 
     const handleUpdate = async () => {
         setIsSaving(true);
         setError(null);
 
         try {
-            const response = await fetch(`/api/admin/news/${params.id}`, {
+            const response = await fetch(`/api/admin/news/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -97,10 +103,10 @@ export default function EditNewsPage({ params }: { params: { id: string } }) {
                 }),
             });
 
-            if (response.ok) {
-                router.push('/admin/news');
-                router.refresh();
-            } else {
+                if (response.ok) {
+                    router.push('/admin/news');
+                    router.refresh();
+                } else {
                 const data = await response.json();
                 setError(data.error || 'Fehler beim Aktualisieren');
             }
