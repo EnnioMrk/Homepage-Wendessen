@@ -9,7 +9,7 @@ import {
     ShieldCheck,
     Heart,
     CalendarBlank,
-    CurrencyDollar,
+    
     User,
     Phone,
     MapPin,

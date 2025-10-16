@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { neon } from '@neondatabase/serverless';
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import Link from 'next/link';

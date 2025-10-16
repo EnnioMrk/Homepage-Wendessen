@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { title, content, category, contentJson } = await request.json();
+    const { title, category, contentJson } = await request.json();
 
         if (!title?.trim()) {
             return NextResponse.json(

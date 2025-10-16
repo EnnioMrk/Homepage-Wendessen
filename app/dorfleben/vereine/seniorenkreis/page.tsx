@@ -4,12 +4,11 @@ import {
     Presentation,
     Globe,
     GameController,
-    Cake,
     Fire,
     Gift,
     Smiley,
     CalendarBlank,
-    CurrencyDollar,
+    
     User,
     Phone,
     Heart,
@@ -227,7 +226,7 @@ export default function SeniorenkreisPage() {
                         <div className="max-w-2xl mx-auto">
                             <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
                                 <div className="w-20 h-20 bg-gradient-to-r from-teal-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <CurrencyDollar className="w-10 h-10 text-white" />
+                                    <User className="w-10 h-10 text-white" />
                                 </div>
                                 <h4 className="text-2xl font-semibold text-emerald-800 mb-4">
                                     Kostenlose Mitgliedschaft

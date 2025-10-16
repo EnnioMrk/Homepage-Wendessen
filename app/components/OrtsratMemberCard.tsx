@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { CrownSimple, EnvelopeSimple } from '@phosphor-icons/react/dist/ssr';
+import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr';
 
 interface OrtsratMemberCardProps {
     name: string;

@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useMemo, useState, useEffect } from 'react';
-import { createEditor, Descendant, Editor, Transforms, Element as SlateElement, BaseEditor } from 'slate';
-import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeafProps } from 'slate-react';
+import isHotkey from 'is-hotkey';
+import { createEditor, Descendant, Editor, Transforms, Element as SlateElement } from 'slate';
+import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps } from 'slate-react';
 import { withHistory } from 'slate-history';
 import {
     TextB,
@@ -20,7 +21,8 @@ import Image from 'next/image';
 
 // Type definitions for Slate
 // Using any to avoid type conflicts with existing RichTextEditor
-type ImageElement = { type: 'image'; url: string; alt?: string; children: any[] };
+type ImageElement = { type: 'image'; url: string; alt?: string; children: Descendant[] };
+type CustomElement = SlateElement & Record<string, unknown>;
 
 interface GalleryImage {
     id: number;
@@ -90,7 +92,7 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
     );
 
     const renderElement = useCallback((props: RenderElementProps) => {
-        const element = props.element as any;
+        const element = props.element as CustomElement;
         
         switch (element.type) {
             case 'heading-one':
@@ -169,18 +171,18 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
         const isList = LIST_TYPES.includes(format);
 
         Transforms.unwrapNodes(editor, {
-            match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && LIST_TYPES.includes((n as any).type),
+            match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && LIST_TYPES.includes(((n as CustomElement).type as string) || ''),
             split: true,
         });
 
         const newProperties: Partial<SlateElement> = {
-            type: isActive ? 'paragraph' : (isList ? 'list-item' : format) as any,
+            type: isActive ? 'paragraph' : (isList ? 'list-item' : format) as string,
         };
         Transforms.setNodes<SlateElement>(editor, newProperties);
 
         if (!isActive && isList) {
-            const block: any = { type: format as 'numbered-list' | 'bulleted-list', children: [] };
-            Transforms.wrapNodes(editor, block);
+            const block: CustomElement = { type: format as 'numbered-list' | 'bulleted-list', children: [] } as CustomElement;
+            Transforms.wrapNodes(editor, block as any);
         }
     };
 
@@ -191,16 +193,12 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
         const isCollapsed = selection && selection.anchor.offset === selection.focus.offset;
         
         if (isCollapsed) {
-            const link: any = {
-                type: 'link',
-                url: linkUrl,
-                children: [{ text: linkUrl }],
-            };
-            Transforms.insertNodes(editor, link);
+            const link: CustomElement = { type: 'link', url: linkUrl, children: [{ text: linkUrl }] } as CustomElement;
+            Transforms.insertNodes(editor, link as any);
         } else {
             Transforms.wrapNodes(
                 editor,
-                { type: 'link', url: linkUrl, children: [] } as any,
+                { type: 'link', url: linkUrl, children: [] } as CustomElement,
                 { split: true }
             );
         }
@@ -210,18 +208,10 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
     };
 
     const insertImage = (url: string, alt: string) => {
-        const image: any = {
-            type: 'image',
-            url,
-            alt,
-            children: [{ text: '' }],
-        };
+        const image: CustomElement = { type: 'image', url, alt, children: [{ text: '' }] } as CustomElement;
         
         Transforms.insertNodes(editor, image);
-        Transforms.insertNodes(editor, {
-            type: 'paragraph',
-            children: [{ text: '' }],
-        } as any);
+        Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] } as SlateElement);
         
         setShowGalleryModal(false);
         setGallerySearch('');

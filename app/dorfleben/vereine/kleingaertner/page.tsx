@@ -3,7 +3,6 @@ import {
     Flower,
     ArrowsOutSimple,
     Lightning,
-    CurrencyDollar,
     Smiley,
     Plant,
     UsersThree,
@@ -173,7 +172,7 @@ export default function KleingaertnerPage() {
                             {/* Costs */}
                             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <CurrencyDollar className="w-8 h-8 text-white" />
+                                    <Plant className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-purple-700 mb-3">
                                     Sozialverträglich

@@ -32,7 +32,7 @@ export default async function ArchivPage() {
     const archiveItems = await getArchiveItems();
     const archivedNews = await getArchivedNews();
 
-    const totalItems = archiveItems.length + archivedNews.length;
+    // totalItems was unused and caused a lint error previously
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 relative">

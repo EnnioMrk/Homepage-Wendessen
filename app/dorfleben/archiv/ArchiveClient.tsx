@@ -62,8 +62,17 @@ function extractTextFromContent(content: string): string {
         if (Array.isArray(parsed)) {
             // Extract all text from Slate JSON structure
             return parsed.map(node => {
-                if (node.children) {
-                    return node.children.map((child: any) => child.text || '').join(' ');
+                if (node && typeof node === 'object' && 'children' in (node as Record<string, unknown>)) {
+                    const children = (node as Record<string, unknown>).children as unknown[] | undefined;
+                    if (Array.isArray(children)) {
+                        return children.map((child) => {
+                            if (child && typeof child === 'object' && 'text' in (child as Record<string, unknown>)) {
+                                const t = (child as Record<string, unknown>).text;
+                                return typeof t === 'string' ? t : '';
+                            }
+                            return '';
+                        }).join(' ');
+                    }
                 }
                 return '';
             }).join(' ');
