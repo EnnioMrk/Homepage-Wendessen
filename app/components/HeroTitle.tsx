@@ -19,8 +19,9 @@ export default function HeroTitle() {
                         `,
                     }}
                 >
-                    WENDESSEN,
-                    <br className="sm:hidden" /> WAS&nbsp;DENN&nbsp;SONST?
+                    SCHÖN,
+                    <br className="sm:hidden" />{' '}
+                    DASS&nbsp;SIE&nbsp;DA&nbsp;SIND!
                 </h1>
             </div>
         </div>

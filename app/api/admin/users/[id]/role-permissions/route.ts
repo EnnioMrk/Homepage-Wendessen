@@ -9,7 +9,8 @@ export async function GET(
     try {
         await requirePermission('users.view');
 
-        const userId = parseInt(params.id);
+        const { id } = params;
+        const userId = parseInt(id);
         if (isNaN(userId)) {
             return NextResponse.json(
                 { error: 'Invalid user ID' },

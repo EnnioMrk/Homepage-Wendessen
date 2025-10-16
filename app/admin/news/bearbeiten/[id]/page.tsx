@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -40,7 +40,8 @@ export default function EditNewsPage() {
     const [title, setTitle] = useState('');
     const [shortDescription, setShortDescription] = useState('');
     const [category, setCategory] = useState('');
-    const [articleContent, setArticleContent] = useState<Descendant[]>(initialEditorValue);
+    const [articleContent, setArticleContent] =
+        useState<Descendant[]>(initialEditorValue);
 
     useEffect(() => {
         let mounted = true;
@@ -65,7 +66,9 @@ export default function EditNewsPage() {
 
                     if (article.contentJson) {
                         try {
-                            const parsedContent = JSON.parse(article.contentJson);
+                            const parsedContent = JSON.parse(
+                                article.contentJson
+                            );
                             setArticleContent(parsedContent);
                         } catch (e) {
                             console.error('Error parsing article content:', e);
@@ -103,10 +106,10 @@ export default function EditNewsPage() {
                 }),
             });
 
-                if (response.ok) {
-                    router.push('/admin/news');
-                    router.refresh();
-                } else {
+            if (response.ok) {
+                router.push('/admin/news');
+                router.refresh();
+            } else {
                 const data = await response.json();
                 setError(data.error || 'Fehler beim Aktualisieren');
             }
@@ -158,7 +161,9 @@ export default function EditNewsPage() {
                                     <ArrowLeft className="w-6 h-6" />
                                 </Link>
                                 <div className="min-w-0 flex-1">
-                                    <h1 className="text-xl font-bold text-gray-900">Nachricht bearbeiten</h1>
+                                    <h1 className="text-xl font-bold text-gray-900">
+                                        Nachricht bearbeiten
+                                    </h1>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -176,7 +181,10 @@ export default function EditNewsPage() {
                                 >
                                     {isSaving ? (
                                         <>
-                                            <LoadingSpinner size="sm" color="white" />
+                                            <LoadingSpinner
+                                                size="sm"
+                                                color="white"
+                                            />
                                             Speichern...
                                         </>
                                     ) : (
@@ -207,7 +215,10 @@ export default function EditNewsPage() {
                     <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
                         <div className="space-y-6">
                             <div>
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="title"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
                                     Titel *
                                 </label>
                                 <input
@@ -223,42 +234,57 @@ export default function EditNewsPage() {
                             </div>
 
                             <div>
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="description"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
                                     Kurzbeschreibung *
                                 </label>
                                 <textarea
                                     id="description"
                                     value={shortDescription}
-                                    onChange={(e) => setShortDescription(e.target.value)}
+                                    onChange={(e) =>
+                                        setShortDescription(e.target.value)
+                                    }
                                     placeholder="Wird auf der Startseite angezeigt..."
                                     rows={4}
                                     required
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">
-                                    Diese Beschreibung erscheint auf der Startseite
+                                    Diese Beschreibung erscheint auf der
+                                    Startseite
                                 </p>
                             </div>
 
                             <div>
-                                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="category"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
                                     Kategorie *
                                 </label>
                                 <select
                                     id="category"
                                     value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
+                                    onChange={(e) =>
+                                        setCategory(e.target.value)
+                                    }
                                     required
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-900"
                                 >
                                     <option value="">Kategorie wählen</option>
                                     <option value="Bildung">Bildung</option>
-                                    <option value="Gemeinschaft">Gemeinschaft</option>
+                                    <option value="Gemeinschaft">
+                                        Gemeinschaft
+                                    </option>
                                     <option value="Feuerwehr">Feuerwehr</option>
                                     <option value="Digital">Digital</option>
                                     <option value="Sport">Sport</option>
                                     <option value="Kultur">Kultur</option>
-                                    <option value="Verwaltung">Verwaltung</option>
+                                    <option value="Verwaltung">
+                                        Verwaltung
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -266,20 +292,23 @@ export default function EditNewsPage() {
 
                     {/* Article Editor */}
                     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <div className="p-6 border-b border-gray-200">
-                                <h2 className="text-lg font-semibold text-gray-900">Artikel-Inhalt</h2>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Erstellen Sie hier den vollständigen Artikel-Inhalt
-                                </p>
-                            </div>
-                            <div className="h-[500px]">
-                                <EnhancedRichTextEditor
-                                    value={articleContent}
-                                    onChange={setArticleContent}
-                                    placeholder="Schreiben Sie hier Ihren vollständigen Artikel..."
-                                />
-                            </div>
+                        <div className="p-6 border-b border-gray-200">
+                            <h2 className="text-lg font-semibold text-gray-900">
+                                Artikel-Inhalt
+                            </h2>
+                            <p className="text-sm text-gray-600 mt-1">
+                                Erstellen Sie hier den vollständigen
+                                Artikel-Inhalt
+                            </p>
                         </div>
+                        <div className="h-[500px]">
+                            <EnhancedRichTextEditor
+                                value={articleContent}
+                                onChange={setArticleContent}
+                                placeholder="Schreiben Sie hier Ihren vollständigen Artikel..."
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -301,8 +330,13 @@ export default function EditNewsPage() {
                                     <ArrowLeft className="w-6 h-6" />
                                 </button>
                                 <div>
-                                    <h1 className="text-xl font-bold text-gray-900">Vorschau</h1>
-                                    <p className="text-sm text-gray-600">Überprüfen Sie Ihren Artikel vor dem Speichern</p>
+                                    <h1 className="text-xl font-bold text-gray-900">
+                                        Vorschau
+                                    </h1>
+                                    <p className="text-sm text-gray-600">
+                                        Überprüfen Sie Ihren Artikel vor dem
+                                        Speichern
+                                    </p>
                                 </div>
                             </div>
                             <button
@@ -312,7 +346,10 @@ export default function EditNewsPage() {
                             >
                                 {isSaving ? (
                                     <>
-                                        <LoadingSpinner size="sm" color="white" />
+                                        <LoadingSpinner
+                                            size="sm"
+                                            color="white"
+                                        />
                                         Wird gespeichert...
                                     </>
                                 ) : (
@@ -347,11 +384,14 @@ export default function EditNewsPage() {
                                         {category}
                                     </span>
                                     <span className="text-white/80 text-sm">
-                                        {new Date().toLocaleDateString('de-DE', {
-                                            day: '2-digit',
-                                            month: 'long',
-                                            year: 'numeric',
-                                        })}
+                                        {new Date().toLocaleDateString(
+                                            'de-DE',
+                                            {
+                                                day: '2-digit',
+                                                month: 'long',
+                                                year: 'numeric',
+                                            }
+                                        )}
                                     </span>
                                 </div>
                                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">

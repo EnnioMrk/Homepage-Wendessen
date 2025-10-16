@@ -125,7 +125,7 @@ export default function SVWendessenPage() {
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-2xl">
                                 <h3 className="text-xl font-semibold text-green-800 mb-3 flex items-center">
                                     <Star className="w-6 h-6 mr-2" />
-                                    Unser Erflog
+                                    Unser Erfolg
                                 </h3>
                                 <p className="text-green-800">
                                     Stolz sind wir auf die mittlerweile

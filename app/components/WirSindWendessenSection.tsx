@@ -7,7 +7,7 @@ export default function WirSindWendessenSection() {
             {/* Section Title */}
             <div className="text-center mb-16">
                 <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                    WIR SIND WENDESSEN
+                    DAS IST WENDESSEN
                 </h2>
                 <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto"></div>
             </div>
