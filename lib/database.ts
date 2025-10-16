@@ -710,7 +710,7 @@ export async function createPortraitSubmission(
 
 export async function updatePortraitStatus(
     id: string,
-    status: 'approved' | 'rejected',
+    status: 'pending' | 'approved' | 'rejected',
     reviewedBy?: string
 ): Promise<PortraitSubmission> {
     try {
