@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requirePermission, getRoleDefaultPermissions } from '@/lib/permissions';
+import {
+    requirePermission,
+    getRoleDefaultPermissions,
+} from '@/lib/permissions';
 import { getAdminUserById } from '@/lib/database';
 
 export async function GET(
