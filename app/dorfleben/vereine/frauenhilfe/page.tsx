@@ -120,7 +120,7 @@ export default function FrauenhilfePage() {
                                 </h3>
                                 <p className="text-lg text-purple-800 mb-3">
                                     Monatliche Treffen finden auf dem{' '}
-                                    <strong>"Hans-Meves-Hof"</strong>, Dorfstr. 19, 
+                                    <strong>&quot;Hans-Meves-Hof&quot;</strong>, Dorfstr. 19, 
                                     38300 WF-Wendessen statt.
                                 </p>
                                 <p className="text-lg text-purple-800 font-semibold">

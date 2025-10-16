@@ -233,7 +233,7 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                             </label>
                             <select
                                 value={filterType}
-                                onChange={(e) => setFilterType(e.target.value as any)}
+                                onChange={(e) => setFilterType(e.target.value as 'all' | 'news' | 'document')}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-gray-900"
                             >
                                 <option value="all">Alle Typen</option>
@@ -267,7 +267,7 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                             </label>
                             <select
                                 value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value as any)}
+                                onChange={(e) => setSortBy(e.target.value as 'date-desc' | 'date-asc' | 'title')}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-gray-900"
                             >
                                 <option value="date-desc">Neueste zuerst</option>

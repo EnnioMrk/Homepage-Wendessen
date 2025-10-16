@@ -1,6 +1,7 @@
+"use client";
+
 import { BaseEditor } from 'slate';
 import { ReactEditor } from 'slate-react';
-
 // Custom Slate element types
 type ImageElement = {
     type: 'image';
@@ -138,16 +139,19 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
                 return <ol className="list-decimal list-inside mb-4" {...props.attributes}>{props.children}</ol>;
             case 'list-item':
                 return <li className="mb-1" {...props.attributes}>{props.children}</li>;
-            case 'link':
+            case 'link': {
+                const el = element as unknown as Record<string, unknown>;
+                const href = typeof el.url === 'string' ? String(el.url) : '#';
                 return (
                     <a
-                        href={(element as any).url}
+                        href={href}
                         className="text-primary underline hover:text-primary-dark"
                         {...props.attributes}
                     >
                         {props.children}
                     </a>
                 );
+            }
             case 'image': {
                 const img = element as ImageElement;
                 return (
@@ -210,8 +214,10 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
             split: true,
         });
 
+        const possibleBlocks = ['paragraph','heading-one','heading-two','bulleted-list','numbered-list','list-item','link','image'] as const;
+        const chosenType = isActive ? 'paragraph' : (isList ? 'list-item' : (possibleBlocks.includes(format as any) ? (format as any) : 'paragraph'));
         const newProperties: Partial<SlateElement> = {
-            type: isActive ? 'paragraph' : (isList ? 'list-item' : (format as any)),
+            type: chosenType as any,
         };
         Transforms.setNodes<SlateElement>(editor, newProperties);
 

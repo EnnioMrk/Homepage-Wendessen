@@ -41,39 +41,45 @@ export default function EditNewsPage({ params }: { params: { id: string } }) {
     const [articleContent, setArticleContent] = useState<Descendant[]>(initialEditorValue);
 
     useEffect(() => {
-        fetchNewsArticle();
-    }, [params.id, fetchNewsArticle]);
+        let mounted = true;
 
-    const fetchNewsArticle = async () => {
-        try {
-            const response = await fetch(`/api/admin/news/${params.id}`);
-            if (response.ok) {
-                const data = await response.json();
-                const article = data.news;
-                
-                setNewsArticle(article);
-                setTitle(article.title);
-                setShortDescription(article.content || '');
-                setCategory(article.category);
-                
-                if (article.contentJson) {
-                    try {
-                        const parsedContent = JSON.parse(article.contentJson);
-                        setArticleContent(parsedContent);
-                    } catch (e) {
-                        console.error('Error parsing article content:', e);
+        (async () => {
+            try {
+                const response = await fetch(`/api/admin/news/${params.id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const article = data.news;
+
+                    if (!mounted) return;
+
+                    setNewsArticle(article);
+                    setTitle(article.title);
+                    setShortDescription(article.content || '');
+                    setCategory(article.category);
+
+                    if (article.contentJson) {
+                        try {
+                            const parsedContent = JSON.parse(article.contentJson);
+                            setArticleContent(parsedContent);
+                        } catch (e) {
+                            console.error('Error parsing article content:', e);
+                        }
                     }
+                } else {
+                    if (mounted) setError('Artikel nicht gefunden');
                 }
-            } else {
-                setError('Artikel nicht gefunden');
+            } catch (err) {
+                console.error('Fetch error:', err);
+                if (mounted) setError('Fehler beim Laden des Artikels');
+            } finally {
+                if (mounted) setIsLoading(false);
             }
-        } catch (err) {
-            console.error('Fetch error:', err);
-            setError('Fehler beim Laden des Artikels');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        })();
+
+        return () => {
+            mounted = false;
+        };
+    }, [params.id]);
 
     const handleUpdate = async () => {
         setIsSaving(true);
