@@ -30,10 +30,22 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
     useEffect(() => {
         if (isOpen) {
             loadPermissions();
-            loadRolePermissions();
+
+            (async () => {
+                try {
+                    const response = await fetch(`/api/admin/users/${user.id}/role-permissions`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setRolePermissions(data.rolePermissions || []);
+                    }
+                } catch (err) {
+                    console.error('Error loading role permissions:', err);
+                }
+            })();
+
             setSelectedPermissions(user.customPermissions || []);
         }
-    }, [isOpen, user, loadRolePermissions]);
+    }, [isOpen, user]);
 
     const loadPermissions = async () => {
         try {
@@ -51,17 +63,7 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
         }
     };
 
-    const loadRolePermissions = async () => {
-        try {
-            const response = await fetch(`/api/admin/users/${user.id}/role-permissions`);
-            if (response.ok) {
-                const data = await response.json();
-                setRolePermissions(data.rolePermissions || []);
-            }
-        } catch (err) {
-            console.error('Error loading role permissions:', err);
-        }
-    };
+    // role permissions are loaded inside the useEffect when the modal opens
 
     const handleTogglePermission = (permissionName: string) => {
         setSelectedPermissions(prev => {
@@ -221,10 +223,9 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
                                                                 {permission.displayName}
                                                             </span>
                                                             {isFromRole && (
-                                                                <ShieldCheck 
-                                                                    className="w-4 h-4 text-primary flex-shrink-0" 
-                                                                    title="Standard-Berechtigung der Rolle" 
-                                                                />
+                                                                <span title="Standard-Berechtigung der Rolle">
+                                                                    <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0" />
+                                                                </span>
                                                             )}
                                                         </div>
                                                         {permission.description && (

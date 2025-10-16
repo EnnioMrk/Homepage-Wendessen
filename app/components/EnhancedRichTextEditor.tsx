@@ -2,8 +2,8 @@
 
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import isHotkey from 'is-hotkey';
-import { createEditor, Descendant, Editor, Transforms, Element as SlateElement, BaseEditor } from 'slate';
-import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps, ReactEditor } from 'slate-react';
+import { createEditor, Descendant, Editor, Transforms, Element as SlateElement } from 'slate';
+import { Slate, Editable, withReact, RenderElementProps, RenderLeafProps } from 'slate-react';
 import { withHistory } from 'slate-history';
 import Image from 'next/image';
 import {
@@ -31,7 +31,7 @@ type CustomElement =
     | { type: 'list-item'; children: Descendant[] }
     | { type: 'link'; url: string; children: Descendant[] }
     | ImageElement;
-type CustomText = { text: string; bold?: boolean; italic?: boolean; underline?: boolean };
+// CustomText intentionally omitted - Slate's Descendant[] is used for content typing
 
 interface Props { value: Descendant[]; onChange: (v: Descendant[]) => void; placeholder?: string }
 const HOTKEYS: Record<string, string> = { 'mod+b': 'bold', 'mod+i': 'italic', 'mod+u': 'underline' };
