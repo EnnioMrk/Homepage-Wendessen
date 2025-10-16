@@ -33,7 +33,6 @@ export default function EditArchivePage({ params }: { params: Promise<{ id: stri
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [archiveItem, setArchiveItem] = useState<ArchiveItem | null>(null);
     const [archiveId, setArchiveId] = useState<string>('');
 
     // Form data
@@ -44,54 +43,56 @@ export default function EditArchivePage({ params }: { params: Promise<{ id: stri
     const [content, setContent] = useState<Descendant[]>(initialEditorValue);
 
     useEffect(() => {
-        params.then(p => {
-            setArchiveId(p.id);
-        });
-    }, [params]);
+        let mounted = true;
 
-    useEffect(() => {
-        if (archiveId) {
-            fetchArchiveItem();
-        }
-    }, [archiveId]);
+        (async () => {
+            try {
+                const p = await params;
+                const id = p.id;
+                setArchiveId(id);
 
-    const fetchArchiveItem = async () => {
-        setIsLoading(true);
-        setError(null);
+                mounted && setIsLoading(true);
+                mounted && setError(null);
 
-        try {
-            const response = await fetch(`/api/archive/${archiveId}`);
-            if (response.ok) {
-                const data = await response.json();
-                const item = data;
-                
-                setArchiveItem(item);
-                setTitle(item.title);
-                setAuthor(item.author || '');
-                setCategory(item.category || '');
-                setCreatedDate(item.created_date || '');
-                
-                // Parse content if it's JSON
-                try {
-                    const parsedContent = JSON.parse(item.content);
-                    setContent(parsedContent);
-                } catch (e) {
-                    // If content is plain text, convert to Slate format
-                    setContent([{
-                        type: 'paragraph',
-                        children: [{ text: item.content }]
-                    }]);
+                const response = await fetch(`/api/archive/${id}`);
+                if (response.ok) {
+                    const data = await response.json();
+
+                    if (!mounted) return;
+
+                    setTitle(data.title);
+                    setAuthor(data.author || '');
+                    setCategory(data.category || '');
+                    setCreatedDate(data.created_date || '');
+
+                    // Parse content if it's JSON
+                    try {
+                        const parsedContent = JSON.parse(data.content);
+                        setContent(parsedContent);
+                    } catch {
+                        // If content is plain text, convert to Slate format
+                        setContent([
+                            {
+                                type: 'paragraph',
+                                children: [{ text: data.content }],
+                            },
+                        ]);
+                    }
+                } else {
+                    mounted && setError('Archiveintrag nicht gefunden');
                 }
-            } else {
-                setError('Archiveintrag nicht gefunden');
+            } catch (err) {
+                console.error('Fetch error:', err);
+                mounted && setError('Fehler beim Laden des Archiveintrags');
+            } finally {
+                mounted && setIsLoading(false);
             }
-        } catch (err) {
-            console.error('Fetch error:', err);
-            setError('Fehler beim Laden des Archiveintrags');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        })();
+
+        return () => {
+            mounted = false;
+        };
+    }, [params]);
 
     const handleUpdate = async () => {
         setIsSaving(true);

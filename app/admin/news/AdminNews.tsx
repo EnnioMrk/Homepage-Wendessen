@@ -17,7 +17,7 @@ import {
     WarningCircle,
     Calendar,
     Tag,
-    Article,
+    // Article icon removed (unused)
 } from '@phosphor-icons/react/dist/ssr';
 
 interface NewsItem {
@@ -376,8 +376,22 @@ export default function AdminNews() {
                                                                 const parsed = typeof item.content === 'string' 
                                                                     ? JSON.parse(item.content) 
                                                                     : item.content;
-                                                                if (Array.isArray(parsed) && parsed[0]?.children?.[0]?.text) {
-                                                                    return parsed[0].children.map((child: any) => child.text).join(' ').substring(0, 200);
+                                                                if (Array.isArray(parsed) && parsed[0]?.children) {
+                                                                    // Extract text safely without using `any`
+                                                                    const first = parsed[0] as unknown;
+                                                                    if (
+                                                                        typeof first === 'object' &&
+                                                                        first !== null &&
+                                                                        'children' in (first as any) &&
+                                                                        Array.isArray((first as any).children)
+                                                                    ) {
+                                                                        const children = (first as any).children as unknown[];
+                                                                        const texts = children
+                                                                            .map((c) => (typeof c === 'object' && c !== null && 'text' in (c as any) ? (c as any).text : ''))
+                                                                            .filter(Boolean)
+                                                                            .join(' ');
+                                                                        return texts.substring(0, 200);
+                                                                    }
                                                                 }
                                                                 return 'Vorschau nicht verfügbar';
                                                             } catch {
