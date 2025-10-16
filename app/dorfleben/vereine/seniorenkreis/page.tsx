@@ -102,7 +102,7 @@ export default function SeniorenkreisPage() {
                                 </h3>
                                 <p className="text-lg text-emerald-800">
                                     Unser Vereinslokal ist die{' '}
-                                    <strong>„Alte Schule"</strong>. Wir treffen
+                                    <strong>&quot;Alte Schule&quot;</strong>. Wir treffen
                                     uns jeden <strong>1. Dienstag im Monat</strong>.
                                 </p>
                             </div>

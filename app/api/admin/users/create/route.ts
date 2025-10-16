@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcrypt.hash(initialPassword, 10);
 
         // Get role name to assign default permissions
-        let defaultPermissions: string[] = [];
-        let finalRoleId = roleId || null;
+    let defaultPermissions: string[] = [];
+    const finalRoleId = roleId || null;
         
         if (finalRoleId) {
             const roleResult = await sql`

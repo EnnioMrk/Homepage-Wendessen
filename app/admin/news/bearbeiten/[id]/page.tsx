@@ -42,7 +42,7 @@ export default function EditNewsPage({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         fetchNewsArticle();
-    }, [params.id]);
+    }, [params.id, fetchNewsArticle]);
 
     const fetchNewsArticle = async () => {
         try {

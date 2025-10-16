@@ -130,13 +130,12 @@ export default function NewsModal({
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Artikel-Inhalt
                                     </label>
-                                        <EnhancedRichTextEditor
-                                            value={articleContent}
-                                            onChange={setArticleContent}
-                                            placeholder="Schreiben Sie hier den vollständigen Artikel..."
-                                        />
-                                    </div>
-                                )}
+                                    <EnhancedRichTextEditor
+                                        value={articleContent}
+                                        onChange={setArticleContent}
+                                        placeholder="Schreiben Sie hier den vollständigen Artikel..."
+                                    />
+                                </div>
                             </div>
                         </div>
 

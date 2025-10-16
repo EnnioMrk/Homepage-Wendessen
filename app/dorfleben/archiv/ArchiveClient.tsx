@@ -98,7 +98,15 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                 if (typeof item.content === 'string') {
                     const parsed = JSON.parse(item.content);
                     if (Array.isArray(parsed) && parsed[0]?.children) {
-                        previewText = parsed[0].children.map((child: any) => child.text || '').join(' ');
+                        previewText = parsed[0].children
+                            .map((child: unknown) => {
+                                if (typeof child === 'object' && child !== null && 'text' in (child as Record<string, unknown>)) {
+                                    const t = (child as Record<string, unknown>).text;
+                                    return typeof t === 'string' ? t : '';
+                                }
+                                return '';
+                            })
+                            .join(' ');
                     }
                 }
             } catch {

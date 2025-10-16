@@ -135,10 +135,10 @@ export default function FrauenhilfePage() {
                                     Aus unserer Satzung
                                 </h3>
                                 <p className="text-lg text-blue-800 italic">
-                                    "Der Verein will Frauen auf dem Boden christlichen 
+                                    &quot;Der Verein will Frauen auf dem Boden christlichen 
                                     Glaubens zusammenführen, sie in der Nachfolge Jesu 
                                     Christi stärken und ihnen bei der Wahrnehmung ihrer 
-                                    Verantwortung in Familie, Gemeinde und Gesellschaft helfen."
+                                    Verantwortung in Familie, Gemeinde und Gesellschaft helfen.&quot;
                                 </p>
                             </div>
                         </div>

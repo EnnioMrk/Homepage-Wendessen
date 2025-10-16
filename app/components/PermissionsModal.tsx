@@ -33,7 +33,7 @@ export default function PermissionsModal({ user, isOpen, onClose, onSuccess }: P
             loadRolePermissions();
             setSelectedPermissions(user.customPermissions || []);
         }
-    }, [isOpen, user]);
+    }, [isOpen, user, loadRolePermissions]);
 
     const loadPermissions = async () => {
         try {

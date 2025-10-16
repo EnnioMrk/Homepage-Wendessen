@@ -20,8 +20,7 @@ import {
 import Image from 'next/image';
 
 // Type definitions for Slate
-// Using any to avoid type conflicts with existing RichTextEditor
-type ImageElement = { type: 'image'; url: string; alt?: string; children: Descendant[] };
+// ImageElement type is not used directly here.
 type CustomElement = SlateElement & Record<string, unknown>;
 
 interface GalleryImage {
@@ -56,7 +55,7 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
             e.children = value && value.length > 0 ? value : [{ type: 'paragraph', children: [{ text: '' }] }];
         }
         return e;
-    }, []);
+    }, [value]);
     
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [linkUrl, setLinkUrl] = useState('');
@@ -182,7 +181,7 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
 
         if (!isActive && isList) {
             const block: CustomElement = { type: format as 'numbered-list' | 'bulleted-list', children: [] } as CustomElement;
-            Transforms.wrapNodes(editor, block as any);
+            Transforms.wrapNodes(editor, block as SlateElement);
         }
     };
 
@@ -191,10 +190,10 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
         
         const { selection } = editor;
         const isCollapsed = selection && selection.anchor.offset === selection.focus.offset;
-        
+
         if (isCollapsed) {
             const link: CustomElement = { type: 'link', url: linkUrl, children: [{ text: linkUrl }] } as CustomElement;
-            Transforms.insertNodes(editor, link as any);
+            Transforms.insertNodes(editor, link as SlateElement);
         } else {
             Transforms.wrapNodes(
                 editor,

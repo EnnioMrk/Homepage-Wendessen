@@ -62,7 +62,7 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Artikel
             e.children = value && value.length > 0 ? value : [{ type: 'paragraph', children: [{ text: '' }] }];
         }
         return e;
-    }, []);
+    }, [value]);
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [linkUrl, setLinkUrl] = useState('');
 
