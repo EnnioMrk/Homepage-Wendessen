@@ -16,16 +16,7 @@ const initialEditorValue: Descendant[] = [
     },
 ];
 
-interface ArchiveItem {
-    id: number;
-    title: string;
-    author?: string;
-    category?: string;
-    created_date?: string;
-    content: string;
-    created_at: string;
-    updated_at: string;
-}
+// ArchiveItem interface was unused here; keep the shape in the fetch handling instead.
 
 export default function EditArchivePage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -51,8 +42,8 @@ export default function EditArchivePage({ params }: { params: Promise<{ id: stri
                 const id = p.id;
                 setArchiveId(id);
 
-                mounted && setIsLoading(true);
-                mounted && setError(null);
+                if (mounted) setIsLoading(true);
+                if (mounted) setError(null);
 
                 const response = await fetch(`/api/archive/${id}`);
                 if (response.ok) {
@@ -79,13 +70,13 @@ export default function EditArchivePage({ params }: { params: Promise<{ id: stri
                         ]);
                     }
                 } else {
-                    mounted && setError('Archiveintrag nicht gefunden');
+                    if (mounted) setError('Archiveintrag nicht gefunden');
                 }
             } catch (err) {
                 console.error('Fetch error:', err);
-                mounted && setError('Fehler beim Laden des Archiveintrags');
+                if (mounted) setError('Fehler beim Laden des Archiveintrags');
             } finally {
-                mounted && setIsLoading(false);
+                if (mounted) setIsLoading(false);
             }
         })();
 

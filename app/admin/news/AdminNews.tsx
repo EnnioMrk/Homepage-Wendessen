@@ -372,33 +372,43 @@ export default function AdminNews() {
                                                 {item.content && (
                                                     <p className="text-gray-600 text-sm line-clamp-2">
                                                         {(() => {
-                                                            try {
-                                                                const parsed = typeof item.content === 'string' 
-                                                                    ? JSON.parse(item.content) 
-                                                                    : item.content;
-                                                                if (Array.isArray(parsed) && parsed[0]?.children) {
-                                                                    // Extract text safely without using `any`
-                                                                    const first = parsed[0] as unknown;
-                                                                    if (
-                                                                        typeof first === 'object' &&
-                                                                        first !== null &&
-                                                                        'children' in (first as any) &&
-                                                                        Array.isArray((first as any).children)
-                                                                    ) {
-                                                                        const children = (first as any).children as unknown[];
-                                                                        const texts = children
-                                                                            .map((c) => (typeof c === 'object' && c !== null && 'text' in (c as any) ? (c as any).text : ''))
-                                                                            .filter(Boolean)
-                                                                            .join(' ');
-                                                                        return texts.substring(0, 200);
+                                                            const extractPreview = (content: unknown): string => {
+                                                                try {
+                                                                    const parsed =
+                                                                        typeof content === 'string'
+                                                                            ? JSON.parse(content)
+                                                                            : content;
+
+                                                                    if (Array.isArray(parsed) && parsed.length > 0) {
+                                                                        const first = parsed[0] as unknown;
+                                                                        if (
+                                                                            typeof first === 'object' &&
+                                                                            first !== null &&
+                                                                            'children' in (first as Record<string, unknown>) &&
+                                                                            Array.isArray((first as Record<string, unknown>).children)
+                                                                        ) {
+                                                                            const children = (first as Record<string, unknown>).children as unknown[];
+                                                                            const texts = children
+                                                                                .map((c) => {
+                                                                                    if (typeof c === 'object' && c !== null && 'text' in (c as Record<string, unknown>)) {
+                                                                                        const maybe = (c as Record<string, unknown>).text;
+                                                                                        return typeof maybe === 'string' ? maybe : '';
+                                                                                    }
+                                                                                    return '';
+                                                                                })
+                                                                                .filter(Boolean)
+                                                                                .join(' ');
+                                                                            return texts.substring(0, 200);
+                                                                        }
                                                                     }
+
+                                                                    return 'Vorschau nicht verfügbar';
+                                                                } catch {
+                                                                    return typeof content === 'string' ? content.substring(0, 200) : 'Vorschau nicht verfügbar';
                                                                 }
-                                                                return 'Vorschau nicht verfügbar';
-                                                            } catch {
-                                                                return typeof item.content === 'string' 
-                                                                    ? item.content.substring(0, 200) 
-                                                                    : 'Vorschau nicht verfügbar';
-                                                            }
+                                                            };
+
+                                                            return extractPreview(item.content);
                                                         })()}
                                                         ...
                                                     </p>
