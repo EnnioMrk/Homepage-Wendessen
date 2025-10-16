@@ -1,3 +1,39 @@
+import { BaseEditor } from 'slate';
+import { ReactEditor } from 'slate-react';
+
+// Custom Slate element types
+type ImageElement = {
+    type: 'image';
+    url: string;
+    alt?: string;
+    children: Descendant[];
+};
+
+type CustomElement =
+    | { type: 'paragraph'; children: Descendant[] }
+    | { type: 'heading-one'; children: Descendant[] }
+    | { type: 'heading-two'; children: Descendant[] }
+    | { type: 'bulleted-list'; children: Descendant[] }
+    | { type: 'numbered-list'; children: Descendant[] }
+    | { type: 'list-item'; children: Descendant[] }
+    | { type: 'link'; url: string; children: Descendant[] }
+    | ImageElement;
+
+type CustomText = {
+    text: string;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+};
+
+// Augment Slate's CustomTypes
+declare module 'slate' {
+    interface CustomTypes {
+        Editor: BaseEditor & ReactEditor;
+        Element: CustomElement;
+        Text: CustomText;
+    }
+}
 'use client';
 
 import { useCallback, useMemo, useState, useEffect } from 'react';
@@ -19,9 +55,8 @@ import {
 } from '@phosphor-icons/react';
 import Image from 'next/image';
 
-// Type definitions for Slate
-// ImageElement type is not used directly here.
-type CustomElement = SlateElement & Record<string, unknown>;
+
+// (Removed duplicate type declarations for ImageElement and CustomElement)
 
 interface GalleryImage {
     id: number;
@@ -92,7 +127,6 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
 
     const renderElement = useCallback((props: RenderElementProps) => {
         const element = props.element as CustomElement;
-        
         switch (element.type) {
             case 'heading-one':
                 return <h1 className="text-3xl font-bold mb-4" {...props.attributes}>{props.children}</h1>;
@@ -107,34 +141,36 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
             case 'link':
                 return (
                     <a
-                        href={element.url}
+                        href={(element as any).url}
                         className="text-primary underline hover:text-primary-dark"
                         {...props.attributes}
                     >
                         {props.children}
                     </a>
                 );
-            case 'image':
+            case 'image': {
+                const img = element as ImageElement;
                 return (
                     <div {...props.attributes} contentEditable={false} className="my-4">
                         <div className="relative inline-block max-w-full">
                             <Image
-                                src={element.url}
-                                alt={element.alt || 'Bild'}
+                                src={img.url}
+                                alt={img.alt || 'Bild'}
                                 width={800}
                                 height={600}
                                 className="rounded-lg shadow-md max-w-full h-auto"
                                 style={{ objectFit: 'contain' }}
                             />
-                            {element.alt && (
+                            {img.alt && (
                                 <p className="text-sm text-gray-600 text-center mt-2 italic">
-                                    {element.alt}
+                                    {img.alt}
                                 </p>
                             )}
                         </div>
                         {props.children}
                     </div>
                 );
+            }
             default:
                 return <p className="mb-4" {...props.attributes}>{props.children}</p>;
         }
@@ -175,13 +211,13 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
         });
 
         const newProperties: Partial<SlateElement> = {
-            type: isActive ? 'paragraph' : (isList ? 'list-item' : format) as string,
+            type: isActive ? 'paragraph' : (isList ? 'list-item' : (format as any)),
         };
         Transforms.setNodes<SlateElement>(editor, newProperties);
 
         if (!isActive && isList) {
-            const block: CustomElement = { type: format as 'numbered-list' | 'bulleted-list', children: [] } as CustomElement;
-            Transforms.wrapNodes(editor, block as SlateElement);
+            const block: CustomElement = { type: format as 'numbered-list' | 'bulleted-list', children: [] };
+            Transforms.wrapNodes(editor, block);
         }
     };
 
@@ -192,12 +228,12 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
         const isCollapsed = selection && selection.anchor.offset === selection.focus.offset;
 
         if (isCollapsed) {
-            const link: CustomElement = { type: 'link', url: linkUrl, children: [{ text: linkUrl }] } as CustomElement;
-            Transforms.insertNodes(editor, link as SlateElement);
+            const link: CustomElement = { type: 'link', url: linkUrl, children: [{ text: linkUrl }] };
+            Transforms.insertNodes(editor, link);
         } else {
             Transforms.wrapNodes(
                 editor,
-                { type: 'link', url: linkUrl, children: [] } as CustomElement,
+                { type: 'link', url: linkUrl, children: [] },
                 { split: true }
             );
         }
@@ -207,11 +243,9 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
     };
 
     const insertImage = (url: string, alt: string) => {
-        const image: CustomElement = { type: 'image', url, alt, children: [{ text: '' }] } as CustomElement;
-        
-        Transforms.insertNodes(editor, image);
+        const image: ImageElement = { type: 'image', url, alt, children: [{ text: '' }] };
+    Transforms.insertNodes(editor, image);
         Transforms.insertNodes(editor, { type: 'paragraph', children: [{ text: '' }] } as SlateElement);
-        
         setShowGalleryModal(false);
         setGallerySearch('');
     };
@@ -451,15 +485,4 @@ export default function EnhancedRichTextEditor({ value, onChange, placeholder = 
     );
 }
 
-// Simple hotkey checker
-function isHotkey(hotkey: string, event: KeyboardEvent): boolean {
-    const keys = hotkey.split('+');
-    const modKey = keys[0] === 'mod';
-    const key = keys[keys.length - 1];
-    
-    if (modKey && (event.ctrlKey || event.metaKey)) {
-        return event.key.toLowerCase() === key.toLowerCase();
-    }
-    
-    return false;
-}
+// Removed local isHotkey function; using imported version.
