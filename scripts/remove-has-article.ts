@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function removeHasArticle() {
     console.log('🗑️  Removing has_article column from news table...');

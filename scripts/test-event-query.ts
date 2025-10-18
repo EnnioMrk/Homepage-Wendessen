@@ -1,7 +1,6 @@
-import { neon } from '@neondatabase/serverless';
 import { unstable_cache } from 'next/cache';
 
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 // Test direct database query
 async function testDirectQuery() {
@@ -14,10 +13,10 @@ async function testDirectQuery() {
         `;
 
         console.log(`✅ Direct query found ${events.length} events:\n`);
-        events.forEach((event: any) => {
-            console.log(`- ${event.title}`);
-            console.log(`  start_date: ${event.start_date}`);
-            console.log(`  end_date: ${event.end_date}`);
+        events.forEach((event: Record<string, unknown>) => {
+            console.log(`- ${String(event.title ?? '')}`);
+            console.log(`  start_date: ${String(event.start_date ?? '')}`);
+            console.log(`  end_date: ${String(event.end_date ?? '')}`);
             console.log('');
         });
 
@@ -54,9 +53,9 @@ async function testCachedQuery() {
         const events = await getCachedEvents();
 
         console.log(`✅ Cached query found ${events.length} events:\n`);
-        events.forEach((event: any) => {
-            console.log(`- ${event.title}`);
-            console.log(`  start_date: ${event.start_date}`);
+        events.forEach((event: Record<string, unknown>) => {
+            console.log(`- ${String(event.title ?? '')}`);
+            console.log(`  start_date: ${String(event.start_date ?? '')}`);
             console.log('');
         });
 

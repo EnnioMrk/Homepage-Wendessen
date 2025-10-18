@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function addEvents() {
     console.log('📅 Adding October 2025 - September 2026 events...\n');

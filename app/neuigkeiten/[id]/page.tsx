@@ -1,11 +1,9 @@
 import { notFound } from 'next/navigation';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import Link from 'next/link';
 import ArticleRenderer from '@/app/components/ArticleRenderer';
 import { Descendant } from 'slate';
-
-const sql = neon(process.env.DATABASE_URL!);
 
 interface NewsArticle {
     id: string;

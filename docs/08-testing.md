@@ -155,18 +155,17 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 // __tests__/lib/database.test.ts
 import { getEvents, createEvent, deleteEvent } from '@/lib/database';
 
-// Mock the database connection
-jest.mock('@neondatabase/serverless', () => ({
-    neon: jest.fn(() => jest.fn()),
+// Mock the shared sql helper
+jest.mock('@/lib/sql', () => ({
+    sql: jest.fn(),
 }));
 
 describe('Database Functions', () => {
-    const mockSql = jest.fn();
+    const mockSql = require('@/lib/sql').sql;
 
     beforeEach(() => {
         jest.clearAllMocks();
-        const { neon } = require('@neondatabase/serverless');
-        neon.mockReturnValue(mockSql);
+        mockSql.mockReset();
     });
 
     describe('getEvents', () => {

@@ -42,8 +42,8 @@ The **Wendessen Village Website** is a modern, community-focused digital platfor
 #### Database & Backend
 
 ```typescript
-- Neon PostgreSQL - Serverless PostgreSQL database
-- @neondatabase/serverless - Direct database connection
+- PostgreSQL (self-hosted or managed) - Standard PostgreSQL database
+- `pg` (node-postgres) used via a centralized helper at `lib/sql.ts`
 - Raw SQL queries with type-safe interfaces
 - No ORM - Direct control over database interactions
 ```
@@ -383,8 +383,7 @@ Platform: Vercel
 ### Environment Configuration
 
 ```bash
-Required Variables:
-- DATABASE_URL: Neon PostgreSQL connection string
+- DATABASE_URL: PostgreSQL connection string (used by `lib/sql.ts`)
 - ADMIN_PASSWORD: Administrative access password
 
 Optional Variables:

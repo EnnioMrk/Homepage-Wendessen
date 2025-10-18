@@ -91,11 +91,9 @@ wohnen-bauen/
 ```typescript
 // 1. Create migration script
 // scripts/migrations/003_add_comments_table.ts
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 
 async function createCommentsTable() {
-    const sql = neon(process.env.DATABASE_URL!);
-
     try {
         await sql`
             CREATE TABLE IF NOT EXISTS comments (
@@ -162,7 +160,7 @@ function convertToComment(dbComment: Record<string, unknown>): Comment {
     };
 }
 
-// 4. Add CRUD operations
+// 3. Add CRUD operations (use the shared helper `sql` imported from `@/lib/sql`)
 export async function getCommentsByEventId(
     eventId: string
 ): Promise<Comment[]> {

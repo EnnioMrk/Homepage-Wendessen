@@ -25,11 +25,11 @@ Browser ← Middleware ← Layout ← Component ← Cache ← Database
 ### Connection Pattern
 
 ```typescript
-import { neon } from '@neondatabase/serverless';
+// The project uses a shared `sql` helper (see `lib/sql.ts`) that wraps `pg`.
 import { unstable_cache } from 'next/cache';
 
 // Singleton connection
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '@/lib/sql';
 
 // Cached query pattern
 export const getEvents = unstable_cache(

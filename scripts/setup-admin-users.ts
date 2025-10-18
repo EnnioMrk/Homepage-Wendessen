@@ -1,7 +1,5 @@
-import { neon } from '@neondatabase/serverless';
 import * as bcrypt from 'bcryptjs';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function setupAdminUsers() {
     console.log('Setting up admin_users table...');

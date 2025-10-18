@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../../lib/permissions';
 import { deleteFromBlob } from '../../../../../lib/blob-utils';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 
 export const runtime = 'nodejs';
 
-const sql = neon(process.env.DATABASE_URL!);
+// using shared `sql` helper imported above
 
 // PUT - Update image (rename)
 export async function PUT(

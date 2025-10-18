@@ -1,9 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { sql } from './sql';
 import bcrypt from 'bcryptjs';
-
-const sql = neon(process.env.DATABASE_URL!);
+// lib/sql provides the database helper
 const SESSION_COOKIE_NAME = 'admin-session';
 
 export interface AdminUser {

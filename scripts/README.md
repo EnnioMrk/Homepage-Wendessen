@@ -285,8 +285,7 @@ When adding new features that require database changes:
 1. **Create script file**: `scripts/setup-{feature}.ts`
 2. **Use Neon client**:
    ```typescript
-   import { neon } from '@neondatabase/serverless';
-   const sql = neon(process.env.DATABASE_URL!);
+   import { sql } from '../lib/sql';
    ```
 3. **Make it idempotent**: Use `IF NOT EXISTS` or check for existing data
 4. **Add to package.json**:

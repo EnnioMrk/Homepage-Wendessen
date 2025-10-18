@@ -1,7 +1,5 @@
-import { neon } from '@neondatabase/serverless';
 import { unstable_cache } from 'next/cache';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from './sql';
 
 export interface DatabaseEvent {
     id: number;
@@ -120,9 +118,15 @@ function convertToCalendarEvent(
         category: String(dbEvent.category) as CalendarEvent['category'],
         organizer: dbEvent.organizer ? String(dbEvent.organizer) : undefined,
         imageUrl: dbEvent.image_url ? String(dbEvent.image_url) : undefined,
-        isCancelled: dbEvent.is_cancelled ? Boolean(dbEvent.is_cancelled) : undefined,
-        cancelledAt: dbEvent.cancelled_at ? new Date(String(dbEvent.cancelled_at)) : undefined,
-        cancelledBy: dbEvent.cancelled_by ? String(dbEvent.cancelled_by) : undefined,
+        isCancelled: dbEvent.is_cancelled
+            ? Boolean(dbEvent.is_cancelled)
+            : undefined,
+        cancelledAt: dbEvent.cancelled_at
+            ? new Date(String(dbEvent.cancelled_at))
+            : undefined,
+        cancelledBy: dbEvent.cancelled_by
+            ? String(dbEvent.cancelled_by)
+            : undefined,
         vereinId: dbEvent.verein_id ? String(dbEvent.verein_id) : undefined,
     };
 }
@@ -342,10 +346,15 @@ export async function cancelEvent(
     cancelledBy: string
 ): Promise<CalendarEvent> {
     try {
-        console.log('Database: Cancelling event ID:', id, 'by user:', cancelledBy);
-        
+        console.log(
+            'Database: Cancelling event ID:',
+            id,
+            'by user:',
+            cancelledBy
+        );
+
         const now = new Date().toISOString();
-        
+
         const result = await sql`
             UPDATE events 
             SET 
@@ -848,23 +857,43 @@ function convertToSharedGallerySubmission(
         submissionGroupId: String(row.submission_group_id),
         title: String(row.title),
         description: row.description ? String(row.description) : undefined,
-        submitterName: row.submitter_name ? String(row.submitter_name) : undefined,
-        submitterEmail: row.submitter_email ? String(row.submitter_email) : undefined,
+        submitterName: row.submitter_name
+            ? String(row.submitter_name)
+            : undefined,
+        submitterEmail: row.submitter_email
+            ? String(row.submitter_email)
+            : undefined,
         imageData: String(row.image_data),
         imageMimeType: String(row.image_mime_type),
-        imageFilename: row.image_filename ? String(row.image_filename) : undefined,
-        dateTaken: row.date_taken ? new Date(String(row.date_taken)) : undefined,
+        imageFilename: row.image_filename
+            ? String(row.image_filename)
+            : undefined,
+        dateTaken: row.date_taken
+            ? new Date(String(row.date_taken))
+            : undefined,
         location: row.location ? String(row.location) : undefined,
         status: String(row.status) as 'pending' | 'approved' | 'rejected',
         submittedAt: new Date(String(row.submitted_at)),
-        reviewedAt: row.reviewed_at ? new Date(String(row.reviewed_at)) : undefined,
+        reviewedAt: row.reviewed_at
+            ? new Date(String(row.reviewed_at))
+            : undefined,
         reviewedBy: row.reviewed_by ? String(row.reviewed_by) : undefined,
-        rejectionReason: row.rejection_reason ? String(row.rejection_reason) : undefined,
+        rejectionReason: row.rejection_reason
+            ? String(row.rejection_reason)
+            : undefined,
     };
 }
 
 export async function createSharedGallerySubmission(
-    submission: Omit<SharedGallerySubmission, 'id' | 'submittedAt' | 'status' | 'reviewedAt' | 'reviewedBy' | 'rejectionReason'>
+    submission: Omit<
+        SharedGallerySubmission,
+        | 'id'
+        | 'submittedAt'
+        | 'status'
+        | 'reviewedAt'
+        | 'reviewedBy'
+        | 'rejectionReason'
+    >
 ): Promise<SharedGallerySubmission> {
     try {
         const result = await sql`
@@ -914,10 +943,10 @@ export async function getSharedGallerySubmissionGroups(
               `;
 
         const submissions = result.map(convertToSharedGallerySubmission);
-        
+
         // Group by submission_group_id
         const groups = new Map<string, SharedGallerySubmissionGroup>();
-        
+
         for (const submission of submissions) {
             if (!groups.has(submission.submissionGroupId)) {
                 groups.set(submission.submissionGroupId, {
@@ -934,30 +963,38 @@ export async function getSharedGallerySubmissionGroups(
                     rejectedCount: 0,
                 });
             }
-            
+
             const group = groups.get(submission.submissionGroupId)!;
             group.images.push(submission);
             group.totalCount++;
-            
+
             // Collect unique submitter names
-            if (submission.submitterName && !group.submitterNames.includes(submission.submitterName)) {
+            if (
+                submission.submitterName &&
+                !group.submitterNames.includes(submission.submitterName)
+            ) {
                 group.submitterNames.push(submission.submitterName);
             }
-            
+
             if (submission.status === 'pending') group.pendingCount++;
             else if (submission.status === 'approved') group.approvedCount++;
             else if (submission.status === 'rejected') group.rejectedCount++;
         }
-        
+
         return Array.from(groups.values());
     } catch (error) {
-        console.error('Error fetching shared gallery submission groups:', error);
+        console.error(
+            'Error fetching shared gallery submission groups:',
+            error
+        );
         throw new Error('Failed to fetch shared gallery submission groups');
     }
 }
 
 export const getSharedGallerySubmissions = unstable_cache(
-    async (status?: 'pending' | 'approved' | 'rejected'): Promise<SharedGallerySubmission[]> => {
+    async (
+        status?: 'pending' | 'approved' | 'rejected'
+    ): Promise<SharedGallerySubmission[]> => {
         try {
             const result = status
                 ? await sql`
@@ -990,10 +1027,10 @@ export const getApprovedSharedGalleryGroups = unstable_cache(
             `;
 
             const submissions = result.map(convertToSharedGallerySubmission);
-            
+
             // Group by submission_group_id
             const groups = new Map<string, SharedGallerySubmissionGroup>();
-            
+
             for (const submission of submissions) {
                 if (!groups.has(submission.submissionGroupId)) {
                     groups.set(submission.submissionGroupId, {
@@ -1010,21 +1047,27 @@ export const getApprovedSharedGalleryGroups = unstable_cache(
                         rejectedCount: 0,
                     });
                 }
-                
+
                 const group = groups.get(submission.submissionGroupId)!;
                 group.images.push(submission);
                 group.totalCount++;
                 group.approvedCount++;
-                
+
                 // Collect unique submitter names
-                if (submission.submitterName && !group.submitterNames.includes(submission.submitterName)) {
+                if (
+                    submission.submitterName &&
+                    !group.submitterNames.includes(submission.submitterName)
+                ) {
                     group.submitterNames.push(submission.submitterName);
                 }
             }
-            
+
             return Array.from(groups.values());
         } catch (error) {
-            console.error('Error fetching approved shared gallery groups:', error);
+            console.error(
+                'Error fetching approved shared gallery groups:',
+                error
+            );
             throw new Error('Failed to fetch approved shared gallery groups');
         }
     },
@@ -1180,7 +1223,10 @@ export async function resetSharedGallerySubmissionToPending(
         }
         return convertToSharedGallerySubmission(result[0]);
     } catch (error) {
-        console.error('Error resetting shared gallery submission to pending:', error);
+        console.error(
+            'Error resetting shared gallery submission to pending:',
+            error
+        );
         throw new Error('Failed to reset shared gallery submission to pending');
     }
 }
@@ -1202,7 +1248,10 @@ export async function resetAllInGroupToPending(
         `;
         return result.length;
     } catch (error) {
-        console.error('Error resetting all submissions in group to pending:', error);
+        console.error(
+            'Error resetting all submissions in group to pending:',
+            error
+        );
         throw new Error('Failed to reset all submissions in group to pending');
     }
 }
@@ -1243,13 +1292,17 @@ function convertToGalleryReport(row: Record<string, unknown>): GalleryReport {
         reason: String(row.reason),
         reporterInfo: row.reporter_info ? String(row.reporter_info) : undefined,
         status: String(row.status) as 'pending' | 'reviewed' | 'dismissed',
-        reviewedAt: row.reviewed_at ? new Date(String(row.reviewed_at)) : undefined,
+        reviewedAt: row.reviewed_at
+            ? new Date(String(row.reviewed_at))
+            : undefined,
         reviewedBy: row.reviewed_by ? String(row.reviewed_by) : undefined,
         createdAt: new Date(String(row.created_at)),
         updatedAt: new Date(String(row.updated_at)),
         imageData: row.image_data ? String(row.image_data) : undefined,
         title: row.title ? String(row.title) : undefined,
-        submitterName: row.submitter_name ? String(row.submitter_name) : undefined,
+        submitterName: row.submitter_name
+            ? String(row.submitter_name)
+            : undefined,
     };
 }
 
@@ -1272,7 +1325,9 @@ export async function createGalleryReport(
 }
 
 export const getGalleryReports = unstable_cache(
-    async (status?: 'pending' | 'reviewed' | 'dismissed'): Promise<GalleryReport[]> => {
+    async (
+        status?: 'pending' | 'reviewed' | 'dismissed'
+    ): Promise<GalleryReport[]> => {
         try {
             const result = status
                 ? await sql`
@@ -1381,22 +1436,28 @@ export interface AdminUserRecord {
     vereinId?: string;
 }
 
-function convertToAdminUserRecord(row: Record<string, unknown>): AdminUserRecord {
+function convertToAdminUserRecord(
+    row: Record<string, unknown>
+): AdminUserRecord {
     return {
         id: Number(row.id),
         username: String(row.username),
         mustChangePassword: Boolean(row.must_change_password),
         createdAt: new Date(String(row.created_at)),
         updatedAt: new Date(String(row.updated_at)),
-        lastLogin: row.last_login ? new Date(String(row.last_login)) : undefined,
+        lastLogin: row.last_login
+            ? new Date(String(row.last_login))
+            : undefined,
         roleId: row.role_id ? Number(row.role_id) : undefined,
         roleName: row.role_name ? String(row.role_name) : undefined,
-        roleDisplayName: row.role_display_name ? String(row.role_display_name) : undefined,
+        roleDisplayName: row.role_display_name
+            ? String(row.role_display_name)
+            : undefined,
         vereinId: row.verein_id ? String(row.verein_id) : undefined,
-        customPermissions: row.custom_permissions 
-            ? (Array.isArray(row.custom_permissions) 
-                ? row.custom_permissions 
-                : JSON.parse(String(row.custom_permissions)))
+        customPermissions: row.custom_permissions
+            ? Array.isArray(row.custom_permissions)
+                ? row.custom_permissions
+                : JSON.parse(String(row.custom_permissions))
             : [],
     };
 }
@@ -1427,7 +1488,9 @@ export async function getAllAdminUsers(): Promise<AdminUserRecord[]> {
     }
 }
 
-export async function getAdminUserById(id: number): Promise<AdminUserRecord | null> {
+export async function getAdminUserById(
+    id: number
+): Promise<AdminUserRecord | null> {
     try {
         const result = await sql`
             SELECT 
@@ -1461,11 +1524,11 @@ export async function deleteAdminUser(id: number): Promise<void> {
             SELECT COUNT(*) as count FROM admin_users
         `;
         const adminCount = Number(countResult[0].count);
-        
+
         if (adminCount <= 1) {
             throw new Error('Cannot delete the last admin user');
         }
-        
+
         await sql`
             DELETE FROM admin_users
             WHERE id = ${id}
@@ -1518,19 +1581,21 @@ export async function getAllPermissions(): Promise<Permission[]> {
     }
 }
 
-export async function getPermissionsByCategory(): Promise<Record<string, Permission[]>> {
+export async function getPermissionsByCategory(): Promise<
+    Record<string, Permission[]>
+> {
     try {
         const permissions = await getAllPermissions();
         const grouped: Record<string, Permission[]> = {};
-        
-        permissions.forEach(perm => {
+
+        permissions.forEach((perm) => {
             const category = perm.category || 'other';
             if (!grouped[category]) {
                 grouped[category] = [];
             }
             grouped[category].push(perm);
         });
-        
+
         return grouped;
     } catch (error) {
         console.error('Error grouping permissions:', error);
@@ -1548,22 +1613,24 @@ export async function updateAdminUserRoleAndPermissions(
         const result = await sql`
             UPDATE admin_users
             SET role_id = ${roleId || null},
-                custom_permissions = ${customPermissions ? JSON.stringify(customPermissions) : '[]'},
+                custom_permissions = ${
+                    customPermissions ? JSON.stringify(customPermissions) : '[]'
+                },
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ${id}
             RETURNING *
         `;
-        
+
         if (result.length === 0) {
             throw new Error('Admin user not found');
         }
-        
+
         // Fetch the updated user with role information
         const updatedUser = await getAdminUserById(id);
         if (!updatedUser) {
             throw new Error('Failed to fetch updated user');
         }
-        
+
         return updatedUser;
     } catch (error) {
         console.error('Error updating admin user role and permissions:', error);

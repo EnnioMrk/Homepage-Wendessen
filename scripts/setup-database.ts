@@ -1,10 +1,10 @@
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../lib/sql';
 
 async function setupDatabase() {
     console.log('Setting up database tables...');
 
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+    // use shared sql helper from lib/sql
 
         async function createGalleryTable() {
             try {

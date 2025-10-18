@@ -59,7 +59,7 @@ All user-facing content MUST follow German conventions:
 -   **Bun REQUIRED**: All commands use `bun` (dev, build, install)
 -   **Next.js 15 App Router**: No Pages Router patterns allowed
 -   **React 19**: Use latest concurrent features where beneficial
--   **Neon PostgreSQL**: Serverless database with `@neondatabase/serverless`
+-   **PostgreSQL**: Database is PostgreSQL-compatible and accessed via the `lib/sql.ts` helper (driver: `pg`)
 -   **Tailwind CSS**: Utility-first styling, no custom CSS files
 
 ### Database Operations

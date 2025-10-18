@@ -5,10 +5,7 @@
  * This script adds support for images in events by adding an image_url column
  */
 
-import { neon } from '@neondatabase/serverless';
-
-// Database connection
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function addImageUrlColumn() {
     try {

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../../lib/auth';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../../../../lib/sql';
 import { revalidatePath, revalidateTag } from 'next/cache';
-
-const sql = neon(process.env.DATABASE_URL!);
 
 // GET - List all news
 export async function GET() {

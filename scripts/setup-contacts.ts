@@ -1,10 +1,9 @@
-import { neon } from '@neondatabase/serverless';
+import { sql } from '../lib/sql';
 import { readFile } from 'fs/promises';
 import path from 'path';
 
 async function setupContacts() {
     console.log('Setting up contacts table and seeding data...');
-    const sql = neon(process.env.DATABASE_URL!);
 
     // 1) Create contacts table with JSONB fields for flexible data
     await sql`

@@ -1,7 +1,5 @@
-import { neon } from '@neondatabase/serverless';
 import crypto from 'crypto';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function generateUniqueId(): Promise<string> {
     // Generate a random 32-bit ID (8 hex characters)

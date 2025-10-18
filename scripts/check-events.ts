@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function checkEvents() {
     console.log('🔍 Checking events in database...\n');
@@ -14,10 +12,10 @@ async function checkEvents() {
 
         console.log(`✅ Found ${events.length} events in database:\n`);
 
-        events.forEach((event: any) => {
-            console.log(`- ${event.title}`);
-            console.log(`  Date: ${event.start_date}`);
-            console.log(`  Category: ${event.category || 'none'}`);
+        events.forEach((event: Record<string, unknown>) => {
+            console.log(`- ${String(event.title ?? '')}`);
+            console.log(`  Date: ${String(event.start_date ?? '')}`);
+            console.log(`  Category: ${String(event.category ?? 'none')}`);
             console.log('');
         });
 

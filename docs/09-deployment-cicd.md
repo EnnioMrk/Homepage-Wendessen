@@ -1,6 +1,9 @@
 # Deployment & CI/CD
 
 ## 🚀 Deployment Overview
+# Deployment & CI/CD
+
+## 🚀 Deployment Overview
 
 ### Deployment Strategy
 
@@ -30,7 +33,7 @@ vercel link
 #### 2. Environment Variables Configuration
 
 Set these in Vercel Dashboard > Settings > Environment Variables:
-
+DATABASE_URL="your_database_url"
 ```bash
 # Production Environment Variables
 DATABASE_URL="postgresql://username:password@ep-prod.us-east-1.aws.neon.tech/neondb"
@@ -435,13 +438,13 @@ gh release create v1.0.1 --notes "Release notes here"
 
 #### Migration Scripts
 
-```bash
+import { sql } from '@/lib/sql';
 # Create migration script
 # scripts/migrations/001_add_image_column.ts
-import { neon } from '@neondatabase/serverless';
+    const sql = sql(process.env.DATABASE_URL!);
 
 async function migrate() {
-    const sql = neon(process.env.DATABASE_URL!);
+  // Use the shared sql helper: import { sql } from '@/lib/sql';
 
     try {
         await sql`
@@ -480,14 +483,14 @@ bun run scripts/migrations/002_new_feature.ts
 
 ### Health Checks
 
-```typescript
+import { sql } from '@/lib/sql';
 // app/api/health/route.ts
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-
+// Use the shared `sql` helper from `@/lib/sql` which wraps `pg`.
+        const sql = sql(process.env.DATABASE_URL!);
 export async function GET() {
     try {
-        const sql = neon(process.env.DATABASE_URL!);
+  const sql = await import('@/lib/sql').then(m => m.sql);
 
         // Test database connection
         const dbHealth = await sql`SELECT 1 as health`;
@@ -635,37 +638,16 @@ echo $DATABASE_URL
 ```
 
 ## 📋 Deployment Checklist
-
-### Pre-deployment
-
--   [ ] All tests passing
--   [ ] Build successful locally
--   [ ] Environment variables configured
 -   [ ] Database migrations applied
 -   [ ] Security audit passed
 -   [ ] Performance acceptable
-
-### Deployment
-
--   [ ] CI/CD pipeline successful
--   [ ] Health check endpoint responding
 -   [ ] Admin panel accessible
 -   [ ] Database connectivity verified
 -   [ ] Analytics tracking active
-
-### Post-deployment
-
--   [ ] Core functionality tested
--   [ ] Performance monitoring active
 -   [ ] Error tracking configured
 -   [ ] Team notified of deployment
 -   [ ] Documentation updated
-
-### Rollback Plan
-
--   [ ] Previous stable deployment identified
 -   [ ] Rollback procedure documented
--   [ ] Database backup verified
 -   [ ] Team notification plan ready
 
 ---

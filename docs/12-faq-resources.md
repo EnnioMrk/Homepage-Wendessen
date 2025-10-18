@@ -55,11 +55,10 @@ However, the project works fine with Node.js if preferred.
 
 **A:** Neon PostgreSQL offers:
 
--   **Serverless architecture**: Automatic scaling and cost efficiency
--   **PostgreSQL compatibility**: Full SQL feature set
--   **Branching**: Database branching for development
--   **Backup and recovery**: Automated data protection
--   **Edge deployment**: Low latency worldwide
+-   **Maturity and stability**: battle-tested relational database
+-   **Full SQL feature set**: rich functionality for queries and indexes
+-   **Extensibility**: stored procedures, extensions, and advanced types
+-   **Strong tooling**: client libraries like `pg` and ecosystem support
 
 #### Q: Can I use this with a different database?
 
@@ -209,20 +208,18 @@ const menuItems = [
 
 ```typescript
 // scripts/migrations/004_add_new_table.ts
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 
 async function migrate() {
-    const sql = neon(process.env.DATABASE_URL!);
+        await sql`
+        CREATE TABLE IF NOT EXISTS new_table (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
+    `;
 
-    await sql`
-    CREATE TABLE IF NOT EXISTS new_table (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-  `;
-
-    console.log('Migration completed');
+        console.log('Migration completed');
 }
 
 migrate();
@@ -343,8 +340,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: oven-sh/setup-bun@v1
-            - run: bun install
-            - run: bun run build
+        import { Pool } from 'pg';
+        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
             - run: bun run deploy # Your deployment script
 ```
 
@@ -355,7 +352,7 @@ jobs:
 **A:** Several optimization strategies:
 
 1. **Image optimization**:
-
+        Yes, you can adapt it to other databases. The project uses a centralized helper (`lib/sql.ts`) and the `sql` tagged-template; swapping drivers requires updating that helper and any provider-specific connection details.
 ```typescript
 // Use Next.js Image component with proper sizing
 <Image
@@ -506,9 +503,9 @@ const events = await sql`
 -   **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** - TypeScript reference
 -   **[Tailwind CSS](https://tailwindcss.com/docs)** - Utility-first CSS framework
 
-#### Database & Deployment
+-#### Database & Deployment
 
--   **[Neon Documentation](https://neon.tech/docs)** - Serverless PostgreSQL
+-   **PostgreSQL Docs**: https://www.postgresql.org/docs/ - Official PostgreSQL documentation
 -   **[Vercel Documentation](https://vercel.com/docs)** - Deployment platform
 -   **[Bun Documentation](https://bun.sh/docs)** - JavaScript runtime and toolkit
 

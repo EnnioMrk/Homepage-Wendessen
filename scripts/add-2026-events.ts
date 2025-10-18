@@ -1,13 +1,11 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function updateEvents() {
     console.log('🗑️  Deleting old events...\n');
 
     try {
-        // Delete all existing events
-        const deleteResult = await sql`DELETE FROM events`;
+    // Delete all existing events
+    await sql`DELETE FROM events`;
         console.log(`✅ Deleted all old events\n`);
 
         console.log('📅 Adding 2026 events...\n');

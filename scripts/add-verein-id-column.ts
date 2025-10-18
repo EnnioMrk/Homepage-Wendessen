@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function addVereinIdColumn() {
     console.log('Adding verein_id column to admin_users table...\n');

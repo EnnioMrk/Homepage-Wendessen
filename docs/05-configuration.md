@@ -35,9 +35,10 @@ NODE_ENV="production"
 #### `DATABASE_URL`
 
 -   **Purpose**: PostgreSQL connection string for Neon database
+ -   **Purpose**: PostgreSQL connection string for the database
 -   **Format**: `postgresql://[user[:password]@][host][:port][/dbname][?param1=value1&...]`
 -   **Required**: Yes
--   **Example**: `postgresql://user:pass@ep-example.us-east-1.aws.neon.tech/neondb`
+ -   **Example**: `postgresql://user:pass@db-host.example.com:5432/dbname`
 
 #### `ADMIN_PASSWORD`
 
@@ -313,24 +314,19 @@ export const config = {
 
 ### Connection Setup
 
-Database connection is configured in `lib/database.ts`:
+Database connection is centralized in `lib/sql.ts` and consumed across the codebase via the shared tagged-template helper:
 
 ```typescript
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 
-// Connection instance
-const sql = neon(process.env.DATABASE_URL!);
-
-// Connection pooling and caching
+// Use the tagged-template helper everywhere:
 export const getEvents = unstable_cache(
     async (): Promise<CalendarEvent[]> => {
-        // Database operations
+        const rows = await sql`SELECT * FROM events ORDER BY start_date ASC`;
+        return rows.map(convertToCalendarEvent);
     },
     ['all-events'],
-    {
-        tags: ['events'],
-        revalidate: 3600, // 1 hour cache
-    }
+    { tags: ['events'], revalidate: 3600 }
 );
 ```
 

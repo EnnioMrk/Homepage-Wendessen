@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../lib/permissions';
 import { uploadToBlob } from '../../../../lib/blob-utils';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 
 export const runtime = 'nodejs';
 
-const sql = neon(process.env.DATABASE_URL!);
+// const sql is provided by the shared helper import above
 
 // GET - List all images
 export async function GET() {

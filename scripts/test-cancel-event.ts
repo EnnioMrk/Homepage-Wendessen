@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function testCancelEvent() {
     console.log('Testing event cancellation...\n');
@@ -15,7 +13,7 @@ async function testCancelEvent() {
         }
 
         const testEvent = events[0];
-        console.log('Testing with event:', testEvent);
+            console.log('Testing with event:', testEvent as Record<string, unknown>);
 
         // Try to cancel it
         const now = new Date().toISOString();
@@ -41,9 +39,9 @@ async function testCancelEvent() {
         
         if (result.length > 0) {
             console.log('Updated event:');
-            console.log('- is_cancelled:', result[0].is_cancelled);
-            console.log('- cancelled_at:', result[0].cancelled_at);
-            console.log('- cancelled_by:', result[0].cancelled_by);
+                console.log('- is_cancelled:', String(result[0].is_cancelled ?? ''));
+                console.log('- cancelled_at:', String(result[0].cancelled_at ?? ''));
+                console.log('- cancelled_by:', String(result[0].cancelled_by ?? ''));
             
             // Restore it
             console.log('\nRestoring event...');
@@ -61,10 +59,12 @@ async function testCancelEvent() {
 
         console.log('\n✅ Cancel functionality works correctly!');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('❌ Error testing cancel:', error);
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
+        if (error instanceof Error) {
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+        }
     }
 }
 

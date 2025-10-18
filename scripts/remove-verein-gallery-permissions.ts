@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function removeVereinGalleryPermissions() {
     console.log('🗑️  Removing verein.gallery permissions...');
@@ -20,8 +18,8 @@ async function removeVereinGalleryPermissions() {
         }
 
         console.log(`\nFound ${existingPerms.length} verein.gallery permissions to remove:`);
-        existingPerms.forEach((perm: any) => {
-            console.log(`  - ${perm.name} (${perm.display_name})`);
+        existingPerms.forEach((perm: Record<string, unknown>) => {
+            console.log(`  - ${String(perm.name ?? '')} (${String(perm.display_name ?? '')})`);
         });
 
         // Remove from custom_permissions in admin_users table
@@ -34,16 +32,17 @@ async function removeVereinGalleryPermissions() {
 
         if (users.length > 0) {
             console.log(`Found ${users.length} users with verein.gallery permissions`);
-            for (const user of users) {
-                const customPerms = user.custom_permissions || [];
-                const filteredPerms = customPerms.filter((p: string) => !p.startsWith('verein.gallery'));
-                
+            for (const user of users as Array<Record<string, unknown>>) {
+                const customPerms = (user.custom_permissions as unknown) || [];
+                const filteredPerms = (Array.isArray(customPerms) ? customPerms : [])
+                    .filter((p: unknown) => String(p).startsWith('verein.gallery') === false);
+
                 await sql`
                     UPDATE admin_users 
                     SET custom_permissions = ${JSON.stringify(filteredPerms)}
                     WHERE id = ${user.id}
                 `;
-                console.log(`  ✓ Updated user: ${user.username}`);
+                console.log(`  ✓ Updated user: ${String(user.username ?? '')}`);
             }
         } else {
             console.log('  No users have verein.gallery in custom permissions');
@@ -51,15 +50,15 @@ async function removeVereinGalleryPermissions() {
 
         // Delete the permissions from the permissions table
         console.log('\n🗑️  Deleting permissions from database...');
-        const result = await sql`
+        await sql`
             DELETE FROM permissions 
             WHERE name LIKE 'verein.gallery%'
         `;
 
         console.log(`✅ Successfully removed ${existingPerms.length} verein.gallery permissions`);
         console.log('\n✨ Done! The following permissions have been removed:');
-        existingPerms.forEach((perm: any) => {
-            console.log(`  ✓ ${perm.name}`);
+        existingPerms.forEach((perm: Record<string, unknown>) => {
+            console.log(`  ✓ ${String(perm.name ?? '')}`);
         });
 
     } catch (error) {

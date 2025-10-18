@@ -23,16 +23,17 @@
 
 ```json
 {
-    "@neondatabase/serverless": "^1.0.1"
+    "pg": "used via lib/sql (node-postgres)"
 }
 ```
 
-**Neon Serverless Driver** provides:
+**Database Driver**
 
--   **PostgreSQL**: Serverless database connection
--   **Edge Runtime**: Compatible with Vercel Edge Functions
--   **Connection Pooling**: Automatic connection management
--   **Type Safety**: Works seamlessly with TypeScript
+-   **pg (node-postgres)**: Standard PostgreSQL client used via a shared helper at `lib/sql.ts`.
+-   **Connection Pooling**: Managed by `pg.Pool` inside the shared helper.
+-   **Type Safety & Querying**: The project exposes a tagged-template `sql` helper to preserve parameterized queries and avoid mass callsite changes.
+    
+    **Migration Note**: This project previously used `@neondatabase/serverless`. That driver has been removed and the codebase now uses `pg` (node-postgres) via the centralized helper at `lib/sql.ts`.
 
 ### UI Components & Styling
 
@@ -180,7 +181,7 @@ All dependencies are compatible with Bun runtime:
 
 -   **next**: Core framework
 -   **react**, **react-dom**: UI library
--   **@neondatabase/serverless**: Database connection
+-   **Database**: Replaced serverless Neon driver with `pg` and a shared `lib/sql.ts` helper
 -   **tailwindcss**: Styling system
 
 ### 2. Feature Dependencies (Can Replace)

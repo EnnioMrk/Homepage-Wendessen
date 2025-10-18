@@ -1,6 +1,4 @@
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function listRoles() {
     console.log('Checking roles in database...\n');
@@ -15,22 +13,22 @@ async function listRoles() {
         console.log('Current roles:');
         console.log('==============\n');
         
-        for (const role of roles) {
-            console.log(`ID: ${role.id}`);
-            console.log(`Name: ${role.name}`);
-            console.log(`Display Name: ${role.display_name}`);
-            console.log(`Description: ${role.description}`);
+        for (const role of roles as Array<Record<string, unknown>>) {
+            console.log(`ID: ${String(role.id ?? '')}`);
+            console.log(`Name: ${String(role.name ?? '')}`);
+            console.log(`Display Name: ${String(role.display_name ?? '')}`);
+            console.log(`Description: ${String(role.description ?? '')}`);
             console.log('---');
         }
 
         console.log(`\nTotal: ${roles.length} roles`);
 
         // Check for verein_ prefixed roles
-        const vereinRoles = roles.filter((r: any) => String(r.name).startsWith('verein_'));
+        const vereinRoles = (roles as Array<Record<string, unknown>>).filter((r) => String(r.name ?? '').startsWith('verein_'));
         if (vereinRoles.length > 0) {
             console.log(`\n⚠️  Found ${vereinRoles.length} Verein-specific roles that should be removed:`);
             for (const role of vereinRoles) {
-                console.log(`   - ${role.name} (${role.display_name})`);
+                console.log(`   - ${String(role.name ?? '')} (${String(role.display_name ?? '')})`);
             }
         }
         

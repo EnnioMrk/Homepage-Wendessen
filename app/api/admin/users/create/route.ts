@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission, getRoleDefaultPermissions } from '@/lib/permissions';
-import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '@/lib/sql';
 
 // Generate a random 6-digit number
 function generateInitialPassword(): string {

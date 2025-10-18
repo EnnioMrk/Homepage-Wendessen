@@ -41,7 +41,9 @@ ping ep-example.us-east-1.aws.neon.tech
 
 ```typescript
 // Implement connection retry logic
-const sql = neon(process.env.DATABASE_URL!, {
+// Use the shared helper instead of neon: import { sql } from '@/lib/sql';
+// The helper reads DATABASE_URL from env and uses pg.Pool under the hood.
+// const sql = /* use the shared helper: import { sql } from '@/lib/sql' */ null;
     pool: {
         max: 10,
         idleTimeoutMillis: 30000,
@@ -172,9 +174,6 @@ if (!mounted) return <div>Loading...</div>;
 #### Network Tab
 
 ```javascript
-// Check API responses
-// Look for:
-// - 401 errors (authentication)
 // - 500 errors (server issues)
 // - Slow requests (performance)
 // - Failed requests (network issues)
@@ -183,6 +182,8 @@ if (!mounted) return <div>Loading...</div>;
 #### Console Debugging
 
 ```typescript
+# Run a quick script that uses the shared helper (requires DATABASE_URL in env)
+# Example: `bunx tsx scripts/setup-database.ts`
 // Add debug logging
 const DEBUG = process.env.NODE_ENV === 'development';
 
@@ -190,10 +191,6 @@ function debugLog(message: string, data?: any) {
     if (DEBUG) {
         console.log(`[DEBUG] ${message}`, data);
     }
-}
-
-// Usage in components
-export default function EventCard({ title, ...props }) {
     debugLog('EventCard rendered', { title, props });
     return <div>...</div>;
 }
@@ -203,6 +200,7 @@ export default function EventCard({ title, ...props }) {
 
 ```javascript
 // Check stored data:
+// const sql = /* use the shared helper: import { sql } from '@/lib/sql' */ null;
 // - Cookies (admin session)
 // - Local Storage
 // - Session Storage
@@ -215,11 +213,8 @@ export default function EventCard({ title, ...props }) {
 
 ```typescript
 // Add query logging
-const sql = neon(process.env.DATABASE_URL!, {
+// const sql = /* use the shared helper: import { sql } from '@/lib/sql' */ null;
     debug: process.env.NODE_ENV === 'development',
-});
-
-// Manual query testing
 export async function debugQuery() {
     try {
         const result = await sql`SELECT NOW()`;
@@ -509,13 +504,11 @@ Logger.info('Event created successfully', { eventId: newEvent.id });
 ```typescript
 // app/api/health/route.ts
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/sql';
 
 export async function GET() {
     try {
-        const sql = neon(process.env.DATABASE_URL!);
-
-        // Test database connection
+        // Test database connection using shared helper
         await sql`SELECT 1`;
 
         const health = {

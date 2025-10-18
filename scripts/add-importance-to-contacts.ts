@@ -1,7 +1,5 @@
-import { neon } from '@neondatabase/serverless';
 import { calculateImportance } from '../lib/importance-utils';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { sql } from '../lib/sql';
 
 async function addImportanceToContacts() {
     try {
