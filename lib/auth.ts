@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from './sql';
 import bcrypt from 'bcryptjs';
 // lib/sql provides the database helper
 const SESSION_COOKIE_NAME = 'admin-session';
@@ -45,6 +44,7 @@ function decodeSessionToken(token: string): SessionData | null {
 // Get admin user by username
 export async function getAdminUserByUsername(username: string): Promise<AdminUser | null> {
     try {
+        const { sql } = await import('./sql');
         const result = await sql`
             SELECT 
                 u.id, 
@@ -75,11 +75,7 @@ export async function getAdminUserByUsername(username: string): Promise<AdminUse
             roleName: row.role_name ? String(row.role_name) : undefined,
             roleDisplayName: row.role_display_name ? String(row.role_display_name) : undefined,
             vereinId: row.verein_id ? String(row.verein_id) : undefined,
-            customPermissions: row.custom_permissions 
-                ? (Array.isArray(row.custom_permissions) 
-                    ? row.custom_permissions 
-                    : JSON.parse(String(row.custom_permissions)))
-                : [],
+            customPermissions: normalizePermissions(row.custom_permissions),
         };
     } catch (error) {
         console.error('Error fetching admin user:', error);
@@ -90,6 +86,7 @@ export async function getAdminUserByUsername(username: string): Promise<AdminUse
 // Verify username and password
 export async function verifyCredentials(username: string, password: string): Promise<AdminUser | null> {
     try {
+        const { sql } = await import('./sql');
         const result = await sql`
             SELECT 
                 u.id, 
@@ -131,11 +128,7 @@ export async function verifyCredentials(username: string, password: string): Pro
             roleId: row.role_id ? Number(row.role_id) : undefined,
             roleName: row.role_name ? String(row.role_name) : undefined,
             roleDisplayName: row.role_display_name ? String(row.role_display_name) : undefined,
-            customPermissions: row.custom_permissions 
-                ? (Array.isArray(row.custom_permissions) 
-                    ? row.custom_permissions 
-                    : JSON.parse(String(row.custom_permissions)))
-                : [],
+            customPermissions: normalizePermissions(row.custom_permissions),
         };
     } catch (error) {
         console.error('Error verifying credentials:', error);
@@ -207,6 +200,30 @@ export async function getCurrentAdminUser(): Promise<AdminUser | null> {
     return getAdminUserByUsername(sessionData.username);
 }
 
+/**
+ * Normalize permissions stored in DB (JSONB or array) into a trimmed string array.
+ * Ensures values like '*' with whitespace are recognized and comparisons are stable.
+ */
+export function normalizePermissions(raw: unknown): string[] {
+    if (!raw) return [];
+
+    try {
+        const arr: unknown[] = Array.isArray(raw) ? raw : JSON.parse(String(raw));
+        return arr
+            .filter((p: unknown) => p !== null && p !== undefined)
+            .map((p: unknown) => String(p).trim())
+            .filter((p: string) => p.length > 0);
+    } catch {
+        // If parsing fails, try coercing to a single string permission
+        try {
+            const single = String(raw).trim();
+            return single.length > 0 ? [single] : [];
+        } catch {
+            return [];
+        }
+    }
+}
+
 // Clear session
 export async function clearSession(): Promise<void> {
     const cookieStore = await cookies();
@@ -266,7 +283,8 @@ export function validatePasswordStrength(password: string): { valid: boolean; me
 export async function changePassword(userId: number, newPassword: string): Promise<boolean> {
     try {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
+        const { sql } = await import('./sql');
+
         await sql`
             UPDATE admin_users
             SET password_hash = ${hashedPassword},

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth';
+import { requireAuth } from '@/lib/middlewareAuth';
 
 export function middleware(request: NextRequest) {
     // Protect admin routes except login and change-password

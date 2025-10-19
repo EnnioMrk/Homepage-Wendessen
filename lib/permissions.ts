@@ -102,26 +102,27 @@ export function getRoleDefaultPermissions(roleName: string): string[] {
 export function hasPermission(user: AdminUser | null, permission: string): boolean {
     if (!user) return false;
 
+    const perms = user.customPermissions || [];
+
     // Check if user has wildcard permission
-    if (user.customPermissions && user.customPermissions.includes('*')) {
+    if (perms.includes('*')) {
         return true;
     }
 
     // Check for exact permission match
-    if (user.customPermissions && user.customPermissions.includes(permission)) {
+    if (perms.includes(permission)) {
         return true;
     }
 
     // Check for category-level wildcard (e.g., 'events.*' allows 'events.create')
     if (user.customPermissions) {
         const [category] = permission.split('.');
-        if (user.customPermissions.includes(`${category}.*`)) {
+        if (perms.includes(`${category}.*`)) {
             return true;
         }
-
         // Check if user has verein.* permission for the general permission
         // Only grant .view permissions automatically if user has verein permissions in that category
-        if (permission.endsWith('.view') && user.customPermissions.some(p => p.startsWith(`verein.${category}.`))) {
+        if (permission.endsWith('.view') && perms.some(p => p.startsWith(`verein.${category}.`))) {
             return true;
         }
     }
@@ -154,6 +155,16 @@ export async function requirePermission(permission: string): Promise<AdminUser> 
     }
 
     if (!hasPermission(user, permission)) {
+        // Diagnostic log to help track down permission mismatches (will show user's normalized permissions)
+        try {
+            console.error(
+                `Permission denied: user=${user.username} (id=${user.id}) missing '${permission}' - user.perms=`,
+                user.customPermissions || []
+            );
+        } catch {
+            // swallow logging errors
+        }
+
         throw new Error(`Forbidden: Missing permission '${permission}'`);
     }
 

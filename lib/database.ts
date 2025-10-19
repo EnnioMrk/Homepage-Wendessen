@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { sql } from './sql';
+import { normalizePermissions } from './auth';
 
 export interface DatabaseEvent {
     id: number;
@@ -1454,11 +1455,7 @@ function convertToAdminUserRecord(
             ? String(row.role_display_name)
             : undefined,
         vereinId: row.verein_id ? String(row.verein_id) : undefined,
-        customPermissions: row.custom_permissions
-            ? Array.isArray(row.custom_permissions)
-                ? row.custom_permissions
-                : JSON.parse(String(row.custom_permissions))
-            : [],
+        customPermissions: normalizePermissions(row.custom_permissions),
     };
 }
 
