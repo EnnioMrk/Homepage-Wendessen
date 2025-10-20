@@ -799,7 +799,7 @@ export async function cleanupOldRejectedPortraits(
         }
 
         // Delete the oldest rejected portraits
-        const idsToDelete = toDeleteResult.map((row) => row.id);
+    const idsToDelete = (toDeleteResult as Array<{ id: number }>).map((row) => row.id);
         const deleteResult = await sql`
             DELETE FROM portraits 
             WHERE id = ANY(${idsToDelete})

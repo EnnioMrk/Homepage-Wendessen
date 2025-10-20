@@ -3,6 +3,15 @@ import { isAuthenticated } from '../../../../lib/auth';
 import { sql } from '../../../../lib/sql';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
+interface NewsRow {
+    id: number;
+    title: string;
+    content?: unknown;
+    category: string;
+    publishedDate: Date;
+    articleId: string;
+}
+
 // GET - List all news
 export async function GET() {
     try {
@@ -22,7 +31,7 @@ export async function GET() {
             ORDER BY published_date DESC
         `;
 
-        const news = result.map((row) => ({
+        const news = (result as NewsRow[]).map((row) => ({
             ...row,
             publishedDate: row.publishedDate.toISOString(),
         }));

@@ -12,12 +12,12 @@ async function migrateNewsContent() {
         `;
         
         // Filter in JavaScript to avoid SQL type issues
-        const newsWithContent = allNews.filter(news => {
-            const hasContent = news.content && news.content.trim() !== '';
-            const hasNoJson = !news.content_json || 
-                             news.content_json === '' || 
-                             news.content_json === 'null' ||
-                             news.content_json === null;
+        const newsWithContent = allNews.filter((n: any) => {
+            const hasContent = n.content && n.content.trim() !== '';
+            const hasNoJson = !n.content_json || 
+                             n.content_json === '' || 
+                             n.content_json === 'null' ||
+                             n.content_json === null;
             return hasContent && hasNoJson;
         });
         

@@ -44,7 +44,7 @@ async function addImportanceToContacts() {
 
         // Step 4: Show summary of importance distribution
         console.log('\n📈 Importance distribution summary:');
-        const summary = await sql`
+    const summary = await sql`
             SELECT 
                 CASE 
                     WHEN importance >= 1000 THEN 'Government/Administrative (1000+)'
@@ -69,7 +69,7 @@ async function addImportanceToContacts() {
         `;
 
         console.log('\n📊 Distribution:');
-        summary.forEach((row) => {
+        (summary as Array<{ category: string; count: number }>).forEach((row) => {
             console.log(`   ${row.category}: ${row.count} contacts`);
         });
 
@@ -82,7 +82,7 @@ async function addImportanceToContacts() {
             LIMIT 10;
         `;
 
-        topContacts.forEach((contact, index) => {
+        (topContacts as Array<{ name: string; importance: number }>).forEach((contact, index) => {
             console.log(
                 `   ${index + 1}. ${contact.name} (${contact.importance})`
             );

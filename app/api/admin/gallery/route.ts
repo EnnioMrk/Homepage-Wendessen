@@ -3,6 +3,17 @@ import { requirePermission } from '../../../../lib/permissions';
 import { uploadToBlob } from '../../../../lib/blob-utils';
 import { sql } from '@/lib/sql';
 
+interface GalleryImageRow {
+    id: number;
+    filename: string;
+    originalName: string;
+    displayName: string;
+    url: string;
+    size: number;
+    mimeType: string;
+    uploadedAt: Date;
+}
+
 export const runtime = 'nodejs';
 
 // const sql is provided by the shared helper import above
@@ -20,7 +31,7 @@ export async function GET() {
             ORDER BY uploaded_at DESC
         `;
 
-        const images = result.map((row) => ({
+        const images = (result as GalleryImageRow[]).map((row) => ({
             ...row,
             uploadedAt: row.uploadedAt.toISOString(),
         }));
