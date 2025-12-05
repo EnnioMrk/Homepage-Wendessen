@@ -43,7 +43,6 @@ async function setupArchiveTable() {
         console.log('  - content: Full text content (required)');
         console.log('  - created_at: When added to database');
         console.log('  - updated_at: Last modification time');
-
     } catch (error) {
         console.error('❌ Error setting up archive table:', error);
         throw error;

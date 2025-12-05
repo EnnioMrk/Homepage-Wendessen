@@ -7,7 +7,8 @@ export async function GET(request: Request) {
         const email = searchParams.get('email');
         
         // Get all groups (pending and approved)
-        const allGroups = await getSharedGallerySubmissionGroups();
+        const result = await getSharedGallerySubmissionGroups();
+        const allGroups = result.groups;
         
         // Filter by email if provided, otherwise return all
         const filteredGroups = email 

@@ -14,6 +14,9 @@ export default async function AdminSharedGalleryPage() {
     // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canViewSharedGallery = hasPermission(currentUser, 'shared_gallery.view');
+    const canApprove = hasPermission(currentUser, 'shared_gallery.approve');
+    const canReject = hasPermission(currentUser, 'shared_gallery.reject');
+    const canReset = hasPermission(currentUser, 'shared_gallery.reset');
 
     if (!canViewSharedGallery) {
         return (
@@ -40,5 +43,5 @@ export default async function AdminSharedGalleryPage() {
         );
     }
 
-    return <AdminSharedGallery />;
+    return <AdminSharedGallery canApprove={canApprove} canReject={canReject} canReset={canReset} />;
 }

@@ -9,12 +9,12 @@ import {
     ShieldCheck,
     Heart,
     CalendarBlank,
-    
     User,
     Phone,
     MapPin,
     HandHeart,
 } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Evang. Frauenhilfe Wendessen - Dorfleben',
@@ -25,37 +25,12 @@ export const metadata = {
 export default function FrauenhilfePage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-pink-600 via-rose-500 to-fuchsia-600 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/frauenhilfe.jpg')] bg-cover bg-center opacity-30"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 to-fuchsia-600/90"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Cross className="w-8 h-8 sm:w-12 sm:h-12 text-pink-600" />
-                            </div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
-                                Evang. Frauenhilfe
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-rose-400 to-white mx-auto mb-8"></div>
-                        <p className="text-2xl md:text-3xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                            Wendessen
-                        </p>
-                        <p className="text-xl text-rose-200 font-semibold mt-4">
-                            Seit 1917 • Glaube • Gemeinschaft • Verantwortung
-                        </p>
-
-                        {/* Decorative elements - hidden on mobile */}
-                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-rose-400/50 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-rose-400/60 rounded-full animate-bounce delay-300"></div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Evang. Frauenhilfe"
+                icon={<Cross />}
+                backgroundImage="/images/Vereinsleben/frauenhilfe.jpg"
+                color="pink"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">
@@ -76,7 +51,8 @@ export default function FrauenhilfePage() {
                                     Gegründet 28. Mai 1917
                                 </h2>
                                 <p className="text-lg">
-                                    Über 100 Jahre christliche Frauengemeinschaft
+                                    Über 100 Jahre christliche
+                                    Frauengemeinschaft
                                 </p>
                             </div>
                         </div>
@@ -89,7 +65,8 @@ export default function FrauenhilfePage() {
                         </h2>
                         <div className="w-24 h-1 bg-gradient-to-r from-pink-600 to-fuchsia-600 mx-auto mb-6"></div>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Frauen auf dem Boden christlichen Glaubens zusammenführen
+                            Frauen auf dem Boden christlichen Glaubens
+                            zusammenführen
                         </p>
                     </div>
 
@@ -103,12 +80,16 @@ export default function FrauenhilfePage() {
                                     Unsere Gemeinschaft
                                 </h3>
                                 <p className="text-lg text-pink-800 mb-3">
-                                    Zur Zeit haben wir <strong>23 Mitglieder</strong>. 
-                                    Der Beitrag beträgt <strong>20,00 EUR jährlich</strong>, 
-                                    davon werden Beiträge an den Kreis- und Landesverband geleistet.
+                                    Zur Zeit haben wir{' '}
+                                    <strong>23 Mitglieder</strong>. Der Beitrag
+                                    beträgt <strong>20,00 EUR jährlich</strong>,
+                                    davon werden Beiträge an den Kreis- und
+                                    Landesverband geleistet.
                                 </p>
                                 <p className="text-lg text-pink-800">
-                                    Außerdem wird ein <strong>Patenkind in Indien</strong> unterstützt.
+                                    Außerdem wird ein{' '}
+                                    <strong>Patenkind in Indien</strong>{' '}
+                                    unterstützt.
                                 </p>
                             </div>
 
@@ -120,8 +101,8 @@ export default function FrauenhilfePage() {
                                 </h3>
                                 <p className="text-lg text-purple-800 mb-3">
                                     Monatliche Treffen finden auf dem{' '}
-                                    <strong>&quot;Hans-Meves-Hof&quot;</strong>, Dorfstr. 19, 
-                                    38300 WF-Wendessen statt.
+                                    <strong>&quot;Hans-Meves-Hof&quot;</strong>,
+                                    Dorfstr. 19, 38300 WF-Wendessen statt.
                                 </p>
                                 <p className="text-lg text-purple-800 font-semibold">
                                     Jeden 3. Mittwoch im Monat um 15:00 Uhr
@@ -135,10 +116,12 @@ export default function FrauenhilfePage() {
                                     Aus unserer Satzung
                                 </h3>
                                 <p className="text-lg text-blue-800 italic">
-                                    &quot;Der Verein will Frauen auf dem Boden christlichen 
-                                    Glaubens zusammenführen, sie in der Nachfolge Jesu 
-                                    Christi stärken und ihnen bei der Wahrnehmung ihrer 
-                                    Verantwortung in Familie, Gemeinde und Gesellschaft helfen.&quot;
+                                    &quot;Der Verein will Frauen auf dem Boden
+                                    christlichen Glaubens zusammenführen, sie in
+                                    der Nachfolge Jesu Christi stärken und ihnen
+                                    bei der Wahrnehmung ihrer Verantwortung in
+                                    Familie, Gemeinde und Gesellschaft
+                                    helfen.&quot;
                                 </p>
                             </div>
                         </div>
@@ -176,7 +159,8 @@ export default function FrauenhilfePage() {
                                     Gedächtnistraining
                                 </h3>
                                 <p className="text-gray-700">
-                                    Geistig fit bleiben durch regelmäßiges Training
+                                    Geistig fit bleiben durch regelmäßiges
+                                    Training
                                 </p>
                             </div>
 
@@ -189,7 +173,8 @@ export default function FrauenhilfePage() {
                                     Basteln
                                 </h3>
                                 <p className="text-gray-700">
-                                    Kreative Aktivitäten und handwerkliche Arbeiten
+                                    Kreative Aktivitäten und handwerkliche
+                                    Arbeiten
                                 </p>
                             </div>
 
@@ -202,7 +187,8 @@ export default function FrauenhilfePage() {
                                     Fahrten & Reiseberichte
                                 </h3>
                                 <p className="text-gray-700">
-                                    Gemeinsame Ausflüge und spannende Reiseberichte
+                                    Gemeinsame Ausflüge und spannende
+                                    Reiseberichte
                                 </p>
                             </div>
 
@@ -228,7 +214,8 @@ export default function FrauenhilfePage() {
                                     Geselliges Beisammensein
                                 </h3>
                                 <p className="text-gray-700">
-                                    Gemeinschaft und Austausch in netter Atmosphäre
+                                    Gemeinschaft und Austausch in netter
+                                    Atmosphäre
                                 </p>
                             </div>
                         </div>
@@ -252,9 +239,10 @@ export default function FrauenhilfePage() {
                                     Patenschaft in Indien
                                 </h4>
                                 <p className="text-lg text-gray-700">
-                                    Mit einem Teil unserer Beiträge unterstützen wir ein{' '}
-                                    <strong>Patenkind in Indien</strong>. So leisten wir 
-                                    einen wertvollen Beitrag für eine bessere Zukunft.
+                                    Mit einem Teil unserer Beiträge unterstützen
+                                    wir ein <strong>Patenkind in Indien</strong>
+                                    . So leisten wir einen wertvollen Beitrag
+                                    für eine bessere Zukunft.
                                 </p>
                             </div>
                         </div>

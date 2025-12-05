@@ -1,4 +1,5 @@
 import { BookOpen } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Geschichte - Wendessen',
@@ -10,36 +11,13 @@ export default function GeschichtePage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-amber-700 via-yellow-600 to-orange-600 py-24 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Wendessen_Luftaufnahme.jpg')] bg-cover bg-center opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-700/95 to-orange-600/95"></div>
-
-                {/* Decorative elements */}
-                <div className="hidden md:block absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full animate-pulse"></div>
-                <div className="hidden md:block absolute bottom-10 right-10 w-24 h-24 border-2 border-yellow-300/30 rounded-full animate-pulse"></div>
-                <div className="hidden md:block absolute top-1/3 left-1/4 w-3 h-3 bg-white/40 rounded-full animate-bounce"></div>
-                <div className="hidden md:block absolute bottom-1/3 right-1/4 w-4 h-4 bg-yellow-300/60 rounded-full animate-bounce delay-500"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-5xl mx-auto">
-                        <div className="flex items-center justify-center mb-8 gap-4 sm:gap-8">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center shadow-2xl flex-shrink-0">
-                                <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 text-amber-600" />
-                            </div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white">
-                                Geschichte
-                            </h1>
-                        </div>
-                        <div className="w-40 h-3 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-10"></div>
-                        <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white/95 leading-relaxed max-w-4xl mx-auto">
-                            850+ Jahre Wendessen
-                        </p>
-                        <p className="text-base sm:text-lg md:text-xl text-yellow-200 font-semibold mt-6">
-                            Von Winedissen zu Wendessen • 1170 bis heute
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Geschichte"
+                subtitle="850+ Jahre Wendessen — Von Winedissen zu Wendessen (1170 bis heute)"
+                icon={<BookOpen />}
+                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                color="amber"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-20">
@@ -70,10 +48,10 @@ export default function GeschichtePage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
-                                        1170
+                                        Winedissen
                                     </div>
                                     <div className="text-xl font-semibold text-gray-800">
-                                        Winedissen
+                                        1170
                                     </div>
                                     <div className="text-sm text-gray-600 mt-2">
                                         Erste urkundliche Erwähnung
@@ -81,42 +59,42 @@ export default function GeschichtePage() {
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
-                                        um 1200
-                                    </div>
-                                    <div className="text-xl font-semibold text-gray-800">
                                         Winethissem
                                     </div>
+                                    <div className="text-xl font-semibold text-gray-800">
+                                        um 1200
+                                    </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
-                                        1292
-                                    </div>
-                                    <div className="text-xl font-semibold text-gray-800">
                                         Wenethessen
                                     </div>
+                                    <div className="text-xl font-semibold text-gray-800">
+                                        1292
+                                    </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
-                                        um 1300
-                                    </div>
-                                    <div className="text-xl font-semibold text-gray-800">
                                         Wendessem
                                     </div>
+                                    <div className="text-xl font-semibold text-gray-800">
+                                        um 1300
+                                    </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
-                                        1358
+                                        Wendessum
                                     </div>
                                     <div className="text-xl font-semibold text-gray-800">
-                                        Wendessum
+                                        1358
                                     </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center border-4 border-amber-400">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
-                                        ab 1350
+                                        Wendessen
                                     </div>
                                     <div className="text-xl font-semibold text-gray-800">
-                                        Wendessen
+                                        ab 1350
                                     </div>
                                     <div className="text-sm text-amber-600 mt-2 font-medium">
                                         bis heute
@@ -424,7 +402,9 @@ export default function GeschichtePage() {
                             </div>
                             <div className="bg-white p-6 rounded-2xl shadow-lg mt-8">
                                 <p className="text-base sm:text-lg text-gray-600">
-                                    <strong className="text-amber-700">Ortsheimatpfleger:</strong>{' '}
+                                    <strong className="text-amber-700">
+                                        Ortsheimatpfleger:
+                                    </strong>{' '}
                                     Erich Isensee
                                 </p>
                             </div>

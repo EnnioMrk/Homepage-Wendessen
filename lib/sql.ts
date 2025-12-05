@@ -11,7 +11,10 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 // Minimal tagged template helper that returns rows like the current code expects
 type SQLFragment = { text: string; values: unknown[] };
 
-function buildQuery(strings: TemplateStringsArray, values: unknown[]): SQLFragment {
+function buildQuery(
+    strings: TemplateStringsArray,
+    values: unknown[]
+): SQLFragment {
     let text = '';
     const vals: unknown[] = [];
 

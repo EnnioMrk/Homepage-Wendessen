@@ -1,0 +1,247 @@
+"filename", "language", "TypeScript", "JavaScript", "Markdown", "JSON with Comments", "TypeScript JSX", "JSON", "SVG", "PostCSS", "comment", "blank", "total"
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/copilot-instructions.md", "Markdown", 0, 0, 113, 0, 0, 0, 0, 0, 0, 51, 164
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/analyze.prompt.md", "Markdown", 0, 0, 82, 0, 0, 0, 0, 0, 0, 20, 102
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/clarify.prompt.md", "Markdown", 0, 0, 129, 0, 0, 0, 0, 0, 0, 30, 159
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/constitution.prompt.md", "Markdown", 0, 0, 56, 0, 0, 0, 0, 0, 0, 18, 74
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/implement.prompt.md", "Markdown", 0, 0, 45, 0, 0, 0, 0, 0, 0, 12, 57
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/plan.prompt.md", "Markdown", 0, 0, 33, 0, 0, 0, 0, 0, 0, 11, 44
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/specify.prompt.md", "Markdown", 0, 0, 14, 0, 0, 0, 0, 0, 0, 8, 22
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/.github/prompts/tasks.prompt.md", "Markdown", 0, 0, 50, 0, 0, 0, 0, 0, 0, 13, 63
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/PROJECT_OVERVIEW.md", "Markdown", 0, 0, 408, 0, 0, 0, 0, 0, 0, 125, 533
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/README.md", "Markdown", 0, 0, 23, 0, 0, 0, 0, 0, 0, 14, 37
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/TODO_2026.md", "Markdown", 0, 0, 75, 0, 0, 0, 0, 0, 0, 23, 98
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/archiv/bearbeiten/[id]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 316, 0, 0, 0, 14, 29, 359
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/archiv/erstellen/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 292, 0, 0, 0, 8, 22, 322
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/archiv/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 360, 0, 0, 0, 9, 21, 390
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/change-password/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 188, 0, 0, 0, 1, 17, 206
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/dashboard/AdminDashboard.tsx", "TypeScript JSX", 0, 0, 0, 0, 565, 0, 0, 0, 18, 25, 608
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/dashboard/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 111, 0, 0, 0, 4, 13, 128
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/events/AdminEventsCalendar.tsx", "TypeScript JSX", 0, 0, 0, 0, 1010, 0, 0, 0, 41, 74, 1125
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/events/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 159, 0, 0, 0, 5, 14, 178
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/gallery/AdminGallery.tsx", "TypeScript JSX", 0, 0, 0, 0, 743, 0, 0, 0, 13, 46, 802
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/gallery/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 38, 0, 0, 0, 1, 6, 45
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 8, 0, 0, 0, 0, 2, 10
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/login/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 141, 0, 0, 0, 1, 13, 155
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/logs/AdminLogs.tsx", "TypeScript JSX", 0, 0, 0, 0, 238, 0, 0, 0, 8, 20, 266
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/logs/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 39, 0, 0, 0, 0, 6, 45
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/news/AdminNews.tsx", "TypeScript JSX", 0, 0, 0, 0, 852, 0, 0, 0, 8, 39, 899
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/news/bearbeiten/[id]/EditNewsForm.tsx", "TypeScript JSX", 0, 0, 0, 0, 351, 0, 0, 0, 10, 28, 389
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/news/bearbeiten/[id]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 42, 0, 0, 0, 1, 8, 51
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/news/erstellen/CreateNewsForm.tsx", "TypeScript JSX", 0, 0, 0, 0, 274, 0, 0, 0, 8, 20, 302
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/news/erstellen/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 38, 0, 0, 0, 1, 6, 45
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/news/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 38, 0, 0, 0, 1, 6, 45
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 13, 0, 0, 0, 1, 5, 19
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/portraits/AdminPortraits.tsx", "TypeScript JSX", 0, 0, 0, 0, 693, 0, 0, 0, 14, 39, 746
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/portraits/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 199, 0, 0, 0, 2, 19, 220
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/settings/AdminSettings.tsx", "TypeScript JSX", 0, 0, 0, 0, 354, 0, 0, 0, 4, 28, 386
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/settings/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 40, 0, 0, 0, 1, 6, 47
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/shared-gallery/AdminSharedGallery.tsx", "TypeScript JSX", 0, 0, 0, 0, 631, 0, 0, 0, 10, 30, 671
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/shared-gallery/AdminSharedGalleryNew.tsx", "TypeScript JSX", 0, 0, 0, 0, 1486, 0, 0, 0, 30, 63, 1579
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/shared-gallery/meldungen/AdminSharedGalleryReports.tsx", "TypeScript JSX", 0, 0, 0, 0, 513, 0, 0, 0, 12, 33, 558
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/shared-gallery/meldungen/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 10, 0, 0, 0, 0, 4, 14
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/shared-gallery/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 41, 0, 0, 0, 1, 6, 48
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/users/AdminUsersClient.tsx", "TypeScript JSX", 0, 0, 0, 0, 593, 0, 0, 0, 9, 42, 644
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/admin/users/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 38, 0, 0, 0, 1, 6, 45
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/change-password/route.ts", "TypeScript", 60, 0, 0, 0, 0, 0, 0, 0, 4, 11, 75
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/gallery/[id]/route.ts", "TypeScript", 108, 0, 0, 0, 0, 0, 0, 0, 10, 20, 138
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/gallery/route.ts", "TypeScript", 101, 0, 0, 0, 0, 0, 0, 0, 10, 19, 130
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/login/route.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 0, 0, 2, 8, 52
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/logout/route.ts", "TypeScript", 27, 0, 0, 0, 0, 0, 0, 0, 2, 5, 34
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/logs/route.ts", "TypeScript", 47, 0, 0, 0, 0, 0, 0, 0, 0, 6, 53
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/me/route.ts", "TypeScript", 34, 0, 0, 0, 0, 0, 0, 0, 3, 6, 43
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/news/[id]/pin/route.ts", "TypeScript", 105, 0, 0, 0, 0, 0, 0, 0, 7, 16, 128
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/news/[id]/route.ts", "TypeScript", 161, 0, 0, 0, 0, 0, 0, 0, 10, 26, 197
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/news/route.ts", "TypeScript", 106, 0, 0, 0, 0, 0, 0, 0, 8, 16, 130
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/pending-tasks/route.ts", "TypeScript", 74, 0, 0, 0, 0, 0, 0, 0, 3, 11, 88
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/permissions/route.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/portraits/route.ts", "TypeScript", 209, 0, 0, 0, 0, 0, 0, 0, 14, 28, 251
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/push-subscribe/route.ts", "TypeScript", 80, 0, 0, 0, 0, 0, 0, 0, 3, 16, 99
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/roles/route.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/settings/route.ts", "TypeScript", 100, 0, 0, 0, 0, 0, 0, 0, 5, 15, 120
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/shared-gallery/image/[id]/route.ts", "TypeScript", 43, 0, 0, 0, 0, 0, 0, 0, 0, 7, 50
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/shared-gallery/images/route.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 0, 0, 1, 9, 52
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/shared-gallery/reports/route.ts", "TypeScript", 53, 0, 0, 0, 0, 0, 0, 0, 1, 12, 66
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/shared-gallery/route.ts", "TypeScript", 310, 0, 0, 0, 0, 0, 0, 0, 1, 29, 340
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/status/route.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/users/[id]/permissions/route.ts", "TypeScript", 75, 0, 0, 0, 0, 0, 0, 0, 6, 14, 95
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/users/[id]/role-permissions/route.ts", "TypeScript", 43, 0, 0, 0, 0, 0, 0, 0, 1, 5, 49
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/users/[id]/route.ts", "TypeScript", 50, 0, 0, 0, 0, 0, 0, 0, 2, 10, 62
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/users/create/route.ts", "TypeScript", 103, 0, 0, 0, 0, 0, 0, 0, 9, 17, 129
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/admin/users/route.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/archive/[id]/route.ts", "TypeScript", 150, 0, 0, 0, 0, 0, 0, 0, 2, 23, 175
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/archive/route.ts", "TypeScript", 72, 0, 0, 0, 0, 0, 0, 0, 1, 11, 84
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/events/[id]/cancel/route.ts", "TypeScript", 133, 0, 0, 0, 0, 0, 0, 0, 13, 30, 176
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/events/[id]/route.ts", "TypeScript", 191, 0, 0, 0, 0, 0, 0, 0, 16, 28, 235
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/events/route.ts", "TypeScript", 73, 0, 0, 0, 0, 0, 0, 0, 6, 11, 90
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/portraits/approved/route.ts", "TypeScript", 21, 0, 0, 0, 0, 0, 0, 0, 2, 4, 27
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/portraits/route.ts", "TypeScript", 91, 0, 0, 0, 0, 0, 0, 0, 9, 14, 114
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/settings/route.ts", "TypeScript", 30, 0, 0, 0, 0, 0, 0, 0, 2, 4, 36
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/shared-gallery/my-groups/route.ts", "TypeScript", 28, 0, 0, 0, 0, 0, 0, 0, 3, 6, 37
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/shared-gallery/report/route.ts", "TypeScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 5, 27
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/api/shared-gallery/submit/route.ts", "TypeScript", 91, 0, 0, 0, 0, 0, 0, 0, 6, 13, 110
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/AddPhotosModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 284, 0, 0, 0, 10, 33, 327
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/ArticleRenderer.tsx", "TypeScript JSX", 0, 0, 0, 0, 357, 0, 0, 0, 16, 37, 410
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/BackButton.tsx", "TypeScript JSX", 0, 0, 0, 0, 13, 0, 0, 0, 0, 3, 16
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/BackgroundElements.tsx", "TypeScript JSX", 0, 0, 0, 0, 51, 0, 0, 0, 6, 10, 67
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/ContactPersonCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 222, 0, 0, 0, 11, 15, 248
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/EnhancedRichTextEditor.tsx", "TypeScript JSX", 0, 0, 0, 0, 1153, 0, 0, 0, 24, 44, 1221
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/ErrorNotification.tsx", "TypeScript JSX", 0, 0, 0, 0, 49, 0, 0, 0, 0, 5, 54
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/EventCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 100, 0, 0, 0, 0, 3, 103
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/EventModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 403, 0, 0, 0, 11, 22, 436
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/EventsSection.tsx", "TypeScript JSX", 0, 0, 0, 0, 81, 0, 0, 0, 1, 5, 87
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/FeatureCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 129, 0, 0, 0, 0, 5, 134
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/FullWidthServicesSection.tsx", "TypeScript JSX", 0, 0, 0, 0, 4, 0, 0, 0, 0, 2, 6
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/GalleryGrid.tsx", "TypeScript JSX", 0, 0, 0, 0, 335, 0, 0, 0, 10, 18, 363
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/HeroTitle.tsx", "TypeScript JSX", 0, 0, 0, 0, 28, 0, 0, 0, 1, 1, 30
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/HomeBanner.tsx", "TypeScript JSX", 0, 0, 0, 0, 29, 0, 0, 0, 3, 8, 40
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/ImageLightbox.tsx", "TypeScript JSX", 0, 0, 0, 0, 287, 0, 0, 0, 6, 15, 308
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/ImagePicker.tsx", "TypeScript JSX", 0, 0, 0, 0, 168, 0, 0, 0, 4, 14, 186
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/LazySharedGalleryImage.tsx", "TypeScript JSX", 0, 0, 0, 0, 77, 0, 0, 0, 0, 8, 85
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/LoadingSpinner.tsx", "TypeScript JSX", 0, 0, 0, 0, 40, 0, 0, 0, 0, 7, 47
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/NewsCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 99, 0, 0, 0, 0, 7, 106
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/NewsModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 147, 0, 0, 0, 1, 17, 165
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/NewsSection.tsx", "TypeScript JSX", 0, 0, 0, 0, 27, 0, 0, 0, 1, 4, 32
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/NotificationBell.tsx", "TypeScript JSX", 0, 0, 0, 0, 149, 0, 0, 0, 2, 16, 167
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/OptimizedImage.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/OrtsratMemberCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 84, 0, 0, 0, 9, 13, 106
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/PageHeader.tsx", "TypeScript JSX", 0, 0, 0, 0, 98, 0, 0, 0, 34, 9, 141
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/PermissionsModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 506, 0, 0, 0, 18, 49, 573
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/PlaygroundsSection.tsx", "TypeScript JSX", 0, 0, 0, 0, 42, 0, 0, 0, 0, 2, 44
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/PortraitSubmissionModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 308, 0, 0, 0, 12, 28, 348
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/PromptDialog.tsx", "TypeScript JSX", 0, 0, 0, 0, 162, 0, 0, 0, 6, 12, 180
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/PushNotificationToggle.tsx", "TypeScript JSX", 0, 0, 0, 0, 135, 0, 0, 0, 11, 26, 172
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/RichTextEditor.tsx", "TypeScript JSX", 0, 0, 0, 0, 291, 0, 0, 0, 3, 39, 333
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/SharedGalleryImageContext.tsx", "TypeScript JSX", 0, 0, 0, 0, 191, 0, 0, 0, 15, 37, 243
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/VereineCarousel.tsx", "TypeScript JSX", 0, 0, 0, 0, 171, 0, 0, 0, 4, 10, 185
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/WirSindWendessenSection.tsx", "TypeScript JSX", 0, 0, 0, 0, 94, 0, 0, 0, 9, 11, 114
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/WirWendesserContent.tsx", "TypeScript JSX", 0, 0, 0, 0, 342, 0, 0, 0, 10, 26, 378
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/footer.tsx", "TypeScript JSX", 0, 0, 0, 0, 63, 0, 0, 0, 3, 6, 72
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/menubar.tsx", "TypeScript JSX", 0, 0, 0, 0, 414, 0, 0, 0, 1, 22, 437
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/components/mobile-navbar.tsx", "TypeScript JSX", 0, 0, 0, 0, 254, 0, 0, 0, 1, 8, 263
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/archiv/ArchiveClient.tsx", "TypeScript JSX", 0, 0, 0, 0, 380, 0, 0, 0, 23, 36, 439
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/archiv/[id]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 130, 0, 0, 0, 3, 12, 145
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/archiv/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 67, 0, 0, 0, 3, 9, 79
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/institutionen/hospiz/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 359, 0, 0, 0, 9, 25, 393
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/institutionen/kirche/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 326, 0, 0, 0, 10, 22, 358
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/ortsrat/bericht/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 274, 0, 0, 0, 10, 22, 306
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/ortsrat/mitglieder/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 152, 0, 0, 0, 3, 9, 164
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/feuerwehr/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 339, 0, 0, 0, 9, 18, 366
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/frauenhilfe/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 287, 0, 0, 0, 18, 20, 325
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/jugendfeuerwehr/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 340, 0, 0, 0, 13, 23, 376
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/kirchbauverein/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 389, 0, 0, 0, 14, 28, 431
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/kleingaertner/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 260, 0, 0, 0, 17, 15, 292
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/schuetzenverein/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 354, 0, 0, 0, 19, 26, 399
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/seniorenkreis/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 249, 0, 0, 0, 17, 19, 285
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/spritzenhaus/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 321, 0, 0, 0, 12, 19, 352
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/vereine/sv-wendessen/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 555, 0, 0, 0, 25, 34, 614
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/wetter/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 370, 0, 0, 0, 15, 19, 404
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/dorfleben/wir-wendesser/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 9, 0, 0, 0, 0, 3, 12
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/geschichte/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 389, 0, 0, 0, 13, 16, 418
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/globals.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 73, 7, 21, 101
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/impressionen/einreichen/SharedGallerySubmissionForm.tsx", "TypeScript JSX", 0, 0, 0, 0, 383, 0, 0, 0, 16, 30, 429
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/impressionen/einreichen/erweitern/AddToExistingForm.tsx", "TypeScript JSX", 0, 0, 0, 0, 400, 0, 0, 0, 5, 33, 438
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/impressionen/einreichen/erweitern/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 16, 0, 0, 0, 0, 3, 19
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/impressionen/einreichen/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 78, 0, 0, 0, 1, 6, 85
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/impressionen/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 77, 0, 0, 0, 3, 8, 88
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/[slug]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 50, 0, 0, 0, 0, 8, 58
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/datenschutz/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 209, 0, 0, 0, 8, 10, 227
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/formular/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 337, 0, 0, 0, 16, 16, 369
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/impressum/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 282, 0, 0, 0, 10, 15, 307
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/redaktionsteam/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 131, 0, 0, 0, 4, 11, 146
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/verzeichnis/ContactDirectory.tsx", "TypeScript JSX", 0, 0, 0, 0, 509, 0, 0, 0, 22, 30, 561
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/verzeichnis/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 31, 0, 0, 0, 3, 6, 40
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/kontakt/whatsapp/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 115, 0, 0, 0, 6, 10, 131
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 72, 0, 0, 0, 5, 4, 81
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/lib/combined-contacts.json", "JSON", 0, 0, 0, 0, 0, 333, 0, 0, 0, 8, 341
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/lib/contact-data.ts", "TypeScript", 135, 0, 0, 0, 0, 0, 0, 0, 1, 4, 140
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/lib/image-utils.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/lib/utils.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/neuigkeiten/[id]/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 128, 0, 0, 0, 4, 17, 149
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/not-found.tsx", "TypeScript JSX", 0, 0, 0, 0, 141, 0, 0, 0, 7, 12, 160
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 25, 0, 0, 0, 2, 5, 32
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/was-steht-an/calendar.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 152, 15, 32, 199
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/was-steht-an/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 599, 0, 0, 0, 20, 38, 657
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/wohnen-bauen/feuerwehrgeraetehaus/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 288, 0, 0, 0, 8, 20, 316
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/app/wohnen-bauen/neubaugebiet/page.tsx", "TypeScript JSX", 0, 0, 0, 0, 287, 0, 0, 0, 10, 19, 316
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/bun.lock", "JSON with Comments", 0, 0, 0, 662, 0, 0, 0, 0, 0, 614, 1276
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/01-project-overview.md", "Markdown", 0, 0, 117, 0, 0, 0, 0, 0, 0, 50, 167
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/02-setup-installation.md", "Markdown", 0, 0, 205, 0, 0, 0, 0, 0, 0, 92, 297
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/03-project-structure.md", "Markdown", 0, 0, 335, 0, 0, 0, 0, 0, 0, 87, 422
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/04-dependencies.md", "Markdown", 0, 0, 255, 0, 0, 0, 0, 0, 0, 105, 360
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/05-configuration.md", "Markdown", 0, 0, 432, 0, 0, 0, 0, 0, 0, 89, 521
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/06-code-walkthrough.md", "Markdown", 0, 0, 562, 0, 0, 0, 0, 0, 0, 114, 676
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/07-debugging-guide.md", "Markdown", 0, 0, 442, 0, 0, 0, 0, 0, 0, 139, 581
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/08-testing.md", "Markdown", 0, 0, 703, 0, 0, 0, 0, 0, 0, 186, 889
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/09-deployment-cicd.md", "Markdown", 0, 0, 495, 0, 0, 0, 0, 0, 0, 171, 666
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/10-extending-project.md", "Markdown", 0, 0, 519, 0, 0, 0, 0, 0, 0, 87, 606
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/11-api-documentation.md", "Markdown", 0, 0, 665, 0, 0, 0, 0, 0, 0, 204, 869
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/12-faq-resources.md", "Markdown", 0, 0, 530, 0, 0, 0, 0, 0, 0, 198, 728
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/ADMIN_QUICK_START.md", "Markdown", 0, 0, 77, 0, 0, 0, 0, 0, 0, 29, 106
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/ADMIN_USER_SYSTEM.md", "Markdown", 0, 0, 133, 0, 0, 0, 0, 0, 0, 40, 173
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/DEFAULT_PERMISSIONS_MIGRATION.md", "Markdown", 0, 0, 146, 0, 0, 0, 0, 0, 0, 68, 214
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/EVENT_CANCELLATION_TESTING.md", "Markdown", 0, 0, 130, 0, 0, 0, 0, 0, 0, 49, 179
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/HAS_ARTICLE_REMOVAL.md", "Markdown", 0, 0, 58, 0, 0, 0, 0, 0, 0, 24, 82
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/PERMISSION_SECURITY.md", "Markdown", 0, 0, 312, 0, 0, 0, 0, 0, 0, 100, 412
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/PERMISSION_SYSTEM_MIGRATION.md", "Markdown", 0, 0, 86, 0, 0, 0, 0, 0, 0, 31, 117
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/QUICK_ADMIN_GUIDE.md", "Markdown", 0, 0, 176, 0, 0, 0, 0, 0, 0, 79, 255
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/README.md", "Markdown", 0, 0, 52, 0, 0, 0, 0, 0, 0, 20, 72
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/ROLES_PERMISSIONS.md", "Markdown", 0, 0, 158, 0, 0, 0, 0, 0, 0, 55, 213
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/ROLE_COMPARISON.md", "Markdown", 0, 0, 177, 0, 0, 0, 0, 0, 0, 72, 249
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/VEREIN_IMPLEMENTATION_SUMMARY.md", "Markdown", 0, 0, 163, 0, 0, 0, 0, 0, 0, 72, 235
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/docs/VEREIN_ROLES.md", "Markdown", 0, 0, 201, 0, 0, 0, 0, 0, 0, 80, 281
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/eslint.config.mjs", "JavaScript", 0, 12, 0, 0, 0, 0, 0, 0, 0, 5, 17
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/global.d.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/admin-auth-context.tsx", "TypeScript JSX", 0, 0, 0, 0, 185, 0, 0, 0, 0, 28, 213
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/admin-log-utils.ts", "TypeScript", 359, 0, 0, 0, 0, 0, 0, 0, 43, 31, 433
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/admin-log.ts", "TypeScript", 191, 0, 0, 0, 0, 0, 0, 0, 23, 12, 226
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/auth-edge.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 0, 0, 3, 11, 56
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/auth.ts", "TypeScript", 242, 0, 0, 0, 0, 0, 0, 0, 13, 36, 291
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/blob-utils.ts", "TypeScript", 281, 0, 0, 0, 0, 0, 0, 0, 18, 37, 336
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/database.ts", "TypeScript", 1737, 0, 0, 0, 0, 0, 0, 0, 63, 171, 1971
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/event-utils.ts", "TypeScript", 91, 0, 0, 0, 0, 0, 0, 0, 6, 10, 107
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/image-utils.ts", "TypeScript", 68, 0, 0, 0, 0, 0, 0, 0, 24, 14, 106
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/importance-utils.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 0, 24, 13, 82
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/news-utils.ts", "TypeScript", 51, 0, 0, 0, 0, 0, 0, 0, 1, 3, 55
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/permissions.ts", "TypeScript", 194, 0, 0, 0, 0, 0, 0, 0, 70, 45, 309
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/portrait-config.ts", "TypeScript", 12, 0, 0, 0, 0, 0, 0, 0, 17, 5, 34
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/push-notifications.ts", "TypeScript", 222, 0, 0, 0, 0, 0, 0, 0, 43, 24, 289
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/sql.ts", "TypeScript", 33, 0, 0, 0, 0, 0, 0, 0, 1, 10, 44
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/useAdminAuth.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/usePermissions.tsx", "TypeScript JSX", 0, 0, 0, 0, 105, 0, 0, 0, 13, 18, 136
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/lib/vereine-data.ts", "TypeScript", 114, 0, 0, 0, 0, 0, 0, 0, 1, 1, 116
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/middleware.ts", "TypeScript", 18, 0, 0, 0, 0, 0, 0, 0, 1, 4, 23
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/next.config.ts", "TypeScript", 91, 0, 0, 0, 0, 0, 0, 0, 8, 3, 102
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/package.json", "JSON", 0, 0, 0, 0, 0, 50, 0, 0, 0, 1, 51
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/postcss.config.mjs", "JavaScript", 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/file.svg", "SVG", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/globe.svg", "SVG", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/next.svg", "SVG", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/svgs/whatsapp-qrcode.svg", "SVG", 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/sw.js", "JavaScript", 0, 75, 0, 0, 0, 0, 0, 0, 4, 14, 93
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/vercel.svg", "SVG", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/public/window.svg", "SVG", 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/README.md", "Markdown", 0, 0, 180, 0, 0, 0, 0, 0, 0, 94, 274
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/add-default-permissions-column.ts", "TypeScript", 21, 0, 0, 0, 0, 0, 0, 0, 3, 5, 29
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/add-pinned-news-column.ts", "TypeScript", 39, 0, 0, 0, 0, 0, 0, 0, 4, 11, 54
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/add-portrait-minio-columns.ts", "TypeScript", 52, 0, 0, 0, 0, 0, 0, 0, 8, 9, 69
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/migrate-default-permissions-to-db.ts", "TypeScript", 154, 0, 0, 0, 0, 0, 0, 0, 11, 20, 185
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/migrate-images-to-webp.ts", "TypeScript", 328, 0, 0, 0, 0, 0, 0, 0, 0, 53, 381
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/migrate-portraits-to-minio.ts", "TypeScript", 108, 0, 0, 0, 0, 0, 0, 0, 7, 20, 135
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/migrate-role-permissions-to-db.ts", "TypeScript", 120, 0, 0, 0, 0, 0, 0, 0, 6, 10, 136
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/migrate-shared-gallery-images-to-minio.ts", "TypeScript", 62, 0, 0, 0, 0, 0, 0, 0, 0, 12, 74
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/run-full-setup.ts", "TypeScript", 56, 0, 0, 0, 0, 0, 0, 0, 4, 7, 67
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-admin-logs.ts", "TypeScript", 38, 0, 0, 0, 0, 0, 0, 0, 4, 11, 53
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-admin-users.ts", "TypeScript", 60, 0, 0, 0, 0, 0, 0, 0, 4, 16, 80
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-archive-table.ts", "TypeScript", 43, 0, 0, 0, 0, 0, 0, 0, 3, 7, 53
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-contacts.ts", "TypeScript", 71, 0, 0, 0, 0, 0, 0, 0, 5, 10, 86
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-database.ts", "TypeScript", 249, 0, 0, 0, 0, 0, 0, 0, 11, 39, 299
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-gallery-reports.ts", "TypeScript", 39, 0, 0, 0, 0, 0, 0, 0, 0, 7, 46
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-portraits-table.ts", "TypeScript", 46, 0, 0, 0, 0, 0, 0, 0, 1, 8, 55
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-push-subscriptions.ts", "TypeScript", 36, 0, 0, 0, 0, 0, 0, 0, 4, 8, 48
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-roles-permissions.ts", "TypeScript", 129, 0, 0, 0, 0, 0, 0, 0, 9, 17, 155
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-settings.ts", "TypeScript", 135, 0, 0, 0, 0, 0, 0, 0, 9, 13, 157
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-shared-gallery.ts", "TypeScript", 97, 0, 0, 0, 0, 0, 0, 0, 0, 20, 117
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/scripts/setup-verein-roles.ts", "TypeScript", 36, 0, 0, 0, 0, 0, 0, 0, 2, 8, 46
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/tailwind.config.js", "JavaScript", 0, 69, 0, 0, 0, 0, 0, 0, 8, 1, 78
+"/Users/enniomarke/Documents/dev/nodejs/Homepage-Wendessen/tsconfig.json", "JSON with Comments", 0, 0, 0, 27, 0, 0, 0, 0, 0, 1, 28
+"Total", "-", 8793, 162, 8337, 689, 27799, 383, 7, 225, 1527, 6591, 54513

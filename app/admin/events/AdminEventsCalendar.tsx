@@ -24,12 +24,26 @@ import {
     ImageSquare,
     ProhibitInset,
     ArrowCounterClockwise,
+    Buildings,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import ImagePicker from '../../components/ImagePicker';
 
 // Set German locale and configure moment properly
 moment.locale('de');
+
+// Vereine map for display
+const VEREINE_MAP: Record<string, string> = {
+    'sv-wendessen': 'SV Wendessen',
+    'feuerwehr': 'Freiwillige Feuerwehr',
+    'jugendfeuerwehr': 'Jugendfeuerwehr',
+    'kleingaertner': 'Kleingärtner-Verein',
+    'kirchbauverein': 'Kirchbauverein',
+    'initiative-spritzenhaus': 'Initiative Spritzenhaus',
+    'schuetzenverein': 'Schützenverein',
+    'seniorenkreis': 'Evang. Seniorenkreis',
+    'frauenhilfe': 'Evang. Frauenhilfe',
+};
 
 // Create localizer with proper configuration
 const localizer = momentLocalizer(moment);
@@ -73,12 +87,12 @@ const defaultEventForm: EventFormData = {
 // Custom event component
 const EventComponent = ({ event }: { event: CalendarEvent }) => {
     const isCancelled = event.isCancelled;
-    
+
     return (
         <div
             className={`${
-                isCancelled 
-                    ? 'bg-gray-400 line-through opacity-70' 
+                isCancelled
+                    ? 'bg-gray-400 line-through opacity-70'
                     : getCategoryBackgroundColor(event.category || 'sonstiges')
             } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
@@ -93,22 +107,30 @@ const EventComponent = ({ event }: { event: CalendarEvent }) => {
 // Custom agenda event component
 const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
     const isCancelled = event.isCancelled;
-    
+
     return (
-        <div className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''}`}>
+        <div
+            className={`flex items-center space-x-3 ${
+                isCancelled ? 'opacity-60' : ''
+            }`}
+        >
             <div
                 className={`w-3 h-3 rounded-full ${
-                    isCancelled 
-                        ? 'bg-gray-400' 
-                        : getCategoryBackgroundColor(event.category || 'sonstiges')
+                    isCancelled
+                        ? 'bg-gray-400'
+                        : getCategoryBackgroundColor(
+                              event.category || 'sonstiges'
+                          )
                 }`}
             ></div>
             <div className="flex-1">
-                <div className={`font-medium ${
-                    isCancelled 
-                        ? 'text-gray-500 line-through' 
-                        : 'text-gray-900'
-                }`}>
+                <div
+                    className={`font-medium ${
+                        isCancelled
+                            ? 'text-gray-500 line-through'
+                            : 'text-gray-900'
+                    }`}
+                >
                     {isCancelled && '🚫 '}
                     {event.title}
                 </div>
@@ -123,9 +145,7 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                     </div>
                 )}
                 {isCancelled && event.cancelledAt && (
-                    <div className="text-xs text-red-600 mt-1">
-                        Abgesagt
-                    </div>
+                    <div className="text-xs text-red-600 mt-1">Abgesagt</div>
                 )}
             </div>
             <div className="text-right">
@@ -176,7 +196,7 @@ export default function AdminEventsCalendar({
     onEventsUpdate,
 }: AdminEventsCalendarProps) {
     const { hasPermission, user } = usePermissions();
-    
+
     // State for events that updates when initialEvents changes
     const [events, setEvents] = useState<CalendarEvent[]>(() =>
         initialEvents.map((event) => ({
@@ -192,18 +212,22 @@ export default function AdminEventsCalendar({
         if (hasPermission('events.edit')) {
             return true;
         }
-        
+
         // If not, check if user has verein-specific edit permission
         if (!hasPermission('verein.events.edit')) {
             return false;
         }
-        
+
         // User has verein permission - check if event belongs to their verein
         // Both user and event must have vereinId, and they must match
-        if (user?.vereinId && event.vereinId && event.vereinId === user.vereinId) {
+        if (
+            user?.vereinId &&
+            event.vereinId &&
+            event.vereinId === user.vereinId
+        ) {
             return true;
         }
-        
+
         // Event doesn't belong to a verein or doesn't match user's verein
         return false;
     };
@@ -213,18 +237,22 @@ export default function AdminEventsCalendar({
         if (hasPermission('events.cancel')) {
             return true;
         }
-        
+
         // If not, check if user has verein-specific cancel permission
         if (!hasPermission('verein.events.cancel')) {
             return false;
         }
-        
+
         // User has verein permission - check if event belongs to their verein
         // Both user and event must have vereinId, and they must match
-        if (user?.vereinId && event.vereinId && event.vereinId === user.vereinId) {
+        if (
+            user?.vereinId &&
+            event.vereinId &&
+            event.vereinId === user.vereinId
+        ) {
             return true;
         }
-        
+
         // Event doesn't belong to a verein or doesn't match user's verein
         return false;
     };
@@ -234,18 +262,22 @@ export default function AdminEventsCalendar({
         if (hasPermission('events.delete')) {
             return true;
         }
-        
+
         // If not, check if user has verein-specific delete permission
         if (!hasPermission('verein.events.delete')) {
             return false;
         }
-        
+
         // User has verein permission - check if event belongs to their verein
         // Both user and event must have vereinId, and they must match
-        if (user?.vereinId && event.vereinId && event.vereinId === user.vereinId) {
+        if (
+            user?.vereinId &&
+            event.vereinId &&
+            event.vereinId === user.vereinId
+        ) {
             return true;
         }
-        
+
         // Event doesn't belong to a verein or doesn't match user's verein
         return false;
     };
@@ -301,6 +333,14 @@ export default function AdminEventsCalendar({
     };
 
     const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+        // Only allow creating events if user has permission
+        if (
+            !hasPermission('events.create') &&
+            !hasPermission('verein.events.create')
+        ) {
+            return;
+        }
+
         // Get the actual Date objects from the slot
         const startDate = slotInfo.start;
         const endDate = slotInfo.end;
@@ -372,7 +412,12 @@ export default function AdminEventsCalendar({
     const handleDeleteEvent = async () => {
         if (!selectedEvent) return;
 
-        if (!confirm('Möchten Sie diesen Termin wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+        if (
+            !confirm(
+                'Möchten Sie diesen Termin wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.'
+            )
+        )
+            return;
 
         setLoading(true);
         try {
@@ -388,7 +433,10 @@ export default function AdminEventsCalendar({
             } else {
                 const errorData = await response.json();
                 console.error('Delete failed with status:', response.status);
-                alert(errorData.error || 'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.');
+                alert(
+                    errorData.error ||
+                        'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.'
+                );
             }
         } catch (error) {
             console.error('Error deleting event:', error);
@@ -400,13 +448,21 @@ export default function AdminEventsCalendar({
     const handleCancelEvent = async () => {
         if (!selectedEvent) return;
 
-        if (!confirm('Möchten Sie diesen Termin absagen? Der Termin bleibt sichtbar, wird aber als abgesagt markiert.')) return;
+        if (
+            !confirm(
+                'Möchten Sie diesen Termin absagen? Der Termin bleibt sichtbar, wird aber als abgesagt markiert.'
+            )
+        )
+            return;
 
         setLoading(true);
         try {
-            const response = await fetch(`/api/events/${selectedEvent.id}/cancel`, {
-                method: 'POST',
-            });
+            const response = await fetch(
+                `/api/events/${selectedEvent.id}/cancel`,
+                {
+                    method: 'POST',
+                }
+            );
 
             if (response.ok) {
                 // Refresh events from parent component
@@ -432,9 +488,12 @@ export default function AdminEventsCalendar({
 
         setLoading(true);
         try {
-            const response = await fetch(`/api/events/${selectedEvent.id}/cancel`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                `/api/events/${selectedEvent.id}/cancel`,
+                {
+                    method: 'DELETE',
+                }
+            );
 
             if (response.ok) {
                 // Refresh events from parent component
@@ -444,7 +503,10 @@ export default function AdminEventsCalendar({
             } else {
                 const errorData = await response.json();
                 console.error('Restore failed with status:', response.status);
-                alert(errorData.error || 'Fehler beim Wiederherstellen des Termins');
+                alert(
+                    errorData.error ||
+                        'Fehler beim Wiederherstellen des Termins'
+                );
             }
         } catch (error) {
             console.error('Error restoring event:', error);
@@ -522,8 +584,8 @@ export default function AdminEventsCalendar({
 
             {/* Event Details Modal */}
             {showEventModal && selectedEvent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4 pb-4 pt-[66px] md:pt-[68px] lg:pt-[70px] z-[60] overflow-y-auto">
+                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-auto">
                         <div className="flex justify-between items-start mb-6">
                             <div>
                                 <h3 className="text-xl font-bold text-gray-900">
@@ -550,8 +612,8 @@ export default function AdminEventsCalendar({
                                                 <PencilSimple className="w-4 h-4" />
                                             </button>
                                         )}
-                                        {canCancelEvent(selectedEvent) && (
-                                            selectedEvent.isCancelled ? (
+                                        {canCancelEvent(selectedEvent) &&
+                                            (selectedEvent.isCancelled ? (
                                                 <button
                                                     onClick={handleRestoreEvent}
                                                     disabled={loading}
@@ -569,8 +631,7 @@ export default function AdminEventsCalendar({
                                                 >
                                                     <ProhibitInset className="w-4 h-4" />
                                                 </button>
-                                            )
-                                        )}
+                                            ))}
                                         {canDeleteEvent(selectedEvent) && (
                                             <button
                                                 onClick={handleDeleteEvent}
@@ -810,19 +871,28 @@ export default function AdminEventsCalendar({
                                                 </h4>
                                                 {selectedEvent.cancelledBy && (
                                                     <p className="text-xs text-red-700">
-                                                        Abgesagt von: {selectedEvent.cancelledBy}
+                                                        Abgesagt von:{' '}
+                                                        {
+                                                            selectedEvent.cancelledBy
+                                                        }
                                                     </p>
                                                 )}
                                                 {selectedEvent.cancelledAt && (
                                                     <p className="text-xs text-red-700">
-                                                        Am: {moment(selectedEvent.cancelledAt).format('DD.MM.YYYY, HH:mm')} Uhr
+                                                        Am:{' '}
+                                                        {moment(
+                                                            selectedEvent.cancelledAt
+                                                        ).format(
+                                                            'DD.MM.YYYY, HH:mm'
+                                                        )}{' '}
+                                                        Uhr
                                                     </p>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 <div className="flex items-center space-x-3">
                                     <div
                                         className={`p-2 rounded-lg ${
@@ -885,6 +955,19 @@ export default function AdminEventsCalendar({
                                         </span>
                                     </div>
                                 )}
+
+                                {selectedEvent.vereinId &&
+                                    typeof selectedEvent.vereinId ===
+                                        'string' && (
+                                        <div className="flex items-center space-x-3">
+                                            <Buildings className="w-5 h-5 text-gray-500" />
+                                            <span className="text-gray-700">
+                                                {VEREINE_MAP[
+                                                    selectedEvent.vereinId
+                                                ] || selectedEvent.vereinId}
+                                            </span>
+                                        </div>
+                                    )}
 
                                 {selectedEvent.description && (
                                     <div className="mt-6">

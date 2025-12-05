@@ -1,18 +1,11 @@
 'use client';
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-
-interface AdminUser {
-    id: number;
-    username: string;
-    roleName?: string;
-    roleDisplayName?: string;
-    customPermissions: string[];
-    vereinId?: string | null;
-}
+import { createContext, useContext, ReactNode, useMemo } from 'react';
+import type { AdminAuthUser } from './admin-auth-context';
+import { useAdminAuth } from './useAdminAuth';
 
 interface PermissionsContextType {
-    user: AdminUser | null;
+    user: AdminAuthUser | null;
     loading: boolean;
     hasPermission: (permission: string) => boolean;
     hasAnyPermission: (permissions: string[]) => boolean;
@@ -20,65 +13,30 @@ interface PermissionsContextType {
     refresh: () => Promise<void>;
 }
 
-const PermissionsContext = createContext<PermissionsContextType | undefined>(undefined);
-
-// Role default permissions (same as server-side, used as templates)
-export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
-    super_admin: ['*'],
-    admin: [
-        'users.view', 'users.create', 'users.edit', 'users.delete',
-        'events.view', 'events.create', 'events.edit', 'events.delete',
-        'news.view', 'news.create', 'news.edit', 'news.delete',
-        'gallery.view', 'gallery.upload', 'gallery.edit', 'gallery.delete',
-        'shared_gallery.view', 'shared_gallery.approve', 'shared_gallery.reject',
-        'portraits.view', 'portraits.edit', 'portraits.delete',
-        'settings.view', 'settings.edit',
-    ],
-    editor: [
-        'events.view', 'events.create', 'events.edit', 'events.cancel',
-        'news.view', 'news.create', 'news.edit',
-        'gallery.view', 'gallery.upload', 'gallery.edit',
-    ],
-    moderator: [
-        'events.view', 'news.view', 'gallery.view',
-        'shared_gallery.view', 'shared_gallery.approve', 'shared_gallery.reject',
-        'portraits.view', 'portraits.edit',
-    ],
-    vereinsverwalter: [
-        'verein.events.create',
-        'verein.events.edit',
-        'verein.events.cancel',
-        'gallery.view',
-        'gallery.upload',
-        'gallery.edit',
-    ],
-    no_permissions: [],
-};
-
-/**
- * Get default permissions for a role (used as template)
- */
-export function getRoleDefaultPermissions(roleName: string): string[] {
-    return ROLE_DEFAULT_PERMISSIONS[roleName] || [];
-}
+const PermissionsContext = createContext<PermissionsContextType | undefined>(
+    undefined
+);
 
 /**
  * Check if a user has a specific permission
  * Now purely permission-based - roles are just for organizing/grouping
  */
-function checkPermission(user: AdminUser | null, permission: string): boolean {
+function checkPermission(
+    user: AdminAuthUser | null,
+    permission: string
+): boolean {
     if (!user) return false;
-    
+
     // Check if user has wildcard permission
     if (user.customPermissions && user.customPermissions.includes('*')) {
         return true;
     }
-    
+
     // Check for exact permission match
     if (user.customPermissions && user.customPermissions.includes(permission)) {
         return true;
     }
-    
+
     // Check for category-level wildcard (e.g., 'events.*' allows 'events.create')
     if (user.customPermissions) {
         const [category] = permission.split('.');
@@ -88,49 +46,36 @@ function checkPermission(user: AdminUser | null, permission: string): boolean {
 
         // Check if user has verein.* permission for the general permission
         // Only grant .view permissions automatically if user has verein permissions in that category
-        if (permission.endsWith('.view') && user.customPermissions.some(p => p.startsWith(`verein.${category}.`))) {
+        if (
+            permission.endsWith('.view') &&
+            user.customPermissions.some((p) =>
+                p.startsWith(`verein.${category}.`)
+            )
+        ) {
             return true;
         }
     }
-    
+
     return false;
 }
 
 export function PermissionsProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<AdminUser | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { user, isLoading, refresh } = useAdminAuth();
 
-    const loadUser = async () => {
-        try {
-            const response = await fetch('/api/admin/me');
-            if (response.ok) {
-                const data = await response.json();
-                setUser(data.user);
-            } else {
-                setUser(null);
-            }
-        } catch (error) {
-            console.error('Error loading user:', error);
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        loadUser();
-    }, []);
-
-    const value: PermissionsContextType = {
-        user,
-        loading,
-        hasPermission: (permission: string) => checkPermission(user, permission),
-        hasAnyPermission: (permissions: string[]) => 
-            permissions.some(p => checkPermission(user, p)),
-        hasAllPermissions: (permissions: string[]) => 
-            permissions.every(p => checkPermission(user, p)),
-        refresh: loadUser,
-    };
+    const value = useMemo<PermissionsContextType>(
+        () => ({
+            user,
+            loading: isLoading,
+            hasPermission: (permission: string) =>
+                checkPermission(user, permission),
+            hasAnyPermission: (permissions: string[]) =>
+                permissions.some((p) => checkPermission(user, p)),
+            hasAllPermissions: (permissions: string[]) =>
+                permissions.every((p) => checkPermission(user, p)),
+            refresh,
+        }),
+        [user, isLoading, refresh]
+    );
 
     return (
         <PermissionsContext.Provider value={value}>
@@ -142,7 +87,9 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
 export function usePermissions() {
     const context = useContext(PermissionsContext);
     if (context === undefined) {
-        throw new Error('usePermissions must be used within a PermissionsProvider');
+        throw new Error(
+            'usePermissions must be used within a PermissionsProvider'
+        );
     }
     return context;
 }
@@ -160,13 +107,13 @@ export function useHasAnyPermission(permissions: string[]): boolean {
 }
 
 // Component wrapper for conditional rendering
-export function WithPermission({ 
-    permission, 
-    fallback = null, 
-    children 
-}: { 
-    permission: string; 
-    fallback?: ReactNode; 
+export function WithPermission({
+    permission,
+    fallback = null,
+    children,
+}: {
+    permission: string;
+    fallback?: ReactNode;
     children: ReactNode;
 }) {
     const { hasPermission } = usePermissions();
@@ -174,13 +121,13 @@ export function WithPermission({
 }
 
 // Component wrapper for conditional rendering with any permission
-export function WithAnyPermission({ 
-    permissions, 
-    fallback = null, 
-    children 
-}: { 
-    permissions: string[]; 
-    fallback?: ReactNode; 
+export function WithAnyPermission({
+    permissions,
+    fallback = null,
+    children,
+}: {
+    permissions: string[];
+    fallback?: ReactNode;
     children: ReactNode;
 }) {
     const { hasAnyPermission } = usePermissions();

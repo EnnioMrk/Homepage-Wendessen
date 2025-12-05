@@ -3,7 +3,7 @@ import { sql } from '../lib/sql';
 async function setupReportsTable() {
     try {
         console.log('Creating shared_gallery_reports table...');
-        
+
         await sql`
             CREATE TABLE IF NOT EXISTS shared_gallery_reports (
                 id SERIAL PRIMARY KEY,
@@ -17,9 +17,9 @@ async function setupReportsTable() {
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         `;
-        
+
         console.log('✓ shared_gallery_reports table created');
-        
+
         console.log('Creating indexes...');
         await sql`
             CREATE INDEX IF NOT EXISTS idx_reports_submission_id 
@@ -33,10 +33,9 @@ async function setupReportsTable() {
             CREATE INDEX IF NOT EXISTS idx_reports_created_at 
             ON shared_gallery_reports(created_at DESC)
         `;
-        
+
         console.log('✓ Indexes created');
         console.log('\n✅ Reports table setup completed successfully!');
-        
     } catch (error) {
         console.error('Error setting up reports table:', error);
         throw error;

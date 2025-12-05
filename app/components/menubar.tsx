@@ -298,9 +298,11 @@ const wohnenBauenItems = [
 
 const kontaktItems = [
     { title: 'Verzeichnis', href: '/kontakt/verzeichnis' },
+    { title: 'Redaktionsteam', href: '/kontakt/redaktionsteam' },
+    { title: 'WhatsApp-Kanal', href: '/kontakt/whatsapp' },
+    { title: 'Kontaktformular', href: '/kontakt/formular' },
     { title: 'Impressum', href: '/kontakt/impressum' },
     { title: 'Datenschutz', href: '/kontakt/datenschutz' },
-    { title: 'Kontaktformular', href: '/kontakt/formular' },
 ];
 
 export function MenubarDemo() {
@@ -320,7 +322,7 @@ export function MenubarDemo() {
                 <MenubarTrigger className="font-semibold">
                     DORFLEBEN
                 </MenubarTrigger>
-                <MenubarContent>
+                <MenubarContent className="w-full max-w-3xl px-4 py-3 max-h-[calc(100vh-72px)] overflow-y-auto">
                     {dorflebenItems.map((item) => (
                         <React.Fragment key={item.title}>
                             {item.href ? (
@@ -330,7 +332,7 @@ export function MenubarDemo() {
                                     </MenubarItem>
                                 </Link>
                             ) : (
-                                <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm font-medium outline-none">
+                                <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm font-medium text-foreground">
                                     {item.title}
                                 </div>
                             )}

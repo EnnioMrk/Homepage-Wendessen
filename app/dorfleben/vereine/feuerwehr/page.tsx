@@ -9,6 +9,7 @@ import {
     Phone,
     Globe,
 } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Freiwillige Feuerwehr Wendessen - Vereine',
@@ -19,37 +20,12 @@ export const metadata = {
 export default function FeuerwehrPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-red-600 via-orange-600 to-red-600 py-12 sm:py-16 md:py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/Freiwillige_Feuerwehr.jpeg')] bg-cover bg-center opacity-30"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-red-600/90 to-orange-600/90"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex flex-col sm:flex-row items-center justify-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl sm:mr-4 md:mr-6 flex-shrink-0">
-                                <Fire className="w-7 h-7 sm:w-8 sm:h-8 md:w-12 md:h-12 text-red-600" />
-                            </div>
-                            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-                                Feuerwehr
-                            </h1>
-                        </div>
-                        <div className="w-24 sm:w-32 h-1.5 sm:h-2 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-4 sm:mb-6 md:mb-8"></div>
-                        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 leading-relaxed max-w-3xl mx-auto px-2">
-                            Freiwillige Feuerwehr Wendessen
-                        </p>
-                        <p className="text-base sm:text-lg md:text-xl text-yellow-200 font-semibold mt-3 sm:mt-4 px-2">
-                            Retten • Löschen • Bergen • Schützen
-                        </p>
-
-                        {/* Decorative elements - hidden on mobile */}
-                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Feuerwehr"
+                icon={<Fire />}
+                backgroundImage="/images/Vereinsleben/Freiwillige_Feuerwehr.jpeg"
+                color="red"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
@@ -178,31 +154,78 @@ export default function FeuerwehrPage() {
                             </div>
 
                             <div className="bg-gradient-to-br from-blue-50 to-green-50 p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-lg">
-                                <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-blue-700 mb-4 sm:mb-6 flex items-center">
+                                <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-blue-700 mb-4 sm:mb-6 flex items-center justify-center md:justify-start">
                                     <UsersThree className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 mr-2 sm:mr-3 flex-shrink-0" />
                                     <span className="break-words">
                                         Gemeinschaftsaktivitäten
                                     </span>
                                 </h3>
-                                <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
-                                    <li className="flex items-start">
-                                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
-                                        <span>Braunkohl-Wanderungen</span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
-                                        <span>Tagesfahrten und Ausflüge</span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
-                                        <span>Osterfeuer</span>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
-                                        Gemeinschaftsveranstaltungen mit anderen
-                                        Vereinen
-                                    </li>
-                                </ul>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 sm:gap-y-3">
+                                    <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-red-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>
+                                                Wöchentliche Dienste für
+                                                Ausbildung und Übung
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>
+                                                Tagesfahrten und Ausflüge
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>Zeltlager</span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-purple-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>
+                                                Gemeinsame Aktionen und Übungen
+                                                mit anderen Feuerwehren
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>
+                                                Wettkämpfe auf Stadt-, Kreis-,
+                                                Bezirk- und Landesebene
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>Osterfeuer</span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-pink-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>Kinderfest</span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>Laternenumzug</span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-teal-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>
+                                                Gedenkveranstaltung zum
+                                                Volkstrauertag
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-cyan-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>
+                                                Evakuierungsübungen im Hospiz
+                                            </span>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="w-2 h-2 bg-amber-500 rounded-full mr-2 sm:mr-3 mt-1.5 flex-shrink-0"></span>
+                                            <span>Weihnachtsbaum-Verkauf</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -230,11 +253,8 @@ export default function FeuerwehrPage() {
                                 </p>
                                 <div className="bg-white p-3 sm:p-4 rounded-xl border border-blue-200">
                                     <p className="font-semibold text-blue-800">
-                                        Jeden Freitag in den geraden
-                                        Kalenderwochen
-                                    </p>
-                                    <p className="text-blue-600">
-                                        ab 18:30 Uhr
+                                        Die Dienste sind immer mittwochs um
+                                        18:30 Uhr
                                     </p>
                                 </div>
                             </div>
@@ -287,11 +307,11 @@ export default function FeuerwehrPage() {
                                 </h3>
                                 <div className="bg-gradient-to-r from-red-50 to-orange-50 p-3 sm:p-4 rounded-xl">
                                     <a
-                                        href="tel:01575454517195"
+                                        href="tel:015678945961"
                                         className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
                                     >
                                         <Phone className="w-5 h-5 mr-2" />
-                                        0157/54517195
+                                        015678 945961
                                     </a>
                                 </div>
                             </div>
@@ -307,16 +327,12 @@ export default function FeuerwehrPage() {
                                     stellv. Ortsbrandmeister
                                 </p>
                                 <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3 sm:mb-4">
-                                    Olaf Glaeske
+                                    Jessica Schulz
                                 </h3>
                                 <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-3 sm:p-4 rounded-xl">
-                                    <a
-                                        href="tel:053318049931"
-                                        className="flex items-center justify-center text-orange-600 hover:text-orange-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331 / 8049931
-                                    </a>
+                                    <p className="text-sm text-gray-600">
+                                        Keine Telefonnummer angegeben
+                                    </p>
                                 </div>
                             </div>
                         </div>

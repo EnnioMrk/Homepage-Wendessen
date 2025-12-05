@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../lib/permissions';
 import { uploadToBlob } from '../../../../lib/blob-utils';
+import { convertFileToWebP } from '../../../../lib/image-utils';
 import { sql } from '@/lib/sql';
+import { getCurrentAdminUser } from '@/lib/auth';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 interface GalleryImageRow {
     id: number;
@@ -85,10 +88,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Upload to Vercel Blob
-        const blob = await uploadToBlob(file.name, file, {
-            access: 'public',
+        // Convert image to WebP format
+        const converted = await convertFileToWebP(file);
+
+        // Upload to MinIO
+        const blob = await uploadToBlob(converted.filename, converted.buffer, {
             addRandomSuffix: true,
+            contentType: converted.mimeType,
         });
 
         // Save to database
@@ -96,7 +102,7 @@ export async function POST(request: NextRequest) {
             INSERT INTO gallery_images (filename, original_name, display_name, url, size, mime_type)
             VALUES (${blob.pathname}, ${file.name}, ${displayName.trim()}, ${
             blob.url
-        }, ${file.size}, ${file.type})
+        }, ${converted.buffer.length}, ${converted.mimeType})
             RETURNING id, filename, original_name as "originalName", display_name as "displayName", 
                      url, size, mime_type as "mimeType", uploaded_at as "uploadedAt"
         `;
@@ -105,6 +111,23 @@ export async function POST(request: NextRequest) {
             ...result[0],
             uploadedAt: result[0].uploadedAt.toISOString(),
         };
+
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'gallery.upload',
+            resourceType: 'gallery',
+            resourceId: String(newImage.id),
+            resourceTitle: displayName.trim(),
+            details: {
+                originalName: file.name,
+                size: converted.buffer.length,
+            },
+            ...requestInfo,
+        });
 
         return NextResponse.json({ image: newImage });
     } catch (error) {

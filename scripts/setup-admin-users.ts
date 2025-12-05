@@ -11,6 +11,7 @@ async function setupAdminUsers() {
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(255) UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
+                verein_id VARCHAR(50),
                 must_change_password BOOLEAN DEFAULT false,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -20,6 +21,11 @@ async function setupAdminUsers() {
 
         console.log('✓ admin_users table created');
 
+        await sql`
+            ALTER TABLE admin_users
+            ADD COLUMN IF NOT EXISTS verein_id VARCHAR(50);
+        `;
+
         // Create an index on username for faster lookups
         await sql`
             CREATE INDEX IF NOT EXISTS idx_admin_users_username 
@@ -27,6 +33,13 @@ async function setupAdminUsers() {
         `;
 
         console.log('✓ Created index on username');
+
+        await sql`
+            CREATE INDEX IF NOT EXISTS idx_admin_users_verein_id
+            ON admin_users(verein_id);
+        `;
+
+        console.log('✓ Created index on verein_id');
 
         // Check if there are any existing admin users
         const existingAdmins = await sql`

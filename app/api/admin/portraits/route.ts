@@ -9,6 +9,8 @@ import {
 } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
 import { revalidateTag } from 'next/cache';
+import { deleteFromBlob } from '@/lib/blob-utils';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 // GET - Load all submissions
 export async function GET() {
@@ -81,18 +83,36 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
-        const status = action === 'approve' ? 'approved' : action === 'reset' ? 'pending' : 'rejected';
+        const status =
+            action === 'approve'
+                ? 'approved'
+                : action === 'reset'
+                ? 'pending'
+                : 'rejected';
         const submission = await updatePortraitStatus(id, status, 'admin');
 
         // If rejecting, trigger cleanup of old rejected portraits
         if (action === 'reject') {
             try {
-                const cleanedUp = await cleanupOldRejectedPortraits(
+                const cleanedUpPortraits = await cleanupOldRejectedPortraits(
                     PORTRAIT_CONFIG.MAX_REJECTED_PORTRAITS
                 );
-                if (cleanedUp > 0) {
+                if (cleanedUpPortraits.length > 0) {
+                    // Delete images from MinIO storage
+                    for (const portrait of cleanedUpPortraits) {
+                        if (portrait.imageStoragePath) {
+                            try {
+                                await deleteFromBlob(portrait.imageStoragePath);
+                            } catch (blobError) {
+                                console.error(
+                                    `Failed to delete image from storage for portrait ${portrait.id}:`,
+                                    blobError
+                                );
+                            }
+                        }
+                    }
                     console.log(
-                        `Cleaned up ${cleanedUp} old rejected portraits after rejecting submission ${id}`
+                        `Cleaned up ${cleanedUpPortraits.length} old rejected portraits after rejecting submission ${id}`
                     );
                 }
             } catch (cleanupError) {
@@ -107,12 +127,40 @@ export async function PATCH(request: NextRequest) {
         // Revalidate the portraits cache
         revalidateTag('portraits');
 
-        const actionText = action === 'approve' ? 'approved' : action === 'reset' ? 'reset to pending' : 'rejected';
-        const messageText = action === 'approve' ? 'freigegeben' : action === 'reset' ? 'zurückgesetzt' : 'abgelehnt';
+        const actionText =
+            action === 'approve'
+                ? 'approved'
+                : action === 'reset'
+                ? 'reset to pending'
+                : 'rejected';
+        const messageText =
+            action === 'approve'
+                ? 'freigegeben'
+                : action === 'reset'
+                ? 'zurückgesetzt'
+                : 'abgelehnt';
 
-        console.log(
-            `Portrait submission ${id} ${actionText} by admin`
-        );
+        console.log(`Portrait submission ${id} ${actionText} by admin`);
+
+        // Log the action
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: user?.id,
+            username: user?.username,
+            action:
+                action === 'approve'
+                    ? 'portrait.approve'
+                    : action === 'reject'
+                    ? 'portrait.reject'
+                    : 'portrait.reset',
+            resourceType: 'portrait',
+            resourceId: id,
+            resourceTitle: submission.name,
+            details: {
+                email: submission.email || undefined,
+            },
+            ...requestInfo,
+        });
 
         return NextResponse.json({
             message: `Einreichung erfolgreich ${messageText}`,
@@ -158,13 +206,41 @@ export async function DELETE(request: NextRequest) {
             );
         }
 
-        // Delete from database (no file deletion needed since we store base64)
-        await deletePortraitSubmission(id);
+        // Delete from database and get the portrait data
+        const deletedPortrait = await deletePortraitSubmission(id);
+
+        // Delete image from MinIO storage
+        if (deletedPortrait.imageStoragePath) {
+            try {
+                await deleteFromBlob(deletedPortrait.imageStoragePath);
+            } catch (blobError) {
+                console.error(
+                    `Failed to delete image from storage for portrait ${id}:`,
+                    blobError
+                );
+                // Continue even if blob deletion fails - the DB record is already deleted
+            }
+        }
 
         // Revalidate the portraits cache
         revalidateTag('portraits');
 
         console.log(`Portrait submission ${id} deleted by admin`);
+
+        // Log the action
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: user?.id,
+            username: user?.username,
+            action: 'portrait.delete',
+            resourceType: 'portrait',
+            resourceId: id,
+            resourceTitle: deletedPortrait.name,
+            details: {
+                email: deletedPortrait.email || undefined,
+            },
+            ...requestInfo,
+        });
 
         return NextResponse.json({
             message: 'Einreichung erfolgreich gelöscht',

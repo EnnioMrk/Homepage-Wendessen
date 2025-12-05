@@ -12,16 +12,19 @@ import {
     EnvelopeSimple,
     Calendar,
     ArrowCounterClockwise,
+    WarningCircle,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { usePermissions } from '@/lib/usePermissions';
+import PromptDialog from '@/app/components/PromptDialog';
 
 interface PortraitSubmission {
     id: number;
     name: string;
     description: string;
     email: string;
-    imageData: string;
+    imageUrl: string;
+    imageStoragePath?: string;
     imageMimeType: string;
     imageFilename: string;
     submittedAt: string;
@@ -45,17 +48,28 @@ export default function AdminPortraits({
     >('all');
     const [isActionLoading, setIsActionLoading] = useState<number | null>(null);
 
+    // Dialog states
+    const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [errorDialog, setErrorDialog] = useState<{
+        isOpen: boolean;
+        message: string;
+    }>({ isOpen: false, message: '' });
+
     const canEdit = hasPermission('portraits.edit');
     const canDelete = hasPermission('portraits.delete');
 
     const getImageUrl = (submission: PortraitSubmission): string => {
-        return `data:${submission.imageMimeType};base64,${submission.imageData}`;
+        return submission.imageUrl;
     };
 
     const filteredSubmissions = submissions.filter((submission) => {
         if (filterStatus === 'all') return true;
         return submission.status === filterStatus;
     });
+
+    const showError = (message: string) => {
+        setErrorDialog({ isOpen: true, message });
+    };
 
     const handleApprove = async (id: number) => {
         setIsActionLoading(id);
@@ -71,11 +85,13 @@ export default function AdminPortraits({
                 setSelectedSubmission(null);
             } else {
                 const error = await response.json();
-                alert(`Fehler: ${error.message}`);
+                showError(
+                    error.message || 'Fehler beim Freigeben der Einreichung'
+                );
             }
         } catch (error) {
             console.error('Error approving submission:', error);
-            alert('Fehler beim Freigeben der Einreichung');
+            showError('Fehler beim Freigeben der Einreichung');
         } finally {
             setIsActionLoading(null);
         }
@@ -95,11 +111,13 @@ export default function AdminPortraits({
                 setSelectedSubmission(null);
             } else {
                 const error = await response.json();
-                alert(`Fehler: ${error.message}`);
+                showError(
+                    error.message || 'Fehler beim Ablehnen der Einreichung'
+                );
             }
         } catch (error) {
             console.error('Error rejecting submission:', error);
-            alert('Fehler beim Ablehnen der Einreichung');
+            showError('Fehler beim Ablehnen der Einreichung');
         } finally {
             setIsActionLoading(null);
         }
@@ -119,25 +137,19 @@ export default function AdminPortraits({
                 setSelectedSubmission(null);
             } else {
                 const error = await response.json();
-                alert(`Fehler: ${error.message}`);
+                showError(
+                    error.message || 'Fehler beim Zurücksetzen der Einreichung'
+                );
             }
         } catch (error) {
             console.error('Error resetting submission:', error);
-            alert('Fehler beim Zurücksetzen der Einreichung');
+            showError('Fehler beim Zurücksetzen der Einreichung');
         } finally {
             setIsActionLoading(null);
         }
     };
 
     const handleDelete = async (id: number) => {
-        if (
-            !confirm(
-                'Sind Sie sicher, dass Sie diese Einreichung löschen möchten?'
-            )
-        ) {
-            return;
-        }
-
         setIsActionLoading(id);
         try {
             const response = await fetch('/api/admin/portraits', {
@@ -151,13 +163,16 @@ export default function AdminPortraits({
                 setSelectedSubmission(null);
             } else {
                 const error = await response.json();
-                alert(`Fehler: ${error.message}`);
+                showError(
+                    error.message || 'Fehler beim Löschen der Einreichung'
+                );
             }
         } catch (error) {
             console.error('Error deleting submission:', error);
-            alert('Fehler beim Löschen der Einreichung');
+            showError('Fehler beim Löschen der Einreichung');
         } finally {
             setIsActionLoading(null);
+            setDeleteConfirmId(null);
         }
     };
 
@@ -351,104 +366,122 @@ export default function AdminPortraits({
                                         Details
                                     </button>
 
-                                    {submission.status === 'pending' && canEdit && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleApprove(submission.id)
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    submission.id
-                                                }
-                                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                            >
-                                                <Check className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleReject(submission.id)
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    submission.id
-                                                }
-                                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </button>
-                                        </>
-                                    )}
+                                    {submission.status === 'pending' &&
+                                        canEdit && (
+                                            <>
+                                                <button
+                                                    onClick={() =>
+                                                        handleApprove(
+                                                            submission.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isActionLoading ===
+                                                        submission.id
+                                                    }
+                                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                >
+                                                    <Check className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleReject(
+                                                            submission.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isActionLoading ===
+                                                        submission.id
+                                                    }
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        )}
 
-                                    {submission.status === 'approved' && canEdit && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleReset(submission.id)
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    submission.id
-                                                }
-                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                title="Zurücksetzen auf Wartend"
-                                            >
-                                                <ArrowCounterClockwise className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleReject(submission.id)
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    submission.id
-                                                }
-                                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                title="Ablehnen"
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </button>
-                                        </>
-                                    )}
+                                    {submission.status === 'approved' &&
+                                        canEdit && (
+                                            <>
+                                                <button
+                                                    onClick={() =>
+                                                        handleReset(
+                                                            submission.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isActionLoading ===
+                                                        submission.id
+                                                    }
+                                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                    title="Zurücksetzen auf Wartend"
+                                                >
+                                                    <ArrowCounterClockwise className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleReject(
+                                                            submission.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isActionLoading ===
+                                                        submission.id
+                                                    }
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                    title="Ablehnen"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        )}
 
-                                    {submission.status === 'rejected' && canEdit && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleReset(submission.id)
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    submission.id
-                                                }
-                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                title="Zurücksetzen auf Wartend"
-                                            >
-                                                <ArrowCounterClockwise className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleApprove(submission.id)
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    submission.id
-                                                }
-                                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                title="Freigeben"
-                                            >
-                                                <Check className="w-4 h-4" />
-                                            </button>
-                                        </>
-                                    )}
+                                    {submission.status === 'rejected' &&
+                                        canEdit && (
+                                            <>
+                                                <button
+                                                    onClick={() =>
+                                                        handleReset(
+                                                            submission.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isActionLoading ===
+                                                        submission.id
+                                                    }
+                                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                    title="Zurücksetzen auf Wartend"
+                                                >
+                                                    <ArrowCounterClockwise className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleApprove(
+                                                            submission.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        isActionLoading ===
+                                                        submission.id
+                                                    }
+                                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
+                                                    title="Freigeben"
+                                                >
+                                                    <Check className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        )}
 
                                     {canDelete && (
                                         <button
                                             onClick={() =>
-                                                handleDelete(submission.id)
+                                                setDeleteConfirmId(
+                                                    submission.id
+                                                )
                                             }
                                             disabled={
-                                                isActionLoading === submission.id
+                                                isActionLoading ===
+                                                submission.id
                                             }
                                             className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
                                         >
@@ -550,112 +583,117 @@ export default function AdminPortraits({
 
                             {/* Actions */}
                             <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                                {selectedSubmission.status === 'pending' && canEdit && (
-                                    <>
-                                        <button
-                                            onClick={() =>
-                                                handleApprove(
+                                {selectedSubmission.status === 'pending' &&
+                                    canEdit && (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    handleApprove(
+                                                        selectedSubmission.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
                                                     selectedSubmission.id
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                selectedSubmission.id
-                                            }
-                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                        >
-                                            <Check className="w-4 h-4 mr-2" />
-                                            Freigeben
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleReject(
+                                                }
+                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                            >
+                                                <Check className="w-4 h-4 mr-2" />
+                                                Freigeben
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleReject(
+                                                        selectedSubmission.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
                                                     selectedSubmission.id
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                selectedSubmission.id
-                                            }
-                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                        >
-                                            <X className="w-4 h-4 mr-2" />
-                                            Ablehnen
-                                        </button>
-                                    </>
-                                )}
-                                {selectedSubmission.status === 'approved' && canEdit && (
-                                    <>
-                                        <button
-                                            onClick={() =>
-                                                handleReset(
+                                                }
+                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                            >
+                                                <X className="w-4 h-4 mr-2" />
+                                                Ablehnen
+                                            </button>
+                                        </>
+                                    )}
+                                {selectedSubmission.status === 'approved' &&
+                                    canEdit && (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    handleReset(
+                                                        selectedSubmission.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
                                                     selectedSubmission.id
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                selectedSubmission.id
-                                            }
-                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                        >
-                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
-                                            Zurücksetzen
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleReject(
+                                                }
+                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                            >
+                                                <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                                                Zurücksetzen
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleReject(
+                                                        selectedSubmission.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
                                                     selectedSubmission.id
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                selectedSubmission.id
-                                            }
-                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                        >
-                                            <X className="w-4 h-4 mr-2" />
-                                            Ablehnen
-                                        </button>
-                                    </>
-                                )}
-                                {selectedSubmission.status === 'rejected' && canEdit && (
-                                    <>
-                                        <button
-                                            onClick={() =>
-                                                handleReset(
+                                                }
+                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                            >
+                                                <X className="w-4 h-4 mr-2" />
+                                                Ablehnen
+                                            </button>
+                                        </>
+                                    )}
+                                {selectedSubmission.status === 'rejected' &&
+                                    canEdit && (
+                                        <>
+                                            <button
+                                                onClick={() =>
+                                                    handleReset(
+                                                        selectedSubmission.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
                                                     selectedSubmission.id
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                selectedSubmission.id
-                                            }
-                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                        >
-                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
-                                            Zurücksetzen
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleApprove(
+                                                }
+                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                            >
+                                                <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                                                Zurücksetzen
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleApprove(
+                                                        selectedSubmission.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
                                                     selectedSubmission.id
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                selectedSubmission.id
-                                            }
-                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                        >
-                                            <Check className="w-4 h-4 mr-2" />
-                                            Freigeben
-                                        </button>
-                                    </>
-                                )}
+                                                }
+                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                            >
+                                                <Check className="w-4 h-4 mr-2" />
+                                                Freigeben
+                                            </button>
+                                        </>
+                                    )}
                                 {canDelete && (
                                     <button
                                         onClick={() =>
-                                            handleDelete(selectedSubmission.id)
+                                            setDeleteConfirmId(
+                                                selectedSubmission.id
+                                            )
                                         }
                                         disabled={
                                             isActionLoading ===
@@ -672,6 +710,36 @@ export default function AdminPortraits({
                     </div>
                 </div>
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <PromptDialog
+                isOpen={deleteConfirmId !== null}
+                onCancel={() => setDeleteConfirmId(null)}
+                onConfirm={async () => {
+                    if (deleteConfirmId !== null) {
+                        await handleDelete(deleteConfirmId);
+                    }
+                }}
+                title="Einreichung löschen"
+                description="Sind Sie sicher, dass Sie diese Einreichung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+                confirmText="Löschen"
+                cancelText="Abbrechen"
+                icon={<Trash className="h-12 w-12" />}
+                accentColor="red"
+            />
+
+            {/* Error Dialog */}
+            <PromptDialog
+                isOpen={errorDialog.isOpen}
+                onCancel={() => setErrorDialog({ isOpen: false, message: '' })}
+                onConfirm={() => setErrorDialog({ isOpen: false, message: '' })}
+                title="Fehler"
+                description={errorDialog.message}
+                confirmText="OK"
+                cancelText="Schließen"
+                icon={<WarningCircle className="h-12 w-12" />}
+                accentColor="red"
+            />
         </div>
     );
 }

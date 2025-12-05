@@ -15,6 +15,7 @@ import {
     Clock,
     Warning,
 } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 interface WeatherData {
     location: string;
@@ -148,37 +149,13 @@ export default function WetterPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-500 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Wendessen_Luftaufnahme.jpg')] bg-cover bg-center opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-cyan-500/90"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-6">
-                                <Cloud className="w-12 h-12 text-blue-600" />
-                            </div>
-                            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white">
-                                Wetter
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-8"></div>
-                        <p className="text-2xl md:text-3xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                            Aktuelle Wetterdaten aus Wendessen
-                        </p>
-                        <p className="text-xl text-yellow-200 font-semibold mt-4">
-                            {weatherData?.location} • {weatherData?.elevation}
-                        </p>
-
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-yellow-400/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="absolute top-1/3 right-32 w-3 h-3 bg-yellow-400/60 rounded-full animate-bounce delay-300"></div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Wetter"
+                subtitle={`Aktuelle Wetterdaten aus Wendessen`}
+                icon={<Cloud />}
+                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                color="blue"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">

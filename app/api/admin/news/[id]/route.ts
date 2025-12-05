@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAuthenticated } from '../../../../../lib/auth';
+import { isAuthenticated, getCurrentAdminUser } from '../../../../../lib/auth';
 import { sql } from '../../../../../lib/sql';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 // GET - Get single news item
 export async function GET(
@@ -20,8 +21,8 @@ export async function GET(
         const { id } = await params;
 
         const result = await sql`
-            SELECT id, title, content, category, published_date as "publishedDate", 
-                   article_id as "articleId", content_json as "contentJson"
+            SELECT id, title, content as "contentJson", category, published_date as "publishedDate", 
+                   article_id as "articleId"
             FROM news
             WHERE id = ${id}
         `;
@@ -63,7 +64,7 @@ export async function PUT(
         }
 
         const { id } = await params;
-        const { title, content, category, contentJson } = await request.json();
+        const { title, category, contentJson } = await request.json();
 
         if (!title?.trim()) {
             return NextResponse.json(
@@ -83,12 +84,11 @@ export async function PUT(
         const result = await sql`
             UPDATE news 
             SET title = ${title.trim()}, 
-                content = ${content?.trim() || null}, 
+                content = ${contentJson || null}, 
                 category = ${category.trim()},
-                content_json = ${contentJson || null},
                 updated_at = ${new Date().toISOString()}
             WHERE id = ${id}
-            RETURNING id, title, content, category, published_date as "publishedDate", 
+            RETURNING id, title, content as "contentJson", category, published_date as "publishedDate", 
                       article_id as "articleId"
         `;
 
@@ -103,6 +103,20 @@ export async function PUT(
             ...result[0],
             publishedDate: result[0].publishedDate.toISOString(),
         };
+
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'news.update',
+            resourceType: 'news',
+            resourceId: id,
+            resourceTitle: title.trim(),
+            details: { category: category.trim() },
+            ...requestInfo,
+        });
 
         // Revalidate pages that show news
         revalidatePath('/');
@@ -136,7 +150,7 @@ export async function DELETE(
 
         // Check if news exists
         const existingNews = await sql`
-            SELECT id FROM news WHERE id = ${id}
+            SELECT id, title, category FROM news WHERE id = ${id}
         `;
 
         if (existingNews.length === 0) {
@@ -146,8 +160,26 @@ export async function DELETE(
             );
         }
 
+        const newsTitle = existingNews[0].title;
+
         // Delete from database
         await sql`DELETE FROM news WHERE id = ${id}`;
+
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'news.delete',
+            resourceType: 'news',
+            resourceId: id,
+            resourceTitle: newsTitle as string,
+            details: {
+                category: (existingNews[0].category as string) || undefined,
+            },
+            ...requestInfo,
+        });
 
         // Revalidate pages that show news
         revalidatePath('/');

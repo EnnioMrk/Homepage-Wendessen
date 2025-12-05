@@ -1,6 +1,7 @@
-import { sql } from '../lib/sql';
 import { readFile } from 'fs/promises';
 import path from 'path';
+import { calculateImportance } from '../lib/importance-utils';
+import { sql } from '../lib/sql';
 
 async function setupContacts() {
     console.log('Setting up contacts table and seeding data...');
@@ -15,14 +16,21 @@ async function setupContacts() {
             addresses JSONB DEFAULT '[]'::jsonb,
             affiliations JSONB DEFAULT '[]'::jsonb,
             sources JSONB DEFAULT '[]'::jsonb,
+            importance INTEGER NOT NULL DEFAULT 0,
             created_at TIMESTAMPTZ DEFAULT NOW(),
             updated_at TIMESTAMPTZ DEFAULT NOW()
         );
     `;
 
+    await sql`
+        ALTER TABLE contacts
+        ADD COLUMN IF NOT EXISTS importance INTEGER NOT NULL DEFAULT 0;
+    `;
+
     // Helpful indexes
     await sql`CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts (name);`;
     await sql`CREATE INDEX IF NOT EXISTS idx_contacts_affiliations ON contacts USING GIN (affiliations);`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_contacts_importance ON contacts (importance DESC);`;
 
     // 2) Load combined contacts from JSON
     const projectRoot = process.cwd();
@@ -47,15 +55,17 @@ async function setupContacts() {
     await sql`TRUNCATE TABLE contacts RESTART IDENTITY;`;
 
     for (const c of contacts) {
+        const importance = calculateImportance(c.affiliations ?? []);
         await sql`
-            INSERT INTO contacts (name, emails, phones, addresses, affiliations, sources)
+            INSERT INTO contacts (name, emails, phones, addresses, affiliations, sources, importance)
             VALUES (
                 ${c.name},
                 ${JSON.stringify(c.emails ?? [])}::jsonb,
                 ${JSON.stringify(c.phones ?? [])}::jsonb,
                 ${JSON.stringify(c.addresses ?? [])}::jsonb,
                 ${JSON.stringify(c.affiliations ?? [])}::jsonb,
-                ${JSON.stringify(c.sources ?? [])}::jsonb
+                ${JSON.stringify(c.sources ?? [])}::jsonb,
+                ${importance}
             )
         `;
     }

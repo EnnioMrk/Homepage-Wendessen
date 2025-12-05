@@ -29,7 +29,9 @@ export async function GET(
         }
 
         // Get role default permissions (used to highlight in UI)
-        const rolePermissions = getRoleDefaultPermissions(user.roleName || '');
+        const rolePermissions = await getRoleDefaultPermissions(
+            user.roleName || ''
+        );
 
         return NextResponse.json({
             rolePermissions,

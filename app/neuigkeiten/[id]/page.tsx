@@ -32,7 +32,11 @@ async function getArticle(articleId: string): Promise<NewsArticle | null> {
     }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
     const { id } = await params;
     const article = await getArticle(id);
 
@@ -48,7 +52,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
 }
 
-export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ArticlePage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
     const { id } = await params;
     const article = await getArticle(id);
 
@@ -57,13 +65,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
     }
 
     let contentJson: Descendant[];
-    
+
     // Parse content (which is now JSON)
-    const contentString = typeof article.content === 'string' 
-        ? article.content 
-        : JSON.stringify(article.content);
-    
-    if (!contentString || contentString === 'null' || contentString === 'object' || contentString.trim() === '') {
+    const contentString =
+        typeof article.content === 'string'
+            ? article.content
+            : JSON.stringify(article.content);
+
+    if (
+        !contentString ||
+        contentString === 'null' ||
+        contentString === 'object' ||
+        contentString.trim() === ''
+    ) {
         contentJson = [
             {
                 type: 'paragraph',
@@ -72,9 +86,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
         ];
     } else {
         try {
-            contentJson = typeof article.content === 'string'
-                ? JSON.parse(article.content)
-                : article.content as Descendant[];
+            contentJson =
+                typeof article.content === 'string'
+                    ? JSON.parse(article.content)
+                    : (article.content as Descendant[]);
         } catch (error) {
             console.error('Error parsing article content:', error);
             contentJson = [

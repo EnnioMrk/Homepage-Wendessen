@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import ErrorNotification from '@/app/components/ErrorNotification';
 import {
     User,
     Plus,
@@ -29,18 +30,21 @@ const VEREINE_MAP: Record<string, string> = {
 };
 
 export default function AdminUsersClient() {
-    const { hasPermission } = usePermissions();
+    const { hasPermission, loading: permissionsLoading } = usePermissions();
     const [users, setUsers] = useState<AdminUserRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showPermissionsModal, setShowPermissionsModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(null);
+    const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(
+        null
+    );
 
-    const canCreate = hasPermission('users.create');
-    const canEdit = hasPermission('users.edit');
-    const canDelete = hasPermission('users.delete');
+    // Wait for permissions to load before checking
+    const canCreate = !permissionsLoading && hasPermission('users.create');
+    const canEdit = !permissionsLoading && hasPermission('users.edit');
+    const canDelete = !permissionsLoading && hasPermission('users.delete');
 
     const loadUsers = async () => {
         try {
@@ -75,13 +79,26 @@ export default function AdminUsersClient() {
         setShowPermissionsModal(true);
     };
 
+    const getExtraPermissionsCount = (user: AdminUserRecord): number => {
+        const defaults = user.roleDefaultPermissions;
+        if (!defaults) return 0;
+
+        const defaultSet = new Set(defaults);
+        const uniqueCustom = Array.from(new Set(user.customPermissions || []));
+        return uniqueCustom.filter((permission) => !defaultSet.has(permission))
+            .length;
+    };
+
     const handleDeleteConfirm = async () => {
         if (!selectedUser) return;
 
         try {
-            const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                `/api/admin/users/${selectedUser.id}`,
+                {
+                    method: 'DELETE',
+                }
+            );
 
             if (!response.ok) {
                 const data = await response.json();
@@ -93,7 +110,7 @@ export default function AdminUsersClient() {
             setSelectedUser(null);
         } catch (err) {
             console.error('Error deleting user:', err);
-            alert(
+            setError(
                 err instanceof Error
                     ? err.message
                     : 'Fehler beim Löschen des Benutzers'
@@ -143,88 +160,120 @@ export default function AdminUsersClient() {
                     {isLoading ? (
                         <div className="text-center py-12">
                             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                            <p className="mt-2 text-gray-600">Lade Benutzer...</p>
+                            <p className="mt-2 text-gray-600">
+                                Lade Benutzer...
+                            </p>
                         </div>
                     ) : (
                         <div className="bg-white shadow overflow-hidden sm:rounded-md">
                             <ul className="divide-y divide-gray-200">
-                                {users.map((user) => (
-                                    <li key={user.id}>
-                                        <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
-                                            <div className="flex items-center min-w-0 flex-1">
-                                                <div className="flex-shrink-0">
-                                                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                                                        <User className="w-5 h-5 text-white" />
+                                {users.map((user) => {
+                                    const extraPermissionsCount =
+                                        getExtraPermissionsCount(user);
+                                    return (
+                                        <li key={user.id}>
+                                            <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
+                                                <div className="flex items-center min-w-0 flex-1">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                                                            <User className="w-5 h-5 text-white" />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="ml-4 min-w-0 flex-1">
-                                                    <div className="flex items-center flex-wrap gap-2">
-                                                        <p className="text-sm font-medium text-gray-900 truncate">
-                                                            {user.username}
-                                                        </p>
-                                                        {user.roleDisplayName && (
-                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                                <ShieldCheck className="w-3 h-3 mr-1" />
-                                                                {user.roleDisplayName}
-                                                            </span>
-                                                        )}
-                                                        {user.vereinId && (
-                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                                {VEREINE_MAP[user.vereinId] || user.vereinId}
-                                                            </span>
-                                                        )}
-                                                        {user.mustChangePassword && (
-                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                                Passwort ändern
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <div className="mt-1 flex flex-wrap items-center text-sm text-gray-500 gap-x-4">
-                                                        <span>
-                                                            Erstellt:{' '}
-                                                            {new Date(
-                                                                user.createdAt
-                                                            ).toLocaleDateString('de-DE')}
-                                                        </span>
-                                                        {user.lastLogin && (
+                                                    <div className="ml-4 min-w-0 flex-1">
+                                                        <div className="flex items-center flex-wrap gap-2">
+                                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                                {user.username}
+                                                            </p>
+                                                            {user.roleDisplayName && (
+                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                                    <ShieldCheck className="w-3 h-3 mr-1" />
+                                                                    {
+                                                                        user.roleDisplayName
+                                                                    }
+                                                                </span>
+                                                            )}
+                                                            {user.vereinId && (
+                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                                    {VEREINE_MAP[
+                                                                        user
+                                                                            .vereinId
+                                                                    ] ||
+                                                                        user.vereinId}
+                                                                </span>
+                                                            )}
+                                                            {user.mustChangePassword && (
+                                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                                    Passwort
+                                                                    ändern
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="mt-1 flex flex-wrap items-center text-sm text-gray-500 gap-x-4">
                                                             <span>
-                                                                Letzter Login:{' '}
+                                                                Erstellt:{' '}
                                                                 {new Date(
-                                                                    user.lastLogin
-                                                                ).toLocaleDateString('de-DE')}
+                                                                    user.createdAt
+                                                                ).toLocaleDateString(
+                                                                    'de-DE'
+                                                                )}
                                                             </span>
-                                                        )}
-                                                        {user.customPermissions && user.customPermissions.length > 0 && (
-                                                            <span className="text-xs text-primary">
-                                                                +{user.customPermissions.length} spezielle Berechtigung(en)
-                                                            </span>
-                                                        )}
+                                                            {user.lastLogin && (
+                                                                <span>
+                                                                    Letzter
+                                                                    Login:{' '}
+                                                                    {new Date(
+                                                                        user.lastLogin
+                                                                    ).toLocaleDateString(
+                                                                        'de-DE'
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                            {extraPermissionsCount >
+                                                                0 && (
+                                                                <span className="text-xs text-primary">
+                                                                    +
+                                                                    {
+                                                                        extraPermissionsCount
+                                                                    }{' '}
+                                                                    spezielle
+                                                                    Berechtigung(en)
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div className="flex items-center space-x-2">
+                                                    {canEdit && (
+                                                        <button
+                                                            onClick={() =>
+                                                                handlePermissionsClick(
+                                                                    user
+                                                                )
+                                                            }
+                                                            className="text-primary hover:text-primary-dark"
+                                                            title="Berechtigungen bearbeiten"
+                                                        >
+                                                            <Gear className="w-5 h-5" />
+                                                        </button>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button
+                                                            onClick={() =>
+                                                                handleDeleteClick(
+                                                                    user
+                                                                )
+                                                            }
+                                                            className="text-red-600 hover:text-red-800"
+                                                            title="Benutzer löschen"
+                                                        >
+                                                            <Trash className="w-5 h-5" />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="flex items-center space-x-2">
-                                                {canEdit && (
-                                                    <button
-                                                        onClick={() => handlePermissionsClick(user)}
-                                                        className="text-primary hover:text-primary-dark"
-                                                        title="Berechtigungen bearbeiten"
-                                                    >
-                                                        <Gear className="w-5 h-5" />
-                                                    </button>
-                                                )}
-                                                {canDelete && (
-                                                    <button
-                                                        onClick={() => handleDeleteClick(user)}
-                                                        className="text-red-600 hover:text-red-800"
-                                                        title="Benutzer löschen"
-                                                    >
-                                                        <Trash className="w-5 h-5" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </li>
-                                ))}
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </div>
                     )}
@@ -265,8 +314,10 @@ export default function AdminUsersClient() {
                             </h3>
                         </div>
                         <p className="text-sm text-gray-600 mb-6">
-                            Möchten Sie den Benutzer <strong>{selectedUser.username}</strong>{' '}
-                            wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+                            Möchten Sie den Benutzer{' '}
+                            <strong>{selectedUser.username}</strong> wirklich
+                            löschen? Diese Aktion kann nicht rückgängig gemacht
+                            werden.
                         </p>
                         <div className="flex justify-end space-x-3">
                             <button
@@ -307,7 +358,9 @@ function CreateUserModal({
     onSuccess: () => void;
 }) {
     const [username, setUsername] = useState('');
-    const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>(undefined);
+    const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>(
+        undefined
+    );
     const [selectedVereinId, setSelectedVereinId] = useState<string>('');
     const [roles, setRoles] = useState<Role[]>([]);
     const [isCreating, setIsCreating] = useState(false);
@@ -337,7 +390,9 @@ function CreateUserModal({
                     const data = await response.json();
                     setRoles(data.roles);
                     // Set default to 'admin' role if available
-                    const defaultRole = data.roles.find((r: Role) => r.name === 'admin');
+                    const defaultRole = data.roles.find(
+                        (r: Role) => r.name === 'admin'
+                    );
                     if (defaultRole) {
                         setSelectedRoleId(defaultRole.id);
                     }
@@ -362,8 +417,8 @@ function CreateUserModal({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    username, 
+                body: JSON.stringify({
+                    username,
                     roleId: selectedRoleId,
                     vereinId: selectedVereinId || undefined,
                 }),
@@ -380,7 +435,9 @@ function CreateUserModal({
         } catch (err) {
             console.error('Error creating user:', err);
             setError(
-                err instanceof Error ? err.message : 'Fehler beim Erstellen des Benutzers'
+                err instanceof Error
+                    ? err.message
+                    : 'Fehler beim Erstellen des Benutzers'
             );
         } finally {
             setIsCreating(false);
@@ -412,7 +469,9 @@ function CreateUserModal({
                                 Der Admin-Benutzer wurde erfolgreich erstellt!
                             </p>
                             <div className="bg-white rounded border border-green-300 p-3 mt-2">
-                                <p className="text-xs text-gray-600 mb-1">Benutzername:</p>
+                                <p className="text-xs text-gray-600 mb-1">
+                                    Benutzername:
+                                </p>
                                 <p className="text-sm font-mono font-medium text-gray-900 mb-3">
                                     {username}
                                 </p>
@@ -433,9 +492,10 @@ function CreateUserModal({
                             </div>
                         </div>
                         <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3">
-                            <strong>Wichtig:</strong> Teilen Sie diese Anmeldedaten sicher mit
-                            dem neuen Admin. Das Passwort wird nur einmal angezeigt und muss
-                            beim ersten Login geändert werden.
+                            <strong>Wichtig:</strong> Teilen Sie diese
+                            Anmeldedaten sicher mit dem neuen Admin. Das
+                            Passwort wird nur einmal angezeigt und muss beim
+                            ersten Login geändert werden.
                         </p>
                         <button
                             onClick={handleClose}
@@ -464,7 +524,8 @@ function CreateUserModal({
                                 placeholder="z.B. max.mustermann"
                             />
                             <p className="mt-1 text-xs text-gray-500">
-                                Nur Buchstaben, Zahlen, Unterstriche und Bindestriche
+                                Nur Buchstaben, Zahlen, Unterstriche und
+                                Bindestriche
                             </p>
                         </div>
 
@@ -476,19 +537,28 @@ function CreateUserModal({
                                 Rolle
                             </label>
                             {isLoadingRoles ? (
-                                <div className="mt-1 text-sm text-gray-500">Lade Rollen...</div>
+                                <div className="mt-1 text-sm text-gray-500">
+                                    Lade Rollen...
+                                </div>
                             ) : (
                                 <select
                                     id="role"
                                     value={selectedRoleId || ''}
-                                    onChange={(e) => setSelectedRoleId(e.target.value ? Number(e.target.value) : undefined)}
+                                    onChange={(e) =>
+                                        setSelectedRoleId(
+                                            e.target.value
+                                                ? Number(e.target.value)
+                                                : undefined
+                                        )
+                                    }
                                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                                 >
                                     <option value="">Keine Rolle</option>
                                     {roles.map((role) => (
                                         <option key={role.id} value={role.id}>
                                             {role.displayName}
-                                            {role.description && ` - ${role.description}`}
+                                            {role.description &&
+                                                ` - ${role.description}`}
                                         </option>
                                     ))}
                                 </select>
@@ -508,7 +578,9 @@ function CreateUserModal({
                             <select
                                 id="verein"
                                 value={selectedVereinId}
-                                onChange={(e) => setSelectedVereinId(e.target.value)}
+                                onChange={(e) =>
+                                    setSelectedVereinId(e.target.value)
+                                }
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                             >
                                 <option value="">Kein Verein</option>
@@ -525,14 +597,17 @@ function CreateUserModal({
 
                         {error && (
                             <div className="rounded-md bg-red-50 p-3">
-                                <div className="text-sm text-red-700">{error}</div>
+                                <div className="text-sm text-red-700">
+                                    {error}
+                                </div>
                             </div>
                         )}
 
                         <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
                             <p className="text-sm text-blue-800">
-                                Ein 6-stelliges Anfangspasswort wird automatisch generiert. Der
-                                Benutzer muss es beim ersten Login ändern.
+                                Ein 6-stelliges Anfangspasswort wird automatisch
+                                generiert. Der Benutzer muss es beim ersten
+                                Login ändern.
                             </p>
                         </div>
 
@@ -555,6 +630,13 @@ function CreateUserModal({
                     </form>
                 )}
             </div>
+
+            {error && (
+                <ErrorNotification
+                    message={error}
+                    onClose={() => setError('')}
+                />
+            )}
         </div>
     );
 }

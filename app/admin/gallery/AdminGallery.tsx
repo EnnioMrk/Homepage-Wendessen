@@ -18,6 +18,7 @@ import {
     WarningCircle,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
+import PromptDialog from '@/app/components/PromptDialog';
 
 interface GalleryImage {
     id: string;
@@ -49,11 +50,16 @@ export default function AdminGallery() {
         null
     );
     const [isRenaming, setIsRenaming] = useState(false);
+    const [isRenamingLoading, setIsRenamingLoading] = useState(false);
     const [newName, setNewName] = useState('');
     const [uploadName, setUploadName] = useState('');
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(
+        null
+    );
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchImages();
@@ -171,6 +177,7 @@ export default function AdminGallery() {
             return;
         }
 
+        setIsRenamingLoading(true);
         try {
             const response = await fetch(`/api/admin/gallery/${imageId}`, {
                 method: 'PUT',
@@ -194,16 +201,13 @@ export default function AdminGallery() {
         } catch (error) {
             console.error('Rename error:', error);
             setError('Fehler beim Umbenennen des Bildes');
+        } finally {
+            setIsRenamingLoading(false);
         }
     };
 
     const handleDelete = async (imageId: string) => {
-        if (
-            !confirm('Sind Sie sicher, dass Sie dieses Bild löschen möchten?')
-        ) {
-            return;
-        }
-
+        setIsDeleting(true);
         try {
             const response = await fetch(`/api/admin/gallery/${imageId}`, {
                 method: 'DELETE',
@@ -212,6 +216,7 @@ export default function AdminGallery() {
             if (response.ok) {
                 setImages((prev) => prev.filter((img) => img.id !== imageId));
                 setSelectedImage(null);
+                setImageToDelete(null);
             } else {
                 const errorData = await response.json();
                 setError(errorData.error || 'Fehler beim Löschen');
@@ -219,6 +224,8 @@ export default function AdminGallery() {
         } catch (error) {
             console.error('Delete error:', error);
             setError('Fehler beim Löschen des Bildes');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -365,54 +372,66 @@ export default function AdminGallery() {
                             {sortedAndFilteredImages.map((image) => (
                                 <div
                                     key={image.id}
-                                    className="bg-white rounded-lg shadow-md overflow-hidden group"
+                                    className="bg-white rounded-lg shadow-md group"
                                 >
-                                    <div className="aspect-square relative">
-                                        <Image
-                                            src={image.url}
-                                            alt={image.displayName}
-                                            fill
-                                            className="object-cover"
-                                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                                        />
-                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-                                            <div className="opacity-0 group-hover:opacity-100 flex space-x-2">
-                                                <button
-                                                    onClick={() =>
-                                                        setSelectedImage(image)
-                                                    }
-                                                    className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                {canEdit && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedImage(image);
-                                                            setNewName(
-                                                                image.displayName
-                                                            );
-                                                            setIsRenaming(true);
-                                                        }}
-                                                        className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
-                                                    >
-                                                        <PencilSimple size={16} />
-                                                    </button>
-                                                )}
-                                                {canDelete && (
+                                    <div className="p-3 pb-0">
+                                        <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-100">
+                                            <Image
+                                                src={image.url}
+                                                alt={image.displayName}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                                            />
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                                                <div className="opacity-0 group-hover:opacity-100 flex space-x-2">
                                                     <button
                                                         onClick={() =>
-                                                            handleDelete(image.id)
+                                                            setSelectedImage(
+                                                                image
+                                                            )
                                                         }
-                                                        className="p-2 bg-white rounded-full hover:bg-red-100 text-red-600 hover:text-red-700"
+                                                        className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
                                                     >
-                                                        <Trash size={16} />
+                                                        <Eye size={16} />
                                                     </button>
-                                                )}
+                                                    {canEdit && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedImage(
+                                                                    image
+                                                                );
+                                                                setNewName(
+                                                                    image.displayName
+                                                                );
+                                                                setIsRenaming(
+                                                                    true
+                                                                );
+                                                            }}
+                                                            className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
+                                                        >
+                                                            <PencilSimple
+                                                                size={16}
+                                                            />
+                                                        </button>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button
+                                                            onClick={() =>
+                                                                setImageToDelete(
+                                                                    image
+                                                                )
+                                                            }
+                                                            className="p-2 bg-white rounded-full hover:bg-red-100 text-red-600 hover:text-red-700"
+                                                        >
+                                                            <Trash size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="p-3">
+                                    <div className="px-3 pb-3">
                                         <h3 className="font-medium text-gray-900 truncate">
                                             {image.displayName}
                                         </h3>
@@ -603,8 +622,8 @@ export default function AdminGallery() {
 
             {/* Image Detail Modal */}
             {selectedImage && !isRenaming && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4 pb-4 pt-[66px] md:pt-[68px] lg:pt-[70px] z-50 overflow-y-auto">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-3xl mx-4 my-auto">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-900">
                                 {selectedImage.displayName}
@@ -617,19 +636,19 @@ export default function AdminGallery() {
                             </button>
                         </div>
 
-                        <div className="mb-4">
-                            <div className="relative bg-gray-100 rounded-lg overflow-hidden">
+                        <div className="mb-6">
+                            <div className="relative w-full h-[50vh] bg-gray-100 rounded-2xl overflow-hidden">
                                 <Image
                                     src={selectedImage.url}
                                     alt={selectedImage.displayName}
-                                    width={800}
-                                    height={600}
-                                    className="w-full h-auto"
+                                    fill
+                                    className="object-contain"
+                                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 60vw"
                                 />
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div>
                                 <span className="font-medium text-gray-700">
                                     Originalname:
@@ -738,15 +757,45 @@ export default function AdminGallery() {
                                 onClick={() =>
                                     handleRename(selectedImage.id, newName)
                                 }
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center"
+                                disabled={isRenamingLoading}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
-                                <Check size={16} className="mr-2" />
-                                Speichern
+                                {isRenamingLoading ? (
+                                    <>
+                                        <LoadingSpinner
+                                            size="sm"
+                                            color="white"
+                                            className="mr-2"
+                                        />
+                                        Speichern...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check size={16} className="mr-2" />
+                                        Speichern
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <PromptDialog
+                isOpen={Boolean(imageToDelete)}
+                title="Bild löschen?"
+                description={`Möchten Sie das Bild "${imageToDelete?.displayName}" wirklich löschen?`}
+                detail="Diese Aktion kann nicht rückgängig gemacht werden."
+                confirmText={isDeleting ? 'Löschen...' : 'Löschen'}
+                cancelText="Abbrechen"
+                onConfirm={() =>
+                    imageToDelete && handleDelete(imageToDelete.id)
+                }
+                onCancel={() => setImageToDelete(null)}
+                icon={<Trash className="h-7 w-7" weight="duotone" />}
+                accentColor="red"
+            />
         </div>
     );
 }

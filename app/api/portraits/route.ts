@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createPortraitSubmission } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
 import { revalidateTag } from 'next/cache';
+import { convertFileToWebP } from '@/lib/image-utils';
+import { uploadToBlob } from '@/lib/blob-utils';
+import { notifyNewPortrait } from '@/lib/push-notifications';
 
 export async function POST(request: NextRequest) {
     try {
@@ -57,23 +60,37 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Convert image to base64
-        const bytes = await image.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const base64Data = buffer.toString('base64');
+        // Convert image to WebP format
+        const converted = await convertFileToWebP(image);
 
-        // Save to database with base64 data
+        // Upload to MinIO S3 storage
+        const blob = await uploadToBlob(
+            `portraits/${converted.filename}`,
+            converted.buffer,
+            {
+                addRandomSuffix: true,
+                contentType: converted.mimeType,
+            }
+        );
+
+        // Save to database with MinIO URL
         const submission = await createPortraitSubmission(
             name,
             description,
-            base64Data,
-            image.type,
-            image.name,
+            blob.url,
+            blob.pathname,
+            converted.mimeType,
+            converted.filename,
             email || undefined
         );
 
         // Revalidate the portraits cache
         revalidateTag('portraits');
+
+        // Send push notification to admins
+        notifyNewPortrait(String(submission.id), name).catch((err) =>
+            console.error('Failed to send portrait notification:', err)
+        );
 
         console.log(
             `New portrait submission from ${name} at ${new Date().toISOString()}`

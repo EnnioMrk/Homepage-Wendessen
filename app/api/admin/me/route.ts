@@ -4,7 +4,7 @@ import { getCurrentAdminUser } from '@/lib/auth';
 export async function GET() {
     try {
         const user = await getCurrentAdminUser();
-        
+
         if (!user) {
             return NextResponse.json(
                 { error: 'Not authenticated' },
@@ -12,13 +12,23 @@ export async function GET() {
             );
         }
 
+        // Combine role default permissions with custom permissions
+        // Custom permissions override/extend role permissions
+        const rolePermissions = user.roleDefaultPermissions || [];
+        const customPermissions = user.customPermissions || [];
+
+        // Merge permissions: role permissions + custom permissions (deduplicated)
+        const allPermissions = [
+            ...new Set([...rolePermissions, ...customPermissions]),
+        ];
+
         return NextResponse.json({
             user: {
                 id: user.id,
                 username: user.username,
                 roleName: user.roleName,
                 roleDisplayName: user.roleDisplayName,
-                customPermissions: user.customPermissions || [],
+                customPermissions: allPermissions,
                 vereinId: user.vereinId || null,
             },
         });

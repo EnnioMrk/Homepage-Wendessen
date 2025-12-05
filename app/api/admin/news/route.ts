@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isAuthenticated } from '../../../../lib/auth';
+import { isAuthenticated, getCurrentAdminUser } from '../../../../lib/auth';
 import { sql } from '../../../../lib/sql';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 interface NewsRow {
     id: number;
@@ -26,7 +27,7 @@ export async function GET() {
         // Get news from database
         const result = await sql`
             SELECT id, title, content, category, published_date as "publishedDate",
-                   article_id as "articleId"
+                   article_id as "articleId", is_pinned as "isPinned", pinned_at as "pinnedAt"
             FROM news 
             ORDER BY published_date DESC
         `;
@@ -34,6 +35,8 @@ export async function GET() {
         const news = (result as NewsRow[]).map((row) => ({
             ...row,
             publishedDate: row.publishedDate.toISOString(),
+            isPinned: row.isPinned || false,
+            pinnedAt: row.pinnedAt ? row.pinnedAt.toISOString() : null,
         }));
 
         return NextResponse.json({ news });
@@ -57,7 +60,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-    const { title, category, contentJson } = await request.json();
+        const { title, category, contentJson } = await request.json();
 
         if (!title?.trim()) {
             return NextResponse.json(
@@ -76,11 +79,12 @@ export async function POST(request: NextRequest) {
         // Generate a unique 32-bit article ID (8 hex characters)
         const crypto = await import('crypto');
         let articleId = crypto.randomBytes(4).toString('hex');
-        
+
         // Ensure uniqueness
         let exists = true;
         while (exists) {
-            const check = await sql`SELECT id FROM news WHERE article_id = ${articleId}`;
+            const check =
+                await sql`SELECT id FROM news WHERE article_id = ${articleId}`;
             if (check.length === 0) {
                 exists = false;
             } else {
@@ -104,6 +108,20 @@ export async function POST(request: NextRequest) {
             ...result[0],
             publishedDate: result[0].publishedDate.toISOString(),
         };
+
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'news.create',
+            resourceType: 'news',
+            resourceId: String(result[0].id),
+            resourceTitle: title.trim(),
+            details: { category: category.trim() },
+            ...requestInfo,
+        });
 
         // Revalidate pages that show news
         revalidatePath('/');

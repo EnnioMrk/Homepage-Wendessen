@@ -211,7 +211,7 @@ const menuItems = [
 import { sql } from '@/lib/sql';
 
 async function migrate() {
-        await sql`
+    await sql`
         CREATE TABLE IF NOT EXISTS new_table (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -219,7 +219,7 @@ async function migrate() {
         );
     `;
 
-        console.log('Migration completed');
+    console.log('Migration completed');
 }
 
 migrate();
@@ -352,7 +352,8 @@ jobs:
 **A:** Several optimization strategies:
 
 1. **Image optimization**:
-        Yes, you can adapt it to other databases. The project uses a centralized helper (`lib/sql.ts`) and the `sql` tagged-template; swapping drivers requires updating that helper and any provider-specific connection details.
+   Yes, you can adapt it to other databases. The project uses a centralized helper (`lib/sql.ts`) and the `sql` tagged-template; swapping drivers requires updating that helper and any provider-specific connection details.
+
 ```typescript
 // Use Next.js Image component with proper sizing
 <Image

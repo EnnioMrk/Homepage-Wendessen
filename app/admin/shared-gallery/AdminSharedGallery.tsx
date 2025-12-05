@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LazySharedGalleryImage from '@/app/components/LazySharedGalleryImage';
+import { SharedGalleryImageProvider } from '@/app/components/SharedGalleryImageContext';
+import PromptDialog from '@/app/components/PromptDialog';
 import {
     ArrowLeft,
     Check,
@@ -21,7 +24,7 @@ interface SharedGallerySubmission {
     description?: string;
     submitterName?: string;
     submitterEmail?: string;
-    imageData: string;
+    imageUrl?: string; // Loaded lazily via admin image endpoint
     imageMimeType: string;
     imageFilename?: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -33,22 +36,32 @@ interface SharedGallerySubmission {
 
 export default function AdminSharedGallery() {
     const router = useRouter();
-    const [submissions, setSubmissions] = useState<SharedGallerySubmission[]>([]);
+    const [submissions, setSubmissions] = useState<SharedGallerySubmission[]>(
+        []
+    );
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
-    const [selectedSubmission, setSelectedSubmission] = useState<SharedGallerySubmission | null>(null);
+    const [filter, setFilter] = useState<
+        'all' | 'pending' | 'approved' | 'rejected'
+    >('pending');
+    const [selectedSubmission, setSelectedSubmission] =
+        useState<SharedGallerySubmission | null>(null);
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [rejectionReason, setRejectionReason] = useState('');
     const [showRejectModal, setShowRejectModal] = useState(false);
+    const [submissionToApprove, setSubmissionToApprove] =
+        useState<SharedGallerySubmission | null>(null);
+    const [submissionToDelete, setSubmissionToDelete] =
+        useState<SharedGallerySubmission | null>(null);
 
     const fetchSubmissions = useCallback(async () => {
         try {
             setLoading(true);
-            const url = filter === 'all' 
-                ? '/api/admin/shared-gallery'
-                : `/api/admin/shared-gallery?status=${filter}`;
-            
+            const url =
+                filter === 'all'
+                    ? '/api/admin/shared-gallery'
+                    : `/api/admin/shared-gallery?status=${filter}`;
+
             const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
@@ -69,8 +82,6 @@ export default function AdminSharedGallery() {
     }, [fetchSubmissions]);
 
     const handleApprove = async (id: string) => {
-        if (!confirm('Möchten Sie dieses Foto freigeben?')) return;
-
         setProcessing(true);
         setError(null);
 
@@ -84,6 +95,7 @@ export default function AdminSharedGallery() {
             if (response.ok) {
                 await fetchSubmissions();
                 setSelectedSubmission(null);
+                setSubmissionToApprove(null);
             } else {
                 const data = await response.json();
                 setError(data.error || 'Fehler beim Freigeben');
@@ -131,8 +143,6 @@ export default function AdminSharedGallery() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Möchten Sie diese Einreichung wirklich löschen?')) return;
-
         setProcessing(true);
         setError(null);
 
@@ -146,6 +156,7 @@ export default function AdminSharedGallery() {
             if (response.ok) {
                 await fetchSubmissions();
                 setSelectedSubmission(null);
+                setSubmissionToDelete(null);
             } else {
                 const data = await response.json();
                 setError(data.error || 'Fehler beim Löschen');
@@ -189,6 +200,7 @@ export default function AdminSharedGallery() {
     const filteredSubmissions = submissions;
 
     return (
+        <SharedGalleryImageProvider>
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <header className="bg-white shadow">
@@ -226,7 +238,13 @@ export default function AdminSharedGallery() {
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                            Ausstehend ({submissions.filter(s => s.status === 'pending').length})
+                            Ausstehend (
+                            {
+                                submissions.filter(
+                                    (s) => s.status === 'pending'
+                                ).length
+                            }
+                            )
                         </button>
                         <button
                             onClick={() => setFilter('approved')}
@@ -236,7 +254,13 @@ export default function AdminSharedGallery() {
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                            Freigegeben ({submissions.filter(s => s.status === 'approved').length})
+                            Freigegeben (
+                            {
+                                submissions.filter(
+                                    (s) => s.status === 'approved'
+                                ).length
+                            }
+                            )
                         </button>
                         <button
                             onClick={() => setFilter('rejected')}
@@ -246,7 +270,13 @@ export default function AdminSharedGallery() {
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                            Abgelehnt ({submissions.filter(s => s.status === 'rejected').length})
+                            Abgelehnt (
+                            {
+                                submissions.filter(
+                                    (s) => s.status === 'rejected'
+                                ).length
+                            }
+                            )
                         </button>
                         <button
                             onClick={() => setFilter('all')}
@@ -279,7 +309,11 @@ export default function AdminSharedGallery() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
                 {loading ? (
                     <div className="bg-white shadow rounded-lg p-12 text-center">
-                        <LoadingSpinner size="lg" text="Lade Einreichungen..." centered />
+                        <LoadingSpinner
+                            size="lg"
+                            text="Lade Einreichungen..."
+                            centered
+                        />
                     </div>
                 ) : filteredSubmissions.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -288,13 +322,21 @@ export default function AdminSharedGallery() {
                                 key={submission.id}
                                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                             >
-                                <div className="aspect-square relative cursor-pointer" onClick={() => setSelectedSubmission(submission)}>
-                                    <Image
-                                        src={submission.imageData}
+                                <div
+                                    className="aspect-square relative cursor-pointer"
+                                    onClick={() =>
+                                        setSelectedSubmission(submission)
+                                    }
+                                >
+                                    <LazySharedGalleryImage
+                                        imageId={submission.id}
                                         alt={submission.title}
                                         fill
                                         className="object-cover"
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                                        onLoad={(imageUrl) => {
+                                            submission.imageUrl = imageUrl;
+                                        }}
                                     />
                                     <div className="absolute top-2 right-2">
                                         {getStatusBadge(submission.status)}
@@ -310,19 +352,30 @@ export default function AdminSharedGallery() {
                                         </p>
                                     )}
                                     <p className="text-xs text-gray-500">
-                                        {new Date(submission.submittedAt).toLocaleDateString('de-DE')}
+                                        {new Date(
+                                            submission.submittedAt
+                                        ).toLocaleDateString('de-DE')}
                                     </p>
                                     <div className="flex gap-2 mt-3">
                                         <button
-                                            onClick={() => setSelectedSubmission(submission)}
+                                            onClick={() =>
+                                                setSelectedSubmission(
+                                                    submission
+                                                )
+                                            }
                                             className="flex-1 px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
                                         >
-                                            <Eye size={14} className="inline mr-1" />
+                                            <Eye
+                                                size={14}
+                                                className="inline mr-1"
+                                            />
                                             Ansehen
                                         </button>
                                         {submission.status === 'pending' && (
                                             <button
-                                                onClick={() => handleApprove(submission.id)}
+                                                onClick={() =>
+                                                    setSubmissionToApprove(submission)
+                                                }
                                                 disabled={processing}
                                                 className="px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded transition-colors disabled:bg-gray-400"
                                             >
@@ -337,7 +390,15 @@ export default function AdminSharedGallery() {
                 ) : (
                     <div className="bg-white shadow rounded-lg p-12 text-center">
                         <p className="text-gray-600">
-                            Keine {filter !== 'all' ? filter === 'pending' ? 'ausstehenden' : filter === 'approved' ? 'freigegebenen' : 'abgelehnten' : ''} Einreichungen gefunden.
+                            Keine{' '}
+                            {filter !== 'all'
+                                ? filter === 'pending'
+                                    ? 'ausstehenden'
+                                    : filter === 'approved'
+                                    ? 'freigegebenen'
+                                    : 'abgelehnten'
+                                : ''}{' '}
+                            Einreichungen gefunden.
                         </p>
                     </div>
                 )}
@@ -357,7 +418,10 @@ export default function AdminSharedGallery() {
                                 </div>
                                 {selectedSubmission.submitterName && (
                                     <p className="text-gray-600">
-                                        Eingereicht von <strong>{selectedSubmission.submitterName}</strong>
+                                        Eingereicht von{' '}
+                                        <strong>
+                                            {selectedSubmission.submitterName}
+                                        </strong>
                                     </p>
                                 )}
                             </div>
@@ -372,54 +436,93 @@ export default function AdminSharedGallery() {
                         <div className="p-6">
                             {/* Image */}
                             <div className="mb-6 relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-                                <Image
-                                    src={selectedSubmission.imageData}
-                                    alt={selectedSubmission.title}
-                                    fill
-                                    className="object-contain"
-                                />
+                                {selectedSubmission.imageUrl ? (
+                                    <Image
+                                        src={selectedSubmission.imageUrl}
+                                        alt={selectedSubmission.title}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <LazySharedGalleryImage
+                                        imageId={selectedSubmission.id}
+                                        alt={selectedSubmission.title}
+                                        fill
+                                        className="object-contain"
+                                        onLoad={(imageUrl) => {
+                                            selectedSubmission.imageUrl =
+                                                imageUrl;
+                                        }}
+                                    />
+                                )}
                             </div>
 
                             {/* Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                 {selectedSubmission.description && (
                                     <div className="md:col-span-2">
-                                        <h4 className="font-semibold text-gray-900 mb-1">Beschreibung</h4>
-                                        <p className="text-gray-700">{selectedSubmission.description}</p>
+                                        <h4 className="font-semibold text-gray-900 mb-1">
+                                            Beschreibung
+                                        </h4>
+                                        <p className="text-gray-700">
+                                            {selectedSubmission.description}
+                                        </p>
                                     </div>
                                 )}
                                 {selectedSubmission.submitterEmail && (
                                     <div>
-                                        <h4 className="font-semibold text-gray-900 mb-1">E-Mail</h4>
-                                        <p className="text-gray-700">{selectedSubmission.submitterEmail}</p>
+                                        <h4 className="font-semibold text-gray-900 mb-1">
+                                            E-Mail
+                                        </h4>
+                                        <p className="text-gray-700">
+                                            {selectedSubmission.submitterEmail}
+                                        </p>
                                     </div>
                                 )}
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 mb-1">Eingereicht am</h4>
+                                    <h4 className="font-semibold text-gray-900 mb-1">
+                                        Eingereicht am
+                                    </h4>
                                     <p className="text-gray-700">
-                                        {new Date(selectedSubmission.submittedAt).toLocaleString('de-DE')}
+                                        {new Date(
+                                            selectedSubmission.submittedAt
+                                        ).toLocaleString('de-DE')}
                                     </p>
                                 </div>
                                 {selectedSubmission.reviewedAt && (
                                     <>
                                         <div>
-                                            <h4 className="font-semibold text-gray-900 mb-1">Geprüft am</h4>
+                                            <h4 className="font-semibold text-gray-900 mb-1">
+                                                Geprüft am
+                                            </h4>
                                             <p className="text-gray-700">
-                                                {new Date(selectedSubmission.reviewedAt).toLocaleString('de-DE')}
+                                                {new Date(
+                                                    selectedSubmission.reviewedAt
+                                                ).toLocaleString('de-DE')}
                                             </p>
                                         </div>
                                         {selectedSubmission.reviewedBy && (
                                             <div>
-                                                <h4 className="font-semibold text-gray-900 mb-1">Geprüft von</h4>
-                                                <p className="text-gray-700">{selectedSubmission.reviewedBy}</p>
+                                                <h4 className="font-semibold text-gray-900 mb-1">
+                                                    Geprüft von
+                                                </h4>
+                                                <p className="text-gray-700">
+                                                    {
+                                                        selectedSubmission.reviewedBy
+                                                    }
+                                                </p>
                                             </div>
                                         )}
                                     </>
                                 )}
                                 {selectedSubmission.rejectionReason && (
                                     <div className="md:col-span-2">
-                                        <h4 className="font-semibold text-gray-900 mb-1">Ablehnungsgrund</h4>
-                                        <p className="text-gray-700">{selectedSubmission.rejectionReason}</p>
+                                        <h4 className="font-semibold text-gray-900 mb-1">
+                                            Ablehnungsgrund
+                                        </h4>
+                                        <p className="text-gray-700">
+                                            {selectedSubmission.rejectionReason}
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -429,21 +532,33 @@ export default function AdminSharedGallery() {
                                 {selectedSubmission.status === 'pending' && (
                                     <>
                                         <button
-                                            onClick={() => handleApprove(selectedSubmission.id)}
+                                            onClick={() =>
+                                                handleApprove(
+                                                    selectedSubmission.id
+                                                )
+                                            }
                                             disabled={processing}
                                             className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:bg-gray-400 flex items-center justify-center"
                                         >
                                             {processing ? (
-                                                <LoadingSpinner size="sm" color="white" />
+                                                <LoadingSpinner
+                                                    size="sm"
+                                                    color="white"
+                                                />
                                             ) : (
                                                 <>
-                                                    <Check size={16} className="mr-2" />
+                                                    <Check
+                                                        size={16}
+                                                        className="mr-2"
+                                                    />
                                                     Freigeben
                                                 </>
                                             )}
                                         </button>
                                         <button
-                                            onClick={() => setShowRejectModal(true)}
+                                            onClick={() =>
+                                                setShowRejectModal(true)
+                                            }
                                             disabled={processing}
                                             className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:bg-gray-400 flex items-center justify-center"
                                         >
@@ -453,7 +568,9 @@ export default function AdminSharedGallery() {
                                     </>
                                 )}
                                 <button
-                                    onClick={() => handleDelete(selectedSubmission.id)}
+                                    onClick={() =>
+                                        setSubmissionToDelete(selectedSubmission)
+                                    }
                                     disabled={processing}
                                     className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium disabled:bg-gray-400 flex items-center justify-center"
                                 >
@@ -482,7 +599,9 @@ export default function AdminSharedGallery() {
                             </label>
                             <textarea
                                 value={rejectionReason}
-                                onChange={(e) => setRejectionReason(e.target.value)}
+                                onChange={(e) =>
+                                    setRejectionReason(e.target.value)
+                                }
                                 placeholder="Grund für die Ablehnung..."
                                 rows={3}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
@@ -514,6 +633,38 @@ export default function AdminSharedGallery() {
                     </div>
                 </div>
             )}
+
+            {/* Approve Confirmation Dialog */}
+            <PromptDialog
+                isOpen={Boolean(submissionToApprove)}
+                title="Foto freigeben?"
+                description={`Möchten Sie das Foto "${submissionToApprove?.title}" freigeben?`}
+                detail="Das Foto wird auf der öffentlichen Galerie-Seite sichtbar."
+                confirmText={processing ? 'Freigeben...' : 'Freigeben'}
+                cancelText="Abbrechen"
+                onConfirm={() =>
+                    submissionToApprove && handleApprove(submissionToApprove.id)
+                }
+                onCancel={() => setSubmissionToApprove(null)}
+                icon={<Check className="h-12 w-12" weight="duotone" />}
+            />
+
+            {/* Delete Confirmation Dialog */}
+            <PromptDialog
+                isOpen={Boolean(submissionToDelete)}
+                title="Einreichung löschen?"
+                description={`Möchten Sie die Einreichung "${submissionToDelete?.title}" wirklich löschen?`}
+                detail="Diese Aktion kann nicht rückgängig gemacht werden."
+                confirmText={processing ? 'Löschen...' : 'Löschen'}
+                cancelText="Abbrechen"
+                onConfirm={() =>
+                    submissionToDelete && handleDelete(submissionToDelete.id)
+                }
+                onCancel={() => setSubmissionToDelete(null)}
+                icon={<Trash className="h-12 w-12" weight="duotone" />}
+                accentColor="red"
+            />
         </div>
+        </SharedGalleryImageProvider>
     );
 }

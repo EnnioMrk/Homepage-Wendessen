@@ -8,45 +8,42 @@ The system now includes dedicated roles for each Verein (club/association) in We
 
 The following Verein roles have been created:
 
-| Verein | Role Name | Display Name |
-|--------|-----------|--------------|
-| SV Wendessen | `verein_sv-wendessen` | SV Wendessen - Vereinsverwalter |
-| Freiwillige Feuerwehr | `verein_feuerwehr` | Freiwillige Feuerwehr - Vereinsverwalter |
-| Jugendfeuerwehr | `verein_jugendfeuerwehr` | Jugendfeuerwehr - Vereinsverwalter |
-| Kleingärtner-Verein | `verein_kleingaertner` | Kleingärtner-Verein - Vereinsverwalter |
-| Kirchbauverein | `verein_kirchbauverein` | Kirchbauverein - Vereinsverwalter |
+| Verein                  | Role Name                        | Display Name                               |
+| ----------------------- | -------------------------------- | ------------------------------------------ |
+| SV Wendessen            | `verein_sv-wendessen`            | SV Wendessen - Vereinsverwalter            |
+| Freiwillige Feuerwehr   | `verein_feuerwehr`               | Freiwillige Feuerwehr - Vereinsverwalter   |
+| Jugendfeuerwehr         | `verein_jugendfeuerwehr`         | Jugendfeuerwehr - Vereinsverwalter         |
+| Kleingärtner-Verein     | `verein_kleingaertner`           | Kleingärtner-Verein - Vereinsverwalter     |
+| Kirchbauverein          | `verein_kirchbauverein`          | Kirchbauverein - Vereinsverwalter          |
 | Initiative Spritzenhaus | `verein_initiative-spritzenhaus` | Initiative Spritzenhaus - Vereinsverwalter |
-| Schützenverein | `verein_schuetzenverein` | Schützenverein - Vereinsverwalter |
+| Schützenverein          | `verein_schuetzenverein`         | Schützenverein - Vereinsverwalter          |
 
 ## Default Permissions
 
 Each Verein role has the following default permissions:
 
 ### Events Management
-- `verein.events.create` - Create events for their Verein
-- `verein.events.edit` - Edit their Verein's events
-- `verein.events.delete` - Delete their Verein's events
 
-### News Management
-- `verein.news.create` - Create news for their Verein
-- `verein.news.edit` - Edit their Verein's news
-- `verein.news.delete` - Delete their Verein's news
+-   `verein.events.create` - Create events for their Verein
+-   `verein.events.edit` - Edit their Verein's events
+-   `verein.events.delete` - Delete their Verein's events
 
 ### Gallery Management
-- `verein.gallery.upload` - Upload images for their Verein
-- `verein.gallery.edit` - Edit their Verein's images
-- `verein.gallery.delete` - Delete their Verein's images
+
+-   `verein.gallery.upload` - Upload images for their Verein
+-   `verein.gallery.edit` - Edit their Verein's images
+-   `verein.gallery.delete` - Delete their Verein's images
 
 ## What Verein Users CAN Do
 
 ✅ Manage their own Verein's events
-✅ Create and edit news articles for their Verein
 ✅ Upload and manage gallery images for their Verein
 ✅ View all public content on the website
 
 ## What Verein Users CANNOT Do
 
 ❌ Manage other Vereine's content
+❌ Create or edit news articles
 ❌ View or manage admin users
 ❌ Access system settings
 ❌ Approve/reject submissions from other users
@@ -60,8 +57,8 @@ Each Verein role has the following default permissions:
 2. Go to **Admin Dashboard** → **Admin-Benutzer**
 3. Click **Neuer Admin**
 4. Fill in the form:
-   - **Username**: Choose a username (e.g., `sv-wendessen-admin`)
-   - **Role**: Select the appropriate Verein role from dropdown
+    - **Username**: Choose a username (e.g., `sv-wendessen-admin`)
+    - **Role**: Select the appropriate Verein role from dropdown
 5. Click **Erstellen**
 6. Share the generated 6-digit password with the Verein contact
 7. User must change password on first login
@@ -69,10 +66,11 @@ Each Verein role has the following default permissions:
 ### Example Usernames
 
 Good username conventions:
-- `sv-wendessen-admin`
-- `feuerwehr-admin`
-- `jugendfeuerwehr-admin`
-- `kleingaertner-admin`
+
+-   `sv-wendessen-admin`
+-   `feuerwehr-admin`
+-   `jugendfeuerwehr-admin`
+-   `kleingaertner-admin`
 
 ## Technical Implementation
 
@@ -85,6 +83,7 @@ bun run setup-verein-roles
 ```
 
 This script:
+
 1. Creates 9 new permissions in the `verein` category
 2. Creates 7 roles (one for each Verein)
 3. Links roles to the Verein IDs from `lib/vereine-data.ts`
@@ -151,17 +150,21 @@ CREATE INDEX idx_gallery_verein ON gallery(verein_id);
 
 ```typescript
 // In API route for creating event
-import { requirePermission, getVereinIdFromRole, isVereinUser } from '@/lib/permissions';
+import {
+    requirePermission,
+    getVereinIdFromRole,
+    isVereinUser,
+} from '@/lib/permissions';
 
 export async function POST(request: NextRequest) {
     const user = await requirePermission('verein.events.create');
     const data = await request.json();
-    
+
     // If user is a Verein admin, automatically set verein_id
     if (isVereinUser(user)) {
         data.verein_id = getVereinIdFromRole(user.roleName!);
     }
-    
+
     // Create event with verein_id
     await createEvent(data);
 }
@@ -177,17 +180,19 @@ import { WithPermission } from '@/lib/usePermissions';
 
 function EventManager() {
     const { user, hasPermission } = usePermissions();
-    
+
     return (
         <div>
             {/* Only show to Verein users */}
             <WithPermission permission="verein.events.create">
                 <CreateEventButton />
             </WithPermission>
-            
+
             {/* Show different UI for Verein vs global admins */}
             {user?.roleName?.startsWith('verein_') ? (
-                <VereinEventsList vereinId={user.roleName.replace('verein_', '')} />
+                <VereinEventsList
+                    vereinId={user.roleName.replace('verein_', '')}
+                />
             ) : (
                 <AllEventsList />
             )}
@@ -212,6 +217,7 @@ If a new Verein is added to the system:
 ⚠️ **Important**: Currently, Verein users have permissions to manage "their" content, but **content filtering by Verein is not yet enforced** at the database level.
 
 **Recommended Implementation**:
+
 1. Add `verein_id` column to content tables
 2. Filter queries by `verein_id` for Verein users
 3. Prevent Verein users from accessing other Vereine's content
@@ -220,23 +226,24 @@ If a new Verein is added to the system:
 ### Permission Escalation Prevention
 
 ✅ Verein users cannot:
-- Change their own role
-- Grant themselves additional permissions
-- Access user management
-- Create other admin users
+
+-   Change their own role
+-   Grant themselves additional permissions
+-   Access user management
+-   Create other admin users
 
 ## Testing Verein Roles
 
 ### Test Checklist
 
-- [ ] Create a test user with a Verein role
-- [ ] Log in as that user
-- [ ] Verify they can create events (with `verein.events.create`)
-- [ ] Verify they can edit events (with `verein.events.edit`)
-- [ ] Verify they cannot access user management
-- [ ] Verify they cannot access other Vereine's content (when filtering is implemented)
-- [ ] Test password change on first login
-- [ ] Test permission denial for unauthorized actions
+-   [ ] Create a test user with a Verein role
+-   [ ] Log in as that user
+-   [ ] Verify they can create events (with `verein.events.create`)
+-   [ ] Verify they can edit events (with `verein.events.edit`)
+-   [ ] Verify they cannot access user management
+-   [ ] Verify they cannot access other Vereine's content (when filtering is implemented)
+-   [ ] Test password change on first login
+-   [ ] Test permission denial for unauthorized actions
 
 ## Troubleshooting
 
@@ -257,12 +264,13 @@ If a new Verein is added to the system:
 ## Future Enhancements
 
 Possible improvements:
-- [ ] Multi-Verein users (one user can manage multiple Vereine)
-- [ ] Verein hierarchy (parent-child relationships)
-- [ ] Verein-specific settings and customization
-- [ ] Delegation (Verein admin can create sub-admins)
-- [ ] Content approval workflow for Vereine
-- [ ] Analytics per Verein
+
+-   [ ] Multi-Verein users (one user can manage multiple Vereine)
+-   [ ] Verein hierarchy (parent-child relationships)
+-   [ ] Verein-specific settings and customization
+-   [ ] Delegation (Verein admin can create sub-admins)
+-   [ ] Content approval workflow for Vereine
+-   [ ] Analytics per Verein
 
 ---
 

@@ -10,7 +10,8 @@ interface PortraitSubmission {
     name: string;
     description: string;
     email: string;
-    imageData: string;
+    imageUrl: string;
+    imageStoragePath?: string;
     imageMimeType: string;
     imageFilename: string;
     submittedAt: string;

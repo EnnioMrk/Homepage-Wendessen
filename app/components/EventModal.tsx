@@ -44,23 +44,39 @@ export default function EventModal({
     title = 'Neuen Termin hinzufügen',
     initialValues,
 }: EventModalProps) {
-    const { hasPermission, user } = usePermissions();
+    const {
+        hasPermission,
+        user,
+        loading: permissionsLoading,
+    } = usePermissions();
     const [isLoading, setIsLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);
     const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl || '');
     const [selectedVereinId, setSelectedVereinId] = useState('');
 
-    // Update selectedVereinId when user data is available
-    useEffect(() => {
-        if (user?.vereinId) {
-            setSelectedVereinId(user.vereinId);
-        }
-    }, [user?.vereinId]);
-
-    // Determine if user can select verein or if it's fixed
+    // Determine permissions
     const hasGeneralCreatePermission = hasPermission('events.create');
     const hasVereinCreatePermission = hasPermission('verein.events.create');
     const canSelectVerein = hasGeneralCreatePermission;
+
+    // Update selectedVereinId when user data is available
+    // For users with only verein permissions, lock to their verein
+    useEffect(() => {
+        if (!permissionsLoading && user) {
+            if (
+                !hasGeneralCreatePermission &&
+                hasVereinCreatePermission &&
+                user.vereinId
+            ) {
+                setSelectedVereinId(user.vereinId);
+            }
+        }
+    }, [
+        user,
+        permissionsLoading,
+        hasGeneralCreatePermission,
+        hasVereinCreatePermission,
+    ]);
 
     if (!isOpen) return null;
 
@@ -136,8 +152,8 @@ export default function EventModal({
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen px-4 text-center">
+        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[50px] md:pt-[52px] lg:pt-[54px]">
+            <div className="flex items-center justify-center min-h-[calc(100vh-50px)] md:min-h-[calc(100vh-52px)] lg:min-h-[calc(100vh-54px)] px-4 py-4 text-center">
                 <div
                     className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
                     onClick={onClose}
@@ -263,26 +279,43 @@ export default function EventModal({
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Verein
                                     </label>
-                                    <select
-                                        name="vereinId"
-                                        disabled={isLoading || !canSelectVerein}
-                                        value={selectedVereinId}
-                                        onChange={(e) => setSelectedVereinId(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
-                                    >
-                                        {VEREINE_OPTIONS.map((verein) => (
-                                            <option key={verein.id} value={verein.id}>
-                                                {verein.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {!canSelectVerein && hasVereinCreatePermission && (
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Als Vereinsverwalter können Sie nur Events für Ihren Verein erstellen.
-                                        </p>
+                                    {permissionsLoading ? (
+                                        <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500">
+                                            Lade...
+                                        </div>
+                                    ) : (
+                                        <select
+                                            name="vereinId"
+                                            disabled={
+                                                isLoading || !canSelectVerein
+                                            }
+                                            value={selectedVereinId}
+                                            onChange={(e) =>
+                                                setSelectedVereinId(
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
+                                        >
+                                            {VEREINE_OPTIONS.map((verein) => (
+                                                <option
+                                                    key={verein.id}
+                                                    value={verein.id}
+                                                >
+                                                    {verein.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                     )}
+                                    {!canSelectVerein &&
+                                        hasVereinCreatePermission && (
+                                            <p className="mt-1 text-xs text-gray-500">
+                                                Als Vereinsverwalter können Sie
+                                                nur Events für Ihren Verein
+                                                erstellen.
+                                            </p>
+                                        )}
                                 </div>
-
                                 <select
                                     name="category"
                                     disabled={isLoading}

@@ -3,6 +3,7 @@ import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
 import { requireAnyPermission } from '@/lib/permissions';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function GET() {
     try {
@@ -59,6 +60,23 @@ export async function POST(request: NextRequest) {
         // Revalidate pages that show events
         revalidatePath('/');
         revalidateTag('events');
+
+        // Log the action
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'event.create',
+            resourceType: 'event',
+            resourceId: createdEvent.id?.toString(),
+            resourceTitle: eventData.title,
+            details: {
+                category: eventData.category || 'sonstiges',
+                location: eventData.location,
+                startDate: eventData.start,
+            },
+            ...requestInfo,
+        });
 
         return NextResponse.json(createdEvent, { status: 201 });
     } catch (error) {

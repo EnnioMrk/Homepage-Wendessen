@@ -8,7 +8,7 @@ This is a Next.js 15 community website for the village of Wendessen, Germany. It
 
 -   **Framework**: Next.js 15 with App Router, React 19
 -   **Runtime**: Bun (preferred for all commands: `bun dev`, `bun run build`)
-  **Database**: PostgreSQL via `pg` (node-postgres) and a shared helper `lib/sql.ts`
+    **Database**: PostgreSQL via `pg` (node-postgres) and a shared helper `lib/sql.ts`
 -   **Styling**: Tailwind CSS with custom component patterns
 -   **Authentication**: Custom session-based auth (see `lib/auth.ts`)
 -   **Caching**: Next.js `unstable_cache` with tags for data revalidation
@@ -17,10 +17,10 @@ This is a Next.js 15 community website for the village of Wendessen, Germany. It
 
 ### Core Data Models
 
-- **Events**: Events calendar with categories (`sitzung`, `veranstaltung`, `sport`, `kultur`, `notfall`, `sonstiges`)
-- **News**: Village news with categorization
-- **Gallery**: Image management system
-- **Contacts**: Community contact directory with importance scoring
+-   **Events**: Events calendar with categories (`sitzung`, `veranstaltung`, `sport`, `kultur`, `notfall`, `sonstiges`)
+-   **News**: Village news with categorization
+-   **Gallery**: Image management system
+-   **Contacts**: Community contact directory with importance scoring
 
 ### Database Connection Pattern
 

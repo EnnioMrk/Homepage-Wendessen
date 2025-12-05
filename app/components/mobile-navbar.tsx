@@ -75,6 +75,7 @@ const wohnenBauenItems = [
 
 const kontaktItems = [
     { title: 'Verzeichnis', href: '/kontakt/verzeichnis' },
+    { title: 'Redaktionsteam', href: '/kontakt/redaktionsteam' },
     { title: 'Impressum', href: '/kontakt/impressum' },
     { title: 'Datenschutz', href: '/kontakt/datenschutz' },
     { title: 'Kontaktformular', href: '/kontakt/formular' },

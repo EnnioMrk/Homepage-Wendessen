@@ -13,7 +13,7 @@ import {
 
 interface ImageLightboxProps {
     submissionId: string;
-    imageData: string;
+    imageUrl: string;
     title: string;
     description?: string;
     submitterName?: string;
@@ -26,7 +26,7 @@ interface ImageLightboxProps {
 
 export default function ImageLightbox({
     submissionId,
-    imageData,
+    imageUrl,
     title,
     description,
     submitterName,
@@ -43,7 +43,7 @@ export default function ImageLightbox({
 
     const handleDownload = () => {
         const link = document.createElement('a');
-        link.href = imageData;
+        link.href = imageUrl;
         link.download = filename || `wendessen-${Date.now()}.jpg`;
         document.body.appendChild(link);
         link.click();
@@ -80,7 +80,9 @@ export default function ImageLightbox({
             }, 2000);
         } catch (error) {
             console.error('Error submitting report:', error);
-            alert('Fehler beim Senden der Meldung. Bitte versuchen Sie es später erneut.');
+            alert(
+                'Fehler beim Senden der Meldung. Bitte versuchen Sie es später erneut.'
+            );
         } finally {
             setReportSubmitting(false);
         }
@@ -98,9 +100,13 @@ export default function ImageLightbox({
                 {/* Header */}
                 <div className="flex items-center justify-between mb-3 text-white flex-shrink-0">
                     <div className="flex-1 pr-4">
-                        <h3 className="text-lg md:text-xl font-bold mb-1 line-clamp-1">{title}</h3>
+                        <h3 className="text-lg md:text-xl font-bold mb-1 line-clamp-1">
+                            {title}
+                        </h3>
                         {description && (
-                            <p className="text-xs md:text-sm text-gray-300 line-clamp-1">{description}</p>
+                            <p className="text-xs md:text-sm text-gray-300 line-clamp-1">
+                                {description}
+                            </p>
                         )}
                     </div>
                     <button
@@ -115,7 +121,7 @@ export default function ImageLightbox({
                 {/* Image Container */}
                 <div className="flex-1 relative mb-3 rounded-lg overflow-hidden bg-black/50">
                     <Image
-                        src={imageData}
+                        src={imageUrl}
                         alt={description || title}
                         fill
                         className="object-contain"
@@ -132,16 +138,27 @@ export default function ImageLightbox({
                         <div className="flex flex-wrap items-center gap-3 text-xs md:text-sm">
                             {submitterName && (
                                 <div className="flex items-center gap-2">
-                                    <User size={18} weight="duotone" className="text-gray-300" />
+                                    <User
+                                        size={18}
+                                        weight="duotone"
+                                        className="text-gray-300"
+                                    />
                                     <span>{submitterName}</span>
                                 </div>
                             )}
                             <div className="flex items-center gap-2">
-                                <Calendar size={18} weight="duotone" className="text-gray-300" />
+                                <Calendar
+                                    size={18}
+                                    weight="duotone"
+                                    className="text-gray-300"
+                                />
                                 <span>
                                     {dateTaken ? (
                                         <>
-                                            Aufgenommen: {new Date(dateTaken).toLocaleDateString('de-DE', {
+                                            Aufgenommen:{' '}
+                                            {new Date(
+                                                dateTaken
+                                            ).toLocaleDateString('de-DE', {
                                                 day: 'numeric',
                                                 month: 'long',
                                                 year: 'numeric',
@@ -149,7 +166,10 @@ export default function ImageLightbox({
                                         </>
                                     ) : (
                                         <>
-                                            Hochgeladen: {new Date(submittedAt).toLocaleDateString('de-DE', {
+                                            Hochgeladen:{' '}
+                                            {new Date(
+                                                submittedAt
+                                            ).toLocaleDateString('de-DE', {
                                                 day: 'numeric',
                                                 month: 'long',
                                                 year: 'numeric',
@@ -160,7 +180,11 @@ export default function ImageLightbox({
                             </div>
                             {location && (
                                 <div className="flex items-center gap-2">
-                                    <MapPin size={18} weight="duotone" className="text-gray-300" />
+                                    <MapPin
+                                        size={18}
+                                        weight="duotone"
+                                        className="text-gray-300"
+                                    />
                                     <span>{location}</span>
                                 </div>
                             )}
@@ -173,7 +197,9 @@ export default function ImageLightbox({
                                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
                             >
                                 <DownloadSimple size={18} />
-                                <span className="hidden sm:inline">Herunterladen</span>
+                                <span className="hidden sm:inline">
+                                    Herunterladen
+                                </span>
                             </button>
                             <button
                                 onClick={() => setShowReportModal(true)}
@@ -228,7 +254,9 @@ export default function ImageLightbox({
                                         Foto melden
                                     </h3>
                                     <button
-                                        onClick={() => setShowReportModal(false)}
+                                        onClick={() =>
+                                            setShowReportModal(false)
+                                        }
                                         className="text-gray-400 hover:text-gray-600"
                                     >
                                         <X size={24} />
@@ -239,14 +267,18 @@ export default function ImageLightbox({
                                 </p>
                                 <textarea
                                     value={reportReason}
-                                    onChange={(e) => setReportReason(e.target.value)}
+                                    onChange={(e) =>
+                                        setReportReason(e.target.value)
+                                    }
                                     placeholder="Bitte beschreiben Sie das Problem..."
                                     rows={4}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 mb-4"
                                 />
                                 <div className="flex gap-3">
                                     <button
-                                        onClick={() => setShowReportModal(false)}
+                                        onClick={() =>
+                                            setShowReportModal(false)
+                                        }
                                         disabled={reportSubmitting}
                                         className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors disabled:opacity-50"
                                     >
@@ -254,10 +286,15 @@ export default function ImageLightbox({
                                     </button>
                                     <button
                                         onClick={handleReport}
-                                        disabled={reportSubmitting || !reportReason.trim()}
+                                        disabled={
+                                            reportSubmitting ||
+                                            !reportReason.trim()
+                                        }
                                         className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {reportSubmitting ? 'Wird gesendet...' : 'Melden'}
+                                        {reportSubmitting
+                                            ? 'Wird gesendet...'
+                                            : 'Melden'}
                                     </button>
                                 </div>
                             </>

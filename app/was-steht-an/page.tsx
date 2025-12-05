@@ -24,6 +24,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import Image from 'next/image';
+import PageHeader from '@/app/components/PageHeader';
 
 // Set German locale
 moment.locale('de');
@@ -32,12 +33,12 @@ const localizer = momentLocalizer(moment);
 // Custom event component
 const EventComponent = ({ event }: { event: CalendarEvent }) => {
     const isCancelled = event.isCancelled;
-    
+
     return (
         <div
             className={`${
-                isCancelled 
-                    ? 'bg-gray-400 line-through opacity-70' 
+                isCancelled
+                    ? 'bg-gray-400 line-through opacity-70'
                     : getCategoryBackgroundColor(event.category || 'sonstiges')
             } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
@@ -52,22 +53,30 @@ const EventComponent = ({ event }: { event: CalendarEvent }) => {
 // Custom agenda event component
 const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
     const isCancelled = event.isCancelled;
-    
+
     return (
-        <div className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''}`}>
+        <div
+            className={`flex items-center space-x-3 ${
+                isCancelled ? 'opacity-60' : ''
+            }`}
+        >
             <div
                 className={`w-3 h-3 rounded-full ${
-                    isCancelled 
-                        ? 'bg-gray-400' 
-                        : getCategoryBackgroundColor(event.category || 'sonstiges')
+                    isCancelled
+                        ? 'bg-gray-400'
+                        : getCategoryBackgroundColor(
+                              event.category || 'sonstiges'
+                          )
                 }`}
             ></div>
             <div className="flex-1">
-                <div className={`font-medium ${
-                    isCancelled 
-                        ? 'text-gray-500 line-through' 
-                        : 'text-gray-900'
-                }`}>
+                <div
+                    className={`font-medium ${
+                        isCancelled
+                            ? 'text-gray-500 line-through'
+                            : 'text-gray-900'
+                    }`}
+                >
                     {isCancelled && '🚫 '}
                     {event.title}
                 </div>
@@ -77,19 +86,19 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                     </div>
                 )}
                 {isCancelled && event.cancelledAt && (
-                    <div className="text-xs text-red-600 mt-1">
-                        Abgesagt
-                    </div>
+                    <div className="text-xs text-red-600 mt-1">Abgesagt</div>
                 )}
             </div>
             <span
                 className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    isCancelled 
-                        ? 'bg-gray-100 text-gray-600' 
+                    isCancelled
+                        ? 'bg-gray-100 text-gray-600'
                         : getCategoryBadgeClasses(event.category || 'sonstiges')
                 }`}
             >
-                {isCancelled ? 'Abgesagt' : getCategoryDisplayName(event.category || 'sonstiges')}
+                {isCancelled
+                    ? 'Abgesagt'
+                    : getCategoryDisplayName(event.category || 'sonstiges')}
             </span>
         </div>
     );
@@ -118,12 +127,12 @@ export default function WasStehAnPage() {
                 }
 
                 const eventsData = await response.json();
-                
+
                 // Calculate date range: today to +1 year
                 const now = new Date();
                 const oneYearFromNow = new Date(now);
                 oneYearFromNow.setFullYear(now.getFullYear() + 1);
-                
+
                 // Convert date strings back to Date objects and filter to next year only
                 const parsedEvents = eventsData
                     .map((event: CalendarEvent) => ({
@@ -131,8 +140,9 @@ export default function WasStehAnPage() {
                         start: new Date(event.start),
                         end: new Date(event.end),
                     }))
-                    .filter((event: CalendarEvent) => 
-                        event.start >= now && event.start <= oneYearFromNow
+                    .filter(
+                        (event: CalendarEvent) =>
+                            event.start >= now && event.start <= oneYearFromNow
                     );
 
                 setEvents(parsedEvents);
@@ -183,26 +193,12 @@ export default function WasStehAnPage() {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
                 {/* Hero Section */}
-                <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-16 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/95 to-pink-600/95"></div>
-
-                    <div className="relative z-10 container mx-auto px-4 text-center">
-                        <div className="max-w-4xl mx-auto">
-                            <div className="flex items-center justify-center mb-6">
-                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <CalendarBlank className="w-8 h-8 text-indigo-600" />
-                                </div>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-                                    Was steht an?
-                                </h1>
-                            </div>
-                            <div className="w-32 h-2 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-6"></div>
-                            <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                                Termine und Veranstaltungen in Wendessen
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <PageHeader
+                    title="Was steht an?"
+                    subtitle="Termine und Veranstaltungen in Wendessen"
+                    icon={<CalendarBlank />}
+                    color="indigo"
+                />
 
                 {/* Loading */}
                 <div className="container mx-auto px-4 py-16">
@@ -225,26 +221,12 @@ export default function WasStehAnPage() {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
                 {/* Hero Section */}
-                <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-16 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/95 to-pink-600/95"></div>
-
-                    <div className="relative z-10 container mx-auto px-4 text-center">
-                        <div className="max-w-4xl mx-auto">
-                            <div className="flex items-center justify-center mb-6">
-                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                    <CalendarBlank className="w-8 h-8 text-indigo-600" />
-                                </div>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-                                    Was steht an?
-                                </h1>
-                            </div>
-                            <div className="w-32 h-2 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-6"></div>
-                            <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                                Termine und Veranstaltungen in Wendessen
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <PageHeader
+                    title="Was steht an?"
+                    subtitle="Termine und Veranstaltungen in Wendessen"
+                    icon={<CalendarBlank />}
+                    color="indigo"
+                />
 
                 {/* Error */}
                 <div className="container mx-auto px-4 py-16">
@@ -275,27 +257,12 @@ export default function WasStehAnPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-16 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/95 to-pink-600/95"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <CalendarBlank className="w-8 h-8 text-indigo-600" />
-                            </div>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-                                Was steht an?
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-yellow-400 to-white mx-auto mb-6"></div>
-                        <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                            Alle Termine und Veranstaltungen in Wendessen auf
-                            einen Blick
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Was steht an?"
+                subtitle="Alle Termine und Veranstaltungen in Wendessen auf einen Blick"
+                icon={<CalendarBlank />}
+                color="indigo"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">
@@ -510,16 +477,19 @@ export default function WasStehAnPage() {
                                             <WarningCircle className="w-5 h-5 text-red-600 mt-0.5 mr-3" />
                                             <div>
                                                 <h4 className="text-sm font-semibold text-red-900 mb-1">
-                                                    🚫 Dieser Termin wurde abgesagt
+                                                    🚫 Dieser Termin wurde
+                                                    abgesagt
                                                 </h4>
                                                 <p className="text-xs text-red-700">
-                                                    Bitte beachten Sie, dass diese Veranstaltung nicht stattfindet.
+                                                    Bitte beachten Sie, dass
+                                                    diese Veranstaltung nicht
+                                                    stattfindet.
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                 )}
-                                
+
                                 <div className="flex items-center space-x-3">
                                     <div
                                         className={`p-2 rounded-lg ${getCategoryBadgeClasses(

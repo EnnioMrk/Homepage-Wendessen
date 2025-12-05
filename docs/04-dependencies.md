@@ -32,7 +32,7 @@
 -   **pg (node-postgres)**: Standard PostgreSQL client used via a shared helper at `lib/sql.ts`.
 -   **Connection Pooling**: Managed by `pg.Pool` inside the shared helper.
 -   **Type Safety & Querying**: The project exposes a tagged-template `sql` helper to preserve parameterized queries and avoid mass callsite changes.
-    
+
     **Migration Note**: This project previously used `@neondatabase/serverless`. That driver has been removed and the codebase now uses `pg` (node-postgres) via the centralized helper at `lib/sql.ts`.
 
 ### UI Components & Styling

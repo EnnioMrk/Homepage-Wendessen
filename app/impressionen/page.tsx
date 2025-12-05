@@ -1,17 +1,21 @@
 import { getApprovedSharedGalleryGroups } from '@/lib/database';
 import { Camera } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 import Link from 'next/link';
 import GalleryGrid from '@/app/components/GalleryGrid';
 
 export const metadata = {
     title: 'Impressionen - Wendessen',
-    description: 'Fotos und Eindrücke aus Wendessen - von Wendessenern für Wendessener',
+    description:
+        'Fotos und Eindrücke aus Wendessen - von Wendessenern für Wendessener',
 };
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
 export default async function ImpessionenPage() {
-    let approvedGroups: Awaited<ReturnType<typeof getApprovedSharedGalleryGroups>> = [];
+    let approvedGroups: Awaited<
+        ReturnType<typeof getApprovedSharedGalleryGroups>
+    > = [];
 
     try {
         approvedGroups = await getApprovedSharedGalleryGroups();
@@ -22,29 +26,12 @@ export default async function ImpessionenPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 py-24 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/95 to-red-600/95"></div>
-                
-                {/* Decorative elements */}
-                <div className="hidden md:block absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full animate-pulse"></div>
-                <div className="hidden md:block absolute bottom-10 right-10 w-24 h-24 border-2 border-pink-300/30 rounded-full animate-pulse"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="flex items-center justify-center mb-8 gap-4">
-                        <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center shadow-2xl">
-                            <Camera className="w-10 h-10 md:w-14 md:h-14 text-purple-600" />
-                        </div>
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white">
-                            Impressionen
-                        </h1>
-                    </div>
-                    <div className="w-32 h-2 bg-white mx-auto mb-6"></div>
-                    <p className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
-                        Wendessen durch die Augen unserer Gemeinschaft
-                    </p>
-                </div>
-            </div>
+            <PageHeader
+                title="Impressionen"
+                subtitle="Wendessen durch die Augen unserer Gemeinschaft"
+                icon={<Camera />}
+                color="purple"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-12">
@@ -55,7 +42,8 @@ export default async function ImpessionenPage() {
                             Teilen Sie Ihre Momente
                         </h2>
                         <p className="text-gray-700 mb-6">
-                            Haben Sie schöne Fotos aus Wendessen? Teilen Sie sie mit der Gemeinschaft!
+                            Haben Sie schöne Fotos aus Wendessen? Teilen Sie sie
+                            mit der Gemeinschaft!
                         </p>
                         <Link
                             href="/impressionen/einreichen"
@@ -80,7 +68,8 @@ export default async function ImpessionenPage() {
                                 Noch keine Fotos
                             </h3>
                             <p className="text-gray-600 mb-6">
-                                Seien Sie der Erste, der ein Foto mit der Gemeinschaft teilt!
+                                Seien Sie der Erste, der ein Foto mit der
+                                Gemeinschaft teilt!
                             </p>
                             <Link
                                 href="/impressionen/einreichen"

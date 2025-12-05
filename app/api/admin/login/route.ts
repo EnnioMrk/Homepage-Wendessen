@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyCredentials, createSession } from '@/lib/auth';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function POST(request: NextRequest) {
     try {
@@ -23,6 +24,17 @@ export async function POST(request: NextRequest) {
 
         // Create session
         await createSession(user);
+
+        // Log the login
+        const { ipAddress, userAgent } = getRequestInfo(request);
+        logAdminAction({
+            userId: user.id,
+            username: user.username,
+            action: 'auth.login',
+            resourceType: 'auth',
+            ipAddress,
+            userAgent,
+        });
 
         return NextResponse.json({
             success: true,

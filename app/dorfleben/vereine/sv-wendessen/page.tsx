@@ -11,6 +11,7 @@ import {
     ShoppingCart,
     Baby,
 } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'SV Wendessen - Dorfleben',
@@ -21,37 +22,12 @@ export const metadata = {
 export default function SVWendessenPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-blue-700 via-green-600 to-emerald-600 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/SV_Wendessen.JPG')] bg-cover bg-center opacity-30"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-700/90 to-emerald-600/90"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Medal className="w-8 h-8 sm:w-12 sm:h-12 text-blue-700" />
-                            </div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
-                                SV Wendessen
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-lime-400 to-white mx-auto mb-8"></div>
-                        <p className="text-xl text-lime-200 font-semibold mt-4">
-                            Sport • Gemeinschaft • Tradition • Familie
-                        </p>
-                        <p className="text-lg text-blue-100 mt-2">
-                            Über 75 Jahre Vereinstradition
-                        </p>
-
-                        {/* Decorative elements - hidden on mobile */}
-                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-lime-400/50 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-lime-400/60 rounded-full animate-bounce delay-300"></div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="SV Wendessen"
+                icon={<Medal />}
+                backgroundImage="/images/Vereinsleben/SV_Wendessen.JPG"
+                color="blue"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">

@@ -6,13 +6,13 @@ import {
     GameController,
     Fire,
     Gift,
-    Smiley,
+    FilmStrip,
     CalendarBlank,
-    
     User,
     Phone,
     Heart,
 } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Evang. Seniorenkreis Atzum-Wendessen - Dorfleben',
@@ -23,37 +23,12 @@ export const metadata = {
 export default function SeniorenkreisPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-emerald-600 via-teal-500 to-green-600 py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Vereinsleben/seniorenkreis.jpg')] bg-cover bg-center opacity-30"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/90 to-green-600/90"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-2xl mr-4 sm:mr-6 flex-shrink-0">
-                                <Users className="w-8 h-8 sm:w-12 sm:h-12 text-emerald-600" />
-                            </div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
-                                Evang. Seniorenkreis
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-teal-400 to-white mx-auto mb-8"></div>
-                        <p className="text-2xl md:text-3xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                            Atzum-Wendessen
-                        </p>
-                        <p className="text-xl text-teal-200 font-semibold mt-4">
-                            Gesellschaft • Vorträge • Aktivitäten • Gemeinschaft
-                        </p>
-
-                        {/* Decorative elements - hidden on mobile */}
-                        <div className="hidden md:block absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute bottom-10 right-10 w-16 h-16 border-2 border-teal-400/50 rounded-full animate-pulse"></div>
-                        <div className="hidden md:block absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="hidden md:block absolute top-1/3 right-32 w-3 h-3 bg-teal-400/60 rounded-full animate-bounce delay-300"></div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Evang. Seniorenkreis"
+                icon={<Users />}
+                backgroundImage="/images/Vereinsleben/seniorenkreis.jpg"
+                color="emerald"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">
@@ -74,7 +49,8 @@ export default function SeniorenkreisPage() {
                                     Auch im Alter in geselliger Runde
                                 </h2>
                                 <p className="text-lg">
-                                    Gemeinsam aktiv bleiben und schöne Stunden erleben
+                                    Gemeinsam aktiv bleiben und schöne Stunden
+                                    erleben
                                 </p>
                             </div>
                         </div>
@@ -102,8 +78,9 @@ export default function SeniorenkreisPage() {
                                 </h3>
                                 <p className="text-lg text-emerald-800">
                                     Unser Vereinslokal ist die{' '}
-                                    <strong>&quot;Alte Schule&quot;</strong>. Wir treffen
-                                    uns jeden <strong>1. Dienstag im Monat</strong>.
+                                    <strong>&quot;Alte Schule&quot;</strong>.
+                                    Wir treffen uns jeden{' '}
+                                    <strong>1. Dienstag im Monat</strong>.
                                 </p>
                             </div>
 
@@ -143,7 +120,8 @@ export default function SeniorenkreisPage() {
                                     Fachvorträge
                                 </h3>
                                 <p className="text-gray-700">
-                                    Vorträge von Referenten aus der Wirtschaft und der Medizin
+                                    Vorträge von Referenten aus der Wirtschaft
+                                    und der Medizin
                                 </p>
                             </div>
 
@@ -173,16 +151,16 @@ export default function SeniorenkreisPage() {
                                 </p>
                             </div>
 
-                            {/* Carnival */}
+                            {/* Film Afternoon (replaced Faschingstreffen) */}
                             <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Smiley className="w-8 h-8 text-white" />
+                                    <FilmStrip className="w-8 h-8 text-white" />
                                 </div>
                                 <h3 className="text-xl font-bold text-orange-700 mb-3">
-                                    Faschingsfeier
+                                    Filmnachmittag
                                 </h3>
                                 <p className="text-gray-700">
-                                    Fröhliche Feier in der Faschingszeit
+                                    Gemütlicher Filmnachmittag mit Austausch
                                 </p>
                             </div>
 
@@ -233,9 +211,9 @@ export default function SeniorenkreisPage() {
                                 </h4>
                                 <p className="text-lg text-gray-700">
                                     Unser Seniorenkreis ist komplett{' '}
-                                    <strong>beitragsfrei</strong>! Kommen Sie einfach
-                                    vorbei und erleben Sie schöne Stunden in netter
-                                    Gesellschaft.
+                                    <strong>beitragsfrei</strong>! Kommen Sie
+                                    einfach vorbei und erleben Sie schöne
+                                    Stunden in netter Gesellschaft.
                                 </p>
                             </div>
                         </div>
@@ -267,11 +245,11 @@ export default function SeniorenkreisPage() {
                                 </h3>
                                 <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl">
                                     <a
-                                        href="tel:0533195557411"
+                                        href="tel:053319357411"
                                         className="flex items-center justify-center text-emerald-600 hover:text-emerald-700 transition-colors"
                                     >
                                         <Phone className="w-5 h-5 mr-2" />
-                                        05331 / 95 57 411
+                                        05331 / 9357411
                                     </a>
                                 </div>
                             </div>

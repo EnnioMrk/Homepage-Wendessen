@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
-import { isAuthenticated } from '../../../../lib/auth';
+import { getCurrentAdminUser } from '@/lib/auth';
 
 export async function GET() {
     try {
-        const authenticated = await isAuthenticated();
-        return NextResponse.json({ authenticated });
-    } catch {
-        return NextResponse.json({ authenticated: false });
+        const user = await getCurrentAdminUser();
+        return NextResponse.json({
+            authenticated: Boolean(user),
+            user,
+        });
+    } catch (error) {
+        console.error('Error determining admin status:', error);
+        return NextResponse.json({ authenticated: false, user: null });
     }
 }

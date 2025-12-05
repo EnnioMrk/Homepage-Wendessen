@@ -1,10 +1,48 @@
+import { randomBytes } from 'crypto';
 import { sql } from '../lib/sql';
+
+async function generateUniqueArticleId(): Promise<string> {
+    return randomBytes(4).toString('hex');
+}
+
+async function ensureNewsArticleIds(): Promise<void> {
+    const rows = await sql`SELECT id FROM news WHERE article_id IS NULL`;
+
+    for (const row of rows) {
+        let articleId = await generateUniqueArticleId();
+
+        // Ensure uniqueness across existing rows
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const existing = await sql`
+                SELECT id FROM news WHERE article_id = ${articleId} LIMIT 1
+            `;
+
+            if (existing.length === 0) {
+                break;
+            }
+
+            articleId = await generateUniqueArticleId();
+        }
+
+        await sql`
+            UPDATE news
+            SET article_id = ${articleId}
+            WHERE id = ${row.id}
+        `;
+    }
+
+    await sql`
+        ALTER TABLE news
+        ALTER COLUMN article_id SET NOT NULL
+    `;
+}
 
 async function setupDatabase() {
     console.log('Setting up database tables...');
 
     try {
-    // use shared sql helper from lib/sql
+        // use shared sql helper from lib/sql
 
         async function createGalleryTable() {
             try {
@@ -38,8 +76,7 @@ async function setupDatabase() {
             }
         }
 
-        createGalleryTable().catch(console.error);
-        await sql`DROP TABLE IF EXISTS events CASCADE;`;
+        await createGalleryTable();
 
         // Create events table
         await sql`
@@ -52,10 +89,24 @@ async function setupDatabase() {
         location VARCHAR(255),
         category VARCHAR(50) DEFAULT 'sonstiges',
         organizer VARCHAR(255),
+        image_url TEXT,
+        verein_id VARCHAR(50),
+        is_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
+        cancelled_at TIMESTAMP WITH TIME ZONE,
+        cancelled_by VARCHAR(255),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
     `;
+
+        await sql`
+            ALTER TABLE events
+            ADD COLUMN IF NOT EXISTS image_url TEXT,
+            ADD COLUMN IF NOT EXISTS verein_id VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS is_cancelled BOOLEAN DEFAULT FALSE,
+            ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP WITH TIME ZONE,
+            ADD COLUMN IF NOT EXISTS cancelled_by VARCHAR(255);
+        `;
 
         // Create index for better performance
         await sql`
@@ -66,20 +117,36 @@ async function setupDatabase() {
       CREATE INDEX IF NOT EXISTS idx_events_category ON events(category);
     `;
 
+        await sql`
+            CREATE INDEX IF NOT EXISTS idx_events_cancelled ON events(is_cancelled);
+        `;
+
+        await sql`
+            CREATE INDEX IF NOT EXISTS idx_events_verein_id ON events(verein_id);
+        `;
+
         console.log('✅ Events table created successfully');
 
         // Create news table
         await sql`
-      CREATE TABLE IF NOT EXISTS news (
-        id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL UNIQUE,
-        content TEXT,
-        category VARCHAR(50) NOT NULL,
-        published_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-      );
-    `;
+            CREATE TABLE IF NOT EXISTS news (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL UNIQUE,
+                content TEXT,
+                content_json JSONB,
+                category VARCHAR(50) NOT NULL,
+                article_id VARCHAR(8) UNIQUE,
+                published_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+        `;
+
+        await sql`
+            ALTER TABLE news
+            ADD COLUMN IF NOT EXISTS content_json JSONB,
+            ADD COLUMN IF NOT EXISTS article_id VARCHAR(8);
+        `;
 
         // Create index for better performance
         await sql`
@@ -89,6 +156,10 @@ async function setupDatabase() {
         await sql`
       CREATE INDEX IF NOT EXISTS idx_news_category ON news(category);
     `;
+
+        await sql`
+            CREATE INDEX IF NOT EXISTS idx_news_article_id ON news(article_id);
+        `;
 
         console.log('✅ News table created successfully');
 
@@ -168,36 +239,42 @@ async function setupDatabase() {
                 content:
                     'Der beliebte Bücherbus der Stadtbibliothek Wolfenbüttel macht wieder regelmäßig Station in Wendessen.',
                 category: 'Bildung',
+                articleId: 'news001',
             },
             {
                 title: 'Bücherzelle für Jung und Alt',
                 content:
                     'Eine neue Bücherzelle wurde am Dorfplatz aufgestellt, wo Bürger kostenlos Bücher tauschen können.',
                 category: 'Gemeinschaft',
+                articleId: 'news002',
             },
             {
                 title: 'Feuerwehr für Kinder gründet sich',
                 content:
                     'Eine neue Kinderfeuerwehr wurde gegründet, um schon die Kleinsten für den Brandschutz zu begeistern.',
                 category: 'Feuerwehr',
+                articleId: 'news003',
             },
             {
                 title: 'Neue Webseite ist online',
                 content:
                     'Die neue Webseite von Wendessen ist jetzt online und bietet umfassende Informationen über unser Dorf.',
                 category: 'Digital',
+                articleId: 'news004',
             },
         ];
 
         for (const news of sampleNews) {
             await sql`
-        INSERT INTO news (title, content, category)
-        VALUES (${news.title}, ${news.content}, ${news.category})
+        INSERT INTO news (title, content, category, article_id)
+        VALUES (${news.title}, ${news.content}, ${news.category}, ${news.articleId})
         ON CONFLICT (title) DO NOTHING;
       `;
         }
 
         console.log('✅ Sample news inserted successfully');
+
+        await ensureNewsArticleIds();
 
         // Verify the setup
         const eventCount = await sql`SELECT COUNT(*) as count FROM events;`;

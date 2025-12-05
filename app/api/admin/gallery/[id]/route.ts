@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../../lib/permissions';
 import { deleteFromBlob } from '../../../../../lib/blob-utils';
 import { sql } from '@/lib/sql';
+import { getCurrentAdminUser } from '@/lib/auth';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export const runtime = 'nodejs';
 
@@ -46,6 +48,22 @@ export async function PUT(
             uploadedAt: result[0].uploadedAt.toISOString(),
         };
 
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'gallery.edit',
+            resourceType: 'gallery',
+            resourceId: id,
+            resourceTitle: displayName.trim(),
+            details: {
+                originalName: updatedImage.originalName || undefined,
+            },
+            ...requestInfo,
+        });
+
         return NextResponse.json({ image: updatedImage });
     } catch (error) {
         console.error('Error updating image:', error);
@@ -68,7 +86,7 @@ export async function DELETE(
 
         // Get image info before deleting
         const imageResult = await sql`
-            SELECT url FROM gallery_images WHERE id = ${id}
+            SELECT url, display_name, original_name FROM gallery_images WHERE id = ${id}
         `;
 
         if (imageResult.length === 0) {
@@ -79,17 +97,34 @@ export async function DELETE(
         }
 
         const imageUrl = imageResult[0].url;
+        const displayName = imageResult[0].display_name;
 
         try {
-            // Delete from Vercel Blob
+            // Delete from MinIO
             await deleteFromBlob(imageUrl);
         } catch (blobError) {
-            console.warn('Could not delete from blob storage:', blobError);
+            console.warn('Could not delete from object storage:', blobError);
             // Continue anyway, just remove from database
         }
 
         // Remove from database
         await sql`DELETE FROM gallery_images WHERE id = ${id}`;
+
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'gallery.delete',
+            resourceType: 'gallery',
+            resourceId: id,
+            resourceTitle: displayName,
+            details: {
+                originalName: imageResult[0].original_name || undefined,
+            },
+            ...requestInfo,
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

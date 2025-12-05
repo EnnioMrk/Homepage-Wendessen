@@ -37,6 +37,7 @@ export default function WirSindWendessenSection() {
                         buttonText="Mehr erfahren"
                         buttonHref="/hospiz"
                         buttonColor="red"
+                        className="h-96"
                     />
                 </div>
 

@@ -151,7 +151,7 @@ Systems:
 - "Wir Wendesser" portrait submissions
 - Admin approval workflow
 - Automatic image optimization
-- Base64 image storage for simplicity
+- MinIO-backed storage for shared gallery uploads (portraits remain base64 for now)
 ```
 
 #### 📞 Contact Directory

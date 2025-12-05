@@ -100,6 +100,7 @@ async function setupRolesAndPermissions() {
                 ('shared_gallery.view', 'Einreichungen anzeigen', 'Kann eingereichte Bilder einsehen', 'shared_gallery'),
                 ('shared_gallery.approve', 'Einreichungen genehmigen', 'Kann Bildeinreichungen genehmigen', 'shared_gallery'),
                 ('shared_gallery.reject', 'Einreichungen ablehnen', 'Kann Bildeinreichungen ablehnen', 'shared_gallery'),
+                ('shared_gallery.reset', 'Einreichungen zurücksetzen', 'Kann Bildeinreichungen auf ausstehend zurücksetzen', 'shared_gallery'),
                 
                 -- Portraits Management
                 ('portraits.view', 'Portraits anzeigen', 'Kann Portrait-Einreichungen einsehen', 'portraits'),

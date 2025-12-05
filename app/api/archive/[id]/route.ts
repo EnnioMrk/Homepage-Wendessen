@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/permissions';
 import { sql } from '@/lib/sql';
+import { getCurrentAdminUser } from '@/lib/auth';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function GET(
     request: NextRequest,
@@ -68,19 +70,39 @@ export async function PUT(
             );
         }
 
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'archive.update',
+            resourceType: 'archive',
+            resourceId: id,
+            resourceTitle: title,
+            details: {
+                category: category || undefined,
+                author: author || undefined,
+            },
+            ...requestInfo,
+        });
+
         return NextResponse.json(result[0]);
     } catch (error: unknown) {
         console.error('Error updating archive item:', error);
-        
+
         const errorMessage = (error as Error).message || 'Unknown error';
-        
-        if (errorMessage.includes('Forbidden') || errorMessage.includes('Unauthorized')) {
+
+        if (
+            errorMessage.includes('Forbidden') ||
+            errorMessage.includes('Unauthorized')
+        ) {
             return NextResponse.json(
                 { error: errorMessage },
                 { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
             );
         }
-        
+
         return NextResponse.json(
             { error: 'Failed to update archive item' },
             { status: 500 }
@@ -96,7 +118,7 @@ export async function DELETE(
         await requirePermission('archive.delete');
 
         const { id } = await params;
-        
+
         const result = await sql`
             DELETE FROM archive 
             WHERE id = ${id}
@@ -110,19 +132,40 @@ export async function DELETE(
             );
         }
 
-        return NextResponse.json({ message: 'Archive item deleted successfully' });
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'archive.delete',
+            resourceType: 'archive',
+            resourceId: id,
+            resourceTitle: result[0].title,
+            details: {
+                category: result[0].category || undefined,
+            },
+            ...requestInfo,
+        });
+
+        return NextResponse.json({
+            message: 'Archive item deleted successfully',
+        });
     } catch (error: unknown) {
         console.error('Error deleting archive item:', error);
-        
+
         const errorMessage = (error as Error).message || 'Unknown error';
-        
-        if (errorMessage.includes('Forbidden') || errorMessage.includes('Unauthorized')) {
+
+        if (
+            errorMessage.includes('Forbidden') ||
+            errorMessage.includes('Unauthorized')
+        ) {
             return NextResponse.json(
                 { error: errorMessage },
                 { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
             );
         }
-        
+
         return NextResponse.json(
             { error: 'Failed to delete archive item' },
             { status: 500 }

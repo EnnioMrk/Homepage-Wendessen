@@ -1,6 +1,7 @@
 # Deployment & CI/CD
 
 ## 🚀 Deployment Overview
+
 # Deployment & CI/CD
 
 ## 🚀 Deployment Overview
@@ -34,6 +35,7 @@ vercel link
 
 Set these in Vercel Dashboard > Settings > Environment Variables:
 DATABASE_URL="your_database_url"
+
 ```bash
 # Production Environment Variables
 DATABASE_URL="postgresql://username:password@ep-prod.us-east-1.aws.neon.tech/neondb"
@@ -439,12 +441,15 @@ gh release create v1.0.1 --notes "Release notes here"
 #### Migration Scripts
 
 import { sql } from '@/lib/sql';
+
 # Create migration script
+
 # scripts/migrations/001_add_image_column.ts
+
     const sql = sql(process.env.DATABASE_URL!);
 
 async function migrate() {
-  // Use the shared sql helper: import { sql } from '@/lib/sql';
+// Use the shared sql helper: import { sql } from '@/lib/sql';
 
     try {
         await sql`
@@ -457,10 +462,12 @@ async function migrate() {
         console.error('Migration 001 failed:', error);
         throw error;
     }
+
 }
 
 migrate();
-```
+
+````
 
 #### Migration Workflow
 
@@ -477,7 +484,7 @@ bun run scripts/migrations/002_new_feature.ts
 
 # 4. Run during deployment
 # Add to CI/CD pipeline before build
-```
+````
 
 ## 📊 Monitoring & Observability
 
@@ -487,10 +494,10 @@ import { sql } from '@/lib/sql';
 // app/api/health/route.ts
 import { NextResponse } from 'next/server';
 // Use the shared `sql` helper from `@/lib/sql` which wraps `pg`.
-        const sql = sql(process.env.DATABASE_URL!);
+const sql = sql(process.env.DATABASE_URL!);
 export async function GET() {
-    try {
-  const sql = await import('@/lib/sql').then(m => m.sql);
+try {
+const sql = await import('@/lib/sql').then(m => m.sql);
 
         // Test database connection
         const dbHealth = await sql`SELECT 1 as health`;
@@ -521,8 +528,10 @@ export async function GET() {
 
         return NextResponse.json(health, { status: 503 });
     }
+
 }
-```
+
+````
 
 ### Vercel Analytics Integration
 
@@ -546,7 +555,7 @@ export default function RootLayout({
         </html>
     );
 }
-```
+````
 
 ### Performance Monitoring
 
@@ -638,6 +647,7 @@ echo $DATABASE_URL
 ```
 
 ## 📋 Deployment Checklist
+
 -   [ ] Database migrations applied
 -   [ ] Security audit passed
 -   [ ] Performance acceptable

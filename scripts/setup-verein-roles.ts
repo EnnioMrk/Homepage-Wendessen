@@ -7,7 +7,8 @@ async function setupVereinsverwalterRole() {
         // Create a single general Vereinsverwalter role
         const roleName = 'vereinsverwalter';
         const roleDisplayName = 'Vereinsverwalter';
-        const description = 'Verwaltung von Inhalten für alle Vereine (Termine, Neuigkeiten, Bilder)';
+        const description =
+            'Verwaltung von Inhalten für alle Vereine (Termine, Neuigkeiten, Bilder)';
 
         // Check if role already exists
         const existingRole = await sql`
@@ -25,13 +26,14 @@ async function setupVereinsverwalterRole() {
         }
 
         console.log('\n✅ Vereinsverwalter role setup complete!');
-        
+
         console.log('\n💡 Default Permissions for Vereinsverwalter Role:');
         console.log('  ✓ Events (view, create, edit, cancel)');
         console.log('  ✓ News (view, create, edit, delete)');
         console.log('  ✓ Gallery (view, upload, edit, delete)');
-        console.log('\n  Note: This is a general role for all Verein administrators.');
-        
+        console.log(
+            '\n  Note: This is a general role for all Verein administrators.'
+        );
     } catch (error) {
         console.error('❌ Error setting up Vereinsverwalter role:', error);
         throw error;

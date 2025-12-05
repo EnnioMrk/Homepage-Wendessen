@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { FileText, Lock } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Impressum - Wendessen',
@@ -11,26 +12,12 @@ export default function ImpressumPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-slate-700 via-gray-700 to-slate-800 py-16 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-700/95 to-slate-800/95"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <FileText className="w-8 h-8 text-slate-700" />
-                            </div>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-                                Impressum
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-blue-400 to-white mx-auto mb-6"></div>
-                        <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                            Rechtliche Hinweise und Angaben
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Impressum"
+                subtitle="Rechtliche Hinweise und Angaben"
+                icon={<FileText />}
+                color="slate"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">

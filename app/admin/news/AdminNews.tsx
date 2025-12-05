@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
+import PromptDialog from '@/app/components/PromptDialog';
+import ArticleRenderer from '@/app/components/ArticleRenderer';
 import Link from 'next/link';
 import {
     Plus,
@@ -17,8 +19,11 @@ import {
     WarningCircle,
     Calendar,
     Tag,
+    PushPin,
+    PushPinSlash,
     // Article icon removed (unused)
 } from '@phosphor-icons/react/dist/ssr';
+import { usePermissions } from '@/lib/usePermissions';
 
 interface NewsItem {
     id: string;
@@ -27,10 +32,19 @@ interface NewsItem {
     category: string;
     publishedDate: string;
     articleId?: string;
+    isPinned?: boolean;
+    pinnedAt?: string;
 }
 
 export default function AdminNews() {
     const router = useRouter();
+    const { hasPermission } = usePermissions();
+
+    // Permission checks
+    const canCreate = hasPermission('news.create');
+    const canEdit = hasPermission('news.edit');
+    const canDelete = hasPermission('news.delete');
+    const canPin = hasPermission('news.pin');
 
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -40,6 +54,9 @@ export default function AdminNews() {
     const [isEditing, setIsEditing] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [pinnedCount, setPinnedCount] = useState(0);
+    const [pinLoading, setPinLoading] = useState<string | null>(null);
+    const [newsToDelete, setNewsToDelete] = useState<NewsItem | null>(null);
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -67,7 +84,11 @@ export default function AdminNews() {
             const response = await fetch('/api/admin/news');
             if (response.ok) {
                 const data = await response.json();
-                setNews(data.news || []);
+                const newsItems = data.news || [];
+                setNews(newsItems);
+                setPinnedCount(
+                    newsItems.filter((n: NewsItem) => n.isPinned).length
+                );
             } else {
                 setError('Fehler beim Laden der Nachrichten');
             }
@@ -151,14 +172,6 @@ export default function AdminNews() {
     };
 
     const handleDelete = async (id: string) => {
-        if (
-            !confirm(
-                'Sind Sie sicher, dass Sie diese Nachricht löschen möchten?'
-            )
-        ) {
-            return;
-        }
-
         try {
             const response = await fetch(`/api/admin/news/${id}`, {
                 method: 'DELETE',
@@ -166,6 +179,10 @@ export default function AdminNews() {
 
             if (response.ok) {
                 setNews((prev) => prev.filter((item) => item.id !== id));
+                setPinnedCount((prev) => {
+                    const item = news.find((n) => n.id === id);
+                    return item?.isPinned ? prev - 1 : prev;
+                });
                 setError(null);
             } else {
                 const errorData = await response.json();
@@ -176,6 +193,44 @@ export default function AdminNews() {
         } catch (error) {
             console.error('Delete error:', error);
             setError('Fehler beim Löschen der Nachricht');
+        }
+    };
+
+    const handleTogglePin = async (id: string, isPinned: boolean) => {
+        setPinLoading(id);
+        try {
+            const response = await fetch(`/api/admin/news/${id}/pin`, {
+                method: isPinned ? 'DELETE' : 'POST',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setNews((prev) =>
+                    prev.map((item) =>
+                        item.id === id
+                            ? {
+                                  ...item,
+                                  isPinned:
+                                      data.news.isPinned || data.news.is_pinned,
+                                  pinnedAt:
+                                      data.news.pinnedAt || data.news.pinned_at,
+                              }
+                            : item
+                    )
+                );
+                setPinnedCount((prev) => (isPinned ? prev - 1 : prev + 1));
+                setError(null);
+            } else {
+                const errorData = await response.json();
+                setError(
+                    errorData.error || 'Fehler beim Ändern des Pin-Status'
+                );
+            }
+        } catch (error) {
+            console.error('Pin toggle error:', error);
+            setError('Fehler beim Ändern des Pin-Status');
+        } finally {
+            setPinLoading(null);
         }
     };
 
@@ -259,13 +314,29 @@ export default function AdminNews() {
                                 </p>
                             </div>
                         </div>
-                        <Link
-                            href="/admin/news/erstellen"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
-                        >
-                            <Plus size={16} className="mr-2" />
-                            Nachricht erstellen
-                        </Link>
+                        <div className="flex items-center gap-4">
+                            {canPin && (
+                                <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full text-sm">
+                                    <PushPin
+                                        size={16}
+                                        className="text-amber-600"
+                                        weight="fill"
+                                    />
+                                    <span className="text-amber-800 font-medium">
+                                        {pinnedCount}/3 angepinnt
+                                    </span>
+                                </div>
+                            )}
+                            {canCreate && (
+                                <Link
+                                    href="/admin/news/erstellen"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
+                                >
+                                    <Plus size={16} className="mr-2" />
+                                    Nachricht erstellen
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
             </header>
@@ -344,11 +415,25 @@ export default function AdminNews() {
                                 {sortedAndFilteredNews.map((item) => (
                                     <div
                                         key={item.id}
-                                        className="p-6 hover:bg-gray-50"
+                                        className={`p-6 hover:bg-gray-50 ${
+                                            item.isPinned
+                                                ? 'bg-amber-50/50 border-l-4 border-amber-400'
+                                                : ''
+                                        }`}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-2 flex-wrap">
+                                                    {item.isPinned && (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                                            <PushPin
+                                                                size={12}
+                                                                className="mr-1"
+                                                                weight="fill"
+                                                            />
+                                                            Angepinnt
+                                                        </span>
+                                                    )}
                                                     <h3 className="text-lg font-medium text-gray-900">
                                                         {item.title}
                                                     </h3>
@@ -372,49 +457,172 @@ export default function AdminNews() {
                                                 {item.content && (
                                                     <p className="text-gray-600 text-sm line-clamp-2">
                                                         {(() => {
-                                                            const extractPreview = (content: unknown): string => {
-                                                                try {
-                                                                    const parsed =
-                                                                        typeof content === 'string'
-                                                                            ? JSON.parse(content)
-                                                                            : content;
+                                                            const extractPreview =
+                                                                (
+                                                                    content: unknown
+                                                                ): string => {
+                                                                    try {
+                                                                        const parsed =
+                                                                            typeof content ===
+                                                                            'string'
+                                                                                ? JSON.parse(
+                                                                                      content
+                                                                                  )
+                                                                                : content;
 
-                                                                    if (Array.isArray(parsed) && parsed.length > 0) {
-                                                                        const first = parsed[0] as unknown;
                                                                         if (
-                                                                            typeof first === 'object' &&
-                                                                            first !== null &&
-                                                                            'children' in (first as Record<string, unknown>) &&
-                                                                            Array.isArray((first as Record<string, unknown>).children)
+                                                                            Array.isArray(
+                                                                                parsed
+                                                                            ) &&
+                                                                            parsed.length >
+                                                                                0
                                                                         ) {
-                                                                            const children = (first as Record<string, unknown>).children as unknown[];
-                                                                            const texts = children
-                                                                                .map((c) => {
-                                                                                    if (typeof c === 'object' && c !== null && 'text' in (c as Record<string, unknown>)) {
-                                                                                        const maybe = (c as Record<string, unknown>).text;
-                                                                                        return typeof maybe === 'string' ? maybe : '';
-                                                                                    }
-                                                                                    return '';
-                                                                                })
-                                                                                .filter(Boolean)
-                                                                                .join(' ');
-                                                                            return texts.substring(0, 200);
+                                                                            const first =
+                                                                                parsed[0] as unknown;
+                                                                            if (
+                                                                                typeof first ===
+                                                                                    'object' &&
+                                                                                first !==
+                                                                                    null &&
+                                                                                'children' in
+                                                                                    (first as Record<
+                                                                                        string,
+                                                                                        unknown
+                                                                                    >) &&
+                                                                                Array.isArray(
+                                                                                    (
+                                                                                        first as Record<
+                                                                                            string,
+                                                                                            unknown
+                                                                                        >
+                                                                                    )
+                                                                                        .children
+                                                                                )
+                                                                            ) {
+                                                                                const children =
+                                                                                    (
+                                                                                        first as Record<
+                                                                                            string,
+                                                                                            unknown
+                                                                                        >
+                                                                                    )
+                                                                                        .children as unknown[];
+                                                                                const texts =
+                                                                                    children
+                                                                                        .map(
+                                                                                            (
+                                                                                                c
+                                                                                            ) => {
+                                                                                                if (
+                                                                                                    typeof c ===
+                                                                                                        'object' &&
+                                                                                                    c !==
+                                                                                                        null &&
+                                                                                                    'text' in
+                                                                                                        (c as Record<
+                                                                                                            string,
+                                                                                                            unknown
+                                                                                                        >)
+                                                                                                ) {
+                                                                                                    const maybe =
+                                                                                                        (
+                                                                                                            c as Record<
+                                                                                                                string,
+                                                                                                                unknown
+                                                                                                            >
+                                                                                                        )
+                                                                                                            .text;
+                                                                                                    return typeof maybe ===
+                                                                                                        'string'
+                                                                                                        ? maybe
+                                                                                                        : '';
+                                                                                                }
+                                                                                                return '';
+                                                                                            }
+                                                                                        )
+                                                                                        .filter(
+                                                                                            Boolean
+                                                                                        )
+                                                                                        .join(
+                                                                                            ' '
+                                                                                        );
+                                                                                return texts.substring(
+                                                                                    0,
+                                                                                    200
+                                                                                );
+                                                                            }
                                                                         }
+
+                                                                        return 'Vorschau nicht verfügbar';
+                                                                    } catch {
+                                                                        return typeof content ===
+                                                                            'string'
+                                                                            ? content.substring(
+                                                                                  0,
+                                                                                  200
+                                                                              )
+                                                                            : 'Vorschau nicht verfügbar';
                                                                     }
+                                                                };
 
-                                                                    return 'Vorschau nicht verfügbar';
-                                                                } catch {
-                                                                    return typeof content === 'string' ? content.substring(0, 200) : 'Vorschau nicht verfügbar';
-                                                                }
-                                                            };
-
-                                                            return extractPreview(item.content);
+                                                            return extractPreview(
+                                                                item.content
+                                                            );
                                                         })()}
                                                         ...
                                                     </p>
                                                 )}
                                             </div>
                                             <div className="flex items-center space-x-2 ml-4">
+                                                {canPin && (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleTogglePin(
+                                                                item.id,
+                                                                !!item.isPinned
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            pinLoading ===
+                                                                item.id ||
+                                                            (!item.isPinned &&
+                                                                pinnedCount >=
+                                                                    3)
+                                                        }
+                                                        title={
+                                                            item.isPinned
+                                                                ? 'Nicht mehr anpinnen'
+                                                                : pinnedCount >=
+                                                                  3
+                                                                ? 'Maximal 3 angepinnte Nachrichten erlaubt'
+                                                                : 'Auf der Startseite anpinnen'
+                                                        }
+                                                        className={`p-2 rounded-full transition-colors ${
+                                                            item.isPinned
+                                                                ? 'text-amber-600 hover:text-amber-700 hover:bg-amber-100'
+                                                                : pinnedCount >=
+                                                                  3
+                                                                ? 'text-gray-300 cursor-not-allowed'
+                                                                : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                                                        } ${
+                                                            pinLoading ===
+                                                            item.id
+                                                                ? 'opacity-50'
+                                                                : ''
+                                                        }`}
+                                                    >
+                                                        {item.isPinned ? (
+                                                            <PushPinSlash
+                                                                size={16}
+                                                                weight="fill"
+                                                            />
+                                                        ) : (
+                                                            <PushPin
+                                                                size={16}
+                                                            />
+                                                        )}
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() =>
                                                         setSelectedNews(item)
@@ -423,21 +631,29 @@ export default function AdminNews() {
                                                 >
                                                     <Eye size={16} />
                                                 </button>
-                                                <Link
-                                                    href={`/admin/news/bearbeiten/${item.id}`}
-                                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full inline-block"
-                                                    title="Bearbeiten"
-                                                >
-                                                    <PencilSimple size={16} />
-                                                </Link>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(item.id)
-                                                    }
-                                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
-                                                >
-                                                    <Trash size={16} />
-                                                </button>
+                                                {canEdit && (
+                                                    <Link
+                                                        href={`/admin/news/bearbeiten/${item.id}`}
+                                                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full inline-block"
+                                                        title="Bearbeiten"
+                                                    >
+                                                        <PencilSimple
+                                                            size={16}
+                                                        />
+                                                    </Link>
+                                                )}
+                                                {canDelete && (
+                                                    <button
+                                                        onClick={() =>
+                                                            setNewsToDelete(
+                                                                item
+                                                            )
+                                                        }
+                                                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                                                    >
+                                                        <Trash size={16} />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -455,13 +671,15 @@ export default function AdminNews() {
                                     Es wurden noch keine Nachrichten erstellt
                                     oder Ihre Suche ergab keine Treffer.
                                 </p>
-                                <Link
-                                    href="/admin/news/erstellen"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center mx-auto"
-                                >
-                                    <Plus size={16} className="mr-2" />
-                                    Erste Nachricht erstellen
-                                </Link>
+                                {canCreate && (
+                                    <Link
+                                        href="/admin/news/erstellen"
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center mx-auto"
+                                    >
+                                        <Plus size={16} className="mr-2" />
+                                        Erste Nachricht erstellen
+                                    </Link>
+                                )}
                             </div>
                         )}
                     </div>
@@ -505,29 +723,31 @@ export default function AdminNews() {
                                 </div>
                             </div>
                             {selectedNews.content && (
-                                <div>
-                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                        {selectedNews.content}
-                                    </p>
+                                <div className="prose prose-sm max-w-none">
+                                    <ArticleRenderer
+                                        content={
+                                            typeof selectedNews.content ===
+                                            'string'
+                                                ? JSON.parse(
+                                                      selectedNews.content
+                                                  )
+                                                : selectedNews.content
+                                        }
+                                    />
                                 </div>
                             )}
                         </div>
 
                         <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
-                            <button
-                                onClick={() => {
-                                    setFormData({
-                                        title: selectedNews.title,
-                                        content: selectedNews.content || '',
-                                        category: selectedNews.category,
-                                    });
-                                    setIsEditing(true);
-                                }}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
-                            >
-                                <PencilSimple size={16} className="mr-2" />
-                                Bearbeiten
-                            </button>
+                            {canEdit && (
+                                <Link
+                                    href={`/admin/news/bearbeiten/${selectedNews.id}`}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
+                                >
+                                    <PencilSimple size={16} className="mr-2" />
+                                    Bearbeiten
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -656,6 +876,23 @@ export default function AdminNews() {
                     </div>
                 </div>
             )}
+
+            <PromptDialog
+                isOpen={newsToDelete !== null}
+                onCancel={() => setNewsToDelete(null)}
+                onConfirm={async () => {
+                    if (newsToDelete) {
+                        await handleDelete(newsToDelete.id);
+                        setNewsToDelete(null);
+                    }
+                }}
+                title="Nachricht löschen"
+                description="Sind Sie sicher, dass Sie diese Nachricht löschen möchten?"
+                confirmText="Löschen"
+                cancelText="Abbrechen"
+                icon={<Trash className="h-12 w-12" />}
+                accentColor="red"
+            />
         </div>
     );
 }

@@ -1,5 +1,9 @@
 import { redirect } from 'next/navigation';
-import { isAuthenticated, getSessionData, getCurrentAdminUser } from '@/lib/auth';
+import {
+    isAuthenticated,
+    getSessionData,
+    getCurrentAdminUser,
+} from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import {
     getEvents,
@@ -51,7 +55,10 @@ export default async function AdminDashboardPage() {
     const canViewEvents = hasPermission(currentUser, 'events.view');
     const canViewNews = hasPermission(currentUser, 'news.view');
     const canViewAdminGallery = hasPermission(currentUser, 'gallery.view');
-    const canViewSharedGallery = hasPermission(currentUser, 'shared_gallery.view');
+    const canViewSharedGallery = hasPermission(
+        currentUser,
+        'shared_gallery.view'
+    );
     const canViewPortraits = hasPermission(currentUser, 'portraits.view');
     const canViewArchive = hasPermission(currentUser, 'archive.view');
 
@@ -107,9 +114,14 @@ export default async function AdminDashboardPage() {
             canViewSharedGallery={canViewSharedGallery}
             canViewPortraits={canViewPortraits}
             canViewArchive={canViewArchive}
-            canManageEvents={hasPermission(currentUser, 'events.create') || hasPermission(currentUser, 'verein.events.create')}
+            canManageEvents={
+                hasPermission(currentUser, 'events.create') ||
+                hasPermission(currentUser, 'verein.events.create')
+            }
             canManageNews={hasPermission(currentUser, 'news.create')}
             canManageUsers={hasPermission(currentUser, 'users.view')}
+            canViewSettings={hasPermission(currentUser, 'settings.view')}
+            canViewLogs={hasPermission(currentUser, 'logs.view')}
         />
     );
 }

@@ -4,7 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
-import { ArrowLeft, Check, X, Warning } from '@phosphor-icons/react';
+import PromptDialog from '@/app/components/PromptDialog';
+import LazySharedGalleryImage from '@/app/components/LazySharedGalleryImage';
+import { SharedGalleryImageProvider } from '@/app/components/SharedGalleryImageContext';
+import { ArrowLeft, Check, X, Warning, Trash } from '@phosphor-icons/react';
 
 interface GalleryReport {
     id: string;
@@ -15,7 +18,7 @@ interface GalleryReport {
     reviewedAt?: string;
     reviewedBy?: string;
     createdAt: string;
-    imageData?: string;
+    imageUrl?: string;
     title?: string;
     submitterName?: string;
 }
@@ -28,24 +31,30 @@ export default function AdminSharedGalleryReports() {
     const [filter, setFilter] = useState<'pending' | 'all'>('pending');
     const [processing, setProcessing] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [viewingImage, setViewingImage] = useState<GalleryReport | null>(null);
+    const [viewingImage, setViewingImage] = useState<GalleryReport | null>(
+        null
+    );
     const [disapproving, setDisapproving] = useState(false);
+    const [imageToDisapprove, setImageToDisapprove] = useState<string | null>(null);
 
     const fetchReports = useCallback(async () => {
         try {
             setLoading(true);
-            
+
             // Always fetch all reports for accurate counts
-            const allResponse = await fetch('/api/admin/shared-gallery/reports');
+            const allResponse = await fetch(
+                '/api/admin/shared-gallery/reports'
+            );
             if (allResponse.ok) {
                 const allData = await allResponse.json();
                 setAllReports(allData.reports || []);
             }
-            
+
             // Fetch filtered reports
-            const url = filter === 'all'
-                ? '/api/admin/shared-gallery/reports'
-                : `/api/admin/shared-gallery/reports?status=pending`;
+            const url =
+                filter === 'all'
+                    ? '/api/admin/shared-gallery/reports'
+                    : `/api/admin/shared-gallery/reports?status=pending`;
 
             const response = await fetch(url);
             if (response.ok) {
@@ -66,7 +75,10 @@ export default function AdminSharedGalleryReports() {
         fetchReports();
     }, [fetchReports]);
 
-    const handleUpdateStatus = async (reportId: string, status: 'reviewed' | 'dismissed') => {
+    const handleUpdateStatus = async (
+        reportId: string,
+        status: 'reviewed' | 'dismissed'
+    ) => {
         setProcessing(reportId);
         setError(null);
 
@@ -92,8 +104,6 @@ export default function AdminSharedGalleryReports() {
     };
 
     const handleDisapprove = async (submissionId: string) => {
-        if (!confirm('Möchten Sie dieses Foto wirklich ablehnen und entfernen?')) return;
-
         setDisapproving(true);
         setError(null);
 
@@ -101,10 +111,10 @@ export default function AdminSharedGalleryReports() {
             const response = await fetch('/api/admin/shared-gallery', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    action: 'reject', 
+                body: JSON.stringify({
+                    action: 'reject',
                     id: submissionId,
-                    reason: 'Aufgrund einer Meldung entfernt'
+                    reason: 'Aufgrund einer Meldung entfernt',
                 }),
             });
 
@@ -149,6 +159,7 @@ export default function AdminSharedGalleryReports() {
     };
 
     return (
+        <SharedGalleryImageProvider>
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <header className="bg-white shadow">
@@ -156,7 +167,9 @@ export default function AdminSharedGalleryReports() {
                     <div className="flex justify-between items-center py-6">
                         <div className="flex items-center">
                             <button
-                                onClick={() => router.push('/admin/shared-gallery')}
+                                onClick={() =>
+                                    router.push('/admin/shared-gallery')
+                                }
                                 className="mr-4 p-2 text-gray-600 hover:text-gray-900"
                             >
                                 <ArrowLeft size={20} />
@@ -186,7 +199,12 @@ export default function AdminSharedGalleryReports() {
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                            Ausstehend ({allReports.filter(r => r.status === 'pending').length})
+                            Ausstehend (
+                            {
+                                allReports.filter((r) => r.status === 'pending')
+                                    .length
+                            }
+                            )
                         </button>
                         <button
                             onClick={() => setFilter('all')}
@@ -204,7 +222,10 @@ export default function AdminSharedGalleryReports() {
                         <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md flex items-center">
                             <Warning size={16} className="mr-2" />
                             {error}
-                            <button onClick={() => setError(null)} className="ml-auto">
+                            <button
+                                onClick={() => setError(null)}
+                                className="ml-auto"
+                            >
                                 <X size={16} />
                             </button>
                         </div>
@@ -216,7 +237,11 @@ export default function AdminSharedGalleryReports() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
                 {loading ? (
                     <div className="bg-white shadow rounded-lg p-12 text-center">
-                        <LoadingSpinner size="lg" text="Lade Meldungen..." centered />
+                        <LoadingSpinner
+                            size="lg"
+                            text="Lade Meldungen..."
+                            centered
+                        />
                     </div>
                 ) : reports.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6">
@@ -228,17 +253,18 @@ export default function AdminSharedGalleryReports() {
                                 <div className="p-6">
                                     <div className="flex gap-6">
                                         {/* Image Thumbnail */}
-                                        {report.imageData && (
-                                            <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                                                <Image
-                                                    src={report.imageData}
-                                                    alt="Gemeldetes Foto"
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="128px"
-                                                />
-                                            </div>
-                                        )}
+                                        <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                                            <LazySharedGalleryImage
+                                                imageId={report.submissionId}
+                                                alt="Gemeldetes Foto"
+                                                fill
+                                                className="object-cover"
+                                                sizes="128px"
+                                                onLoad={(imageUrl) => {
+                                                    report.imageUrl = imageUrl;
+                                                }}
+                                            />
+                                        </div>
 
                                         {/* Report Details */}
                                         <div className="flex-1 min-w-0">
@@ -246,13 +272,21 @@ export default function AdminSharedGalleryReports() {
                                                 <div>
                                                     <div className="flex items-center gap-3 mb-2">
                                                         <h3 className="text-lg font-bold text-gray-900">
-                                                            {report.title || 'Unbekannter Titel'}
+                                                            {report.title ||
+                                                                'Unbekannter Titel'}
                                                         </h3>
-                                                        {getStatusBadge(report.status)}
+                                                        {getStatusBadge(
+                                                            report.status
+                                                        )}
                                                     </div>
                                                     {report.submitterName && (
                                                         <p className="text-sm text-gray-600 mb-1">
-                                                            Foto von: <strong>{report.submitterName}</strong>
+                                                            Foto von:{' '}
+                                                            <strong>
+                                                                {
+                                                                    report.submitterName
+                                                                }
+                                                            </strong>
                                                         </p>
                                                     )}
                                                 </div>
@@ -262,18 +296,30 @@ export default function AdminSharedGalleryReports() {
                                                 <p className="text-sm font-medium text-red-900 mb-1">
                                                     Grund der Meldung:
                                                 </p>
-                                                <p className="text-sm text-red-800">{report.reason}</p>
+                                                <p className="text-sm text-red-800">
+                                                    {report.reason}
+                                                </p>
                                             </div>
 
                                             <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
                                                 <span>
-                                                    Gemeldet am {new Date(report.createdAt).toLocaleDateString('de-DE')}
+                                                    Gemeldet am{' '}
+                                                    {new Date(
+                                                        report.createdAt
+                                                    ).toLocaleDateString(
+                                                        'de-DE'
+                                                    )}
                                                 </span>
                                                 {report.reviewedAt && (
                                                     <>
                                                         <span>•</span>
                                                         <span>
-                                                            Bearbeitet am {new Date(report.reviewedAt).toLocaleDateString('de-DE')}
+                                                            Bearbeitet am{' '}
+                                                            {new Date(
+                                                                report.reviewedAt
+                                                            ).toLocaleDateString(
+                                                                'de-DE'
+                                                            )}
                                                         </span>
                                                     </>
                                                 )}
@@ -283,21 +329,40 @@ export default function AdminSharedGalleryReports() {
                                             {report.status === 'pending' && (
                                                 <div className="flex gap-3">
                                                     <button
-                                                        onClick={() => handleUpdateStatus(report.id, 'reviewed')}
-                                                        disabled={processing === report.id}
+                                                        onClick={() =>
+                                                            handleUpdateStatus(
+                                                                report.id,
+                                                                'reviewed'
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            processing ===
+                                                            report.id
+                                                        }
                                                         className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors disabled:bg-gray-400"
                                                     >
-                                                        {processing === report.id ? (
-                                                            <LoadingSpinner size="sm" color="white" />
+                                                        {processing ===
+                                                        report.id ? (
+                                                            <LoadingSpinner
+                                                                size="sm"
+                                                                color="white"
+                                                            />
                                                         ) : (
                                                             <>
-                                                                <Check size={18} />
-                                                                Als geprüft markieren
+                                                                <Check
+                                                                    size={18}
+                                                                />
+                                                                Als geprüft
+                                                                markieren
                                                             </>
                                                         )}
                                                     </button>
                                                     <button
-                                                        onClick={() => setViewingImage(report)}
+                                                        onClick={() =>
+                                                            setViewingImage(
+                                                                report
+                                                            )
+                                                        }
                                                         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
                                                     >
                                                         Foto ansehen
@@ -317,8 +382,8 @@ export default function AdminSharedGalleryReports() {
                             Keine Meldungen
                         </h3>
                         <p className="text-gray-600">
-                            {filter === 'pending' 
-                                ? 'Es gibt keine ausstehenden Meldungen.' 
+                            {filter === 'pending'
+                                ? 'Es gibt keine ausstehenden Meldungen.'
                                 : 'Es wurden noch keine Fotos gemeldet.'}
                         </p>
                     </div>
@@ -327,16 +392,18 @@ export default function AdminSharedGalleryReports() {
 
             {/* Image View Modal */}
             {viewingImage && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
                     onClick={() => setViewingImage(null)}
                 >
-                    <div 
+                    <div
                         className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-gray-900">Gemeldetes Foto</h3>
+                            <h3 className="text-xl font-bold text-gray-900">
+                                Gemeldetes Foto
+                            </h3>
                             <button
                                 onClick={() => setViewingImage(null)}
                                 className="text-gray-400 hover:text-gray-600"
@@ -348,50 +415,83 @@ export default function AdminSharedGalleryReports() {
                         <div className="p-6">
                             {/* Image Preview */}
                             <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 mb-6">
-                                <Image
-                                    src={viewingImage.imageData || ''}
-                                    alt="Gemeldetes Foto"
-                                    fill
-                                    className="object-contain"
-                                    unoptimized
-                                />
+                                {viewingImage.imageUrl ? (
+                                    <Image
+                                        src={viewingImage.imageUrl}
+                                        alt="Gemeldetes Foto"
+                                        fill
+                                        className="object-contain"
+                                        unoptimized
+                                    />
+                                ) : (
+                                    <LazySharedGalleryImage
+                                        imageId={viewingImage.submissionId}
+                                        alt="Gemeldetes Foto"
+                                        fill
+                                        className="object-contain"
+                                        onLoad={(imageUrl) => {
+                                            viewingImage.imageUrl = imageUrl;
+                                        }}
+                                    />
+                                )}
                             </div>
 
                             {/* Report Details */}
                             <div className="space-y-4 mb-6">
                                 <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Titel</h4>
-                                    <p className="text-gray-900">{viewingImage.title || 'Unbekannter Titel'}</p>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                        Titel
+                                    </h4>
+                                    <p className="text-gray-900">
+                                        {viewingImage.title ||
+                                            'Unbekannter Titel'}
+                                    </p>
                                 </div>
 
                                 {viewingImage.submitterName && (
                                     <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Eingereicht von</h4>
-                                        <p className="text-gray-900">{viewingImage.submitterName}</p>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                            Eingereicht von
+                                        </h4>
+                                        <p className="text-gray-900">
+                                            {viewingImage.submitterName}
+                                        </p>
                                     </div>
                                 )}
 
                                 <div className="bg-red-50 border-l-4 border-red-500 p-3">
-                                    <h4 className="text-sm font-semibold text-red-900 mb-1">Grund der Meldung</h4>
-                                    <p className="text-sm text-red-800">{viewingImage.reason}</p>
+                                    <h4 className="text-sm font-semibold text-red-900 mb-1">
+                                        Grund der Meldung
+                                    </h4>
+                                    <p className="text-sm text-red-800">
+                                        {viewingImage.reason}
+                                    </p>
                                 </div>
 
                                 {viewingImage.reporterInfo && (
                                     <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Melder-Info</h4>
-                                        <p className="text-gray-900 text-sm">{viewingImage.reporterInfo}</p>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                            Melder-Info
+                                        </h4>
+                                        <p className="text-gray-900 text-sm">
+                                            {viewingImage.reporterInfo}
+                                        </p>
                                     </div>
                                 )}
 
                                 <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Gemeldet am</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                        Gemeldet am
+                                    </h4>
                                     <p className="text-gray-900">
-                                        {new Date(viewingImage.createdAt).toLocaleDateString('de-DE', {
+                                        {new Date(
+                                            viewingImage.createdAt
+                                        ).toLocaleDateString('de-DE', {
                                             day: '2-digit',
                                             month: 'long',
                                             year: 'numeric',
                                             hour: '2-digit',
-                                            minute: '2-digit'
+                                            minute: '2-digit',
                                         })}
                                     </p>
                                 </div>
@@ -406,13 +506,20 @@ export default function AdminSharedGalleryReports() {
                                     Schließen
                                 </button>
                                 <button
-                                    onClick={() => handleDisapprove(viewingImage.submissionId)}
+                                    onClick={() =>
+                                        setImageToDisapprove(
+                                            viewingImage.submissionId
+                                        )
+                                    }
                                     disabled={disapproving}
                                     className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:bg-gray-400 flex items-center gap-2"
                                 >
                                     {disapproving ? (
                                         <>
-                                            <LoadingSpinner size="sm" color="white" />
+                                            <LoadingSpinner
+                                                size="sm"
+                                                color="white"
+                                            />
                                             Wird abgelehnt...
                                         </>
                                     ) : (
@@ -427,6 +534,24 @@ export default function AdminSharedGalleryReports() {
                     </div>
                 </div>
             )}
+
+            <PromptDialog
+                isOpen={imageToDisapprove !== null}
+                onCancel={() => setImageToDisapprove(null)}
+                onConfirm={async () => {
+                    if (imageToDisapprove) {
+                        await handleDisapprove(imageToDisapprove);
+                        setImageToDisapprove(null);
+                    }
+                }}
+                title="Foto ablehnen"
+                description="Möchten Sie dieses Foto wirklich ablehnen und entfernen?"
+                confirmText="Ablehnen"
+                cancelText="Abbrechen"
+                icon={<Trash className="h-12 w-12" />}
+                accentColor="red"
+            />
         </div>
+        </SharedGalleryImageProvider>
     );
 }

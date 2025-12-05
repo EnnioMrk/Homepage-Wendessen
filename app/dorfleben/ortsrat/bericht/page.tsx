@@ -10,8 +10,11 @@ import {
     Heart,
     Bell,
     Lightning,
+    UsersThree,
     ChartBar,
 } from '@phosphor-icons/react/dist/ssr';
+
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Bürgermeister berichtet - Grußwort 2023 | Wendessen',
@@ -22,29 +25,13 @@ export const metadata = {
 export default function BuergermeisterBerichtetPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-primary via-secondary to-primary py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Wendessen_Luftaufnahme.jpg')] bg-cover bg-center opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-                            Bürgermeister berichtet
-                        </h1>
-                        <div className="w-32 h-2 bg-gradient-to-r from-accent to-white mx-auto mb-8"></div>
-                        <p className="text-2xl md:text-3xl text-white/90 leading-relaxed">
-                            Grußwort zum Jahr 2023
-                        </p>
-
-                        {/* Decorative elements */}
-                        <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full animate-pulse"></div>
-                        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-accent/50 rounded-full animate-pulse"></div>
-                        <div className="absolute top-1/2 left-20 w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
-                        <div className="hidden sm:block absolute top-1/3 lg:top-1/2 right-32 w-3 h-3 bg-accent/60 rounded-full animate-bounce delay-300"></div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Bürgermeister berichtet"
+                subtitle="Grußwort zum Jahr 2023"
+                icon={<UsersThree />}
+                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                color="primary"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">

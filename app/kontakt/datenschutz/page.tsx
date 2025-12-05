@@ -1,4 +1,5 @@
 import { Shield } from '@phosphor-icons/react/dist/ssr';
+import PageHeader from '@/app/components/PageHeader';
 
 export const metadata = {
     title: 'Datenschutzerklärung - Wendessen',
@@ -10,26 +11,12 @@ export default function DatenschutzPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
-            <div className="relative bg-gradient-to-r from-indigo-700 via-purple-700 to-blue-800 py-16 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-700/95 to-blue-800/95"></div>
-
-                <div className="relative z-10 container mx-auto px-4 text-center">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <Shield className="w-8 h-8 text-indigo-700" />
-                            </div>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-                                Datenschutzerklärung
-                            </h1>
-                        </div>
-                        <div className="w-32 h-2 bg-gradient-to-r from-purple-400 to-white mx-auto mb-6"></div>
-                        <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
-                            Informationen zum Umgang mit Ihren Daten
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Datenschutzerklärung"
+                subtitle="Informationen zum Umgang mit Ihren Daten"
+                icon={<Shield />}
+                color="indigo"
+            />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">

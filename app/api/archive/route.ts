@@ -1,6 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/permissions';
 import { sql } from '@/lib/sql';
+import { getCurrentAdminUser } from '@/lib/auth';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function GET() {
     try {
@@ -18,7 +20,7 @@ export async function GET() {
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         await requirePermission('archive.create');
 
@@ -34,23 +36,45 @@ export async function POST(request: Request) {
 
         const result = await sql`
             INSERT INTO archive (title, author, category, created_date, content)
-            VALUES (${title}, ${author || null}, ${category || null}, ${created_date || null}, ${content})
+            VALUES (${title}, ${author || null}, ${category || null}, ${
+            created_date || null
+        }, ${content})
             RETURNING *
         `;
+
+        // Log the action
+        const currentUser = await getCurrentAdminUser();
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: currentUser?.id,
+            username: currentUser?.username,
+            action: 'archive.create',
+            resourceType: 'archive',
+            resourceId: String(result[0].id),
+            resourceTitle: title,
+            details: {
+                category: category || undefined,
+                author: author || undefined,
+            },
+            ...requestInfo,
+        });
 
         return NextResponse.json(result[0], { status: 201 });
     } catch (error: unknown) {
         console.error('Error creating archive item:', error);
-        
+
         const errorMessage = (error as Error).message || 'Unknown error';
-        
-        if (errorMessage.includes('Forbidden') || errorMessage.includes('Unauthorized')) {
+
+        if (
+            errorMessage.includes('Forbidden') ||
+            errorMessage.includes('Unauthorized')
+        ) {
             return NextResponse.json(
                 { error: errorMessage },
                 { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
             );
         }
-        
+
         return NextResponse.json(
             { error: 'Failed to create archive item' },
             { status: 500 }

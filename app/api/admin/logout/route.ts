@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server';
-import { clearSession } from '@/lib/auth';
+import { clearSession, getCurrentAdminUser } from '@/lib/auth';
+import { logAdminAction } from '@/lib/admin-log';
 
 export async function POST() {
     try {
+        // Get user before clearing session
+        const currentUser = await getCurrentAdminUser();
+
+        // Log the logout before clearing session
+        if (currentUser) {
+            logAdminAction({
+                userId: currentUser.id,
+                username: currentUser.username,
+                action: 'auth.logout',
+                resourceType: 'auth',
+            });
+        }
+
         await clearSession();
 
         return NextResponse.json(

@@ -6,6 +6,9 @@ import { CalendarEvent, NewsItem } from '@/lib/database';
 import Link from 'next/link';
 import EventModal from '@/app/components/EventModal';
 import NewsModal from '@/app/components/NewsModal';
+import NotificationBell from '@/app/components/NotificationBell';
+import PushNotificationToggle from '@/app/components/PushNotificationToggle';
+import NotificationTester from '@/app/components/NotificationTester';
 import {
     Calendar,
     Newspaper,
@@ -13,6 +16,8 @@ import {
     UsersThree,
     UserGear,
     Article,
+    GearSix,
+    ClockCounterClockwise,
 } from '@phosphor-icons/react/dist/ssr';
 
 // Function to get category colors for news badges
@@ -48,6 +53,8 @@ interface AdminDashboardProps {
     canManageEvents: boolean;
     canManageNews: boolean;
     canManageUsers: boolean;
+    canViewSettings: boolean;
+    canViewLogs: boolean;
 }
 
 export default function AdminDashboard({
@@ -68,6 +75,8 @@ export default function AdminDashboard({
     canManageEvents,
     canManageNews,
     canManageUsers,
+    canViewSettings,
+    canViewLogs,
 }: AdminDashboardProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showEventModal, setShowEventModal] = useState(false);
@@ -103,6 +112,8 @@ export default function AdminDashboard({
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                            <PushNotificationToggle />
+                            <NotificationBell />
                             <button
                                 onClick={handleLogout}
                                 disabled={isLoggingOut}
@@ -231,203 +242,257 @@ export default function AdminDashboard({
                             {/* Recent Events */}
                             {canViewEvents && (
                                 <div className="bg-white shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                        Aktuelle Termine
-                                    </h3>
-                                    <Link
-                                        href="/admin/events"
-                                        className="text-sm text-indigo-600 hover:text-indigo-800 font-medium self-center sm:self-auto"
-                                    >
-                                        Alle Termine →
-                                    </Link>
-                                </div>
-                                {eventsError ? (
-                                    <div className="text-red-600 text-sm">
-                                        {eventsError}
-                                    </div>
-                                ) : events.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {events.slice(0, 5).map((event) => (
-                                            <div
-                                                key={event.id}
-                                                className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                                    <div className="px-4 py-5 sm:p-6">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                                Aktuelle Termine
+                                            </h3>
+                                            <Link
+                                                href="/admin/events"
+                                                className="text-sm text-indigo-600 hover:text-indigo-800 font-medium self-center sm:self-auto"
                                             >
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-900">
-                                                        {event.title}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {new Date(
-                                                            event.start
-                                                        ).toLocaleDateString(
-                                                            'de-DE'
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <span
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        event.category ===
-                                                        'sitzung'
-                                                            ? 'bg-blue-100 text-blue-800'
-                                                            : event.category ===
-                                                              'veranstaltung'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : event.category ===
-                                                              'sport'
-                                                            ? 'bg-orange-100 text-orange-800'
-                                                            : event.category ===
-                                                              'kultur'
-                                                            ? 'bg-purple-100 text-purple-800'
-                                                            : 'bg-gray-100 text-gray-800'
-                                                    }`}
-                                                >
-                                                    {event.category}
-                                                </span>
+                                                Alle Termine →
+                                            </Link>
+                                        </div>
+                                        {eventsError ? (
+                                            <div className="text-red-600 text-sm">
+                                                {eventsError}
                                             </div>
-                                        ))}
+                                        ) : events.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {events
+                                                    .slice(0, 5)
+                                                    .map((event) => (
+                                                        <div
+                                                            key={event.id}
+                                                            className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                                                        >
+                                                            <div>
+                                                                <p className="text-sm font-medium text-gray-900">
+                                                                    {
+                                                                        event.title
+                                                                    }
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">
+                                                                    {new Date(
+                                                                        event.start
+                                                                    ).toLocaleDateString(
+                                                                        'de-DE'
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                            <span
+                                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                                    event.category ===
+                                                                    'sitzung'
+                                                                        ? 'bg-blue-100 text-blue-800'
+                                                                        : event.category ===
+                                                                          'veranstaltung'
+                                                                        ? 'bg-green-100 text-green-800'
+                                                                        : event.category ===
+                                                                          'sport'
+                                                                        ? 'bg-orange-100 text-orange-800'
+                                                                        : event.category ===
+                                                                          'kultur'
+                                                                        ? 'bg-purple-100 text-purple-800'
+                                                                        : 'bg-gray-100 text-gray-800'
+                                                                }`}
+                                                            >
+                                                                {event.category}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500 text-sm">
+                                                Keine Termine gefunden
+                                            </p>
+                                        )}
                                     </div>
-                                ) : (
-                                    <p className="text-gray-500 text-sm">
-                                        Keine Termine gefunden
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        )}
+                                </div>
+                            )}
 
-                        {/* Recent News */}
-                        {canViewNews && (
-                            <div className="bg-white shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                        Aktuelle Neugkeiten
-                                    </h3>
-                                    <Link
-                                        href="/admin/news"
-                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium self-center sm:self-auto"
-                                    >
-                                        Alle Neuigkeiten →
-                                    </Link>
-                                </div>
-                                {newsError ? (
-                                    <div className="text-red-600 text-sm">
-                                        {newsError}
-                                    </div>
-                                ) : news.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {news.slice(0, 5).map((item) => (
-                                            <div
-                                                key={item.id}
-                                                className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                            {/* Recent News */}
+                            {canViewNews && (
+                                <div className="bg-white shadow rounded-lg">
+                                    <div className="px-4 py-5 sm:p-6">
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
+                                            <h3 className="text-lg leading-6 font-medium text-gray-900">
+                                                Aktuelle Neugkeiten
+                                            </h3>
+                                            <Link
+                                                href="/admin/news"
+                                                className="text-sm text-blue-600 hover:text-blue-800 font-medium self-center sm:self-auto"
                                             >
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-900">
-                                                        {item.title}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {new Date(
-                                                            item.publishedDate
-                                                        ).toLocaleDateString(
-                                                            'de-DE'
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <span
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getNewsCategoryColors(
-                                                        item.category
-                                                    )}`}
-                                                >
-                                                    {item.category}
-                                                </span>
+                                                Alle Neuigkeiten →
+                                            </Link>
+                                        </div>
+                                        {newsError ? (
+                                            <div className="text-red-600 text-sm">
+                                                {newsError}
                                             </div>
-                                        ))}
+                                        ) : news.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {news
+                                                    .slice(0, 5)
+                                                    .map((item) => (
+                                                        <div
+                                                            key={item.id}
+                                                            className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
+                                                        >
+                                                            <div>
+                                                                <p className="text-sm font-medium text-gray-900">
+                                                                    {item.title}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">
+                                                                    {new Date(
+                                                                        item.publishedDate
+                                                                    ).toLocaleDateString(
+                                                                        'de-DE'
+                                                                    )}
+                                                                </p>
+                                                            </div>
+                                                            <span
+                                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getNewsCategoryColors(
+                                                                    item.category
+                                                                )}`}
+                                                            >
+                                                                {item.category}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500 text-sm">
+                                                Keine Nachrichten gefunden
+                                            </p>
+                                        )}
                                     </div>
-                                ) : (
-                                    <p className="text-gray-500 text-sm">
-                                        Keine Nachrichten gefunden
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        )}
+                                </div>
+                            )}
                         </div>
                     )}
 
                     {/* Quick Actions */}
-                    {(canManageEvents || canManageNews || canManageUsers) && (
+                    {(canManageEvents ||
+                        canManageNews ||
+                        canManageUsers ||
+                        canViewSettings ||
+                        canViewLogs) && (
                         <div className="mt-8">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
                                 Schnellaktionen
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {/* Add Event */}
-                            {canManageEvents && (
-                                <button
-                                    onClick={() => setShowEventModal(true)}
-                                    className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500 text-left"
-                                >
-                                    <div className="flex items-center mb-3">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <Calendar className="w-5 h-5 text-blue-600" />
+                                {/* Add Event */}
+                                {canManageEvents && (
+                                    <button
+                                        onClick={() => setShowEventModal(true)}
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500 text-left"
+                                    >
+                                        <div className="flex items-center mb-3">
+                                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <Calendar className="w-5 h-5 text-blue-600" />
+                                            </div>
+                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                Neuer Termin
+                                            </h4>
                                         </div>
-                                        <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                            Neuer Termin
-                                        </h4>
-                                    </div>
-                                    <p className="text-sm text-gray-600">
-                                        Termin erstellen und veröffentlichen
-                                    </p>
-                                </button>
-                            )}
+                                        <p className="text-sm text-gray-600">
+                                            Termin erstellen und veröffentlichen
+                                        </p>
+                                    </button>
+                                )}
 
-                            {/* Add News */}
-                            {canManageNews && (
-                                <Link
-                                    href="/admin/news/erstellen"
-                                    className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500 text-left block"
-                                >
-                                    <div className="flex items-center mb-3">
-                                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                            <Newspaper className="w-5 h-5 text-green-600" />
+                                {/* Add News */}
+                                {canManageNews && (
+                                    <Link
+                                        href="/admin/news/erstellen"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500 text-left block"
+                                    >
+                                        <div className="flex items-center mb-3">
+                                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <Newspaper className="w-5 h-5 text-green-600" />
+                                            </div>
+                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                Neue Nachricht
+                                            </h4>
                                         </div>
-                                        <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                            Neue Nachricht
-                                        </h4>
-                                    </div>
-                                    <p className="text-sm text-gray-600">
-                                        Nachricht erstellen und veröffentlichen
-                                    </p>
-                                </Link>
-                            )}
+                                        <p className="text-sm text-gray-600">
+                                            Nachricht erstellen und
+                                            veröffentlichen
+                                        </p>
+                                    </Link>
+                                )}
 
-                            {/* Admin Users */}
-                            {canManageUsers && (
-                                <Link
-                                    href="/admin/users"
-                                    className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-primary block"
-                                >
-                                    <div className="flex items-center mb-3">
-                                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                                            <UserGear className="w-5 h-5 text-primary" />
+                                {/* Admin Users */}
+                                {canManageUsers && (
+                                    <Link
+                                        href="/admin/users"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-primary block"
+                                    >
+                                        <div className="flex items-center mb-3">
+                                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                                <UserGear className="w-5 h-5 text-primary" />
+                                            </div>
+                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                Benutzer
+                                            </h4>
                                         </div>
-                                        <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                            Benutzer
-                                        </h4>
-                                    </div>
-                                    <p className="text-sm text-gray-600">
-                                        Admins und Rechte verwalten
-                                    </p>
-                                </Link>
-                            )}
-                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Admins und Rechte verwalten
+                                        </p>
+                                    </Link>
+                                )}
+
+                                {/* Settings */}
+                                {canViewSettings && (
+                                    <Link
+                                        href="/admin/settings"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-gray-500 block"
+                                    >
+                                        <div className="flex items-center mb-3">
+                                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                <GearSix className="w-5 h-5 text-gray-600" />
+                                            </div>
+                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                Einstellungen
+                                            </h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Website-Einstellungen verwalten
+                                        </p>
+                                    </Link>
+                                )}
+
+                                {/* Activity Log */}
+                                {canViewLogs && (
+                                    <Link
+                                        href="/admin/logs"
+                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-indigo-500 block"
+                                    >
+                                        <div className="flex items-center mb-3">
+                                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                                <ClockCounterClockwise className="w-5 h-5 text-indigo-600" />
+                                            </div>
+                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                Aktivitätslog
+                                            </h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            Admin-Aktivitäten einsehen
+                                        </p>
+                                    </Link>
+                                )}
+                            </div>
                         </div>
                     )}
 
                     {/* Content Management */}
-                    {(canViewAdminGallery || canViewSharedGallery || canViewPortraits || canViewArchive) && (
+                    {(canViewAdminGallery ||
+                        canViewSharedGallery ||
+                        canViewPortraits ||
+                        canViewArchive) && (
                         <div className="mt-8">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
                                 Inhalte verwalten
@@ -494,7 +559,8 @@ export default function AdminDashboard({
                                             </div>
                                         </div>
                                         <p className="text-sm text-gray-600">
-                                            Wir Wendessener - Einwohner stellen sich vor
+                                            Wir Wendessener - Einwohner stellen
+                                            sich vor
                                         </p>
                                     </Link>
                                 )}
@@ -520,6 +586,18 @@ export default function AdminDashboard({
                                         </p>
                                     </Link>
                                 )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Notification Tester - only in development */}
+                    {process.env.NODE_ENV === 'development' && canViewLogs && (
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
+                                Entwickler-Tools
+                            </h3>
+                            <div className="max-w-2xl">
+                                <NotificationTester />
                             </div>
                         </div>
                     )}

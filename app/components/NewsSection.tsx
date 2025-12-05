@@ -22,6 +22,7 @@ export default async function NewsSection() {
                         title={item.title}
                         publishedDate={item.publishedDate}
                         articleId={item.articleId}
+                        isPinned={item.isPinned}
                     />
                 ))}
             </div>

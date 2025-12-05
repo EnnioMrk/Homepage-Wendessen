@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-    getSessionData, 
-    changePassword, 
+import {
+    getSessionData,
+    changePassword,
     validatePasswordStrength,
     createSession,
-    getAdminUserByUsername
+    getAdminUserByUsername,
 } from '@/lib/auth';
+import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function POST(request: NextRequest) {
     try {
         const sessionData = await getSessionData();
-        
+
         if (!sessionData) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
@@ -51,6 +52,16 @@ export async function POST(request: NextRequest) {
         if (user) {
             await createSession(user);
         }
+
+        // Log the action
+        const requestInfo = getRequestInfo(request);
+        logAdminAction({
+            userId: sessionData.userId,
+            username: sessionData.username,
+            action: 'auth.password_change',
+            resourceType: 'auth',
+            ...requestInfo,
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

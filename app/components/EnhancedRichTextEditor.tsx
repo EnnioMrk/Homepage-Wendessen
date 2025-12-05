@@ -15,6 +15,7 @@ import {
     withReact,
     RenderElementProps,
     RenderLeafProps,
+    ReactEditor,
 } from 'slate-react';
 import { withHistory } from 'slate-history';
 import Image from 'next/image';
@@ -29,6 +30,8 @@ import {
     Link as LinkIcon,
     Image as ImageIcon,
     X,
+    PencilSimple,
+    Trash,
 } from '@phosphor-icons/react';
 
 type GalleryImage = {
@@ -42,10 +45,16 @@ type GalleryImage = {
     uploadedAt: string;
 };
 
+type ImageSize = 'small' | 'medium' | 'large' | 'full';
+type ImagePosition = 'left' | 'center' | 'right';
+
 type ImageElement = {
     type: 'image';
     url: string;
     alt?: string;
+    imageSize?: ImageSize;
+    position?: ImagePosition;
+    textFlow?: boolean;
     children: Descendant[];
 };
 type CustomElement =
@@ -96,6 +105,16 @@ export default function EnhancedRichTextEditor({
     const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
     const [loadingGallery, setLoadingGallery] = useState(false);
     const [gallerySearch, setGallerySearch] = useState('');
+    const [selectedGalleryImage, setSelectedGalleryImage] =
+        useState<GalleryImage | null>(null);
+    const [imageSize, setImageSize] = useState<ImageSize>('medium');
+    const [imagePosition, setImagePosition] = useState<ImagePosition>('center');
+    const [imageTextFlow, setImageTextFlow] = useState<boolean>(false);
+    const [editingImagePath, setEditingImagePath] = useState<number[] | null>(
+        null
+    );
+    const [editingImageElement, setEditingImageElement] =
+        useState<ImageElement | null>(null);
 
     const fetchGalleryImages = useCallback(async () => {
         setLoadingGallery(true);
@@ -122,99 +141,213 @@ export default function EnhancedRichTextEditor({
             i.originalName.toLowerCase().includes(gallerySearch.toLowerCase())
     );
 
-    const renderElement = useCallback((props: RenderElementProps) => {
-        const el = props.element as CustomElement;
-        switch (el.type) {
-            case 'heading-one':
-                return (
-                    <h1
-                        {...props.attributes}
-                        className="text-3xl font-bold mb-4"
-                    >
-                        {props.children}
-                    </h1>
-                );
-            case 'heading-two':
-                return (
-                    <h2
-                        {...props.attributes}
-                        className="text-2xl font-semibold mb-3"
-                    >
-                        {props.children}
-                    </h2>
-                );
-            case 'bulleted-list':
-                return (
-                    <ul
-                        {...props.attributes}
-                        className="list-disc list-inside mb-4"
-                    >
-                        {props.children}
-                    </ul>
-                );
-            case 'numbered-list':
-                return (
-                    <ol
-                        {...props.attributes}
-                        className="list-decimal list-inside mb-4"
-                    >
-                        {props.children}
-                    </ol>
-                );
-            case 'list-item':
-                return (
-                    <li {...props.attributes} className="mb-1">
-                        {props.children}
-                    </li>
-                );
-            case 'link': {
-                const maybe = el as { url?: unknown };
-                const href = typeof maybe.url === 'string' ? maybe.url : '#';
-                return (
-                    <a
-                        {...props.attributes}
-                        href={href}
-                        className="text-primary underline hover:text-primary-dark"
-                    >
-                        {props.children}
-                    </a>
-                );
-            }
-            case 'image': {
-                const img = el as ImageElement;
-                return (
-                    <div
-                        {...props.attributes}
-                        contentEditable={false}
-                        className="my-4"
-                    >
-                        <div className="relative inline-block max-w-full">
-                            <Image
-                                src={img.url}
-                                alt={img.alt || 'Bild'}
-                                width={800}
-                                height={600}
-                                className="rounded-lg shadow-md max-w-full h-auto"
-                                style={{ objectFit: 'contain' }}
-                            />
-                            {img.alt && (
-                                <p className="text-sm text-gray-600 text-center mt-2 italic">
-                                    {img.alt}
-                                </p>
-                            )}
+    const renderElement = useCallback(
+        (props: RenderElementProps) => {
+            const el = props.element as CustomElement;
+            switch (el.type) {
+                case 'heading-one':
+                    return (
+                        <h1
+                            {...props.attributes}
+                            className="text-3xl font-bold mb-4"
+                        >
+                            {props.children}
+                        </h1>
+                    );
+                case 'heading-two':
+                    return (
+                        <h2
+                            {...props.attributes}
+                            className="text-2xl font-semibold mb-3"
+                        >
+                            {props.children}
+                        </h2>
+                    );
+                case 'bulleted-list':
+                    return (
+                        <ul
+                            {...props.attributes}
+                            className="list-disc list-inside mb-4"
+                        >
+                            {props.children}
+                        </ul>
+                    );
+                case 'numbered-list':
+                    return (
+                        <ol
+                            {...props.attributes}
+                            className="list-decimal list-inside mb-4"
+                        >
+                            {props.children}
+                        </ol>
+                    );
+                case 'list-item':
+                    return (
+                        <li {...props.attributes} className="mb-1">
+                            {props.children}
+                        </li>
+                    );
+                case 'link': {
+                    const maybe = el as { url?: unknown };
+                    const href =
+                        typeof maybe.url === 'string' ? maybe.url : '#';
+                    return (
+                        <a
+                            {...props.attributes}
+                            href={href}
+                            className="text-primary underline hover:text-primary-dark"
+                        >
+                            {props.children}
+                        </a>
+                    );
+                }
+                case 'image': {
+                    const img = el as ImageElement;
+                    const size = img.imageSize || 'medium';
+                    const pos = img.position || 'center';
+                    const textFlow = img.textFlow ?? false;
+
+                    const sizeClasses: Record<ImageSize, string> = {
+                        small: 'max-w-[200px]',
+                        medium: 'max-w-[400px]',
+                        large: 'max-w-[600px]',
+                        full: 'max-w-full',
+                    };
+
+                    const getAlignmentClass = (position: ImagePosition) => {
+                        if (position === 'left') return 'text-left';
+                        if (position === 'right') return 'text-right';
+                        return 'text-center';
+                    };
+
+                    const getFloatClasses = (position: ImagePosition) => {
+                        if (position === 'left') return 'float-left mr-4 mb-2';
+                        if (position === 'right')
+                            return 'float-right ml-4 mb-2';
+                        return '';
+                    };
+
+                    const handleEditImage = (e: React.MouseEvent) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const path = ReactEditor.findPath(
+                            editor,
+                            props.element
+                        );
+                        setEditingImagePath(path);
+                        setEditingImageElement(img);
+                        setImageSize(img.imageSize || 'medium');
+                        setImagePosition(img.position || 'center');
+                        setImageTextFlow(img.textFlow ?? false);
+                    };
+
+                    const handleDeleteImage = (e: React.MouseEvent) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const path = ReactEditor.findPath(
+                            editor,
+                            props.element
+                        );
+                        Transforms.removeNodes(editor, { at: path });
+                    };
+
+                    if (textFlow && pos !== 'center') {
+                        // Text flows around image
+                        return (
+                            <div
+                                {...props.attributes}
+                                contentEditable={false}
+                                className={`group relative ${
+                                    sizeClasses[size]
+                                } ${getFloatClasses(pos)}`}
+                            >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={img.url}
+                                    alt={img.alt || 'Bild'}
+                                    className="rounded-lg shadow-md w-full h-auto"
+                                />
+                                {/* Edit/Delete overlay */}
+                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={handleEditImage}
+                                        className="p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100 text-gray-700"
+                                        title="Bild bearbeiten"
+                                    >
+                                        <PencilSimple className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteImage}
+                                        className="p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 text-red-600"
+                                        title="Bild entfernen"
+                                    >
+                                        <Trash className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                {props.children}
+                            </div>
+                        );
+                    }
+
+                    // Image on its own line with alignment
+                    return (
+                        <div
+                            {...props.attributes}
+                            contentEditable={false}
+                            className={`my-4 clear-both ${getAlignmentClass(
+                                pos
+                            )}`}
+                        >
+                            <div
+                                className={`relative inline-block ${sizeClasses[size]} group`}
+                            >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={img.url}
+                                    alt={img.alt || 'Bild'}
+                                    className="rounded-lg shadow-md w-full h-auto"
+                                />
+                                {img.alt && (
+                                    <p className="text-sm text-gray-600 text-center mt-2 italic">
+                                        {img.alt}
+                                    </p>
+                                )}
+                                {/* Edit/Delete overlay */}
+                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={handleEditImage}
+                                        className="p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100 text-gray-700"
+                                        title="Bild bearbeiten"
+                                    >
+                                        <PencilSimple className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteImage}
+                                        className="p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 text-red-600"
+                                        title="Bild entfernen"
+                                    >
+                                        <Trash className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                            {props.children}
                         </div>
-                        {props.children}
-                    </div>
-                );
+                    );
+                }
+                default:
+                    return (
+                        <p {...props.attributes} className="mb-4">
+                            {props.children}
+                        </p>
+                    );
             }
-            default:
-                return (
-                    <p {...props.attributes} className="mb-4">
-                        {props.children}
-                    </p>
-                );
-        }
-    }, []);
+        },
+        [editor]
+    );
 
     const renderLeaf = useCallback((props: RenderLeafProps) => {
         let children = <span {...props.attributes}>{props.children}</span>;
@@ -318,11 +451,20 @@ export default function EnhancedRichTextEditor({
             });
     };
 
-    const insertImage = (url: string, alt?: string) => {
+    const insertImage = (
+        url: string,
+        alt?: string,
+        size: ImageSize = 'medium',
+        position: ImagePosition = 'center',
+        textFlow: boolean = false
+    ) => {
         const image: ImageElement = {
             type: 'image',
             url,
             alt,
+            imageSize: size,
+            position,
+            textFlow,
             children: [{ text: '' }],
         };
         Transforms.insertNodes(editor, image as unknown as SlateElement);
@@ -333,6 +475,28 @@ export default function EnhancedRichTextEditor({
         Transforms.insertNodes(editor, para as unknown as SlateElement);
         setShowGalleryModal(false);
         setGallerySearch('');
+        setSelectedGalleryImage(null);
+        setImageSize('medium');
+        setImagePosition('center');
+        setImageTextFlow(false);
+    };
+
+    const updateImage = (
+        path: number[],
+        size: ImageSize,
+        position: ImagePosition,
+        textFlow: boolean
+    ) => {
+        Transforms.setNodes(
+            editor,
+            { imageSize: size, position, textFlow } as Partial<SlateElement>,
+            { at: path }
+        );
+        setEditingImagePath(null);
+        setEditingImageElement(null);
+        setImageSize('medium');
+        setImagePosition('center');
+        setImageTextFlow(false);
     };
 
     return (
@@ -474,12 +638,17 @@ export default function EnhancedRichTextEditor({
                     <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold text-gray-900">
-                                Bild aus Galerie wählen
+                                {selectedGalleryImage
+                                    ? 'Bildoptionen'
+                                    : 'Bild aus Galerie wählen'}
                             </h2>
                             <button
                                 onClick={() => {
                                     setShowGalleryModal(false);
                                     setGallerySearch('');
+                                    setSelectedGalleryImage(null);
+                                    setImageSize('medium');
+                                    setImagePosition('center');
                                 }}
                                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
                             >
@@ -487,60 +656,534 @@ export default function EnhancedRichTextEditor({
                             </button>
                         </div>
 
-                        <div className="mb-4">
-                            <input
-                                type="text"
-                                value={gallerySearch}
-                                onChange={(e) =>
-                                    setGallerySearch(e.target.value)
-                                }
-                                placeholder="Bilder durchsuchen..."
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
-                            />
-                        </div>
+                        {selectedGalleryImage ? (
+                            /* Image Options View */
+                            <div className="space-y-6">
+                                {/* Back button */}
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setSelectedGalleryImage(null)
+                                    }
+                                    className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                                >
+                                    ← Zurück zur Galerie
+                                </button>
 
-                        {loadingGallery ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-                            </div>
-                        ) : filteredImages.length === 0 ? (
-                            <div className="text-center py-12">
-                                <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                <p className="text-gray-600">
-                                    {gallerySearch
-                                        ? 'Keine Bilder gefunden'
-                                        : 'Keine Bilder in der Galerie'}
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                                {filteredImages.map((image) => (
+                                {/* Preview */}
+                                <div className="bg-gray-100 rounded-lg p-4">
+                                    <p className="text-sm text-gray-600 mb-3 font-medium">
+                                        Vorschau:
+                                    </p>
+                                    <div
+                                        className={`${
+                                            imagePosition === 'left'
+                                                ? 'text-left'
+                                                : imagePosition === 'right'
+                                                ? 'text-right'
+                                                : 'text-center'
+                                        }`}
+                                    >
+                                        <div
+                                            className={`inline-block ${
+                                                imageSize === 'small'
+                                                    ? 'max-w-[150px]'
+                                                    : imageSize === 'medium'
+                                                    ? 'max-w-[250px]'
+                                                    : imageSize === 'large'
+                                                    ? 'max-w-[350px]'
+                                                    : 'max-w-full'
+                                            }`}
+                                        >
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={selectedGalleryImage.url}
+                                                alt={
+                                                    selectedGalleryImage.displayName
+                                                }
+                                                className="rounded-lg shadow-md w-full h-auto"
+                                            />
+                                        </div>
+                                    </div>
+                                    {imagePosition !== 'center' && (
+                                        <p className="text-xs text-gray-500 mt-2 italic">
+                                            Bei Links/Rechts-Ausrichtung kann
+                                            Text neben dem Bild fließen.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Size Selection */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Bildgröße
+                                    </label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {[
+                                            {
+                                                value: 'small',
+                                                label: 'Klein',
+                                                desc: '200px',
+                                            },
+                                            {
+                                                value: 'medium',
+                                                label: 'Mittel',
+                                                desc: '400px',
+                                            },
+                                            {
+                                                value: 'large',
+                                                label: 'Groß',
+                                                desc: '600px',
+                                            },
+                                            {
+                                                value: 'full',
+                                                label: 'Volle Breite',
+                                                desc: '100%',
+                                            },
+                                        ].map((option) => (
+                                            <button
+                                                key={option.value}
+                                                type="button"
+                                                onClick={() =>
+                                                    setImageSize(
+                                                        option.value as ImageSize
+                                                    )
+                                                }
+                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                    imageSize === option.value
+                                                        ? 'border-primary bg-primary/10 text-primary'
+                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                                }`}
+                                            >
+                                                <div>{option.label}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {option.desc}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Position Selection */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Position
+                                    </label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            {
+                                                value: 'left',
+                                                label: 'Links',
+                                                desc: 'Linksbündig',
+                                            },
+                                            {
+                                                value: 'center',
+                                                label: 'Zentriert',
+                                                desc: 'Mittig',
+                                            },
+                                            {
+                                                value: 'right',
+                                                label: 'Rechts',
+                                                desc: 'Rechtsbündig',
+                                            },
+                                        ].map((option) => (
+                                            <button
+                                                key={option.value}
+                                                type="button"
+                                                onClick={() =>
+                                                    setImagePosition(
+                                                        option.value as ImagePosition
+                                                    )
+                                                }
+                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                    imagePosition ===
+                                                    option.value
+                                                        ? 'border-primary bg-primary/10 text-primary'
+                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                                }`}
+                                            >
+                                                <div>{option.label}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {option.desc}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Text Flow Toggle */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Textumfluss
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setImageTextFlow(false)
+                                            }
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                !imageTextFlow
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            <div>Eigene Zeile</div>
+                                            <div className="text-xs text-gray-500">
+                                                Text beginnt darunter
+                                            </div>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setImageTextFlow(true)
+                                            }
+                                            disabled={
+                                                imagePosition === 'center'
+                                            }
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imageTextFlow &&
+                                                imagePosition !== 'center'
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : imagePosition === 'center'
+                                                    ? 'border-gray-100 text-gray-400 cursor-not-allowed'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            <div>Text daneben</div>
+                                            <div className="text-xs text-gray-500">
+                                                {imagePosition === 'center'
+                                                    ? 'Nur bei Links/Rechts'
+                                                    : 'Text fließt um das Bild'}
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Insert Button */}
+                                <div className="flex justify-end gap-3 pt-4 border-t">
                                     <button
-                                        key={image.id}
+                                        type="button"
+                                        onClick={() =>
+                                            setSelectedGalleryImage(null)
+                                        }
+                                        className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
+                                    >
+                                        Abbrechen
+                                    </button>
+                                    <button
                                         type="button"
                                         onClick={() =>
                                             insertImage(
-                                                image.url,
-                                                image.displayName
+                                                selectedGalleryImage.url,
+                                                selectedGalleryImage.displayName,
+                                                imageSize,
+                                                imagePosition,
+                                                imageTextFlow &&
+                                                    imagePosition !== 'center'
                                             )
                                         }
-                                        className="group relative aspect-square overflow-hidden rounded-lg border-2 border-gray-200 hover:border-primary transition-colors"
+                                        className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
                                     >
-                                        <Image
-                                            src={image.url}
-                                            alt={image.displayName}
-                                            fill
-                                            className="object-cover"
+                                        Bild einfügen
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            /* Gallery Grid View */
+                            <>
+                                <div className="mb-4">
+                                    <input
+                                        type="text"
+                                        value={gallerySearch}
+                                        onChange={(e) =>
+                                            setGallerySearch(e.target.value)
+                                        }
+                                        placeholder="Bilder durchsuchen..."
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                                    />
+                                </div>
+
+                                {loadingGallery ? (
+                                    <div className="flex items-center justify-center py-12">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+                                    </div>
+                                ) : filteredImages.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                                        <p className="text-gray-600">
+                                            {gallerySearch
+                                                ? 'Keine Bilder gefunden'
+                                                : 'Keine Bilder in der Galerie'}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                        {filteredImages.map((image) => (
+                                            <button
+                                                key={image.id}
+                                                type="button"
+                                                onClick={() =>
+                                                    setSelectedGalleryImage(
+                                                        image
+                                                    )
+                                                }
+                                                className="group relative aspect-square overflow-hidden rounded-lg border-2 border-gray-200 hover:border-primary transition-colors"
+                                            >
+                                                <Image
+                                                    src={image.url}
+                                                    alt={image.displayName}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center">
+                                                    <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium px-2 text-center">
+                                                        {image.displayName}
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Image Modal */}
+            {editingImagePath && editingImageElement && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
+                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                Bild bearbeiten
+                            </h2>
+                            <button
+                                onClick={() => {
+                                    setEditingImagePath(null);
+                                    setEditingImageElement(null);
+                                    setImageSize('medium');
+                                    setImagePosition('center');
+                                    setImageTextFlow(false);
+                                }}
+                                className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-6">
+                            {/* Preview */}
+                            <div className="bg-gray-100 rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-3 font-medium">
+                                    Vorschau:
+                                </p>
+                                <div
+                                    className={`${
+                                        imagePosition === 'left'
+                                            ? 'text-left'
+                                            : imagePosition === 'right'
+                                            ? 'text-right'
+                                            : 'text-center'
+                                    }`}
+                                >
+                                    <div
+                                        className={`inline-block ${
+                                            imageSize === 'small'
+                                                ? 'max-w-[150px]'
+                                                : imageSize === 'medium'
+                                                ? 'max-w-[250px]'
+                                                : imageSize === 'large'
+                                                ? 'max-w-[350px]'
+                                                : 'max-w-full'
+                                        }`}
+                                    >
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={editingImageElement.url}
+                                            alt={
+                                                editingImageElement.alt ||
+                                                'Bild'
+                                            }
+                                            className="rounded-lg shadow-md w-full h-auto"
                                         />
-                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center">
-                                            <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium px-2 text-center">
-                                                {image.displayName}
-                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Size Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Bildgröße
+                                </label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {[
+                                        {
+                                            value: 'small',
+                                            label: 'Klein',
+                                            desc: '200px',
+                                        },
+                                        {
+                                            value: 'medium',
+                                            label: 'Mittel',
+                                            desc: '400px',
+                                        },
+                                        {
+                                            value: 'large',
+                                            label: 'Groß',
+                                            desc: '600px',
+                                        },
+                                        {
+                                            value: 'full',
+                                            label: 'Volle Breite',
+                                            desc: '100%',
+                                        },
+                                    ].map((option) => (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() =>
+                                                setImageSize(
+                                                    option.value as ImageSize
+                                                )
+                                            }
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imageSize === option.value
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            <div>{option.label}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {option.desc}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Position Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Position
+                                </label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        {
+                                            value: 'left',
+                                            label: 'Links',
+                                            desc: 'Linksbündig',
+                                        },
+                                        {
+                                            value: 'center',
+                                            label: 'Zentriert',
+                                            desc: 'Mittig',
+                                        },
+                                        {
+                                            value: 'right',
+                                            label: 'Rechts',
+                                            desc: 'Rechtsbündig',
+                                        },
+                                    ].map((option) => (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() =>
+                                                setImagePosition(
+                                                    option.value as ImagePosition
+                                                )
+                                            }
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imagePosition === option.value
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            <div>{option.label}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {option.desc}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Text Flow Toggle */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Textumfluss
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setImageTextFlow(false)}
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                            !imageTextFlow
+                                                ? 'border-primary bg-primary/10 text-primary'
+                                                : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                        }`}
+                                    >
+                                        <div>Eigene Zeile</div>
+                                        <div className="text-xs text-gray-500">
+                                            Text beginnt darunter
                                         </div>
                                     </button>
-                                ))}
+                                    <button
+                                        type="button"
+                                        onClick={() => setImageTextFlow(true)}
+                                        disabled={imagePosition === 'center'}
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                            imageTextFlow &&
+                                            imagePosition !== 'center'
+                                                ? 'border-primary bg-primary/10 text-primary'
+                                                : imagePosition === 'center'
+                                                ? 'border-gray-100 text-gray-400 cursor-not-allowed'
+                                                : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                        }`}
+                                    >
+                                        <div>Text daneben</div>
+                                        <div className="text-xs text-gray-500">
+                                            {imagePosition === 'center'
+                                                ? 'Nur bei Links/Rechts'
+                                                : 'Text fließt um das Bild'}
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
-                        )}
+
+                            {/* Save Button */}
+                            <div className="flex justify-end gap-3 pt-4 border-t">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setEditingImagePath(null);
+                                        setEditingImageElement(null);
+                                        setImageSize('medium');
+                                        setImagePosition('center');
+                                        setImageTextFlow(false);
+                                    }}
+                                    className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
+                                >
+                                    Abbrechen
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        updateImage(
+                                            editingImagePath,
+                                            imageSize,
+                                            imagePosition,
+                                            imageTextFlow &&
+                                                imagePosition !== 'center'
+                                        )
+                                    }
+                                    className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
+                                >
+                                    Änderungen speichern
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

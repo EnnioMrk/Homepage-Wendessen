@@ -35,10 +35,10 @@ NODE_ENV="production"
 #### `DATABASE_URL`
 
 -   **Purpose**: PostgreSQL connection string for Neon database
- -   **Purpose**: PostgreSQL connection string for the database
+-   **Purpose**: PostgreSQL connection string for the database
 -   **Format**: `postgresql://[user[:password]@][host][:port][/dbname][?param1=value1&...]`
 -   **Required**: Yes
- -   **Example**: `postgresql://user:pass@db-host.example.com:5432/dbname`
+-   **Example**: `postgresql://user:pass@db-host.example.com:5432/dbname`
 
 #### `ADMIN_PASSWORD`
 
