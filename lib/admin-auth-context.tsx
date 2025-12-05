@@ -53,16 +53,17 @@ function normalizeUser(raw: Record<string, unknown>): AdminAuthUser | null {
     }
 
     const permissions = Array.isArray(raw.customPermissions)
-        ? raw.customPermissions.map((permission: unknown) =>
-              String(permission)
-          )
+        ? raw.customPermissions.map((permission: unknown) => String(permission))
         : [];
 
     return {
         id: Number(raw.id),
         username: String(raw.username),
         roleName: typeof raw.roleName === 'string' ? raw.roleName : undefined,
-        roleDisplayName: typeof raw.roleDisplayName === 'string' ? raw.roleDisplayName : undefined,
+        roleDisplayName:
+            typeof raw.roleDisplayName === 'string'
+                ? raw.roleDisplayName
+                : undefined,
         customPermissions: permissions,
         vereinId:
             raw.vereinId === null || typeof raw.vereinId === 'undefined'
@@ -124,8 +125,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
             const payload = await safeParseJson<{ user?: unknown }>(response);
             const userObj = payload?.user;
-            const normalizedUser = 
-                userObj && typeof userObj === 'object' && !Array.isArray(userObj)
+            const normalizedUser =
+                userObj &&
+                typeof userObj === 'object' &&
+                !Array.isArray(userObj)
                     ? normalizeUser(userObj as Record<string, unknown>)
                     : null;
 

@@ -13,14 +13,16 @@ import {
 interface TestResult {
     success: boolean;
     message: string;
-    details?: {
-        total: number;
-        successful: number;
-    } | {
-        portraits: { checked: number; sent: number };
-        sharedGallery: { checked: number; sent: number };
-        total: { checked: number; sent: number };
-    };
+    details?:
+        | {
+              total: number;
+              successful: number;
+          }
+        | {
+              portraits: { checked: number; sent: number };
+              sharedGallery: { checked: number; sent: number };
+              total: { checked: number; sent: number };
+          };
 }
 
 export default function NotificationTester() {

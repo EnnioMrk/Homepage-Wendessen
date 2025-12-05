@@ -1,6 +1,6 @@
 /**
  * Background Scheduler for periodic tasks
- * 
+ *
  * This module runs periodic background tasks like sending reminder notifications.
  * It uses setInterval and includes measures to keep the scheduler running reliably.
  */
@@ -20,18 +20,27 @@ let runCount = 0;
 async function runReminderCheck(): Promise<void> {
     const timestamp = new Date().toISOString();
     runCount++;
-    
-    console.log(`[Scheduler] [${timestamp}] Running reminder check #${runCount}...`);
-    
+
+    console.log(
+        `[Scheduler] [${timestamp}] Running reminder check #${runCount}...`
+    );
+
     try {
         const results = await sendAllPendingReminders();
         lastRunTime = new Date();
-        
+
         console.log(`[Scheduler] [${timestamp}] Reminder check complete:`);
-        console.log(`  Portraits: ${results.portraits.sent}/${results.portraits.checked} sent`);
-        console.log(`  Shared Gallery: ${results.sharedGallery.sent}/${results.sharedGallery.checked} sent`);
+        console.log(
+            `  Portraits: ${results.portraits.sent}/${results.portraits.checked} sent`
+        );
+        console.log(
+            `  Shared Gallery: ${results.sharedGallery.sent}/${results.sharedGallery.checked} sent`
+        );
     } catch (error) {
-        console.error(`[Scheduler] [${timestamp}] Error running reminder check:`, error);
+        console.error(
+            `[Scheduler] [${timestamp}] Error running reminder check:`,
+            error
+        );
     }
 }
 
@@ -40,13 +49,13 @@ async function runReminderCheck(): Promise<void> {
  */
 function scheduleNextRun(): void {
     if (!isRunning) return;
-    
+
     // Use setTimeout instead of setInterval for more control
     intervalId = setTimeout(async () => {
         await runReminderCheck();
         scheduleNextRun(); // Schedule the next run after completion
     }, ONE_HOUR_MS);
-    
+
     // Prevent the timeout from blocking process exit in development
     if (intervalId.unref) {
         intervalId.unref();
@@ -61,16 +70,16 @@ export function startScheduler(): void {
         console.log('[Scheduler] Already running, skipping start');
         return;
     }
-    
+
     // Only run in production to avoid duplicate runs in development (hot reload)
     if (process.env.NODE_ENV !== 'production') {
         console.log('[Scheduler] Skipping scheduler start in development mode');
         return;
     }
-    
+
     isRunning = true;
     console.log('[Scheduler] Starting background scheduler (1 hour interval)');
-    
+
     // Run immediately on startup, then schedule hourly
     runReminderCheck().then(() => {
         scheduleNextRun();
@@ -82,7 +91,7 @@ export function startScheduler(): void {
  */
 export function stopScheduler(): void {
     if (!isRunning) return;
-    
+
     isRunning = false;
     if (intervalId) {
         clearTimeout(intervalId);

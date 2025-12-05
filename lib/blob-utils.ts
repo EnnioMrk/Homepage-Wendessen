@@ -113,9 +113,9 @@ const minioClient = new (
     secretKey: MINIO_SECRET_KEY || '',
 });
 
-function resolveBucketAndObject(urlOrPath: string):
-    | { bucket: string; object: string }
-    | null {
+function resolveBucketAndObject(
+    urlOrPath: string
+): { bucket: string; object: string } | null {
     if (!urlOrPath) {
         return null;
     }
@@ -307,22 +307,26 @@ export async function downloadFromBlob(urlOrPath: string): Promise<{
 
     let contentType: string | undefined;
     try {
-        const stat = await new Promise<MinioStatLike | null>((resolve, reject) => {
-            minioClient.statObject(
-                target.bucket,
-                target.object,
-                (err: Error | null, s?: MinioStatLike) => {
-                    if (err) {
-                        // If object metadata cannot be fetched, continue with buffer only
-                        if ((err as { code?: string }).code === 'NotFound') {
-                            return resolve(null);
+        const stat = await new Promise<MinioStatLike | null>(
+            (resolve, reject) => {
+                minioClient.statObject(
+                    target.bucket,
+                    target.object,
+                    (err: Error | null, s?: MinioStatLike) => {
+                        if (err) {
+                            // If object metadata cannot be fetched, continue with buffer only
+                            if (
+                                (err as { code?: string }).code === 'NotFound'
+                            ) {
+                                return resolve(null);
+                            }
+                            return reject(err);
                         }
-                        return reject(err);
+                        resolve(s || null);
                     }
-                    resolve(s || null);
-                }
-            );
-        });
+                );
+            }
+        );
         contentType =
             stat?.metaData?.['content-type'] ||
             stat?.metaData?.['Content-Type'] ||

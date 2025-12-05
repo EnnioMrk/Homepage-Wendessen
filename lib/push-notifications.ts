@@ -368,7 +368,9 @@ async function getPendingPortraits(): Promise<PendingPortrait[]> {
 /**
  * Get all pending shared gallery submissions grouped by submission_group_id
  */
-async function getPendingSharedGalleryGroups(): Promise<PendingSharedGallery[]> {
+async function getPendingSharedGalleryGroups(): Promise<
+    PendingSharedGallery[]
+> {
     try {
         const result = await sql`
             SELECT 

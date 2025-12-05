@@ -5,18 +5,18 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const email = searchParams.get('email');
-        
+
         // Get all groups (pending and approved)
         const result = await getSharedGallerySubmissionGroups();
         const allGroups = result.groups;
-        
+
         // Filter by email if provided, otherwise return all
-        const filteredGroups = email 
-            ? allGroups.filter(group => group.submitterEmail === email)
+        const filteredGroups = email
+            ? allGroups.filter((group) => group.submitterEmail === email)
             : allGroups;
 
         // Return unique groups with basic info
-        const uniqueGroups = filteredGroups.map(group => ({
+        const uniqueGroups = filteredGroups.map((group) => ({
             submissionGroupId: group.submissionGroupId,
             title: group.title,
             description: group.description,
