@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
-import { sql } from './sql';
-import { normalizePermissions } from './auth';
+import { sql, pool } from './sql';
+
+const EXCLUDED_PERMISSION_PREFIXES = ['verein.news.'];
 
 export interface DatabaseEvent {
     id: number;
@@ -53,6 +54,8 @@ export interface DatabaseNews {
     content?: string;
     category: string;
     published_date: string;
+    is_pinned?: boolean;
+    pinned_at?: string;
     created_at: string;
     updated_at: string;
 }
@@ -64,6 +67,8 @@ export interface NewsItem {
     category: string;
     publishedDate: Date;
     articleId: string;
+    isPinned?: boolean;
+    pinnedAt?: Date;
 }
 
 // Contacts types
@@ -141,6 +146,10 @@ function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
         category: String(dbNews.category),
         publishedDate: new Date(String(dbNews.published_date)),
         articleId: String(dbNews.article_id),
+        isPinned: Boolean(dbNews.is_pinned),
+        pinnedAt: dbNews.pinned_at
+            ? new Date(String(dbNews.pinned_at))
+            : undefined,
     };
 }
 
@@ -265,51 +274,62 @@ export async function updateEvent(
     event: Partial<Omit<CalendarEvent, 'id'>>
 ): Promise<CalendarEvent> {
     try {
-        // For simplicity, let's update all fields (this ensures consistency)
+        // First, get the existing event to merge with updates
+        const existing = await sql`SELECT * FROM events WHERE id = ${id}`;
+        if (existing.length === 0) {
+            throw new Error('Event not found');
+        }
+
+        const existingEvent = existing[0];
+
+        // Merge: use new value if provided, otherwise keep existing
+        const title =
+            event.title !== undefined ? event.title : existingEvent.title;
+        const description =
+            event.description !== undefined
+                ? event.description || null
+                : existingEvent.description;
+        const startDate =
+            event.start !== undefined
+                ? event.start.toISOString()
+                : existingEvent.start_date;
+        const endDate =
+            event.end !== undefined
+                ? event.end.toISOString()
+                : existingEvent.end_date;
+        const location =
+            event.location !== undefined
+                ? event.location || null
+                : existingEvent.location;
+        const category =
+            event.category !== undefined
+                ? event.category
+                : existingEvent.category;
+        const organizer =
+            event.organizer !== undefined
+                ? event.organizer || null
+                : existingEvent.organizer;
+        const imageUrl =
+            event.imageUrl !== undefined
+                ? event.imageUrl || null
+                : existingEvent.image_url;
+        const vereinId =
+            event.vereinId !== undefined
+                ? event.vereinId || null
+                : existingEvent.verein_id;
+
         const result = await sql`
             UPDATE events 
             SET 
-                title = ${event.title !== undefined ? event.title : sql`title`},
-                description = ${
-                    event.description !== undefined
-                        ? event.description || null
-                        : sql`description`
-                },
-                start_date = ${
-                    event.start !== undefined
-                        ? event.start.toISOString()
-                        : sql`start_date`
-                },
-                end_date = ${
-                    event.end !== undefined
-                        ? event.end.toISOString()
-                        : sql`end_date`
-                },
-                location = ${
-                    event.location !== undefined
-                        ? event.location || null
-                        : sql`location`
-                },
-                category = ${
-                    event.category !== undefined
-                        ? event.category
-                        : sql`category`
-                },
-                organizer = ${
-                    event.organizer !== undefined
-                        ? event.organizer || null
-                        : sql`organizer`
-                },
-                image_url = ${
-                    event.imageUrl !== undefined
-                        ? event.imageUrl || null
-                        : sql`image_url`
-                },
-                verein_id = ${
-                    event.vereinId !== undefined
-                        ? event.vereinId || null
-                        : sql`verein_id`
-                },
+                title = ${title},
+                description = ${description},
+                start_date = ${startDate},
+                end_date = ${endDate},
+                location = ${location},
+                category = ${category},
+                organizer = ${organizer},
+                image_url = ${imageUrl},
+                verein_id = ${vereinId},
                 updated_at = ${new Date().toISOString()}
             WHERE id = ${id}
             RETURNING *
@@ -443,17 +463,44 @@ export async function getNews(): Promise<NewsItem[]> {
     }
 }
 
-// Get recent news (limited)
+// Get recent news (limited) - pinned news always shown first
 export const getRecentNews = unstable_cache(
     async (limit: number = 4): Promise<NewsItem[]> => {
         try {
-            const news = await sql`
-          SELECT * FROM news 
-          ORDER BY published_date DESC
-          LIMIT ${limit}
-        `;
+            // First get pinned news (max 3)
+            const pinnedNews = await sql`
+                SELECT * FROM news 
+                WHERE is_pinned = TRUE
+                ORDER BY pinned_at DESC
+                LIMIT 3
+            `;
 
-            return news.map(convertToNewsItem);
+            const pinnedCount = pinnedNews.length;
+            const remainingSlots = limit - pinnedCount;
+
+            // Then get regular news to fill remaining slots
+            let regularNews: Record<string, unknown>[] = [];
+            if (remainingSlots > 0) {
+                const pinnedIds = pinnedNews.map((n) => n.id);
+                if (pinnedIds.length > 0) {
+                    regularNews = await sql`
+                        SELECT * FROM news 
+                        WHERE id != ALL(${pinnedIds})
+                        ORDER BY published_date DESC
+                        LIMIT ${remainingSlots}
+                    `;
+                } else {
+                    regularNews = await sql`
+                        SELECT * FROM news 
+                        ORDER BY published_date DESC
+                        LIMIT ${remainingSlots}
+                    `;
+                }
+            }
+
+            // Combine: pinned first, then regular
+            const allNews = [...pinnedNews, ...regularNews];
+            return allNews.map(convertToNewsItem);
         } catch (error) {
             console.error('Error fetching recent news:', error);
             throw new Error('Failed to fetch recent news from database');
@@ -505,6 +552,65 @@ export const getArchivedNews = unstable_cache(
     }
 );
 
+// Archive item interface
+export interface ArchiveItem {
+    id: number;
+    title: string;
+    author?: string;
+    category?: string;
+    created_date?: string;
+    content: string;
+    created_at: string;
+}
+
+// Convert raw DB row to ArchiveItem
+function convertToArchiveItem(row: Record<string, unknown>): ArchiveItem {
+    return {
+        id: Number(row.id),
+        title: String(row.title),
+        author: row.author ? String(row.author) : undefined,
+        category: row.category ? String(row.category) : undefined,
+        created_date: row.created_date ? String(row.created_date) : undefined,
+        content: String(row.content),
+        created_at: String(row.created_at),
+    };
+}
+
+// Get all archive items
+export const getArchiveItems = unstable_cache(
+    async (): Promise<ArchiveItem[]> => {
+        try {
+            const items = await sql`
+                SELECT * FROM archive 
+                ORDER BY created_date DESC NULLS LAST, created_at DESC
+            `;
+            return items.map(convertToArchiveItem);
+        } catch (error) {
+            console.error('Error fetching archive items:', error);
+            return [];
+        }
+    },
+    ['archive-items'],
+    {
+        tags: ['archive'],
+        revalidate: 3600,
+    }
+);
+
+// Get archive item by ID
+export async function getArchiveItemById(id: string): Promise<ArchiveItem | null> {
+    try {
+        const result = await sql`
+            SELECT * FROM archive WHERE id = ${id}
+        `;
+        if (result.length === 0) return null;
+        return convertToArchiveItem(result[0]);
+    } catch (error) {
+        console.error('Error fetching archive item:', error);
+        return null;
+    }
+}
+
 // Create a new news item
 export async function createNews(
     news: Omit<NewsItem, 'id' | 'publishedDate'>
@@ -539,6 +645,75 @@ export async function getNewsById(id: string): Promise<NewsItem | null> {
     } catch (error) {
         console.error('Error fetching news by ID:', error);
         throw new Error('Failed to fetch news by ID from database');
+    }
+}
+
+// Get count of pinned news
+export async function getPinnedNewsCount(): Promise<number> {
+    try {
+        const result = await sql`
+            SELECT COUNT(*) as count 
+            FROM news 
+            WHERE is_pinned = TRUE
+        `;
+        return Number(result[0].count);
+    } catch (error) {
+        console.error('Error fetching pinned news count:', error);
+        throw new Error('Failed to fetch pinned news count from database');
+    }
+}
+
+// Pin a news item (max 3 pinned at a time)
+export async function pinNews(id: string): Promise<NewsItem> {
+    try {
+        // Check current pinned count
+        const pinnedCount = await getPinnedNewsCount();
+        if (pinnedCount >= 3) {
+            throw new Error(
+                'Maximum of 3 pinned news items allowed. Unpin another item first.'
+            );
+        }
+
+        const result = await sql`
+            UPDATE news 
+            SET 
+                is_pinned = TRUE,
+                pinned_at = ${new Date().toISOString()}
+            WHERE id = ${id}
+            RETURNING *
+        `;
+
+        if (result.length === 0) {
+            throw new Error('News item not found');
+        }
+
+        return convertToNewsItem(result[0]);
+    } catch (error) {
+        console.error('Error pinning news:', error);
+        throw error;
+    }
+}
+
+// Unpin a news item
+export async function unpinNews(id: string): Promise<NewsItem> {
+    try {
+        const result = await sql`
+            UPDATE news 
+            SET 
+                is_pinned = FALSE,
+                pinned_at = NULL
+            WHERE id = ${id}
+            RETURNING *
+        `;
+
+        if (result.length === 0) {
+            throw new Error('News item not found');
+        }
+
+        return convertToNewsItem(result[0]);
+    } catch (error) {
+        console.error('Error unpinning news:', error);
+        throw new Error('Failed to unpin news in database');
     }
 }
 
@@ -610,7 +785,8 @@ export interface DatabasePortrait {
     name: string;
     description: string;
     email?: string;
-    image_data: string;
+    image_url: string;
+    image_storage_path?: string;
     image_mime_type: string;
     image_filename?: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -626,7 +802,8 @@ export interface PortraitSubmission {
     name: string;
     description: string;
     email?: string;
-    imageData: string;
+    imageUrl: string;
+    imageStoragePath?: string;
     imageMimeType: string;
     imageFilename?: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -643,7 +820,10 @@ function convertToPortraitSubmission(
         name: String(row.name),
         description: String(row.description),
         email: row.email ? String(row.email) : undefined,
-        imageData: String(row.image_data),
+        imageUrl: String(row.image_url),
+        imageStoragePath: row.image_storage_path
+            ? String(row.image_storage_path)
+            : undefined,
         imageMimeType: String(row.image_mime_type),
         imageFilename: row.image_filename
             ? String(row.image_filename)
@@ -698,15 +878,16 @@ export const getApprovedPortraits = unstable_cache(
 export async function createPortraitSubmission(
     name: string,
     description: string,
-    imageData: string,
+    imageUrl: string,
+    imageStoragePath: string,
     imageMimeType: string,
     imageFilename?: string,
     email?: string
 ): Promise<PortraitSubmission> {
     try {
         const result = await sql`
-            INSERT INTO portraits (name, description, image_data, image_mime_type, image_filename, email)
-            VALUES (${name}, ${description}, ${imageData}, ${imageMimeType}, ${
+            INSERT INTO portraits (name, description, image_url, image_storage_path, image_mime_type, image_filename, email)
+            VALUES (${name}, ${description}, ${imageUrl}, ${imageStoragePath}, ${imageMimeType}, ${
             imageFilename || null
         }, ${email})
             RETURNING *
@@ -745,7 +926,9 @@ export async function updatePortraitStatus(
     }
 }
 
-export async function deletePortraitSubmission(id: string): Promise<void> {
+export async function deletePortraitSubmission(
+    id: string
+): Promise<PortraitSubmission> {
     try {
         const result = await sql`
             DELETE FROM portraits 
@@ -756,6 +939,8 @@ export async function deletePortraitSubmission(id: string): Promise<void> {
         if (result.length === 0) {
             throw new Error('Portrait submission not found');
         }
+
+        return convertToPortraitSubmission(result[0]);
     } catch (error) {
         console.error('Error deleting portrait submission:', error);
         throw new Error('Failed to delete portrait submission');
@@ -765,10 +950,11 @@ export async function deletePortraitSubmission(id: string): Promise<void> {
 /**
  * Cleans up old rejected portraits if the count exceeds the maximum limit.
  * Deletes the oldest rejected portraits first.
+ * Returns the deleted portraits so their images can be cleaned up from storage.
  */
 export async function cleanupOldRejectedPortraits(
     maxRejectedPortraits: number
-): Promise<number> {
+): Promise<PortraitSubmission[]> {
     try {
         // Count current rejected portraits
         const countResult = await sql`
@@ -780,7 +966,7 @@ export async function cleanupOldRejectedPortraits(
         const rejectedCount = parseInt(countResult[0].count as string);
 
         if (rejectedCount <= maxRejectedPortraits) {
-            return 0; // No cleanup needed
+            return []; // No cleanup needed
         }
 
         // Calculate how many to delete
@@ -788,28 +974,29 @@ export async function cleanupOldRejectedPortraits(
 
         // Get the oldest rejected portraits to delete
         const toDeleteResult = await sql`
-            SELECT id FROM portraits 
+            SELECT id, image_storage_path FROM portraits 
             WHERE status = 'rejected'
             ORDER BY reviewed_at ASC, submitted_at ASC
             LIMIT ${toDelete}
         `;
 
         if (toDeleteResult.length === 0) {
-            return 0;
+            return [];
         }
 
-        // Delete the oldest rejected portraits
-    const idsToDelete = (toDeleteResult as Array<{ id: number }>).map((row) => row.id);
+        // Delete the oldest rejected portraits and return them
+        const idsToDelete = toDeleteResult.map((row) => row.id);
         const deleteResult = await sql`
             DELETE FROM portraits 
             WHERE id = ANY(${idsToDelete})
+            RETURNING *
         `;
 
         console.log(
             `Cleaned up ${deleteResult.length} old rejected portraits (limit: ${maxRejectedPortraits}, was: ${rejectedCount})`
         );
 
-        return deleteResult.length;
+        return deleteResult.map(convertToPortraitSubmission);
     } catch (error) {
         console.error('Error cleaning up rejected portraits:', error);
         throw new Error('Failed to cleanup rejected portraits');
@@ -824,7 +1011,8 @@ export interface SharedGallerySubmission {
     description?: string;
     submitterName?: string;
     submitterEmail?: string;
-    imageData: string;
+    imageUrl: string;
+    imageStoragePath?: string;
     imageMimeType: string;
     imageFilename?: string;
     dateTaken?: Date;
@@ -853,6 +1041,12 @@ export interface SharedGallerySubmissionGroup {
 function convertToSharedGallerySubmission(
     row: Record<string, unknown>
 ): SharedGallerySubmission {
+    const imageUrl = row.image_url
+        ? String(row.image_url)
+        : row.image_data
+        ? String(row.image_data)
+        : '';
+
     return {
         id: String(row.id),
         submissionGroupId: String(row.submission_group_id),
@@ -864,7 +1058,10 @@ function convertToSharedGallerySubmission(
         submitterEmail: row.submitter_email
             ? String(row.submitter_email)
             : undefined,
-        imageData: String(row.image_data),
+        imageUrl,
+        imageStoragePath: row.image_storage_path
+            ? String(row.image_storage_path)
+            : undefined,
         imageMimeType: String(row.image_mime_type),
         imageFilename: row.image_filename
             ? String(row.image_filename)
@@ -900,7 +1097,7 @@ export async function createSharedGallerySubmission(
         const result = await sql`
             INSERT INTO shared_gallery_submissions (
                 submission_group_id, title, description, submitter_name, submitter_email, 
-                image_data, image_mime_type, image_filename, date_taken, location, status
+                image_data, image_url, image_storage_path, image_mime_type, image_filename, date_taken, location, status
             )
             VALUES (
                 ${submission.submissionGroupId},
@@ -908,7 +1105,9 @@ export async function createSharedGallerySubmission(
                 ${submission.description || null},
                 ${submission.submitterName || null},
                 ${submission.submitterEmail || null},
-                ${submission.imageData},
+                NULL,
+                ${submission.imageUrl},
+                ${submission.imageStoragePath || null},
                 ${submission.imageMimeType},
                 ${submission.imageFilename || null},
                 ${submission.dateTaken || null},
@@ -925,30 +1124,90 @@ export async function createSharedGallerySubmission(
 }
 
 export async function getSharedGallerySubmissionGroups(
-    status?: 'pending' | 'approved' | 'rejected'
-): Promise<SharedGallerySubmissionGroup[]> {
+    status?: 'pending' | 'approved' | 'rejected',
+    limit?: number,
+    offset?: number
+): Promise<{ groups: SharedGallerySubmissionGroup[]; total: number }> {
     try {
-        const result = status
-            ? await sql`
-                SELECT * FROM shared_gallery_submissions 
-                WHERE submission_group_id IN (
-                    SELECT DISTINCT submission_group_id 
-                    FROM shared_gallery_submissions 
-                    WHERE status = ${status}
-                )
-                ORDER BY submitted_at DESC
-              `
-            : await sql`
-                SELECT * FROM shared_gallery_submissions 
-                ORDER BY submitted_at DESC
-              `;
+        const limitValue = limit ?? 25;
+        const offsetValue = offset ?? 0;
+        const params: unknown[] = [];
 
-        const submissions = result.map(convertToSharedGallerySubmission);
+        let whereClause = '';
+        if (status) {
+            params.push(status);
+            whereClause = `WHERE status = $${params.length}`;
+        }
 
-        // Group by submission_group_id
+        params.push(limitValue);
+        const limitIndex = params.length;
+        params.push(offsetValue);
+        const offsetIndex = params.length;
+
+        const query = `
+            WITH filtered AS (
+                SELECT *
+                FROM shared_gallery_submissions
+                ${whereClause}
+            ),
+            grouped AS (
+                SELECT submission_group_id, MIN(submitted_at) AS first_submitted
+                FROM filtered
+                GROUP BY submission_group_id
+            ),
+            ordered AS (
+                SELECT
+                    submission_group_id,
+                    first_submitted,
+                    COUNT(*) OVER () AS total_groups
+                FROM grouped
+                ORDER BY first_submitted DESC
+            ),
+            paged AS (
+                SELECT *
+                FROM ordered
+                LIMIT $${limitIndex} OFFSET $${offsetIndex}
+            )
+            SELECT
+                paged.total_groups,
+                filtered.id,
+                filtered.submission_group_id,
+                filtered.title,
+                filtered.description,
+                filtered.submitter_name,
+                filtered.submitter_email,
+                filtered.image_url,
+                filtered.image_storage_path,
+                filtered.image_mime_type,
+                filtered.image_filename,
+                filtered.date_taken,
+                filtered.location,
+                filtered.status,
+                filtered.submitted_at,
+                filtered.reviewed_at,
+                filtered.reviewed_by,
+                filtered.rejection_reason
+            FROM filtered
+            JOIN paged ON filtered.submission_group_id = paged.submission_group_id
+            ORDER BY paged.first_submitted DESC, filtered.submitted_at DESC;
+        `;
+
+        const { rows } = await pool.query(query, params);
+
+        if (rows.length === 0) {
+            const countResult = status
+                ? await sql`SELECT COUNT(DISTINCT submission_group_id)::int as count FROM shared_gallery_submissions WHERE status = ${status}`
+                : await sql`SELECT COUNT(DISTINCT submission_group_id)::int as count FROM shared_gallery_submissions`;
+            const totalWhenEmpty = countResult[0]?.count || 0;
+            return { groups: [], total: totalWhenEmpty };
+        }
+
+        const total = Number(rows[0].total_groups || 0);
         const groups = new Map<string, SharedGallerySubmissionGroup>();
 
-        for (const submission of submissions) {
+        for (const row of rows) {
+            const submission = convertToSharedGallerySubmission(row);
+
             if (!groups.has(submission.submissionGroupId)) {
                 groups.set(submission.submissionGroupId, {
                     submissionGroupId: submission.submissionGroupId,
@@ -969,7 +1228,6 @@ export async function getSharedGallerySubmissionGroups(
             group.images.push(submission);
             group.totalCount++;
 
-            // Collect unique submitter names
             if (
                 submission.submitterName &&
                 !group.submitterNames.includes(submission.submitterName)
@@ -982,7 +1240,7 @@ export async function getSharedGallerySubmissionGroups(
             else if (submission.status === 'rejected') group.rejectedCount++;
         }
 
-        return Array.from(groups.values());
+        return { groups: Array.from(groups.values()), total };
     } catch (error) {
         console.error(
             'Error fetching shared gallery submission groups:',
@@ -997,14 +1255,21 @@ export const getSharedGallerySubmissions = unstable_cache(
         status?: 'pending' | 'approved' | 'rejected'
     ): Promise<SharedGallerySubmission[]> => {
         try {
+            // Legacy image_data payloads are excluded; URL is enough for rendering
             const result = status
                 ? await sql`
-                    SELECT * FROM shared_gallery_submissions 
+                    SELECT id, submission_group_id, title, description, submitter_name, 
+                          submitter_email, image_url, image_storage_path, image_mime_type, image_filename, date_taken, 
+                           location, status, submitted_at, reviewed_at, reviewed_by, rejection_reason
+                    FROM shared_gallery_submissions 
                     WHERE status = ${status}
                     ORDER BY submitted_at DESC
                   `
                 : await sql`
-                    SELECT * FROM shared_gallery_submissions 
+                    SELECT id, submission_group_id, title, description, submitter_name, 
+                          submitter_email, image_url, image_storage_path, image_mime_type, image_filename, date_taken, 
+                           location, status, submitted_at, reviewed_at, reviewed_by, rejection_reason
+                    FROM shared_gallery_submissions 
                     ORDER BY submitted_at DESC
                   `;
             return result.map(convertToSharedGallerySubmission);
@@ -1281,7 +1546,7 @@ export interface GalleryReport {
     createdAt: Date;
     updatedAt: Date;
     // Joined data from submission
-    imageData?: string;
+    imageUrl?: string;
     title?: string;
     submitterName?: string;
 }
@@ -1299,7 +1564,11 @@ function convertToGalleryReport(row: Record<string, unknown>): GalleryReport {
         reviewedBy: row.reviewed_by ? String(row.reviewed_by) : undefined,
         createdAt: new Date(String(row.created_at)),
         updatedAt: new Date(String(row.updated_at)),
-        imageData: row.image_data ? String(row.image_data) : undefined,
+        imageUrl: row.image_url
+            ? String(row.image_url)
+            : row.image_data
+            ? String(row.image_data)
+            : undefined,
         title: row.title ? String(row.title) : undefined,
         submitterName: row.submitter_name
             ? String(row.submitter_name)
@@ -1330,16 +1599,17 @@ export const getGalleryReports = unstable_cache(
         status?: 'pending' | 'reviewed' | 'dismissed'
     ): Promise<GalleryReport[]> => {
         try {
+            // Image data stays out of this query; admins fetch the URL lazily when needed
             const result = status
                 ? await sql`
-                    SELECT r.*, s.image_data, s.title, s.submitter_name
+                                        SELECT r.*, s.title, s.submitter_name, s.image_url, s.image_storage_path, s.image_data
                     FROM shared_gallery_reports r
                     JOIN shared_gallery_submissions s ON r.submission_id = s.id
                     WHERE r.status = ${status}
                     ORDER BY r.created_at DESC
                   `
                 : await sql`
-                    SELECT r.*, s.image_data, s.title, s.submitter_name
+                                        SELECT r.*, s.title, s.submitter_name, s.image_url, s.image_storage_path, s.image_data
                     FROM shared_gallery_reports r
                     JOIN shared_gallery_submissions s ON r.submission_id = s.id
                     ORDER BY r.created_at DESC
@@ -1434,12 +1704,25 @@ export interface AdminUserRecord {
     roleName?: string;
     roleDisplayName?: string;
     customPermissions: string[];
+    roleDefaultPermissions?: string[];
     vereinId?: string;
 }
 
 function convertToAdminUserRecord(
     row: Record<string, unknown>
 ): AdminUserRecord {
+    const rawCustomPermissions = row.custom_permissions
+        ? Array.isArray(row.custom_permissions)
+            ? row.custom_permissions
+            : JSON.parse(String(row.custom_permissions))
+        : [];
+
+    const rawRoleDefaultPermissions = row.role_default_permissions
+        ? Array.isArray(row.role_default_permissions)
+            ? row.role_default_permissions
+            : JSON.parse(String(row.role_default_permissions))
+        : undefined;
+
     return {
         id: Number(row.id),
         username: String(row.username),
@@ -1455,7 +1738,12 @@ function convertToAdminUserRecord(
             ? String(row.role_display_name)
             : undefined,
         vereinId: row.verein_id ? String(row.verein_id) : undefined,
-        customPermissions: normalizePermissions(row.custom_permissions),
+        customPermissions: removeExcludedPermissions(
+            rawCustomPermissions as string[]
+        ),
+        roleDefaultPermissions: rawRoleDefaultPermissions
+            ? removeExcludedPermissions(rawRoleDefaultPermissions as string[])
+            : undefined,
     };
 }
 
@@ -1473,7 +1761,8 @@ export async function getAllAdminUsers(): Promise<AdminUserRecord[]> {
                 u.verein_id,
                 u.custom_permissions,
                 r.name as role_name,
-                r.display_name as role_display_name
+                r.display_name as role_display_name,
+                r.default_permissions as role_default_permissions
             FROM admin_users u
             LEFT JOIN roles r ON u.role_id = r.id
             ORDER BY u.created_at DESC
@@ -1501,7 +1790,8 @@ export async function getAdminUserById(
                 u.verein_id,
                 u.custom_permissions,
                 r.name as role_name,
-                r.display_name as role_display_name
+                r.display_name as role_display_name,
+                r.default_permissions as role_default_permissions
             FROM admin_users u
             LEFT JOIN roles r ON u.role_id = r.id
             WHERE u.id = ${id}
@@ -1583,15 +1873,45 @@ export async function getPermissionsByCategory(): Promise<
 > {
     try {
         const permissions = await getAllPermissions();
+        const filteredPermissions = permissions.filter(
+            (perm) =>
+                !EXCLUDED_PERMISSION_PREFIXES.some((prefix) =>
+                    perm.name.startsWith(prefix)
+                )
+        );
         const grouped: Record<string, Permission[]> = {};
 
-        permissions.forEach((perm) => {
+        filteredPermissions.forEach((perm) => {
             const category = perm.category || 'other';
             if (!grouped[category]) {
                 grouped[category] = [];
             }
             grouped[category].push(perm);
         });
+
+        // Expose synthetic wildcard permission so the UI can toggle it explicitly
+        const wildcardPermission: Permission = {
+            id: -1,
+            name: '*',
+            displayName: 'Alle Berechtigungen',
+            description:
+                'Gewährt Zugriff auf jede einzelne Berechtigung des Systems',
+            category: 'system',
+            createdAt: new Date(0),
+            updatedAt: new Date(0),
+        };
+
+        if (!grouped.system) {
+            grouped.system = [];
+        }
+
+        const alreadyHasWildcard = grouped.system.some(
+            (perm) => perm.name === '*'
+        );
+
+        if (!alreadyHasWildcard) {
+            grouped.system.unshift(wildcardPermission);
+        }
 
         return grouped;
     } catch (error) {
@@ -1604,14 +1924,23 @@ export async function getPermissionsByCategory(): Promise<
 export async function updateAdminUserRoleAndPermissions(
     id: number,
     roleId?: number,
-    customPermissions?: string[]
+    customPermissions?: string[],
+    vereinId?: string | null
 ): Promise<AdminUserRecord> {
     try {
+        const normalizedPermissions =
+            normalizeCustomPermissions(customPermissions);
+
         const result = await sql`
             UPDATE admin_users
             SET role_id = ${roleId || null},
                 custom_permissions = ${
-                    customPermissions ? JSON.stringify(customPermissions) : '[]'
+                    normalizedPermissions !== null
+                        ? JSON.stringify(normalizedPermissions)
+                        : sql`custom_permissions`
+                },
+                verein_id = ${
+                    vereinId === undefined ? sql`verein_id` : vereinId
                 },
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ${id}
@@ -1633,4 +1962,68 @@ export async function updateAdminUserRoleAndPermissions(
         console.error('Error updating admin user role and permissions:', error);
         throw error;
     }
+}
+
+function removeExcludedPermissions(permissions: string[]): string[] {
+    return permissions.filter(
+        (permission) =>
+            !EXCLUDED_PERMISSION_PREFIXES.some((prefix) =>
+                permission.startsWith(prefix)
+            )
+    );
+}
+
+function normalizeCustomPermissions(permissions?: string[]): string[] | null {
+    if (!Array.isArray(permissions)) {
+        return null;
+    }
+
+    const uniquePermissions = Array.from(
+        new Set(
+            permissions
+                .map((permission) => permission?.trim())
+                .filter((permission): permission is string =>
+                    Boolean(permission)
+                )
+        )
+    );
+
+    const filteredPermissions = removeExcludedPermissions(uniquePermissions);
+
+    if (filteredPermissions.includes('*')) {
+        return ['*'];
+    }
+
+    return filteredPermissions;
+}
+
+// ============================================================================
+// Site Settings
+// ============================================================================
+
+export interface SiteSetting {
+    key: string;
+    value: string;
+}
+
+export const getSiteSettings = unstable_cache(
+    async (): Promise<Record<string, string>> => {
+        const result = await sql`
+            SELECT key, value
+            FROM site_settings
+        `;
+
+        const settings: Record<string, string> = {};
+        for (const row of result) {
+            settings[row.key as string] = (row.value as string) || '';
+        }
+        return settings;
+    },
+    ['site-settings'],
+    { revalidate: 300, tags: ['settings'] }
+);
+
+export async function getSiteSetting(key: string): Promise<string | null> {
+    const settings = await getSiteSettings();
+    return settings[key] || null;
 }

@@ -7,10 +7,10 @@ import ArchiveClient from './ArchiveClient';
 export const revalidate = 3600;
 
 export default async function ArchivPage() {
-    const archiveItems = await getArchiveItems();
-    const archivedNews = await getArchivedNews();
-
-    // totalItems was unused and caused a lint error previously
+    const [archiveItems, archivedNews] = await Promise.all([
+        getArchiveItems(),
+        getArchivedNews(),
+    ]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 relative">

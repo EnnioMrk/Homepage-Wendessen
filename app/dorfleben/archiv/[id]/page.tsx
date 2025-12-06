@@ -3,33 +3,13 @@ import ArticleRenderer from '@/app/components/ArticleRenderer';
 import { NewspaperClipping, User, CalendarBlank, Tag, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import Link from 'next/link';
 import { Descendant } from 'slate';
+import { getArchiveItemById } from '@/lib/database';
 
-interface ArchiveItem {
-    id: number;
-    title: string;
-    author?: string;
-    category?: string;
-    created_date?: string;
-    content: string;
-    created_at: string;
-}
-
-async function getArchiveItem(id: string): Promise<ArchiveItem | null> {
-    try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/archive/${id}`, {
-            cache: 'no-store'
-        });
-        if (!response.ok) return null;
-        return response.json();
-    } catch (error) {
-        console.error('Failed to fetch archive item:', error);
-        return null;
-    }
-}
+export const revalidate = 3600;
 
 export default async function ArchiveItemPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const item = await getArchiveItem(id);
+    const item = await getArchiveItemById(id);
 
     if (!item) {
         return (
