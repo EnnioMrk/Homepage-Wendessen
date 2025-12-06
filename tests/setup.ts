@@ -26,7 +26,7 @@ if (fs.existsSync(envPath)) {
 }
 
 // Set test environment
-process.env.NODE_ENV = 'test';
+(process.env as Record<string, string>).NODE_ENV = 'test';
 
 // Suppress console.log in tests unless DEBUG is set
 if (!process.env.DEBUG) {

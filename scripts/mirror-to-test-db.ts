@@ -12,9 +12,12 @@
  * Requires .env file with DATABASE_URL and TEST_DATABASE_URL
  */
 
-import Pg, { Pool as PoolType } from 'pg';
+import Pg from 'pg';
 import fs from 'fs';
 import path from 'path';
+
+// Type alias for Pool instance
+type PoolInstance = InstanceType<typeof Pg.Pool>;
 
 // Load .env file manually
 const envPath = path.resolve(process.cwd(), '.env');
@@ -81,18 +84,18 @@ const TABLES_IN_ORDER = [
     'verein_roles',
 ];
 
-async function getExistingTables(pool: PoolType): Promise<string[]> {
+async function getExistingTables(pool: PoolInstance): Promise<string[]> {
     const result = await pool.query(`
         SELECT table_name 
         FROM information_schema.tables 
         WHERE table_schema = 'public' 
         AND table_type = 'BASE TABLE'
     `);
-    return result.rows.map((row) => row.table_name);
+    return result.rows.map((row: { table_name: string }) => row.table_name);
 }
 
 async function getTableSchema(
-    pool: PoolType,
+    pool: PoolInstance,
     tableName: string
 ): Promise<string> {
     // Get column definitions
@@ -125,10 +128,17 @@ async function getTableSchema(
         [tableName]
     );
 
-    const primaryKeys = pkResult.rows.map((row) => row.attname);
+    const primaryKeys = pkResult.rows.map((row: { attname: string }) => row.attname);
 
     // Build CREATE TABLE statement
-    const columns = columnsResult.rows.map((col) => {
+    const columns = columnsResult.rows.map((col: {
+        column_name: string;
+        data_type: string;
+        character_maximum_length: number | null;
+        column_default: string | null;
+        is_nullable: string;
+        udt_name: string;
+    }) => {
         let typeDef = col.udt_name.toUpperCase();
 
         // Handle special types
@@ -169,7 +179,7 @@ async function getTableSchema(
 
     if (primaryKeys.length > 0) {
         columns.push(
-            `PRIMARY KEY (${primaryKeys.map((k) => `"${k}"`).join(', ')})`
+            `PRIMARY KEY (${primaryKeys.map((k: string) => `"${k}"`).join(', ')})`
         );
     }
 
@@ -179,7 +189,7 @@ async function getTableSchema(
 }
 
 async function getTableIndexes(
-    pool: PoolType,
+    pool: PoolInstance,
     tableName: string
 ): Promise<string[]> {
     const result = await pool.query(
@@ -193,14 +203,14 @@ async function getTableIndexes(
         [tableName]
     );
 
-    return result.rows.map((row) =>
+    return result.rows.map((row: { indexdef: string }) =>
         row.indexdef.replace('CREATE INDEX', 'CREATE INDEX IF NOT EXISTS')
     );
 }
 
 async function copyTableData(
-    sourcePool: PoolType,
-    targetPool: PoolType,
+    sourcePool: PoolInstance,
+    targetPool: PoolInstance,
     tableName: string
 ): Promise<number> {
     // Get column types to handle JSONB properly
@@ -217,9 +227,9 @@ async function copyTableData(
     const jsonColumns = new Set(
         columnTypesResult.rows
             .filter(
-                (col) => col.udt_name === 'jsonb' || col.udt_name === 'json'
+                (col: { column_name: string; udt_name: string }) => col.udt_name === 'jsonb' || col.udt_name === 'json'
             )
-            .map((col) => col.column_name)
+            .map((col: { column_name: string; udt_name: string }) => col.column_name)
     );
 
     // Get all data from source
@@ -279,7 +289,7 @@ async function copyTableData(
     return inserted;
 }
 
-async function resetSequences(pool: PoolType, tableName: string): Promise<void> {
+async function resetSequences(pool: PoolInstance, tableName: string): Promise<void> {
     // Get sequence info for the table
     const result = await pool.query(
         `
