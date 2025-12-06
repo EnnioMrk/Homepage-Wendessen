@@ -12,7 +12,7 @@
  * Requires .env file with DATABASE_URL and TEST_DATABASE_URL
  */
 
-import Pg from 'pg';
+import Pg, { Pool as PoolType } from 'pg';
 import fs from 'fs';
 import path from 'path';
 
@@ -81,7 +81,7 @@ const TABLES_IN_ORDER = [
     'verein_roles',
 ];
 
-async function getExistingTables(pool: Pg.Pool): Promise<string[]> {
+async function getExistingTables(pool: PoolType): Promise<string[]> {
     const result = await pool.query(`
         SELECT table_name 
         FROM information_schema.tables 
@@ -92,7 +92,7 @@ async function getExistingTables(pool: Pg.Pool): Promise<string[]> {
 }
 
 async function getTableSchema(
-    pool: Pg.Pool,
+    pool: PoolType,
     tableName: string
 ): Promise<string> {
     // Get column definitions
@@ -179,7 +179,7 @@ async function getTableSchema(
 }
 
 async function getTableIndexes(
-    pool: Pg.Pool,
+    pool: PoolType,
     tableName: string
 ): Promise<string[]> {
     const result = await pool.query(
@@ -199,8 +199,8 @@ async function getTableIndexes(
 }
 
 async function copyTableData(
-    sourcePool: Pg.Pool,
-    targetPool: Pg.Pool,
+    sourcePool: PoolType,
+    targetPool: PoolType,
     tableName: string
 ): Promise<number> {
     // Get column types to handle JSONB properly
@@ -279,7 +279,7 @@ async function copyTableData(
     return inserted;
 }
 
-async function resetSequences(pool: Pg.Pool, tableName: string): Promise<void> {
+async function resetSequences(pool: PoolType, tableName: string): Promise<void> {
     // Get sequence info for the table
     const result = await pool.query(
         `
