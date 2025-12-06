@@ -11,6 +11,8 @@ interface NewsRow {
     category: string;
     publishedDate: Date;
     articleId: string;
+    isPinned?: boolean;
+    pinnedAt?: Date | null;
 }
 
 // GET - List all news
