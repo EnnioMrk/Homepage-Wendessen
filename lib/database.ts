@@ -481,7 +481,7 @@ export const getRecentNews = unstable_cache(
             // Then get regular news to fill remaining slots
             let regularNews: Record<string, unknown>[] = [];
             if (remainingSlots > 0) {
-                const pinnedIds = pinnedNews.map((n) => n.id);
+                const pinnedIds = pinnedNews.map((n: Record<string, unknown>) => n.id);
                 if (pinnedIds.length > 0) {
                     regularNews = await sql`
                         SELECT * FROM news 
