@@ -148,6 +148,21 @@ When developing new features, always follow this workflow:
 
 **Important**: Never push directly to `main`. All features must go through `staging` first for testing and user confirmation.
 
+### Pre-Push Build Requirement
+
+**CRITICAL**: Always run a successful build before pushing any changes to Git:
+
+```bash
+bun run build
+```
+
+This ensures:
+- TypeScript type checking passes
+- No compilation errors exist
+- The deployment will succeed
+
+Never push code that fails the build. If the build fails, fix all errors first.
+
 ### Semantic Versioning
 
 This project uses **Semantic Versioning** (SemVer) across all branches. Version format: `MAJOR.MINOR.PATCH`
