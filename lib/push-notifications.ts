@@ -77,7 +77,7 @@ export async function getUserPushSubscriptions(
             FROM push_subscriptions
             WHERE user_id = ${userId}
         `;
-        return result.map((row) => ({
+        return result.map((row: Record<string, unknown>) => ({
             id: Number(row.id),
             userId: Number(row.user_id),
             endpoint: String(row.endpoint),
@@ -138,7 +138,7 @@ export async function getSubscriptionsForPermission(
                     OR au.custom_permissions::jsonb ? '*'
                 )
         `;
-        return result.map((row) => ({
+        return result.map((row: Record<string, unknown>) => ({
             id: Number(row.id),
             userId: Number(row.user_id),
             endpoint: String(row.endpoint),
@@ -354,7 +354,7 @@ async function getPendingPortraits(): Promise<PendingPortrait[]> {
             FROM portraits
             WHERE status = 'pending'
         `;
-        return result.map((row) => ({
+        return result.map((row: Record<string, unknown>) => ({
             id: Number(row.id),
             name: String(row.name),
             daysWaiting: Number(row.days_waiting),
@@ -382,7 +382,7 @@ async function getPendingSharedGalleryGroups(): Promise<
             WHERE status = 'pending'
             GROUP BY submission_group_id, submitter_name
         `;
-        return result.map((row) => ({
+        return result.map((row: Record<string, unknown>) => ({
             submissionGroupId: String(row.submission_group_id),
             submitterName: String(row.submitter_name || 'Unbekannt'),
             imageCount: Number(row.image_count),
