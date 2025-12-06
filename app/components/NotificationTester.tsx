@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import {
     Bell,
-    Send,
+    PaperPlaneTilt,
     Users,
     Image as ImageIcon,
     User,
     Clock,
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 
 interface TestResult {
     success: boolean;
@@ -94,7 +94,7 @@ export default function NotificationTester() {
                         <div className="w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
                     )}
                     {loading !== 'self' && (
-                        <Send className="w-5 h-5 text-gray-400" />
+                        <PaperPlaneTilt className="w-5 h-5 text-gray-400" />
                     )}
                 </button>
 
@@ -122,7 +122,7 @@ export default function NotificationTester() {
                         <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                     )}
                     {loading !== 'portrait' && (
-                        <Send className="w-5 h-5 text-gray-400" />
+                        <PaperPlaneTilt className="w-5 h-5 text-gray-400" />
                     )}
                 </button>
 
@@ -150,7 +150,7 @@ export default function NotificationTester() {
                         <div className="w-5 h-5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
                     )}
                     {loading !== 'shared_gallery' && (
-                        <Send className="w-5 h-5 text-gray-400" />
+                        <PaperPlaneTilt className="w-5 h-5 text-gray-400" />
                     )}
                 </button>
 
@@ -175,7 +175,7 @@ export default function NotificationTester() {
                         <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
                     )}
                     {loading !== 'permission' && (
-                        <Send className="w-5 h-5 text-gray-400" />
+                        <PaperPlaneTilt className="w-5 h-5 text-gray-400" />
                     )}
                 </button>
 
@@ -201,7 +201,7 @@ export default function NotificationTester() {
                         <div className="w-5 h-5 border-2 border-orange-600 border-t-transparent rounded-full animate-spin" />
                     )}
                     {loading !== 'reminders' && (
-                        <Send className="w-5 h-5 text-gray-400" />
+                        <PaperPlaneTilt className="w-5 h-5 text-gray-400" />
                     )}
                 </button>
             </div>

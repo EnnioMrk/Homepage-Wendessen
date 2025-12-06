@@ -6,8 +6,6 @@ import './globals.css';
 import { MenubarDemo } from './components/menubar';
 import MobileNavbar from './components/mobile-navbar';
 import { Footer } from './components/footer';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { AdminAuthProvider } from '@/lib/admin-auth-context';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -72,8 +70,6 @@ export default function RootLayout({
                         <Footer />
                     </div>
                 </AdminAuthProvider>
-                <Analytics />
-                <SpeedInsights />
             </body>
         </html>
     );
