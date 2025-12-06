@@ -210,7 +210,7 @@ export async function getAdminLogs(
     }
 
     return {
-        logs: logs.map((row) => ({
+        logs: logs.map((row: Record<string, unknown>) => ({
             id: row.id as number,
             userId: row.user_id as number | null,
             username: row.username as string | null,
