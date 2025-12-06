@@ -1,8 +1,5 @@
 import { sql } from '../lib/sql';
-import {
-    convertToWebP,
-    convertDataUrlToWebP,
-} from '../lib/image-utils';
+import { convertToWebP, convertDataUrlToWebP } from '../lib/image-utils';
 import {
     downloadFromBlob,
     uploadToBlob,
@@ -35,7 +32,9 @@ interface DownloadSource {
 async function fetchFromUrl(url: string): Promise<DownloadSource> {
     const response = await fetch(url);
     if (!response.ok) {
-        throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+        throw new Error(
+            `Failed to fetch ${url}: ${response.status} ${response.statusText}`
+        );
     }
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -55,7 +54,9 @@ async function loadImageSource(options: {
             return await downloadFromBlob(blobPath);
         } catch (error) {
             console.warn(
-                `- ${label}: unable to read ${blobPath} from MinIO (${(error as Error).message}).`
+                `- ${label}: unable to read ${blobPath} from MinIO (${
+                    (error as Error).message
+                }).`
             );
         }
     }
@@ -65,7 +66,9 @@ async function loadImageSource(options: {
             return await fetchFromUrl(url);
         } catch (error) {
             console.warn(
-                `- ${label}: HTTP fetch failed for ${url} (${(error as Error).message}).`
+                `- ${label}: HTTP fetch failed for ${url} (${
+                    (error as Error).message
+                }).`
             );
         }
     }
@@ -101,7 +104,9 @@ async function migrateGalleryImages() {
 
     for (const row of rows) {
         if (!row.filename) {
-            console.warn(`- Gallery image ${row.id} has no filename; skipping.`);
+            console.warn(
+                `- Gallery image ${row.id} has no filename; skipping.`
+            );
             continue;
         }
 
@@ -134,10 +139,12 @@ async function migrateGalleryImages() {
             const existingKey = row.filename;
             const targetKey = existingKey?.toLowerCase().endsWith('.webp')
                 ? existingKey
-                : existingKey?.replace(/\.[^.]+$/, '.webp') || `${existingKey}.webp`;
+                : existingKey?.replace(/\.[^.]+$/, '.webp') ||
+                  `${existingKey}.webp`;
 
             const blob = await uploadToBlob(targetKey, converted.buffer, {
                 contentType: converted.mimeType,
+                bucket: 'gallery',
             });
 
             await sql`
@@ -154,7 +161,11 @@ async function migrateGalleryImages() {
                     await deleteFromBlob(existingKey);
                 } catch (err) {
                     console.warn(
-                        `- Gallery image ${row.id}: unable to delete old key ${existingKey} (${(err as Error).message}).`
+                        `- Gallery image ${
+                            row.id
+                        }: unable to delete old key ${existingKey} (${
+                            (err as Error).message
+                        }).`
                     );
                 }
             }
@@ -219,12 +230,17 @@ async function migrateSharedGalleryImages() {
                     ? existingKey.toLowerCase().endsWith('.webp')
                         ? existingKey
                         : existingKey.replace(/\.[^.]+$/, '.webp')
-                    : `shared-gallery/${row.submission_group_id || 'ungrouped'}/${Date.now()}-${Math.random()
+                    : `shared-gallery/${
+                          row.submission_group_id || 'ungrouped'
+                      }/${Date.now()}-${Math.random()
                           .toString(36)
-                          .slice(2, 8)}-${sanitizeFilename(converted.filename)}`;
+                          .slice(2, 8)}-${sanitizeFilename(
+                          converted.filename
+                      )}`;
 
                 const blob = await uploadToBlob(targetKey, converted.buffer, {
                     contentType: converted.mimeType,
+                    bucket: 'impressions',
                 });
 
                 await sql`
@@ -243,12 +259,18 @@ async function migrateSharedGalleryImages() {
                         await deleteFromBlob(existingKey);
                     } catch (err) {
                         console.warn(
-                            `- Shared gallery submission ${row.id}: unable to delete old key ${existingKey} (${(err as Error).message}).`
+                            `- Shared gallery submission ${
+                                row.id
+                            }: unable to delete old key ${existingKey} (${
+                                (err as Error).message
+                            }).`
                         );
                     }
                 }
 
-                console.log(`✓ Shared gallery submission ${row.id} converted to WebP`);
+                console.log(
+                    `✓ Shared gallery submission ${row.id} converted to WebP`
+                );
                 continue;
             }
 
@@ -270,12 +292,15 @@ async function migrateSharedGalleryImages() {
                 }
 
                 const sanitizedFilename = sanitizeFilename(converted.filename);
-                const objectKey = `shared-gallery/${row.submission_group_id || 'ungrouped'}/${Date.now()}-${Math.random()
+                const objectKey = `shared-gallery/${
+                    row.submission_group_id || 'ungrouped'
+                }/${Date.now()}-${Math.random()
                     .toString(36)
                     .slice(2, 8)}-${sanitizedFilename}`;
 
                 const blob = await uploadToBlob(objectKey, converted.buffer, {
                     contentType: converted.mimeType,
+                    bucket: 'impressions',
                 });
 
                 await sql`
@@ -289,7 +314,9 @@ async function migrateSharedGalleryImages() {
                     WHERE id = ${row.id}
                 `;
 
-                console.log(`✓ Shared gallery submission ${row.id} moved to MinIO & converted`);
+                console.log(
+                    `✓ Shared gallery submission ${row.id} moved to MinIO & converted`
+                );
                 continue;
             }
 
@@ -328,7 +355,9 @@ async function migratePortraitImages() {
             if (dataString.startsWith('data:')) {
                 const matches = dataString.match(/^data:([^;]+);base64,(.+)$/);
                 if (!matches) {
-                    console.warn(`- Portrait ${row.id}: invalid data URL; skipping.`);
+                    console.warn(
+                        `- Portrait ${row.id}: invalid data URL; skipping.`
+                    );
                     continue;
                 }
                 mimeType = matches[1];

@@ -91,10 +91,11 @@ export async function POST(request: NextRequest) {
         // Convert image to WebP format
         const converted = await convertFileToWebP(file);
 
-        // Upload to MinIO
+        // Upload to MinIO (gallery bucket)
         const blob = await uploadToBlob(converted.filename, converted.buffer, {
             addRandomSuffix: true,
             contentType: converted.mimeType,
+            bucket: 'gallery',
         });
 
         // Save to database

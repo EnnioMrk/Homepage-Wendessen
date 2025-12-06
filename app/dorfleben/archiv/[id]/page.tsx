@@ -1,13 +1,23 @@
 import BackgroundElements from '@/app/components/BackgroundElements';
 import ArticleRenderer from '@/app/components/ArticleRenderer';
-import { NewspaperClipping, User, CalendarBlank, Tag, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import {
+    NewspaperClipping,
+    User,
+    CalendarBlank,
+    Tag,
+    ArrowLeft,
+} from '@phosphor-icons/react/dist/ssr';
 import Link from 'next/link';
 import { Descendant } from 'slate';
 import { getArchiveItemById } from '@/lib/database';
 
 export const revalidate = 3600;
 
-export default async function ArchiveItemPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ArchiveItemPage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
     const { id } = await params;
     const item = await getArchiveItemById(id);
 
@@ -54,11 +64,11 @@ export default async function ArchiveItemPage({ params }: { params: Promise<{ id
                             <ArrowLeft className="w-5 h-5" />
                             <span>Zurück zum Archiv</span>
                         </Link>
-                        
+
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
                             {item.title}
                         </h1>
-                        
+
                         <div className="flex flex-wrap gap-4 text-white/90">
                             {item.author && (
                                 <div className="flex items-center space-x-2">
@@ -69,11 +79,15 @@ export default async function ArchiveItemPage({ params }: { params: Promise<{ id
                             {item.created_date && (
                                 <div className="flex items-center space-x-2">
                                     <CalendarBlank className="w-5 h-5" />
-                                    <span>{new Date(item.created_date).toLocaleDateString('de-DE', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
-                                    })}</span>
+                                    <span>
+                                        {new Date(
+                                            item.created_date
+                                        ).toLocaleDateString('de-DE', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                        })}
+                                    </span>
                                 </div>
                             )}
                             {item.category && (
@@ -94,8 +108,14 @@ export default async function ArchiveItemPage({ params }: { params: Promise<{ id
                         <div className="prose prose-lg max-w-none">
                             {(() => {
                                 try {
-                                    const parsedContent = JSON.parse(item.content) as Descendant[];
-                                    return <ArticleRenderer content={parsedContent} />;
+                                    const parsedContent = JSON.parse(
+                                        item.content
+                                    ) as Descendant[];
+                                    return (
+                                        <ArticleRenderer
+                                            content={parsedContent}
+                                        />
+                                    );
                                 } catch {
                                     // Fallback for plain text content
                                     return (
@@ -106,14 +126,18 @@ export default async function ArchiveItemPage({ params }: { params: Promise<{ id
                                 }
                             })()}
                         </div>
-                        
+
                         <div className="mt-8 pt-8 border-t border-gray-200">
                             <p className="text-sm text-gray-500">
-                                Archiviert am: {new Date(item.created_at).toLocaleDateString('de-DE', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}
+                                Archiviert am:{' '}
+                                {new Date(item.created_at).toLocaleDateString(
+                                    'de-DE',
+                                    {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    }
+                                )}
                             </p>
                         </div>
                     </div>

@@ -1,0 +1,11 @@
+[test]
+# Test configuration for Bun
+root = "./tests"
+preload = ["./tests/setup.ts"]
+
+# Timeout for each test in milliseconds
+timeout = 30000
+
+# Coverage reporting
+coverage = false
+coverageDir = "./coverage"

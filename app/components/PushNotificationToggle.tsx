@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BellRinging, BellSlash, PaperPlaneTilt } from '@phosphor-icons/react/dist/ssr';
+import {
+    BellRinging,
+    BellSlash,
+    PaperPlaneTilt,
+} from '@phosphor-icons/react/dist/ssr';
 
 export default function PushNotificationToggle() {
     const [isSubscribed, setIsSubscribed] = useState(false);
@@ -147,7 +151,9 @@ export default function PushNotificationToggle() {
             setShowTestButton(false); // Hide after successful test
         } catch (err) {
             console.error('Error sending test notification:', err);
-            setError(err instanceof Error ? err.message : 'Test fehlgeschlagen');
+            setError(
+                err instanceof Error ? err.message : 'Test fehlgeschlagen'
+            );
         } finally {
             setTestSending(false);
         }

@@ -119,6 +119,114 @@ await sql`CREATE INDEX IF NOT EXISTS idx_name ON table(column);`;
 
 ## Development Workflow
 
+### Git Branching Strategy
+
+When developing new features, always follow this workflow:
+
+1. **Create a feature branch** from the current branch:
+
+    ```bash
+    git checkout -b feature/<feature-name>
+    ```
+
+2. **Develop and commit** changes to the feature branch with descriptive commit messages
+
+3. **Test the feature** locally and ensure all tests pass (`bun test`)
+
+4. **Once the user confirms** the feature works correctly, merge to `staging`:
+
+    ```bash
+    git checkout staging
+    git merge feature/<feature-name>
+    git push origin staging
+    ```
+
+5. **Clean up** the feature branch after successful merge:
+    ```bash
+    git branch -d feature/<feature-name>
+    ```
+
+**Important**: Never push directly to `main`. All features must go through `staging` first for testing and user confirmation.
+
+### Semantic Versioning
+
+This project uses **Semantic Versioning** (SemVer) across all branches. Version format: `MAJOR.MINOR.PATCH`
+
+#### Version Bump Rules
+
+-   **PATCH** (`x.x.1` → `x.x.2`): Bug fixes, small tweaks, non-breaking changes
+-   **MINOR** (`x.1.x` → `x.2.0`): New features, backwards-compatible additions
+-   **MAJOR** (`1.x.x` → `2.0.0`): Breaking changes, major redesigns
+
+#### Versioning Workflow
+
+1. **Feature branches**: Bump version in `package.json` according to the change type before merging
+2. **Staging**: Accumulates version bumps from merged features; use pre-release tags if needed (e.g., `1.2.0-staging.1`)
+3. **Main/Master**: Contains stable releases only; version should match the latest merged staging version
+
+#### Version Location
+
+The version is stored in `package.json` under the `"version"` field. Always update this file when changing versions.
+
+### Conventional Commits
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages.
+
+#### Commit Message Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer]
+```
+
+#### Commit Types
+
+| Type | Description | SemVer Impact |
+|------|-------------|---------------|
+| `feat` | New feature | MINOR bump |
+| `fix` | Bug fix | PATCH bump |
+| `docs` | Documentation only | No bump |
+| `style` | Code style (formatting, whitespace) | No bump |
+| `refactor` | Code change that neither fixes a bug nor adds a feature | No bump |
+| `perf` | Performance improvement | PATCH bump |
+| `test` | Adding or updating tests | No bump |
+| `chore` | Maintenance tasks (deps, build, etc.) | No bump |
+
+#### Breaking Changes
+
+For breaking changes, add `BREAKING CHANGE:` in the commit body or footer. This triggers a MAJOR version bump regardless of commit type.
+
+```bash
+feat: redesign event calendar API
+
+BREAKING CHANGE: `getEvents()` now returns a Promise instead of synchronous data
+```
+
+#### Examples
+
+```bash
+# Feature with scope
+feat(calendar): add recurring events support
+
+# Bug fix with issue reference
+fix(auth): resolve session expiration bug
+
+fixes #42
+
+# Documentation update
+docs: update API documentation for events
+
+# Chore with version bump
+chore: bump version to 1.3.0
+```
+
+#### Scope Examples
+
+Common scopes for this project: `calendar`, `news`, `gallery`, `contacts`, `auth`, `admin`, `api`, `db`
+
 ### Local Development
 
 1. **Development Server**: Assume `bun dev` is always running in the background on port 3000 with Turbopack (never start a new develiopment server)

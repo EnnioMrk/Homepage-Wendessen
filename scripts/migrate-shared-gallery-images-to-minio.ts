@@ -44,6 +44,7 @@ async function migrateSharedGalleryImages() {
                 contentType: String(
                     row.image_mime_type || 'application/octet-stream'
                 ),
+                bucket: 'impressions',
             });
 
             await sql`

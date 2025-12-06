@@ -481,7 +481,9 @@ export const getRecentNews = unstable_cache(
             // Then get regular news to fill remaining slots
             let regularNews: Record<string, unknown>[] = [];
             if (remainingSlots > 0) {
-                const pinnedIds = pinnedNews.map((n: Record<string, unknown>) => n.id);
+                const pinnedIds = pinnedNews.map(
+                    (n: Record<string, unknown>) => n.id
+                );
                 if (pinnedIds.length > 0) {
                     regularNews = await sql`
                         SELECT * FROM news 
@@ -598,7 +600,9 @@ export const getArchiveItems = unstable_cache(
 );
 
 // Get archive item by ID
-export async function getArchiveItemById(id: string): Promise<ArchiveItem | null> {
+export async function getArchiveItemById(
+    id: string
+): Promise<ArchiveItem | null> {
     try {
         const result = await sql`
             SELECT * FROM archive WHERE id = ${id}
@@ -985,7 +989,9 @@ export async function cleanupOldRejectedPortraits(
         }
 
         // Delete the oldest rejected portraits and return them
-        const idsToDelete = toDeleteResult.map((row: Record<string, unknown>) => row.id);
+        const idsToDelete = toDeleteResult.map(
+            (row: Record<string, unknown>) => row.id
+        );
         const deleteResult = await sql`
             DELETE FROM portraits 
             WHERE id = ANY(${idsToDelete})

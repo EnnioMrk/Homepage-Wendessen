@@ -63,13 +63,14 @@ export async function POST(request: NextRequest) {
         // Convert image to WebP format
         const converted = await convertFileToWebP(image);
 
-        // Upload to MinIO S3 storage
+        // Upload to MinIO S3 storage (portraits bucket)
         const blob = await uploadToBlob(
             `portraits/${converted.filename}`,
             converted.buffer,
             {
                 addRandomSuffix: true,
                 contentType: converted.mimeType,
+                bucket: 'portraits',
             }
         );
 

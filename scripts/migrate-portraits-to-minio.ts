@@ -55,13 +55,14 @@ async function migratePortraitsToMinio() {
                         portrait.image_mime_type
                     )}`;
 
-                // Upload to MinIO
+                // Upload to MinIO (portraits bucket)
                 const blob = await uploadToBlob(
                     `portraits/${filename}`,
                     buffer,
                     {
                         addRandomSuffix: true,
                         contentType: portrait.image_mime_type,
+                        bucket: 'portraits',
                     }
                 );
 

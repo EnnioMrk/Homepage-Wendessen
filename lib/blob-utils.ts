@@ -1,10 +1,14 @@
 // MinIO (S3-compatible) utilities
 // Expects the following env vars:
-// MINIO_ENDPOINT, MINIO_PORT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_BUCKET, MINIO_USE_SSL
+// MINIO_ENDPOINT, MINIO_PORT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, MINIO_USE_SSL
+// MINIO_BUCKET_GALLERY, MINIO_BUCKET_PORTRAITS, MINIO_BUCKET_IMPRESSIONS
 
 // If the `minio` package is not installed in a consumer environment yet,
 // install `minio` in your environment to get full types.
 import * as Minio from 'minio';
+
+// Bucket types for different storage purposes
+export type MinioBucket = 'gallery' | 'portraits' | 'impressions';
 
 interface BlobUploadResponse {
     url: string;
@@ -24,7 +28,19 @@ let MINIO_PORT = process.env.MINIO_PORT
     : undefined;
 const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY;
 const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY;
-const MINIO_BUCKET = process.env.MINIO_BUCKET || 'wendessen';
+
+// Bucket names from environment variables
+const MINIO_BUCKETS: Record<MinioBucket, string> = {
+    gallery: process.env.MINIO_BUCKET_GALLERY || 'admin-gallery',
+    portraits: process.env.MINIO_BUCKET_PORTRAITS || 'portraits',
+    impressions: process.env.MINIO_BUCKET_IMPRESSIONS || 'impressions',
+};
+
+// Legacy support: if old MINIO_BUCKET is set, use it as default for gallery
+if (process.env.MINIO_BUCKET && !process.env.MINIO_BUCKET_GALLERY) {
+    MINIO_BUCKETS.gallery = process.env.MINIO_BUCKET;
+}
+
 let MINIO_USE_SSL = process.env.MINIO_USE_SSL === 'true' || false;
 
 // If the user supplied a full URL, parse it and derive host/port/ssl defaults
@@ -132,14 +148,56 @@ function resolveBucketAndObject(
         // not a URL, fall through
     }
 
-    if (!MINIO_BUCKET) {
-        return null;
-    }
-
+    // Default to gallery bucket for backward compatibility
     return {
-        bucket: MINIO_BUCKET,
+        bucket: MINIO_BUCKETS.gallery,
         object: decodeURIComponent(urlOrPath),
     };
+}
+
+// Helper function to get bucket name
+export function getBucketName(bucket: MinioBucket): string {
+    return MINIO_BUCKETS[bucket];
+}
+
+// Get all bucket names
+export function getAllBucketNames(): string[] {
+    return Object.values(MINIO_BUCKETS);
+}
+
+// Check if MinIO is configured
+export function isMinioConfigured(): boolean {
+    return !!(MINIO_ENDPOINT && MINIO_ACCESS_KEY && MINIO_SECRET_KEY);
+}
+
+/**
+ * Initialize all MinIO buckets on server startup.
+ * Creates buckets if they don't exist.
+ */
+export async function initializeMinIOBuckets(): Promise<void> {
+    if (!isMinioConfigured()) {
+        console.warn('[MinIO] Not configured, skipping bucket initialization');
+        return;
+    }
+
+    console.log('[MinIO] Initializing buckets...');
+
+    const bucketTypes: MinioBucket[] = ['gallery', 'portraits', 'impressions'];
+
+    for (const bucketType of bucketTypes) {
+        const bucketName = MINIO_BUCKETS[bucketType];
+        try {
+            await ensureBucketExists(bucketName);
+            console.log(`[MinIO] ✓ Bucket "${bucketName}" ready`);
+        } catch (error) {
+            console.error(
+                `[MinIO] ✗ Failed to initialize bucket "${bucketName}":`,
+                error
+            );
+        }
+    }
+
+    console.log('[MinIO] Bucket initialization complete');
 }
 
 function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -186,7 +244,11 @@ function bufferFromFile(
 export async function uploadToBlob(
     filename: string,
     file: File | Blob | Buffer | Uint8Array,
-    options: { addRandomSuffix?: boolean; contentType?: string } = {}
+    options: {
+        addRandomSuffix?: boolean;
+        contentType?: string;
+        bucket?: MinioBucket;
+    } = {}
 ): Promise<BlobUploadResponse> {
     if (!MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
         throw new Error(
@@ -194,14 +256,17 @@ export async function uploadToBlob(
         );
     }
 
-    const { addRandomSuffix = false, contentType: providedContentType } =
-        options;
+    const {
+        addRandomSuffix = false,
+        contentType: providedContentType,
+        bucket: bucketType = 'gallery',
+    } = options;
 
     const finalFilename = addRandomSuffix
         ? `${Date.now()}-${Math.random().toString(36).substring(2)}-${filename}`
         : filename;
 
-    const bucket = MINIO_BUCKET;
+    const bucket = MINIO_BUCKETS[bucketType];
 
     await ensureBucketExists(bucket);
 

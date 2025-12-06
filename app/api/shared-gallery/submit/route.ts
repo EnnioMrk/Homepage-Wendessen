@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
 
         const blob = await uploadToBlob(uniqueKey, converted.buffer, {
             contentType: converted.mimeType,
+            bucket: 'impressions',
         });
 
         const submission = await createSharedGallerySubmission({
