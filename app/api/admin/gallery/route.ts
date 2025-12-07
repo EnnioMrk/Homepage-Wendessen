@@ -5,6 +5,7 @@ import { convertFileToWebP } from '../../../../lib/image-utils';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { isMinioConfigured, getPresignedUrl } from '../../../../lib/blob-utils';
 
 interface GalleryImageRow {
     id: number;
@@ -34,10 +35,25 @@ export async function GET() {
             ORDER BY uploaded_at DESC
         `;
 
-        const images = (result as GalleryImageRow[]).map((row) => ({
-            ...row,
-            uploadedAt: row.uploadedAt.toISOString(),
-        }));
+        const rows = result as GalleryImageRow[];
+        const images = await Promise.all(
+            rows.map(async (row) => {
+                const uploadedAt = row.uploadedAt.toISOString();
+                let url = row.url;
+                if (isMinioConfigured() && url) {
+                    try {
+                        url = await getPresignedUrl(url);
+                    } catch (err) {
+                        console.warn('Could not generate presigned URL:', err);
+                    }
+                }
+                return {
+                    ...row,
+                    uploadedAt,
+                    url,
+                };
+            })
+        );
 
         return NextResponse.json({ images });
     } catch (error) {
