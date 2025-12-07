@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "bun run --bun next dev --turbopack",
         "build": "bun run --bun next build",
-        "start": "bun run setup-minio && bun run --bun next start",
+        "start": "bun run --bun next start",
         "lint": "bun run --bun next lint",
         "test": "bun test",
         "test:unit": "bun test tests/lib tests/validation",
@@ -15,8 +15,7 @@
         "test:coverage": "bun test --coverage",
         "ws:start": "bun run scripts/websocket-server.ts",
         "mirror-to-test-db": "bunx tsx scripts/mirror-to-test-db.ts",
-        "setup-minio": "bunx tsx scripts/setup-minio-buckets.ts",
-        "prestart": "bun run setup-minio"
+        "setup-minio": "bunx tsx scripts/setup-minio-buckets.ts"
     },
     "dependencies": {
         "@phosphor-icons/react": "^2.1.10",

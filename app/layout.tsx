@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+// Initialize MinIO buckets/policies on server runtime start
+import '@/lib/minio-init';
 import { Inter } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
