@@ -2,43 +2,29 @@ import type { NextConfig } from 'next';
 
 // Derive MinIO host/port/protocol from environment safely (no hardcoded host)
 const minioEndpoint = process.env.MINIO_ENDPOINT;
-function resolveMinio(endpoint?: string) {
+function resolveMinioHost(endpoint?: string) {
     if (!endpoint) return undefined;
     try {
         const u = new URL(endpoint);
-        return {
-            protocol: u.protocol.replace(':', ''),
-            hostname: u.hostname,
-            port: u.port || undefined,
-        };
+        return u.hostname;
     } catch {
-        // Accept formats like 'hostname:9000' or 'hostname/' or 'http://hostname:9000/'
-        const cleaned = endpoint.replace(/^https?:\/\//, '').replace(/\/+$/g, '');
-        const hostPort = cleaned.split('/')[0];
-        const [hostname, port] = hostPort.split(':');
-        const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : (endpoint.startsWith('https') ? 'https' : 'http');
-        return {
-            protocol,
-            hostname,
-            port: port || undefined,
-        };
+        // If it's not a full URL, trim trailing slashes and ports if present
+        return endpoint.replace(/:\/\/$|:\/|\/$/g, '').replace(/:\d+$/, '');
     }
 }
 
-const minio = resolveMinio(minioEndpoint);
+const minioHostname = resolveMinioHost(minioEndpoint);
 const nextConfig: NextConfig = {
     images: {
-        // Use remotePatterns (images.domains is deprecated)
-        remotePatterns: minio
-            ? [
-                  {
-                      protocol: minio.protocol,
-                      hostname: minio.hostname,
-                      port: minio.port || process.env.MINIO_PORT || undefined,
-                      pathname: '/:path*',
-                  },
-              ]
-            : [],
+        domains: minioHostname ? [minioHostname] : [],
+        remotePatterns: [
+            {
+                protocol: process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http',
+                hostname: minioHostname || 'localhost',
+                port: process.env.MINIO_PORT || '9000',
+                pathname: '/:path*',
+            },
+        ],
         // Aggressive caching for optimized images (1 year)
         minimumCacheTTL: 31536000,
     },

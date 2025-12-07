@@ -115,12 +115,6 @@ interface MinioClientLike {
         name: string,
         callback: (err: Error | null, stat?: MinioStatLike) => void
     ): void;
-    presignedGetObject?: (
-        bucket: string,
-        name: string,
-        expiry: number,
-        callback: (err: Error | null, url?: string) => void
-    ) => void;
 }
 
 // Keep the client minimally typed to avoid depending on fragile upstream types
@@ -320,47 +314,6 @@ export async function uploadToBlob(
         contentType,
         contentDisposition: `inline; filename="${filename}"`,
     };
-}
-
-/**
- * Generate a presigned GET URL for a MinIO object.
- * If MinIO is not configured, returns the original path or URL.
- */
-export async function getPresignedUrl(
-    urlOrPath: string,
-    expirySeconds = 60 * 60 * 24
-): Promise<string> {
-    const target = resolveBucketAndObject(urlOrPath);
-    if (!target) return urlOrPath;
-
-    // If MinIO is not configured return the stored URL/path
-    if (!isMinioConfigured()) return urlOrPath;
-
-    return await new Promise<string>((resolve, reject) => {
-        const clientWithPresigned = minioClient as unknown as {
-            presignedGetObject?: (
-                bucket: string,
-                name: string,
-                expiry: number,
-                callback: (err: Error | null, url?: string) => void
-            ) => void;
-        };
-        const fn = clientWithPresigned.presignedGetObject;
-        if (typeof fn !== 'function') {
-            // If the method is not available, fall back to the direct URL
-            const protocol = MINIO_USE_SSL ? 'https' : 'http';
-            const direct = `${protocol}://${MINIO_ENDPOINT}:${MINIO_PORT}/${target.bucket}/${encodeURIComponent(
-                target.object
-            )}`;
-            return resolve(direct);
-        }
-
-        fn(target.bucket, target.object, expirySeconds, (err: Error | null, url?: string) => {
-            if (err) return reject(err);
-            if (!url) return reject(new Error('Empty presigned URL'));
-            resolve(url);
-        });
-    });
 }
 
 export async function deleteFromBlob(urlOrPath: string): Promise<void> {

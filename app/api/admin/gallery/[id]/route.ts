@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../../lib/permissions';
 import { deleteFromBlob } from '../../../../../lib/blob-utils';
-import { isMinioConfigured, getPresignedUrl } from '../../../../../lib/blob-utils';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
@@ -44,20 +43,9 @@ export async function PUT(
             );
         }
 
-        const raw = result[0];
-        let url = raw.url;
-        if (isMinioConfigured() && url) {
-            try {
-                url = await getPresignedUrl(url);
-            } catch (err) {
-                console.warn('Could not generate presigned URL for updated image:', err);
-            }
-        }
-
         const updatedImage = {
-            ...raw,
-            uploadedAt: raw.uploadedAt.toISOString(),
-            url,
+            ...result[0],
+            uploadedAt: result[0].uploadedAt.toISOString(),
         };
 
         // Log the action
