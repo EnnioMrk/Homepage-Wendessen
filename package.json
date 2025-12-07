@@ -14,7 +14,9 @@
         "test:watch": "bun test --watch",
         "test:coverage": "bun test --coverage",
         "ws:start": "bun run scripts/websocket-server.ts",
-        "mirror-to-test-db": "bunx tsx scripts/mirror-to-test-db.ts"
+        "mirror-to-test-db": "bunx tsx scripts/mirror-to-test-db.ts",
+        "setup-minio": "bunx tsx scripts/setup-minio-buckets.ts",
+        "prestart": "bun run setup-minio"
     },
     "dependencies": {
         "@phosphor-icons/react": "^2.1.10",
