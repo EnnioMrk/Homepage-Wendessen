@@ -1,4 +1,4 @@
-import Minio from 'minio';
+import { Client } from 'minio';
 
 // Run once per Node process. Importing this module triggers initialization.
 declare global {
@@ -30,7 +30,7 @@ if (!globalThis.__minioInitPromise) {
 
             const parsed = parseEndpoint(MINIO_ENDPOINT);
 
-            const client = new Minio.Client({
+            const client = new Client({
                 endPoint: parsed.host,
                 port: parseInt(MINIO_PORT, 10) || parseInt(parsed.port, 10) || 9000,
                 useSSL: MINIO_USE_SSL,

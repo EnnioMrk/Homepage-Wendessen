@@ -4,7 +4,7 @@
  * Run at server start to guarantee correct bucket policies.
  */
 
-import Minio from 'minio';
+import { Client } from 'minio';
 
 const {
     MINIO_ENDPOINT = 'http://localhost:9000',
@@ -28,7 +28,7 @@ function parseEndpoint(endpoint: string) {
 
 const parsed = parseEndpoint(MINIO_ENDPOINT);
 
-const client = new Minio.Client({
+const client = new Client({
     endPoint: parsed.host,
     port: parseInt(MINIO_PORT, 10) || (parsed.port ? parseInt(parsed.port, 10) : 9000),
     useSSL: (MINIO_USE_SSL === 'true'),
