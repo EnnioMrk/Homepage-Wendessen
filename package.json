@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "bun run --bun next dev --turbopack",
         "build": "bun run --bun next build",
-        "start": "bun run --bun next start",
+        "start": "bun run setup-minio && bun run --bun next start",
         "lint": "bun run --bun next lint",
         "test": "bun test",
         "test:unit": "bun test tests/lib tests/validation",
