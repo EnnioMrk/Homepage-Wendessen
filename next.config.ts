@@ -2,6 +2,10 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
     images: {
+        // Always allow the known MinIO hostname in case env vars are missing
+        domains: [
+            'wendessen-website-minio-dljcxl-fcba76-146-59-235-98.traefik.me',
+        ],
         remotePatterns: [
             {
                 protocol:
@@ -10,7 +14,7 @@ const nextConfig: NextConfig = {
                     ? new URL(process.env.MINIO_ENDPOINT).hostname
                     : process.env.MINIO_ENDPOINT || 'localhost',
                 port: process.env.MINIO_PORT || '9000',
-                pathname: '/**',
+                pathname: '/:path*',
             },
         ],
         // Aggressive caching for optimized images (1 year)

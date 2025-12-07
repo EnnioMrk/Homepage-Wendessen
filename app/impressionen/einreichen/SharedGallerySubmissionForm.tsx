@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 import { Camera, X, Check, WarningCircle } from '@phosphor-icons/react';
@@ -26,6 +27,8 @@ export default function SharedGallerySubmissionForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [hasConsent, setHasConsent] = useState(false);
+    const [socialConsent, setSocialConsent] = useState(false);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
@@ -120,6 +123,11 @@ export default function SharedGallerySubmissionForm() {
             return;
         }
 
+        if (!hasConsent) {
+            setError('Bitte stimmen Sie den Bedingungen zu, um fortzufahren.');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -147,6 +155,7 @@ export default function SharedGallerySubmissionForm() {
                         imageFilename: photo.file.name,
                         dateTaken: photo.dateTaken?.toISOString(),
                         location: photo.location,
+                        socialConsent: socialConsent,
                     }),
                 });
 
@@ -166,6 +175,8 @@ export default function SharedGallerySubmissionForm() {
                 submitterName: '',
                 submitterEmail: '',
             });
+            setHasConsent(false);
+            setSocialConsent(false);
         } catch (err) {
             console.error('Submission error:', err);
             setError('Fehler beim Einreichen der Fotos');
@@ -396,11 +407,56 @@ export default function SharedGallerySubmissionForm() {
                 </p>
             </div>
 
+            {/* Consent Checkboxes */}
+            <div className="mb-6 space-y-4 rounded-lg bg-gray-50 p-4 border border-gray-200">
+                <div className="flex items-start">
+                    <div className="flex items-center h-5">
+                        <input
+                            id="consent"
+                            name="consent"
+                            type="checkbox"
+                            checked={hasConsent}
+                            onChange={(e) => setHasConsent(e.target.checked)}
+                            className="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div className="ml-3 text-sm">
+                        <label htmlFor="consent" className="font-medium text-gray-800">
+                            Pflicht-Einwilligung zur Nutzung auf der Webseite *
+                        </label>
+                        <p className="text-gray-600 text-xs mt-1">
+                            Ich habe die <Link href="/datenschutz" className="text-purple-600 hover:text-purple-800 underline" target="_blank">rechtlichen Hinweise</Link> gelesen und bestätige, dass ich alle Rechte an den Bildern besitze und die Zustimmung aller abgebildeten Personen für die Veröffentlichung auf dieser Webseite habe.
+                        </p>
+                    </div>
+                </div>
+                <div className="flex items-start">
+                    <div className="flex items-center h-5">
+                        <input
+                            id="socialConsent"
+                            name="socialConsent"
+                            type="checkbox"
+                            checked={socialConsent}
+                            onChange={(e) => setSocialConsent(e.target.checked)}
+                            className="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded"
+                        />
+                    </div>
+                    <div className="ml-3 text-sm">
+                        <label htmlFor="socialConsent" className="font-medium text-gray-800">
+                            Freiwillige Einwilligung für Social Media
+                        </label>
+                        <p className="text-gray-600 text-xs mt-1">
+                            Ich bin damit einverstanden, dass die Bilder zusätzlich auf den offiziellen Social-Media-Kanälen des Dorfes geteilt werden dürfen. Mir sind die <Link href="/datenschutz#social-risks" className="text-purple-600 hover:text-purple-800 underline" target="_blank">besonderen Risiken</Link> bewusst.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {/* Submit Button */}
             <div className="flex gap-3">
                 <button
                     type="submit"
-                    disabled={loading || photos.length === 0 || !commonData.generalTitle.trim()}
+                    disabled={loading || photos.length === 0 || !commonData.generalTitle.trim() || !hasConsent}
                     className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                     {loading ? (

@@ -16,6 +16,20 @@ import { revalidateTag } from 'next/cache';
 import { deleteFromBlob } from '@/lib/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
+// Helper function to notify WebSocket server
+async function notifyClients() {
+    try {
+        // Non-blocking call
+        fetch('http://localhost:8081/broadcast', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'refresh' }),
+        }).catch(err => console.error('WS notify error:', err));
+    } catch (error) {
+        console.error('Error notifying WebSocket server:', error);
+    }
+}
+
 export async function GET(request: NextRequest) {
     const authenticated = await isAuthenticated();
     if (!authenticated) {
@@ -88,6 +102,7 @@ export async function POST(request: NextRequest) {
                 currentUser?.username || 'Admin'
             );
             revalidateTag('shared-gallery');
+            notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -116,6 +131,7 @@ export async function POST(request: NextRequest) {
                 reason
             );
             revalidateTag('shared-gallery');
+            notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -140,6 +156,7 @@ export async function POST(request: NextRequest) {
             }
             const count = await resetAllInGroupToPending(submissionGroupId);
             revalidateTag('shared-gallery');
+            notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -173,6 +190,7 @@ export async function POST(request: NextRequest) {
                 );
             }
             revalidateTag('shared-gallery');
+            notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -205,6 +223,7 @@ export async function POST(request: NextRequest) {
                 );
             }
             revalidateTag('shared-gallery');
+            notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,

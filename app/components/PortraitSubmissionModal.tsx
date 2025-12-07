@@ -9,6 +9,7 @@ import {
     FileText,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface PortraitSubmissionModalProps {
     isOpen: boolean;
@@ -29,6 +30,7 @@ export default function PortraitSubmissionModal({
         description: '',
         email: '',
     });
+    const [hasConsent, setHasConsent] = useState(false);
 
     if (!isOpen) return null;
 
@@ -68,6 +70,11 @@ export default function PortraitSubmissionModal({
             return;
         }
 
+        if (!hasConsent) {
+            alert('Bitte stimmen Sie den Bedingungen zur Bildveröffentlichung zu.');
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -87,6 +94,7 @@ export default function PortraitSubmissionModal({
                 setFormData({ name: '', description: '', email: '' });
                 setSelectedFile(null);
                 setPreviewUrl(null);
+                setHasConsent(false);
 
                 onClose();
                 if (onSuccess) {
@@ -119,6 +127,7 @@ export default function PortraitSubmissionModal({
         setSelectedFile(null);
         setPreviewUrl(null);
         setFormData({ name: '', description: '', email: '' });
+        setHasConsent(false);
         onClose();
     };
 
@@ -286,19 +295,34 @@ export default function PortraitSubmissionModal({
                                     />
                                 </div>
 
-                                {/* Privacy Notice */}
+                                {/* Consent Checkbox */}
                                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                                    <p className="text-sm text-green-800">
-                                        <span className="font-medium">
-                                            Datenschutz:
-                                        </span>{' '}
-                                        Ihre Daten werden nur für die
-                                        Darstellung auf der Wendessen-Website
-                                        verwendet. Das Foto und Ihr Name werden
-                                        öffentlich sichtbar sein. Ihre
-                                        E-Mail-Adresse wird nicht
-                                        veröffentlicht.
-                                    </p>
+                                    <div className="flex items-start">
+                                        <div className="flex items-center h-5">
+                                            <input
+                                                id="consent"
+                                                name="consent"
+                                                type="checkbox"
+                                                checked={hasConsent}
+                                                onChange={(e) =>
+                                                    setHasConsent(e.target.checked)
+                                                }
+                                                className="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="ml-3 text-sm">
+                                            <label
+                                                htmlFor="consent"
+                                                className="font-medium text-gray-800"
+                                            >
+                                                Einwilligung zur Veröffentlichung *
+                                            </label>
+                                            <p className="text-gray-600 text-xs mt-1">
+                                                Ich habe die <Link href="/datenschutz" className="text-green-600 hover:text-green-800 underline" target="_blank">rechtlichen Hinweise</Link> gelesen und bestätige, dass ich alle Rechte am Bild besitze und die Zustimmung aller abgebildeten Personen für die Veröffentlichung auf dieser Webseite habe.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -313,7 +337,8 @@ export default function PortraitSubmissionModal({
                                         !selectedFile ||
                                         !formData.name.trim() ||
                                         !formData.description.trim() ||
-                                        formData.description.length < 50
+                                        formData.description.length < 50 ||
+                                        !hasConsent
                                     }
                                     className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
                                 >
