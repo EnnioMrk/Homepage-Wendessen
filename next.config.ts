@@ -1,18 +1,26 @@
 import type { NextConfig } from 'next';
 
+// Derive MinIO host/port/protocol from environment safely (no hardcoded host)
+const minioEndpoint = process.env.MINIO_ENDPOINT;
+function resolveMinioHost(endpoint?: string) {
+    if (!endpoint) return undefined;
+    try {
+        const u = new URL(endpoint);
+        return u.hostname;
+    } catch {
+        // If it's not a full URL, trim trailing slashes and ports if present
+        return endpoint.replace(/:\/\/$|:\/|\/$/g, '').replace(/:\d+$/, '');
+    }
+}
+
+const minioHostname = resolveMinioHost(minioEndpoint);
 const nextConfig: NextConfig = {
     images: {
-        // Always allow the known MinIO hostname in case env vars are missing
-        domains: [
-            'wendessen-website-minio-dljcxl-fcba76-146-59-235-98.traefik.me',
-        ],
+        domains: minioHostname ? [minioHostname] : [],
         remotePatterns: [
             {
-                protocol:
-                    process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http',
-                hostname: process.env.MINIO_ENDPOINT?.includes('://')
-                    ? new URL(process.env.MINIO_ENDPOINT).hostname
-                    : process.env.MINIO_ENDPOINT || 'localhost',
+                protocol: process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http',
+                hostname: minioHostname || 'localhost',
                 port: process.env.MINIO_PORT || '9000',
                 pathname: '/:path*',
             },
