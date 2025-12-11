@@ -1,4 +1,4 @@
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 import { Users, UserCircle } from '@phosphor-icons/react/dist/ssr';
 
 interface TeamMember {

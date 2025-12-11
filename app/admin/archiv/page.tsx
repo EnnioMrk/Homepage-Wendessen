@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { usePermissions } from '@/lib/usePermissions';
 import Link from 'next/link';
-import PromptDialog from '@/app/components/PromptDialog';
-import ErrorNotification from '@/app/components/ErrorNotification';
+import PromptDialog from '@/app/components/ui/PromptDialog';
+import ErrorNotification from '@/app/components/ui/ErrorNotification';
 import {
     NewspaperClipping,
     Plus,
@@ -17,7 +17,7 @@ import {
     Eye,
     X,
 } from '@phosphor-icons/react/dist/ssr';
-import ArticleRenderer from '@/app/components/ArticleRenderer';
+import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import { Descendant } from 'slate';
 
 interface ArchiveItem {

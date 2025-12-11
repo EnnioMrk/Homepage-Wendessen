@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
 import LazySharedGalleryImage from '@/app/components/LazySharedGalleryImage';
 import { SharedGalleryImageProvider } from '@/app/components/SharedGalleryImageContext';
-import PromptDialog from '@/app/components/PromptDialog';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import PromptDialog from '@/app/components/ui/PromptDialog';
 import {
     ArrowLeft,
     Check,

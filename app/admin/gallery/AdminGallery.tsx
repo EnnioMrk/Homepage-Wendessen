@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import { usePermissions } from '@/lib/usePermissions';
 import {
     UploadSimple,
@@ -18,7 +18,7 @@ import {
     WarningCircle,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
-import PromptDialog from '@/app/components/PromptDialog';
+import PromptDialog from '@/app/components/ui/PromptDialog';
 
 interface GalleryImage {
     id: string;

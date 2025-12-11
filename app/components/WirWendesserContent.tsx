@@ -16,7 +16,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import PortraitSubmissionModal from '@/app/components/PortraitSubmissionModal';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 interface ApprovedPortrait {
     id: number;

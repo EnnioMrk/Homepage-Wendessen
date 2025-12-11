@@ -1,6 +1,6 @@
 import { getApprovedSharedGalleryGroups } from '@/lib/database';
 import { Camera } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 import Link from 'next/link';
 import GalleryGrid from '@/app/components/GalleryGrid';
 

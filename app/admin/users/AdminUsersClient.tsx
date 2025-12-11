@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ErrorNotification from '@/app/components/ErrorNotification';
+import ErrorNotification from '@/app/components/ui/ErrorNotification';
 import {
     User,
     Plus,

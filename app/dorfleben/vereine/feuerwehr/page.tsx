@@ -9,7 +9,7 @@ import {
     Phone,
     Globe,
 } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 export const metadata = {
     title: 'Freiwillige Feuerwehr Wendessen - Vereine',

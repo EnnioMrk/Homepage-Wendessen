@@ -228,4 +228,8 @@ export async function getAdminLogs(
 }
 
 // Re-export client-safe utilities for backwards compatibility
-export { getActionDescription, getActionColor } from './admin-log-utils';
+export {
+    getActionDescription,
+    getActionColor,
+    getLogSentence,
+} from './utils/admin-log-utils';

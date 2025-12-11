@@ -26,7 +26,11 @@ interface AddPhotosModalProps {
     onSuccess: () => void;
 }
 
-export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosModalProps) {
+export default function AddPhotosModal({
+    group,
+    onClose,
+    onSuccess,
+}: AddPhotosModalProps) {
     const [photos, setPhotos] = useState<PhotoData[]>([]);
     const [submitterName, setSubmitterName] = useState('');
     const [submitterEmail, setSubmitterEmail] = useState('');
@@ -49,19 +53,30 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
 
             try {
                 const exif = await exifr.parse(file, {
-                    pick: ['DateTimeOriginal', 'CreateDate', 'DateTime', 'GPSLatitude', 'GPSLongitude']
+                    pick: [
+                        'DateTimeOriginal',
+                        'CreateDate',
+                        'DateTime',
+                        'GPSLatitude',
+                        'GPSLongitude',
+                    ],
                 });
 
                 if (exif) {
                     // Try to get date in order of preference
-                    const exifDate = exif.DateTimeOriginal || exif.CreateDate || exif.DateTime;
+                    const exifDate =
+                        exif.DateTimeOriginal ||
+                        exif.CreateDate ||
+                        exif.DateTime;
                     if (exifDate) {
                         dateTaken = new Date(exifDate).toISOString();
                     }
 
                     // Get GPS coordinates if available
                     if (exif.GPSLatitude && exif.GPSLongitude) {
-                        location = `${exif.GPSLatitude.toFixed(6)}, ${exif.GPSLongitude.toFixed(6)}`;
+                        location = `${exif.GPSLatitude.toFixed(
+                            6
+                        )}, ${exif.GPSLongitude.toFixed(6)}`;
                     }
                 }
             } catch (error) {
@@ -73,7 +88,7 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                 preview,
                 description: '',
                 dateTaken,
-                location
+                location,
             });
         }
 
@@ -107,22 +122,19 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
             return;
         }
 
-        if (!submitterEmail) {
-            setError('Bitte geben Sie Ihre E-Mail-Adresse ein');
-            return;
-        }
-
         setIsSubmitting(true);
 
         try {
             // Submit each photo to the existing group
             for (const photo of photos) {
                 const reader = new FileReader();
-                const imageData = await new Promise<string>((resolve, reject) => {
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(photo.file);
-                });
+                const imageData = await new Promise<string>(
+                    (resolve, reject) => {
+                        reader.onload = () => resolve(reader.result as string);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(photo.file);
+                    }
+                );
 
                 const response = await fetch('/api/shared-gallery/submit', {
                     method: 'POST',
@@ -137,7 +149,7 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                         imageMimeType: photo.file.type,
                         imageFilename: photo.file.name,
                         dateTaken: photo.dateTaken,
-                        location: photo.location
+                        location: photo.location,
                     }),
                 });
 
@@ -149,7 +161,9 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
             onSuccess();
         } catch (error) {
             console.error('Error submitting photos:', error);
-            setError('Fehler beim Hochladen der Fotos. Bitte versuchen Sie es erneut.');
+            setError(
+                'Fehler beim Hochladen der Fotos. Bitte versuchen Sie es erneut.'
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -164,15 +178,26 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                             Fotos hinzufügen
                         </h2>
                         <p className="text-sm text-gray-600 mt-1">
-                            Zu: <span className="font-semibold">{group.title}</span>
+                            Zu:{' '}
+                            <span className="font-semibold">{group.title}</span>
                         </p>
                     </div>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
-                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                            className="w-6 h-6 text-gray-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                            />
                         </svg>
                     </button>
                 </div>
@@ -196,7 +221,7 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                     {/* Email Input */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Ihre E-Mail-Adresse *
+                            Ihre E-Mail-Adresse
                         </label>
                         <input
                             type="email"
@@ -204,7 +229,6 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                             onChange={(e) => setSubmitterEmail(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             placeholder="ihre.email@beispiel.de"
-                            required
                         />
                         <p className="text-xs text-gray-500 mt-1">
                             Zur Verifizierung und für Rückfragen
@@ -225,13 +249,30 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                                 className="hidden"
                                 id="photo-upload"
                             />
-                            <label htmlFor="photo-upload" className="cursor-pointer">
+                            <label
+                                htmlFor="photo-upload"
+                                className="cursor-pointer"
+                            >
                                 <div className="flex flex-col items-center gap-2">
-                                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    <svg
+                                        className="w-12 h-12 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
                                     </svg>
-                                    <span className="text-blue-600 font-medium">Fotos auswählen</span>
-                                    <span className="text-sm text-gray-500">oder hierher ziehen</span>
+                                    <span className="text-blue-600 font-medium">
+                                        Fotos auswählen
+                                    </span>
+                                    <span className="text-sm text-gray-500">
+                                        oder hierher ziehen
+                                    </span>
                                 </div>
                             </label>
                         </div>
@@ -245,7 +286,10 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                             </h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {photos.map((photo, index) => (
-                                    <div key={index} className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                                    <div
+                                        key={index}
+                                        className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50"
+                                    >
                                         <div className="relative aspect-video bg-gray-200">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
@@ -255,35 +299,65 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                                             />
                                             <button
                                                 type="button"
-                                                onClick={() => removePhoto(index)}
+                                                onClick={() =>
+                                                    removePhoto(index)
+                                                }
                                                 className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
                                             >
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
                                                 </svg>
                                             </button>
                                         </div>
                                         <div className="p-3 space-y-2">
                                             <div className="text-xs text-gray-600">
                                                 <p className="font-medium truncate">
-                                                    {photo.file.name} ({(photo.file.size / (1024 * 1024)).toFixed(2)} MB)
+                                                    {photo.file.name} (
+                                                    {(
+                                                        photo.file.size /
+                                                        (1024 * 1024)
+                                                    ).toFixed(2)}{' '}
+                                                    MB)
                                                 </p>
                                                 {photo.dateTaken && (
                                                     <p className="text-gray-500">
-                                                        📅 {new Date(photo.dateTaken).toLocaleDateString('de-DE', {
-                                                            day: '2-digit',
-                                                            month: '2-digit',
-                                                            year: 'numeric'
-                                                        })}
+                                                        📅{' '}
+                                                        {new Date(
+                                                            photo.dateTaken
+                                                        ).toLocaleDateString(
+                                                            'de-DE',
+                                                            {
+                                                                day: '2-digit',
+                                                                month: '2-digit',
+                                                                year: 'numeric',
+                                                            }
+                                                        )}
                                                     </p>
                                                 )}
                                                 {photo.location && (
-                                                    <p className="text-gray-500">📍 {photo.location}</p>
+                                                    <p className="text-gray-500">
+                                                        📍 {photo.location}
+                                                    </p>
                                                 )}
                                             </div>
                                             <textarea
                                                 value={photo.description}
-                                                onChange={(e) => updatePhotoDescription(index, e.target.value)}
+                                                onChange={(e) =>
+                                                    updatePhotoDescription(
+                                                        index,
+                                                        e.target.value
+                                                    )
+                                                }
                                                 placeholder="Beschreibung (optional)"
                                                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                                 rows={2}
@@ -316,7 +390,11 @@ export default function AddPhotosModal({ group, onClose, onSuccess }: AddPhotosM
                             className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={isSubmitting || photos.length === 0}
                         >
-                            {isSubmitting ? 'Wird hochgeladen...' : `${photos.length} Foto${photos.length !== 1 ? 's' : ''} hinzufügen`}
+                            {isSubmitting
+                                ? 'Wird hochgeladen...'
+                                : `${photos.length} Foto${
+                                      photos.length !== 1 ? 's' : ''
+                                  } hinzufügen`}
                         </button>
                     </div>
                 </form>

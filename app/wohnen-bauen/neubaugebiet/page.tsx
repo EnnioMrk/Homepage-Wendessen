@@ -12,7 +12,7 @@ import {
     FileText,
     Calendar,
 } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 export const metadata = {
     title: 'Neubaugebiet Leipziger Allee - Wohnen & Bauen in Wendessen',

@@ -6,8 +6,8 @@ import 'moment/locale/de';
 import '../../was-steht-an/calendar.css'; // Import calendar styles
 import { useState, useEffect } from 'react';
 import { CalendarEvent } from '@/lib/database';
-import { getCategoryBackgroundColor } from '@/lib/event-utils';
-import EventModal from '@/app/components/EventModal';
+import { getCategoryBackgroundColor } from '@/lib/utils/event-utils';
+
 import { usePermissions } from '@/lib/usePermissions';
 import {
     UsersThree,
@@ -27,7 +27,8 @@ import {
     Buildings,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
-import ImagePicker from '../../components/ImagePicker';
+import EventModal from '@/app/components/events/EventModal';
+import ImagePicker from '@/app/components/ui/ImagePicker';
 
 // Set German locale and configure moment properly
 moment.locale('de');

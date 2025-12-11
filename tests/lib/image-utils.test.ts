@@ -3,7 +3,7 @@ import {
     convertToWebP,
     convertDataUrlToWebP,
     bufferToDataUrl,
-} from '../../lib/image-utils';
+} from '../../lib/utils/image-utils';
 
 describe('Image Utils', () => {
     describe('convertToWebP', () => {

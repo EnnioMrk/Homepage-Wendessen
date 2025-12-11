@@ -23,15 +23,18 @@ export async function POST(request: NextRequest) {
         const limitedIds = imageIds.slice(0, 100);
 
         const result = await sql`
-            SELECT id, image_url, image_data, image_mime_type 
+            SELECT id, image_url, image_mime_type 
             FROM shared_gallery_submissions 
             WHERE id = ANY(${limitedIds})
         `;
 
-        const images: Record<string, { imageUrl: string; imageMimeType?: string }> = {};
+        const images: Record<
+            string,
+            { imageUrl: string; imageMimeType?: string }
+        > = {};
 
         for (const row of result) {
-            const imageUrl = row.image_url || row.image_data;
+            const imageUrl = row.image_url;
             if (imageUrl) {
                 images[String(row.id)] = {
                     imageUrl,

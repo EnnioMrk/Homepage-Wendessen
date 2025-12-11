@@ -157,9 +157,10 @@ bun run build
 ```
 
 This ensures:
-- TypeScript type checking passes
-- No compilation errors exist
-- The deployment will succeed
+
+-   TypeScript type checking passes
+-   No compilation errors exist
+-   The deployment will succeed
 
 Never push code that fails the build. If the build fails, fix all errors first.
 
@@ -199,16 +200,16 @@ This project follows the [Conventional Commits](https://www.conventionalcommits.
 
 #### Commit Types
 
-| Type | Description | SemVer Impact |
-|------|-------------|---------------|
-| `feat` | New feature | MINOR bump |
-| `fix` | Bug fix | PATCH bump |
-| `docs` | Documentation only | No bump |
-| `style` | Code style (formatting, whitespace) | No bump |
-| `refactor` | Code change that neither fixes a bug nor adds a feature | No bump |
-| `perf` | Performance improvement | PATCH bump |
-| `test` | Adding or updating tests | No bump |
-| `chore` | Maintenance tasks (deps, build, etc.) | No bump |
+| Type       | Description                                             | SemVer Impact |
+| ---------- | ------------------------------------------------------- | ------------- |
+| `feat`     | New feature                                             | MINOR bump    |
+| `fix`      | Bug fix                                                 | PATCH bump    |
+| `docs`     | Documentation only                                      | No bump       |
+| `style`    | Code style (formatting, whitespace)                     | No bump       |
+| `refactor` | Code change that neither fixes a bug nor adds a feature | No bump       |
+| `perf`     | Performance improvement                                 | PATCH bump    |
+| `test`     | Adding or updating tests                                | No bump       |
+| `chore`    | Maintenance tasks (deps, build, etc.)                   | No bump       |
 
 #### Breaking Changes
 

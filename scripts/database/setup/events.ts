@@ -1,0 +1,37 @@
+#!/usr/bin/env bunx
+import { sql } from '../../../lib/sql';
+
+async function setupEvents() {
+    console.log('Setting up events table...');
+
+    try {
+        await sql`
+            CREATE TABLE IF NOT EXISTS events (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL UNIQUE,
+                description TEXT,
+                start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+                end_date TIMESTAMP WITH TIME ZONE,
+                location VARCHAR(255),
+                category VARCHAR(50) DEFAULT 'sonstiges',
+                organizer VARCHAR(255),
+                image_url TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            );
+        `;
+        console.log('✓ events table ensured');
+
+        await sql`CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);`;
+        console.log('✓ events indexes ensured');
+
+        console.log('✅ Events setup complete');
+    } catch (err) {
+        console.error('Error setting up events:', err);
+        throw err;
+    }
+}
+
+setupEvents()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));

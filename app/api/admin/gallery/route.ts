@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../lib/permissions';
-import { uploadToBlob } from '../../../../lib/blob-utils';
-import { convertFileToWebP } from '../../../../lib/image-utils';
+import { uploadToBlob } from '../../../../lib/utils/blob-utils';
+import { convertFileToWebP } from '../../../../lib/utils/image-utils';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';

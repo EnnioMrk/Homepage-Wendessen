@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSharedGallerySubmission } from '@/lib/database';
+import { sql } from '@/lib/sql';
 import { revalidateTag } from 'next/cache';
-import { uploadToBlob } from '@/lib/blob-utils';
-import { convertDataUrlToWebP } from '@/lib/image-utils';
-import { notifyNewSharedGallery } from '@/lib/push-notifications';
+import { uploadToBlob } from '@/lib/utils/blob-utils';
+import { convertDataUrlToWebP } from '@/lib/utils/image-utils';
+import {
+    notifyNewSharedGallery,
+    notifySharedGalleryAppended,
+} from '@/lib/push-notifications';
 
 export async function POST(request: NextRequest) {
     try {
@@ -56,6 +60,24 @@ export async function POST(request: NextRequest) {
             bucket: 'impressions',
         });
 
+        // Determine if this submissionGroupId already exists (append vs new)
+        const existingCountResult =
+            await sql`SELECT COUNT(*) as count FROM shared_gallery_submissions WHERE submission_group_id = ${submissionGroupId}`;
+        const existingCount = Number(existingCountResult[0]?.count || 0);
+
+        // If this is the first image for this submission group, require a submitter name
+        if (
+            existingCount === 0 &&
+            (!submitterName || !String(submitterName).trim())
+        ) {
+            return NextResponse.json(
+                { error: 'Submitter name is required for new submissions' },
+                { status: 400 }
+            );
+        }
+
+        // Legacy mapping creation removed: do not create gallery mappings here.
+
         const submission = await createSharedGallerySubmission({
             submissionGroupId,
             title,
@@ -73,15 +95,27 @@ export async function POST(request: NextRequest) {
         // Revalidate the shared gallery cache so admins see new submissions
         revalidateTag('shared-gallery');
 
-        // Send push notification to admins (deduplication happens in the function)
-        // Note: Since images are submitted one by one, the notification is sent on first image
-        notifyNewSharedGallery(
-            submissionGroupId,
-            submitterName || 'Anonym',
-            1 // We don't know total count here, just say "new submission"
-        ).catch((err) =>
-            console.error('Failed to send shared gallery notification:', err)
-        );
+        // Send push notification to admins. If this group already existed, send an "appended" notification,
+        // otherwise send the new-submission notification.
+        const senderName = submitterName || 'Anonym';
+        if (existingCount > 0) {
+            notifySharedGalleryAppended(submissionGroupId, senderName, 1).catch(
+                (err) =>
+                    console.error(
+                        'Failed to send shared gallery appended notification:',
+                        err
+                    )
+            );
+        } else {
+            // First image in this group -> new submission
+            notifyNewSharedGallery(submissionGroupId, senderName, 1).catch(
+                (err) =>
+                    console.error(
+                        'Failed to send shared gallery notification:',
+                        err
+                    )
+            );
+        }
 
         return NextResponse.json(
             {

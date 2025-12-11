@@ -19,7 +19,8 @@ const nextConfig: NextConfig = {
         domains: minioHostname ? [minioHostname] : [],
         remotePatterns: [
             {
-                protocol: process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http',
+                protocol:
+                    process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http',
                 hostname: minioHostname || 'localhost',
                 port: process.env.MINIO_PORT || '9000',
                 pathname: '/:path*',

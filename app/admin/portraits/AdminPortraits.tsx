@@ -16,7 +16,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { usePermissions } from '@/lib/usePermissions';
-import PromptDialog from '@/app/components/PromptDialog';
+import PromptDialog from '@/app/components/ui/PromptDialog';
 
 interface PortraitSubmission {
     id: number;

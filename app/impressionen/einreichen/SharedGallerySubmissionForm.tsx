@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import { Camera, X, Check, WarningCircle } from '@phosphor-icons/react';
 import exifr from 'exifr';
 
@@ -56,19 +56,30 @@ export default function SharedGallerySubmissionForm() {
             try {
                 // Extract EXIF data
                 const exifData = await exifr.parse(file, {
-                    pick: ['DateTimeOriginal', 'CreateDate', 'DateTime', 'GPSLatitude', 'GPSLongitude']
+                    pick: [
+                        'DateTimeOriginal',
+                        'CreateDate',
+                        'DateTime',
+                        'GPSLatitude',
+                        'GPSLongitude',
+                    ],
                 });
 
                 // Get date taken from EXIF
                 let dateTaken: Date | undefined;
                 if (exifData) {
-                    dateTaken = exifData.DateTimeOriginal || exifData.CreateDate || exifData.DateTime;
+                    dateTaken =
+                        exifData.DateTimeOriginal ||
+                        exifData.CreateDate ||
+                        exifData.DateTime;
                 }
 
                 // Get location from GPS data
                 let location: string | undefined;
                 if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
-                    location = `${exifData.GPSLatitude.toFixed(6)}, ${exifData.GPSLongitude.toFixed(6)}`;
+                    location = `${exifData.GPSLatitude.toFixed(
+                        6
+                    )}, ${exifData.GPSLongitude.toFixed(6)}`;
                 }
 
                 // Create preview
@@ -83,7 +94,7 @@ export default function SharedGallerySubmissionForm() {
                     });
                     loaded++;
                     if (loaded === files.length) {
-                        setPhotos(prev => [...prev, ...newPhotos]);
+                        setPhotos((prev) => [...prev, ...newPhotos]);
                     }
                 };
                 reader.readAsDataURL(file);
@@ -99,7 +110,7 @@ export default function SharedGallerySubmissionForm() {
                     });
                     loaded++;
                     if (loaded === files.length) {
-                        setPhotos(prev => [...prev, ...newPhotos]);
+                        setPhotos((prev) => [...prev, ...newPhotos]);
                     }
                 };
                 reader.readAsDataURL(file);
@@ -112,7 +123,7 @@ export default function SharedGallerySubmissionForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!commonData.generalTitle.trim()) {
             setError('Bitte geben Sie einen Titel ein');
             return;
@@ -128,17 +139,24 @@ export default function SharedGallerySubmissionForm() {
             return;
         }
 
+        if (!commonData.submitterName.trim()) {
+            setError('Bitte geben Sie Ihren Namen an');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
         try {
             // Generate a unique group ID for this submission
-            const groupId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            const groupId = `sub_${Date.now()}_${Math.random()
+                .toString(36)
+                .substr(2, 9)}`;
 
             // Submit each photo with the same group ID
             for (let i = 0; i < photos.length; i++) {
                 const photo = photos[i];
-                    
+
                 const response = await fetch('/api/shared-gallery/submit', {
                     method: 'POST',
                     headers: {
@@ -148,8 +166,10 @@ export default function SharedGallerySubmissionForm() {
                         submissionGroupId: groupId,
                         title: commonData.generalTitle.trim(),
                         description: photo.description.trim() || undefined,
-                        submitterName: commonData.submitterName.trim() || undefined,
-                        submitterEmail: commonData.submitterEmail.trim() || undefined,
+                        submitterName:
+                            commonData.submitterName.trim() || undefined,
+                        submitterEmail:
+                            commonData.submitterEmail.trim() || undefined,
                         imageData: photo.preview,
                         imageMimeType: photo.file.type,
                         imageFilename: photo.file.name,
@@ -161,7 +181,10 @@ export default function SharedGallerySubmissionForm() {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    setError(errorData.error || `Fehler beim Hochladen von Foto ${i + 1}`);
+                    setError(
+                        errorData.error ||
+                            `Fehler beim Hochladen von Foto ${i + 1}`
+                    );
                     setLoading(false);
                     return;
                 }
@@ -196,8 +219,9 @@ export default function SharedGallerySubmissionForm() {
                         Vielen Dank!
                     </h3>
                     <p className="text-gray-700 mb-6">
-                        Ihre Fotos wurden erfolgreich eingereicht und werden in Kürze von unserem Team geprüft.
-                        Nach der Freigabe erscheinen sie in unserer Impressionen-Galerie.
+                        Ihre Fotos wurden erfolgreich eingereicht und werden in
+                        Kürze von unserem Team geprüft. Nach der Freigabe
+                        erscheinen sie in unserer Impressionen-Galerie.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button
@@ -219,14 +243,19 @@ export default function SharedGallerySubmissionForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
+        <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-2xl shadow-xl p-8"
+        >
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-gray-900">
                     Neue Foto-Sammlung erstellen
                 </h3>
                 <button
                     type="button"
-                    onClick={() => router.push('/impressionen/einreichen/erweitern')}
+                    onClick={() =>
+                        router.push('/impressionen/einreichen/erweitern')
+                    }
                     className="text-sm text-purple-600 hover:text-purple-700 font-medium underline"
                 >
                     Zu bestehender Sammlung hinzufügen
@@ -251,21 +280,35 @@ export default function SharedGallerySubmissionForm() {
 
             {/* General Title */}
             <div className="mb-6">
-                <label htmlFor="generalTitle" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                    htmlFor="generalTitle"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                >
                     Titel *
                 </label>
                 <input
                     type="text"
                     id="generalTitle"
                     value={commonData.generalTitle}
-                    onChange={(e) => setCommonData({ ...commonData, generalTitle: e.target.value })}
+                    onChange={(e) =>
+                        setCommonData({
+                            ...commonData,
+                            generalTitle: e.target.value,
+                        })
+                    }
                     placeholder="z.B. Dorffest 2025, Winterlandschaft, etc."
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                     maxLength={255}
                     required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                    Dieser Titel gilt für {photos.length === 0 ? 'Ihre' : photos.length === 1 ? 'Ihr' : `alle ${photos.length}`} Foto{photos.length !== 1 ? 's' : ''}
+                    Dieser Titel gilt für{' '}
+                    {photos.length === 0
+                        ? 'Ihre'
+                        : photos.length === 1
+                        ? 'Ihr'
+                        : `alle ${photos.length}`}{' '}
+                    Foto{photos.length !== 1 ? 's' : ''}
                 </p>
             </div>
 
@@ -279,10 +322,17 @@ export default function SharedGallerySubmissionForm() {
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                             <Camera className="w-12 h-12 text-gray-400 mb-3" />
                             <p className="mb-2 text-sm text-gray-600">
-                                <span className="font-semibold">Klicken Sie hier</span> oder ziehen Sie Fotos hierher
+                                <span className="font-semibold">
+                                    Klicken Sie hier
+                                </span>{' '}
+                                oder ziehen Sie Fotos hierher
                             </p>
-                            <p className="text-xs text-gray-500">PNG, JPG, WEBP (max. 10MB pro Foto)</p>
-                            <p className="text-xs text-gray-500 mt-1">Mehrere Fotos auswählbar</p>
+                            <p className="text-xs text-gray-500">
+                                PNG, JPG, WEBP (max. 10MB pro Foto)
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Mehrere Fotos auswählbar
+                            </p>
                         </div>
                         <input
                             type="file"
@@ -295,7 +345,10 @@ export default function SharedGallerySubmissionForm() {
                 ) : (
                     <div className="space-y-4">
                         {photos.map((photo, index) => (
-                            <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div
+                                key={index}
+                                className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                            >
                                 <div className="flex gap-4">
                                     <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
                                         <Image
@@ -313,8 +366,13 @@ export default function SharedGallerySubmissionForm() {
                                             <textarea
                                                 value={photo.description}
                                                 onChange={(e) => {
-                                                    const newPhotos = [...photos];
-                                                    newPhotos[index].description = e.target.value;
+                                                    const newPhotos = [
+                                                        ...photos,
+                                                    ];
+                                                    newPhotos[
+                                                        index
+                                                    ].description =
+                                                        e.target.value;
                                                     setPhotos(newPhotos);
                                                 }}
                                                 placeholder="Beschreibung..."
@@ -324,18 +382,32 @@ export default function SharedGallerySubmissionForm() {
                                         </div>
                                         <div className="space-y-1">
                                             <p className="text-xs text-gray-500">
-                                                📁 {photo.file.name} ({(photo.file.size / (1024 * 1024)).toFixed(2)} MB)
+                                                📁 {photo.file.name} (
+                                                {(
+                                                    photo.file.size /
+                                                    (1024 * 1024)
+                                                ).toFixed(2)}{' '}
+                                                MB)
                                             </p>
                                             {photo.dateTaken && (
                                                 <p className="text-xs text-gray-500">
-                                                    📅 Aufgenommen: {photo.dateTaken.toLocaleDateString('de-DE', {
-                                                        day: '2-digit',
-                                                        month: '2-digit',
-                                                        year: 'numeric'
-                                                    })} um {photo.dateTaken.toLocaleTimeString('de-DE', {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit'
-                                                    })}
+                                                    📅 Aufgenommen:{' '}
+                                                    {photo.dateTaken.toLocaleDateString(
+                                                        'de-DE',
+                                                        {
+                                                            day: '2-digit',
+                                                            month: '2-digit',
+                                                            year: 'numeric',
+                                                        }
+                                                    )}{' '}
+                                                    um{' '}
+                                                    {photo.dateTaken.toLocaleTimeString(
+                                                        'de-DE',
+                                                        {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        }
+                                                    )}
                                                 </p>
                                             )}
                                             {photo.location && (
@@ -348,7 +420,11 @@ export default function SharedGallerySubmissionForm() {
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            setPhotos(photos.filter((_, i) => i !== index));
+                                            setPhotos(
+                                                photos.filter(
+                                                    (_, i) => i !== index
+                                                )
+                                            );
                                         }}
                                         className="p-2 h-fit bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                                     >
@@ -359,7 +435,13 @@ export default function SharedGallerySubmissionForm() {
                         ))}
                         <button
                             type="button"
-                            onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                            onClick={() =>
+                                document
+                                    .querySelector<HTMLInputElement>(
+                                        'input[type="file"]'
+                                    )
+                                    ?.click()
+                            }
                             className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors flex items-center justify-center gap-2"
                         >
                             <Camera className="w-5 h-5" />
@@ -371,33 +453,51 @@ export default function SharedGallerySubmissionForm() {
 
             {/* Submitter Name */}
             <div className="mb-6">
-                <label htmlFor="submitterName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Ihr Name (optional)
+                <label
+                    htmlFor="submitterName"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                    Ihr Name *
                 </label>
                 <input
                     type="text"
                     id="submitterName"
                     value={commonData.submitterName}
-                    onChange={(e) => setCommonData({ ...commonData, submitterName: e.target.value })}
+                    onChange={(e) =>
+                        setCommonData({
+                            ...commonData,
+                            submitterName: e.target.value,
+                        })
+                    }
                     placeholder="Max Mustermann"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                     maxLength={255}
+                    required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                    Wird in der Galerie bei Ihren Fotos angezeigt, falls freigegeben
+                    Wird in der Galerie bei Ihren Fotos angezeigt, falls
+                    freigegeben
                 </p>
             </div>
 
             {/* Submitter Email */}
             <div className="mb-6">
-                <label htmlFor="submitterEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                    htmlFor="submitterEmail"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                >
                     E-Mail (optional)
                 </label>
                 <input
                     type="email"
                     id="submitterEmail"
                     value={commonData.submitterEmail}
-                    onChange={(e) => setCommonData({ ...commonData, submitterEmail: e.target.value })}
+                    onChange={(e) =>
+                        setCommonData({
+                            ...commonData,
+                            submitterEmail: e.target.value,
+                        })
+                    }
                     placeholder="max@example.com"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                     maxLength={255}
@@ -422,11 +522,25 @@ export default function SharedGallerySubmissionForm() {
                         />
                     </div>
                     <div className="ml-3 text-sm">
-                        <label htmlFor="consent" className="font-medium text-gray-800">
+                        <label
+                            htmlFor="consent"
+                            className="font-medium text-gray-800"
+                        >
                             Pflicht-Einwilligung zur Nutzung auf der Webseite *
                         </label>
                         <p className="text-gray-600 text-xs mt-1">
-                            Ich habe die <Link href="/datenschutz" className="text-purple-600 hover:text-purple-800 underline" target="_blank">rechtlichen Hinweise</Link> gelesen und bestätige, dass ich alle Rechte an den Bildern besitze und die Zustimmung aller abgebildeten Personen für die Veröffentlichung auf dieser Webseite habe.
+                            Ich habe die{' '}
+                            <Link
+                                href="/datenschutz"
+                                className="text-purple-600 hover:text-purple-800 underline"
+                                target="_blank"
+                            >
+                                rechtlichen Hinweise
+                            </Link>{' '}
+                            gelesen und bestätige, dass ich alle Rechte an den
+                            Bildern besitze und die Zustimmung aller
+                            abgebildeten Personen für die Veröffentlichung auf
+                            dieser Webseite habe.
                         </p>
                     </div>
                 </div>
@@ -442,11 +556,24 @@ export default function SharedGallerySubmissionForm() {
                         />
                     </div>
                     <div className="ml-3 text-sm">
-                        <label htmlFor="socialConsent" className="font-medium text-gray-800">
+                        <label
+                            htmlFor="socialConsent"
+                            className="font-medium text-gray-800"
+                        >
                             Freiwillige Einwilligung für Social Media
                         </label>
                         <p className="text-gray-600 text-xs mt-1">
-                            Ich bin damit einverstanden, dass die Bilder zusätzlich auf den offiziellen Social-Media-Kanälen des Dorfes geteilt werden dürfen. Mir sind die <Link href="/datenschutz#social-risks" className="text-purple-600 hover:text-purple-800 underline" target="_blank">besonderen Risiken</Link> bewusst.
+                            Ich bin damit einverstanden, dass die Bilder
+                            zusätzlich auf den offiziellen Social-Media-Kanälen
+                            des Dorfes geteilt werden dürfen. Mir sind die{' '}
+                            <Link
+                                href="/datenschutz#social-risks"
+                                className="text-purple-600 hover:text-purple-800 underline"
+                                target="_blank"
+                            >
+                                besonderen Risiken
+                            </Link>{' '}
+                            bewusst.
                         </p>
                     </div>
                 </div>
@@ -456,18 +583,30 @@ export default function SharedGallerySubmissionForm() {
             <div className="flex gap-3">
                 <button
                     type="submit"
-                    disabled={loading || photos.length === 0 || !commonData.generalTitle.trim() || !hasConsent}
+                    disabled={
+                        loading ||
+                        photos.length === 0 ||
+                        !commonData.generalTitle.trim() ||
+                        !hasConsent ||
+                        !commonData.submitterName.trim()
+                    }
                     className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 >
                     {loading ? (
                         <>
-                            <LoadingSpinner size="sm" color="white" className="mr-2" />
+                            <LoadingSpinner
+                                size="sm"
+                                color="white"
+                                className="mr-2"
+                            />
                             Wird eingereicht...
                         </>
                     ) : (
                         <>
                             <Check className="w-5 h-5 mr-2" />
-                            {photos.length === 1 ? 'Foto einreichen' : `${photos.length} Fotos einreichen`}
+                            {photos.length === 1
+                                ? 'Foto einreichen'
+                                : `${photos.length} Fotos einreichen`}
                         </>
                     )}
                 </button>

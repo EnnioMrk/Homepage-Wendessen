@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
-import Pg from 'pg';
+import * as pg from 'pg';
 import fs from 'fs';
 import path from 'path';
 
@@ -19,8 +19,6 @@ if (fs.existsSync(envPath)) {
     }
 }
 
-const { Pool } = Pg;
-
 // Use TEST_DATABASE_URL for integration tests, fall back to DATABASE_URL
 // The mirror script sets up the test database at port 5431
 const TEST_DATABASE_URL =
@@ -30,14 +28,14 @@ const TEST_DATABASE_URL =
 const describeFn = TEST_DATABASE_URL ? describe : describe.skip;
 
 describeFn('Database Integration Tests', () => {
-    let pool: Pg.Pool;
+    let pool: any;
 
     beforeAll(() => {
         if (!TEST_DATABASE_URL) {
             console.warn('TEST_DATABASE_URL not set, skipping database tests');
             return;
         }
-        pool = new Pool({ connectionString: TEST_DATABASE_URL });
+        pool = new (pg as any).Pool({ connectionString: TEST_DATABASE_URL });
     });
 
     afterAll(async () => {
@@ -77,7 +75,7 @@ describeFn('Database Integration Tests', () => {
                 WHERE table_schema = 'public' 
                 AND table_name = 'events'
             `);
-            const columns = result.rows.map((r) => r.column_name);
+            const columns = result.rows.map((r: any) => r.column_name);
 
             expect(columns).toContain('id');
             expect(columns).toContain('title');
@@ -109,7 +107,7 @@ describeFn('Database Integration Tests', () => {
                 'notfall',
                 'sonstiges',
             ];
-            result.rows.forEach((row) => {
+            result.rows.forEach((row: any) => {
                 expect(validCategories).toContain(row.category);
             });
         });
@@ -134,7 +132,7 @@ describeFn('Database Integration Tests', () => {
                 WHERE table_schema = 'public' 
                 AND table_name = 'news'
             `);
-            const columns = result.rows.map((r) => r.column_name);
+            const columns = result.rows.map((r: any) => r.column_name);
 
             expect(columns).toContain('id');
             expect(columns).toContain('title');
@@ -176,7 +174,7 @@ describeFn('Database Integration Tests', () => {
                 AND table_name = 'contacts'
                 AND udt_name = 'jsonb'
             `);
-            const jsonbColumns = result.rows.map((r) => r.column_name);
+            const jsonbColumns = result.rows.map((r: any) => r.column_name);
 
             expect(jsonbColumns).toContain('emails');
             expect(jsonbColumns).toContain('phones');
@@ -204,7 +202,7 @@ describeFn('Database Integration Tests', () => {
                 WHERE table_schema = 'public' 
                 AND table_name = 'admin_users'
             `);
-            const columns = result.rows.map((r) => r.column_name);
+            const columns = result.rows.map((r: any) => r.column_name);
 
             expect(columns).toContain('id');
             expect(columns).toContain('username');
@@ -248,7 +246,7 @@ describeFn('Database Integration Tests', () => {
 
         test('expected roles exist', async () => {
             const result = await pool.query(`SELECT name FROM roles`);
-            const roleNames = result.rows.map((r) => r.name);
+            const roleNames = result.rows.map((r: any) => r.name);
 
             // Check for some expected roles
             expect(roleNames.length).toBeGreaterThan(0);

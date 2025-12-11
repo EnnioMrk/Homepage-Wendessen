@@ -14,7 +14,7 @@ import {
     MapPin,
     HandHeart,
 } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 export const metadata = {
     title: 'Evang. Frauenhilfe Wendessen - Dorfleben',

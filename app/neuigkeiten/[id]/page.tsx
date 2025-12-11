@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { sql } from '@/lib/sql';
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import Link from 'next/link';
-import ArticleRenderer from '@/app/components/ArticleRenderer';
+import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import { Descendant } from 'slate';
 
 interface NewsArticle {

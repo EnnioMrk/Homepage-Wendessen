@@ -100,11 +100,7 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                             Ergänzen
                                         </button>
                                     </div>
-                                    {group.description && (
-                                        <p className="text-lg text-gray-700 mb-3 max-w-3xl">
-                                            {group.description}
-                                        </p>
-                                    )}
+                                    {/* Gallery-level descriptions removed per request */}
                                     <div className="flex items-center gap-3 text-sm text-gray-600">
                                         <span className="font-medium">
                                             {group.totalCount} Foto
@@ -167,11 +163,11 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                 </div>
 
                                 {/* Group Images with staggered layout */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 md:gap-2">
                                     {group.images.map((photo, photoIndex) => (
                                         <div
                                             key={photo.id}
-                                            className="group relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer"
+                                            className="group relative cursor-pointer mb-4"
                                             style={{
                                                 animationDelay: `${
                                                     photoIndex * 100
@@ -193,53 +189,61 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                                 })
                                             }
                                         >
-                                            {/* Gradient border effect */}
-                                            <div
-                                                className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-sm -z-10`}
-                                            ></div>
-
-                                            <div className="aspect-square relative overflow-hidden">
-                                                <Image
-                                                    src={photo.imageUrl}
-                                                    alt={
-                                                        photo.description ||
-                                                        group.title
-                                                    }
-                                                    fill
-                                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                                />
-                                                {/* Overlay gradient on hover */}
-                                                <div
-                                                    className={`absolute inset-0 bg-gradient-to-t ${gradient} opacity-0 group-hover:opacity-30 transition-opacity duration-500`}
-                                                ></div>
-
-                                                {/* Click hint on hover */}
-                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
-                                                        <svg
-                                                            className="w-6 h-6 text-gray-800"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth={2}
-                                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                                                            />
-                                                        </svg>
-                                                    </div>
+                                            {/* Padded container without border/background; image has asymmetric corner radii */}
+                                            <div className="p-3 rounded-3xl">
+                                                <div className="relative aspect-square overflow-hidden rounded-t-3xl rounded-b-2xl">
+                                                    <Image
+                                                        src={photo.imageUrl}
+                                                        alt={
+                                                            photo.description?.trim() ||
+                                                            group.title
+                                                        }
+                                                        fill
+                                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                    />
                                                 </div>
                                             </div>
-                                            {photo.description && (
-                                                <div className="p-4 bg-gradient-to-br from-gray-50 to-white">
-                                                    <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed">
-                                                        {photo.description}
-                                                    </p>
+
+                                            {/* Info below the image container */}
+                                            <div className="px-5">
+                                                <div className="w-full flex items-center justify-between text-sm text-gray-700 font-medium">
+                                                    <span className="truncate">
+                                                        {group
+                                                            .submitterNames[0] ||
+                                                            'Anonym'}
+                                                    </span>
+                                                    <span className="text-sm text-gray-500">
+                                                        {photo.dateTaken
+                                                            ? new Date(
+                                                                  photo.dateTaken
+                                                              ).toLocaleDateString(
+                                                                  'de-DE',
+                                                                  {
+                                                                      day: 'numeric',
+                                                                      month: 'short',
+                                                                      year: 'numeric',
+                                                                  }
+                                                              )
+                                                            : new Date(
+                                                                  group.submittedAt
+                                                              ).toLocaleDateString(
+                                                                  'de-DE',
+                                                                  {
+                                                                      day: 'numeric',
+                                                                      month: 'short',
+                                                                      year: 'numeric',
+                                                                  }
+                                                              )}
+                                                    </span>
                                                 </div>
-                                            )}
+
+                                                {photo.description?.trim() ? (
+                                                    <p className="mt-1 text-sm text-gray-700 line-clamp-3 leading-relaxed">
+                                                        {photo.description.trim()}
+                                                    </p>
+                                                ) : null}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

@@ -179,11 +179,19 @@ describe('Edge Cases and Boundary Conditions', () => {
         });
 
         test('handles nullish coalescing', () => {
-            expect(null ?? 'default').toBe('default');
-            expect(undefined ?? 'default').toBe('default');
-            expect(0 ?? 'default').toBe(0);
-            expect('' ?? 'default').toBe('');
-            expect(false ?? 'default').toBe(false);
+            const n: null = null;
+            const u: undefined = undefined;
+            expect(n ?? 'default').toBe('default');
+            expect(u ?? 'default').toBe('default');
+
+            // Use typed unions so TypeScript treats these as possibly nullish
+            const maybeZero: number | null = Math.random() > 2 ? null : 0;
+            const maybeEmpty: string | null = Math.random() > 2 ? null : '';
+            const maybeFalse: boolean | null = Math.random() > 2 ? null : false;
+
+            expect(maybeZero ?? 'default').toBe(0);
+            expect(maybeEmpty ?? 'default').toBe('');
+            expect(maybeFalse ?? 'default').toBe(false);
         });
     });
 

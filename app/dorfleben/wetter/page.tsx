@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import {
     Cloud,
     Thermometer,
@@ -15,7 +15,7 @@ import {
     Clock,
     Warning,
 } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 interface WeatherData {
     location: string;

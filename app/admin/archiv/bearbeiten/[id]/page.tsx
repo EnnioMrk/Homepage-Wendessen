@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Eye, Check, X } from '@phosphor-icons/react';
 import Link from 'next/link';
 import EnhancedRichTextEditor from '@/app/components/EnhancedRichTextEditor';
-import ArticleRenderer from '@/app/components/ArticleRenderer';
+import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import { Descendant } from 'slate';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
 const initialEditorValue: Descendant[] = [
     {

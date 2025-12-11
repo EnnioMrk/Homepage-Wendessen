@@ -128,58 +128,64 @@ async function getTableSchema(
         [tableName]
     );
 
-    const primaryKeys = pkResult.rows.map((row: { attname: string }) => row.attname);
+    const primaryKeys = pkResult.rows.map(
+        (row: { attname: string }) => row.attname
+    );
 
     // Build CREATE TABLE statement
-    const columns = columnsResult.rows.map((col: {
-        column_name: string;
-        data_type: string;
-        character_maximum_length: number | null;
-        column_default: string | null;
-        is_nullable: string;
-        udt_name: string;
-    }) => {
-        let typeDef = col.udt_name.toUpperCase();
+    const columns = columnsResult.rows.map(
+        (col: {
+            column_name: string;
+            data_type: string;
+            character_maximum_length: number | null;
+            column_default: string | null;
+            is_nullable: string;
+            udt_name: string;
+        }) => {
+            let typeDef = col.udt_name.toUpperCase();
 
-        // Handle special types
-        if (col.udt_name === 'int4') typeDef = 'INTEGER';
-        if (col.udt_name === 'int8') typeDef = 'BIGINT';
-        if (col.udt_name === 'bool') typeDef = 'BOOLEAN';
-        if (col.udt_name === 'varchar' && col.character_maximum_length) {
-            typeDef = `VARCHAR(${col.character_maximum_length})`;
+            // Handle special types
+            if (col.udt_name === 'int4') typeDef = 'INTEGER';
+            if (col.udt_name === 'int8') typeDef = 'BIGINT';
+            if (col.udt_name === 'bool') typeDef = 'BOOLEAN';
+            if (col.udt_name === 'varchar' && col.character_maximum_length) {
+                typeDef = `VARCHAR(${col.character_maximum_length})`;
+            }
+            if (col.udt_name === 'timestamptz')
+                typeDef = 'TIMESTAMP WITH TIME ZONE';
+            if (col.udt_name === 'timestamp') typeDef = 'TIMESTAMP';
+
+            let columnDef = `"${col.column_name}" ${typeDef}`;
+
+            // Handle serial types by checking default
+            if (col.column_default?.includes('nextval')) {
+                if (typeDef === 'INTEGER')
+                    columnDef = `"${col.column_name}" SERIAL`;
+                else if (typeDef === 'BIGINT')
+                    columnDef = `"${col.column_name}" BIGSERIAL`;
+            } else if (
+                col.column_default &&
+                !col.column_default.includes('nextval')
+            ) {
+                columnDef += ` DEFAULT ${col.column_default}`;
+            }
+
+            if (
+                col.is_nullable === 'NO' &&
+                !col.column_default?.includes('nextval')
+            ) {
+                columnDef += ' NOT NULL';
+            }
+
+            return columnDef;
         }
-        if (col.udt_name === 'timestamptz')
-            typeDef = 'TIMESTAMP WITH TIME ZONE';
-        if (col.udt_name === 'timestamp') typeDef = 'TIMESTAMP';
-
-        let columnDef = `"${col.column_name}" ${typeDef}`;
-
-        // Handle serial types by checking default
-        if (col.column_default?.includes('nextval')) {
-            if (typeDef === 'INTEGER')
-                columnDef = `"${col.column_name}" SERIAL`;
-            else if (typeDef === 'BIGINT')
-                columnDef = `"${col.column_name}" BIGSERIAL`;
-        } else if (
-            col.column_default &&
-            !col.column_default.includes('nextval')
-        ) {
-            columnDef += ` DEFAULT ${col.column_default}`;
-        }
-
-        if (
-            col.is_nullable === 'NO' &&
-            !col.column_default?.includes('nextval')
-        ) {
-            columnDef += ' NOT NULL';
-        }
-
-        return columnDef;
-    });
+    );
 
     if (primaryKeys.length > 0) {
         columns.push(
-            `PRIMARY KEY (${primaryKeys.map((k: string) => `"${k}"`).join(', ')})`
+            `PRIMARY KEY (${primaryKeys
+                .map((k: string) => `"${k}"`)
+                .join(', ')})`
         );
     }
 
@@ -227,9 +233,13 @@ async function copyTableData(
     const jsonColumns = new Set(
         columnTypesResult.rows
             .filter(
-                (col: { column_name: string; udt_name: string }) => col.udt_name === 'jsonb' || col.udt_name === 'json'
+                (col: { column_name: string; udt_name: string }) =>
+                    col.udt_name === 'jsonb' || col.udt_name === 'json'
             )
-            .map((col: { column_name: string; udt_name: string }) => col.column_name)
+            .map(
+                (col: { column_name: string; udt_name: string }) =>
+                    col.column_name
+            )
     );
 
     // Get all data from source
@@ -289,7 +299,10 @@ async function copyTableData(
     return inserted;
 }
 
-async function resetSequences(pool: PoolInstance, tableName: string): Promise<void> {
+async function resetSequences(
+    pool: PoolInstance,
+    tableName: string
+): Promise<void> {
     // Get sequence info for the table
     const result = await pool.query(
         `

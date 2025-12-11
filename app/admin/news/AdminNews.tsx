@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
-import PromptDialog from '@/app/components/PromptDialog';
-import ArticleRenderer from '@/app/components/ArticleRenderer';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import PromptDialog from '@/app/components/ui/PromptDialog';
+import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import Link from 'next/link';
 import {
     Plus,

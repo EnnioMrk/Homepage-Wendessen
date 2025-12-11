@@ -12,12 +12,12 @@ import {
     CaretRight,
     MagnifyingGlass,
 } from '@phosphor-icons/react';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import {
     getActionDescription,
     getActionColor,
     getLogSentence,
-} from '@/lib/admin-log-utils';
+} from '@/lib/utils/admin-log-utils';
 
 interface LogEntry {
     id: number;

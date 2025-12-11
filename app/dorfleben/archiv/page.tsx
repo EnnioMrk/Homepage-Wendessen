@@ -1,6 +1,6 @@
-import BackgroundElements from '@/app/components/BackgroundElements';
+import BackgroundElements from '@/app/components/layout/BackgroundElements';
 import { NewspaperClipping } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 import { getArchivedNews, getArchiveItems } from '@/lib/database';
 import ArchiveClient from './ArchiveClient';
 

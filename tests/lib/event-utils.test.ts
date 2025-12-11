@@ -6,7 +6,7 @@ import {
     getCategoryDisplayName,
     getCategoryIconEmoji,
     type EventCategory,
-} from '../../lib/event-utils';
+} from '../../lib/utils/event-utils';
 
 describe('Event Utils', () => {
     describe('getCategoryColors', () => {

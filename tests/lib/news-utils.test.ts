@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test';
-import { getCategoryColorClasses } from '../../lib/news-utils';
+import { getCategoryColorClasses } from '../../lib/utils/news-utils';
 
 describe('News Utils', () => {
     describe('getCategoryColorClasses', () => {

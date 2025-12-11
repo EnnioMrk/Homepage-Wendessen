@@ -9,7 +9,7 @@ import {
 } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
 import { revalidateTag } from 'next/cache';
-import { deleteFromBlob } from '@/lib/blob-utils';
+import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 // Helper function to notify WebSocket server

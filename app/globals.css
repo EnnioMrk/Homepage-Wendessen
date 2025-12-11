@@ -73,6 +73,20 @@
     }
 }
 
+/* Ensure form controls have high-contrast text by default */
+@layer base {
+    input,
+    textarea,
+    select {
+        @apply text-gray-900 bg-white;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        @apply text-gray-400;
+    }
+}
+
 /* Custom styles for navigation */
 .navigation-menu-trigger {
     @apply bg-white text-foreground hover:bg-primary/20 hover:text-primary-dark;

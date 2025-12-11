@@ -317,6 +317,30 @@ export async function notifyNewSharedGallery(
 }
 
 /**
+ * Notify that images were appended to an existing shared gallery group
+ */
+export async function notifySharedGalleryAppended(
+    submissionGroupId: string,
+    submitterName: string,
+    imageCount: number
+): Promise<void> {
+    await notifyUsersWithPermission(
+        'shared_gallery.view',
+        'shared_gallery_appended',
+        submissionGroupId,
+        {
+            title: 'Impressionen ergänzt',
+            body: `${submitterName} hat ${imageCount} ${
+                imageCount === 1 ? 'Bild' : 'Bilder'
+            } zu einer bestehenden Einreichung hinzugefügt.`,
+            icon: '/images/logo.png',
+            url: '/admin/shared-gallery',
+            tag: 'shared-gallery-appended',
+        }
+    );
+}
+
+/**
  * Get reminder days (3, 5, 7, 9, 11, ...)
  * Returns the reminder day if the submission age matches, otherwise null
  */

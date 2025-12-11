@@ -1,6 +1,6 @@
 import { getContacts } from '@/lib/database';
 import ContactDirectory from './ContactDirectory';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 import { AddressBook } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {

@@ -15,7 +15,7 @@ import {
     X,
     SpinnerGap,
 } from '@phosphor-icons/react';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
 interface SiteSetting {
     id: number;

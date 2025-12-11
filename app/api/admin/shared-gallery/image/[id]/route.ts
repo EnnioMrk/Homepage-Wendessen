@@ -15,7 +15,7 @@ export async function GET(
         const { id } = await params;
 
         const result = await sql`
-            SELECT image_url, image_data, image_mime_type 
+            SELECT image_url, image_mime_type 
             FROM shared_gallery_submissions 
             WHERE id = ${id}
         `;
@@ -27,7 +27,7 @@ export async function GET(
             );
         }
 
-        const imageUrl = result[0].image_url || result[0].image_data;
+        const imageUrl = result[0].image_url;
         if (!imageUrl) {
             return NextResponse.json(
                 { error: 'Image data missing' },

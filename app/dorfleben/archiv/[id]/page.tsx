@@ -1,5 +1,5 @@
-import BackgroundElements from '@/app/components/BackgroundElements';
-import ArticleRenderer from '@/app/components/ArticleRenderer';
+import BackgroundElements from '@/app/components/layout/BackgroundElements';
+import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import {
     NewspaperClipping,
     User,

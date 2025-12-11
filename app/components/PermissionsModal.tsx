@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, ShieldCheck } from '@phosphor-icons/react/dist/ssr';
 import { AdminUserRecord } from '@/lib/database';
-import PromptDialog from './PromptDialog';
+import PromptDialog from '@/app/components/ui/PromptDialog';
 
 interface Permission {
     id: number;

@@ -10,7 +10,7 @@ import {
     getCategoryBackgroundColor,
     getCategoryBadgeClasses,
     getCategoryDisplayName,
-} from '@/lib/event-utils';
+} from '@/lib/utils/event-utils';
 import {
     UsersThree,
     CalendarBlank,
@@ -22,9 +22,9 @@ import {
     User,
     WarningCircle,
 } from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import Image from 'next/image';
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 // Set German locale
 moment.locale('de');

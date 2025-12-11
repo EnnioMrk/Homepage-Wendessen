@@ -2,7 +2,7 @@ import { describe, test, expect } from 'bun:test';
 import {
     calculateImportance,
     isHighImportanceRole,
-} from '../../lib/importance-utils';
+} from '../../lib/utils/importance-utils';
 
 describe('Importance Utils', () => {
     describe('calculateImportance', () => {

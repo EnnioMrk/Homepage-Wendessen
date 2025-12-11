@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import LoadingSpinner from '@/app/components/LoadingSpinner';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import { Camera, X, Check, WarningCircle, ArrowLeft } from '@phosphor-icons/react';
 import exifr from 'exifr';
 

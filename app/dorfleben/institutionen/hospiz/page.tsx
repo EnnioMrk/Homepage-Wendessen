@@ -9,7 +9,7 @@ import {
     Clock,
 } from '@phosphor-icons/react/dist/ssr';
 
-import PageHeader from '@/app/components/PageHeader';
+import PageHeader from '@/app/components/layout/PageHeader';
 
 export const metadata = {
     title: 'Hospiz - Wohnen & Bauen in Wendessen',
