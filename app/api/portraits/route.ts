@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPortraitSubmission } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
-import { revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { convertFileToWebP } from '@/lib/utils/image-utils';
 import { uploadToBlob } from '@/lib/utils/blob-utils';
 import { notifyNewPortrait } from '@/lib/push-notifications';
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         );
 
         // Revalidate the portraits cache
-        revalidateTag('portraits');
+        revalidateTagSafe('portraits');
 
         // Send push notification to admins
         notifyNewPortrait(String(submission.id), name).catch((err) =>

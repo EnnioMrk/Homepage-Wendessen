@@ -16,7 +16,6 @@ function resolveMinioHost(endpoint?: string) {
 const minioHostname = resolveMinioHost(minioEndpoint);
 const nextConfig: NextConfig = {
     images: {
-        domains: minioHostname ? [minioHostname] : [],
         remotePatterns: [
             {
                 protocol:

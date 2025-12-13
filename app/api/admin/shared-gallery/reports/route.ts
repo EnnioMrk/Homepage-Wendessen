@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { getGalleryReports, updateGalleryReportStatus } from '@/lib/database';
-import { revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 
 export async function GET(request: Request) {
     const authenticated = await isAuthenticated();
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         const report = await updateGalleryReportStatus(reportId, status, 'admin');
         
         // Revalidate the reports cache
-        revalidateTag('gallery-reports');
+        revalidateTagSafe('gallery-reports');
 
         return NextResponse.json({ success: true, report });
     } catch (error) {

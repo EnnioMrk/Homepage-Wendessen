@@ -1,16 +1,4 @@
 import type { Metadata } from 'next';
-// Initialize MinIO buckets/policies and ensure default admin on server runtime start
-import '@/lib/minio-init';
-import ensureAdmin from '@/lib/ensure-admin';
-
-// Trigger ensure-admin at module import time so it runs on process startup
-if (typeof window === 'undefined') {
-    // fire-and-forget — logs and errors will appear in the server console
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    ensureAdmin().catch((e) =>
-        console.error('ensureAdmin (import-time) failed', e)
-    );
-}
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Menubar } from '@/app/components/layout/menubar';
@@ -31,15 +19,9 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // Run ensure-admin on server render/startup so it executes reliably
-    try {
-        const mod = await import('@/lib/ensure-admin');
-        if (typeof mod.ensureAdmin === 'function') {
-            await mod.ensureAdmin();
-        }
-    } catch (e) {
-        console.error('RootLayout: ensure-admin failed', e);
-    }
+    // NOTE: Do not run startup initialization here. Initialization (MinIO,
+    // default admin user) should run from a controlled startup script so it
+    // only executes once, not per Next/Turbopack build worker.
     return (
         <html lang="de">
             <body

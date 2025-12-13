@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSharedGallerySubmission } from '@/lib/database';
 import { sql } from '@/lib/sql';
-import { revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { uploadToBlob } from '@/lib/utils/blob-utils';
 import { convertDataUrlToWebP } from '@/lib/utils/image-utils';
 import {
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Revalidate the shared gallery cache so admins see new submissions
-        revalidateTag('shared-gallery');
+        revalidateTagSafe('shared-gallery');
 
         // Send push notification to admins. If this group already existed, send an "appended" notification,
         // otherwise send the new-submission notification.

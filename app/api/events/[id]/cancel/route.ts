@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cancelEvent, uncancelEvent, getEventById } from '@/lib/database';
 import { requireAnyPermission } from '@/lib/permissions';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function POST(
@@ -85,8 +85,8 @@ export async function POST(
         console.log('Event cancelled successfully');
 
         // Revalidate pages that show events
-        revalidatePath('/');
-        revalidateTag('events');
+        revalidatePathSafe('/');
+        revalidateTagSafe('events');
 
         // Log the action
         const requestInfo = getRequestInfo(request);
@@ -181,8 +181,8 @@ export async function DELETE(
         const uncancelledEvent = await uncancelEvent(id);
 
         // Revalidate pages that show events
-        revalidatePath('/');
-        revalidateTag('events');
+        revalidatePathSafe('/');
+        revalidateTagSafe('events');
 
         // Log the action
         const requestInfo = getRequestInfo(request);

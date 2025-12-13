@@ -6,7 +6,7 @@ import {
     CalendarEvent,
 } from '@/lib/database';
 import { requireAnyPermission } from '@/lib/permissions';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function GET(
@@ -108,8 +108,8 @@ export async function PUT(
         const updatedEvent = await updateEvent(id, updateData);
 
         // Revalidate pages that show events
-        revalidatePath('/');
-        revalidateTag('events');
+        revalidatePathSafe('/');
+        revalidateTagSafe('events');
 
         // Log the action
         const requestInfo = getRequestInfo(request);
@@ -189,8 +189,8 @@ export async function DELETE(
         await deleteEvent(id);
 
         // Revalidate pages that show events
-        revalidatePath('/');
-        revalidateTag('events');
+        revalidatePathSafe('/');
+        revalidateTagSafe('events');
 
         // Log the action
         const requestInfo = getRequestInfo(request);

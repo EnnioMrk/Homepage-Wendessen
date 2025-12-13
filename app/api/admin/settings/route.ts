@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { sql } from '@/lib/sql';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export interface SiteSetting {
@@ -105,8 +105,8 @@ export async function PUT(request: NextRequest) {
         });
 
         // Revalidate all pages since settings can affect any page
-        revalidatePath('/', 'layout');
-        revalidateTag('settings');
+        revalidatePathSafe('/', 'layout');
+        revalidateTagSafe('settings');
 
         return NextResponse.json({ success: true });
     } catch (error) {

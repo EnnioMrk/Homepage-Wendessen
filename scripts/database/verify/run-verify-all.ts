@@ -40,8 +40,11 @@ export async function runVerifyAll(): Promise<void> {
         }
 
         console.log(`
-=== verify: START ${s} ===`);
-        const res = spawnSync('bunx', ['tsx', scriptPath], {
+    === verify: START ${s} ===`);
+        // Run the TypeScript verification script with `bun` directly.
+        // Bun can execute .ts files without tsx; this avoids bunx's temporary
+        // preload loader issues on some Windows setups.
+        const res = spawnSync('bun', [scriptPath], {
             env: process.env,
             encoding: 'utf8',
             maxBuffer: 10 * 1024 * 1024,

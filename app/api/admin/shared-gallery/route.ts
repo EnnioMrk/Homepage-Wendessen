@@ -12,7 +12,7 @@ import {
     deleteSharedGallerySubmission,
     getSharedGallerySubmissionById,
 } from '@/lib/database';
-import { revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
                 submissionGroupId,
                 currentUser?.username || 'Admin'
             );
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
             notifyClients();
 
             logAdminAction({
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
                 currentUser?.username || 'Admin',
                 reason
             );
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
             notifyClients();
 
             logAdminAction({
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
                 );
             }
             const count = await resetAllInGroupToPending(submissionGroupId);
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
             notifyClients();
 
             logAdminAction({
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
                     currentUser?.username || 'Admin'
                 );
             }
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
             notifyClients();
 
             logAdminAction({
@@ -222,7 +222,7 @@ export async function POST(request: NextRequest) {
                     reason
                 );
             }
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
             notifyClients();
 
             logAdminAction({
@@ -255,7 +255,7 @@ export async function POST(request: NextRequest) {
             for (const imageId of imageIds) {
                 await resetSharedGallerySubmissionToPending(imageId);
             }
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -280,7 +280,7 @@ export async function POST(request: NextRequest) {
                 id,
                 currentUser?.username || 'Admin'
             );
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -305,7 +305,7 @@ export async function POST(request: NextRequest) {
                 currentUser?.username || 'Admin',
                 reason
             );
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -343,7 +343,7 @@ export async function POST(request: NextRequest) {
                 );
             }
             await deleteSharedGallerySubmission(id);
-            revalidateTag('shared-gallery');
+            revalidateTagSafe('shared-gallery');
 
             logAdminAction({
                 userId: currentUser?.id,

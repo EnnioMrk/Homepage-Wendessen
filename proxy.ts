@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/middlewareAuth';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     // Protect admin routes except login and change-password
     if (
         request.nextUrl.pathname.startsWith('/admin') &&

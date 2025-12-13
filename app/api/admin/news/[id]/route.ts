@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '../../../../../lib/auth';
 import { sql } from '../../../../../lib/sql';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 // GET - Get single news item
@@ -119,8 +119,8 @@ export async function PUT(
         });
 
         // Revalidate pages that show news
-        revalidatePath('/');
-        revalidateTag('news');
+        revalidatePathSafe('/');
+        revalidateTagSafe('news');
 
         return NextResponse.json({ news: updatedNews });
     } catch (error) {
@@ -182,8 +182,8 @@ export async function DELETE(
         });
 
         // Revalidate pages that show news
-        revalidatePath('/');
-        revalidateTag('news');
+        revalidatePathSafe('/');
+        revalidateTagSafe('news');
 
         return NextResponse.json({ success: true });
     } catch (error) {

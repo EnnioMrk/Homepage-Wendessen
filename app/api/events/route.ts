@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
 import { requireAnyPermission } from '@/lib/permissions';
 import { getCurrentAdminUser } from '@/lib/auth';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function GET() {
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
         const createdEvent = await createEvent(newEvent);
 
         // Revalidate pages that show events
-        revalidatePath('/');
-        revalidateTag('events');
+        revalidatePathSafe('/');
+        revalidateTagSafe('events');
 
         // Log the action
         const requestInfo = getRequestInfo(request);

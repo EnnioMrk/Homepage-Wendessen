@@ -8,7 +8,7 @@ import {
     unpinNews,
     getPinnedNewsCount,
 } from '../../../../../../lib/database';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 // POST - Pin a news item
@@ -30,8 +30,8 @@ export async function POST(
         const news = await pinNews(id);
 
         // Revalidate pages that show news
-        revalidatePath('/');
-        revalidateTag('news');
+        revalidatePathSafe('/');
+        revalidateTagSafe('news');
 
         // Log the action
         const currentUser = await getCurrentAdminUser();
@@ -77,8 +77,8 @@ export async function DELETE(
         const news = await unpinNews(id);
 
         // Revalidate pages that show news
-        revalidatePath('/');
-        revalidateTag('news');
+        revalidatePathSafe('/');
+        revalidateTagSafe('news');
 
         // Log the action
         const currentUser = await getCurrentAdminUser();

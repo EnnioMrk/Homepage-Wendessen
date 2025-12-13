@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '../../../../lib/auth';
 import { sql } from '../../../../lib/sql';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 interface NewsRow {
@@ -126,8 +126,8 @@ export async function POST(request: NextRequest) {
         });
 
         // Revalidate pages that show news
-        revalidatePath('/');
-        revalidateTag('news');
+        revalidatePathSafe('/');
+        revalidateTagSafe('news');
 
         return NextResponse.json({ news: newNews });
     } catch (error) {

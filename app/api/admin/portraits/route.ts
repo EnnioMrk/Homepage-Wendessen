@@ -8,7 +8,7 @@ import {
     cleanupOldRejectedPortraits,
 } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
-import { revalidateTag } from 'next/cache';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
@@ -139,7 +139,7 @@ export async function PATCH(request: NextRequest) {
         }
 
         // Revalidate the portraits cache
-        revalidateTag('portraits');
+        revalidateTagSafe('portraits');
 
         const actionText =
             action === 'approve'
@@ -240,7 +240,7 @@ export async function DELETE(request: NextRequest) {
         }
 
         // Revalidate the portraits cache
-        revalidateTag('portraits');
+        revalidateTagSafe('portraits');
 
         console.log(`Portrait submission ${id} deleted by admin`);
 
