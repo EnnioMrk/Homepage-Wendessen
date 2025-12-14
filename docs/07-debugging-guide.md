@@ -183,7 +183,7 @@ if (!mounted) return <div>Loading...</div>;
 
 ```typescript
 # Run a quick script that uses the shared helper (requires DATABASE_URL in env)
-# Example: `bunx tsx scripts/setup-database.ts`
+# Example: `bun scripts/setup-database.ts`
 // Add debug logging
 const DEBUG = process.env.NODE_ENV === 'development';
 

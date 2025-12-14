@@ -91,16 +91,16 @@ export const getCategoryDisplayName = (category: string): string => {
     return displayNames[category as EventCategory] || 'Sonstiges';
 };
 
-// Get category icon (emoji)
+// Get category icon key (use icon components in UI instead of emoji)
 export const getCategoryIconEmoji = (category: string): string => {
-    const iconMap = {
-        sitzung: '📋',
-        veranstaltung: '🎉',
-        sport: '⚽',
-        kultur: '🎭',
-        notfall: '🚨',
-        sonstiges: '📅',
+    const iconKeyMap = {
+        sitzung: 'users-three',
+        veranstaltung: 'calendar-blank',
+        sport: 'lightning',
+        kultur: 'music-notes-simple',
+        notfall: 'alert-circle',
+        sonstiges: 'calendar',
     };
 
-    return iconMap[category as EventCategory] || '📅';
+    return iconKeyMap[category as EventCategory] || 'calendar';
 };

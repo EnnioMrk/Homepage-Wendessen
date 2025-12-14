@@ -1,4 +1,4 @@
-#!/usr/bin/env bunx tsx
+#!/usr/bin/env bun
 import { sql } from '../../../lib/sql';
 
 async function run() {

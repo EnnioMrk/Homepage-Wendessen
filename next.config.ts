@@ -13,18 +13,44 @@ function resolveMinioHost(endpoint?: string) {
     }
 }
 
-const minioHostname = resolveMinioHost(minioEndpoint);
+const minioHostname = resolveMinioHost(minioEndpoint) || process.env.MINIO_HOSTNAME || process.env.MINIO_HOST;
+const minioPort = process.env.MINIO_PORT || (minioEndpoint ? new URL(minioEndpoint).port || undefined : undefined) || '9000';
+const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
+
+// Build remotePatterns as URL instances when MinIO is configured. Using
+// `URL` here matches Next.js typings `(URL | RemotePattern)[]` and keeps the
+// allowed external image sources strict (blocks all others).
+const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
+    ? (() => {
+          const portSegment = process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : '';
+          const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
+          try {
+              return [new URL(url)];
+          } catch {
+              // fallback to object pattern if URL constructor fails for any reason
+              return [
+                  {
+                      protocol: minioProtocol,
+                      hostname: minioHostname,
+                      ...(process.env.MINIO_PORT ? { port: process.env.MINIO_PORT } : {}),
+                      pathname: '/:path*',
+                  },
+              ];
+          }
+      })()
+    : [];
+
+console.log(
+    `Next.js image remotePatterns configured for MinIO: ${minioHostname ? `${minioProtocol}://${minioHostname}${process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''}` : 'none'}`
+);
+
 const nextConfig: NextConfig = {
     images: {
-        remotePatterns: [
-            {
-                protocol:
-                    process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http',
-                hostname: minioHostname || 'localhost',
-                port: process.env.MINIO_PORT || '9000',
-                pathname: '/:path*',
-            },
-        ],
+        // Use only remotePatterns (domains is deprecated). Keep patterns strict
+        // and only enable them when a MinIO hostname is configured via env.
+        // Type assertion is required so TS accepts the plain-object patterns
+        // as the expected `(URL | RemotePattern)[]` union.
+        remotePatterns: imageRemotePatterns as unknown as any,
         // Aggressive caching for optimized images (1 year)
         minimumCacheTTL: 31536000,
     },

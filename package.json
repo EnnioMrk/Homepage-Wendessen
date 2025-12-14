@@ -13,9 +13,8 @@
         "test:api": "bun test tests/api",
         "test:watch": "bun test --watch",
         "test:coverage": "bun test --coverage",
-        "ws:start": "bun run scripts/websocket-server.ts",
-        "mirror-to-test-db": "bunx tsx scripts/mirror-to-test-db.ts",
-        "setup-minio": "bunx tsx scripts/setup-minio-buckets.ts"
+        "setup-minio": "bun scripts/setup-minio-buckets.ts",
+        "setup:db": "bun scripts/database/run-full-setup.ts"
     },
     "dependencies": {
         "@phosphor-icons/react": "^2.1.10",
@@ -30,6 +29,7 @@
         "minio": "^7.1.4",
         "moment": "^2.30.1",
         "next": "^16.0.10",
+        "npx": "^10.2.2",
         "pg": "^8.16.3",
         "react": "^19.2.3",
         "react-big-calendar": "^1.19.4",

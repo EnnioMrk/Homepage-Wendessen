@@ -51,16 +51,7 @@ export async function ensureAdmin(): Promise<void> {
                     `;
                     const superRoleId = roleRows?.[0]?.id;
 
-                    // Fetch all permission names to grant explicitly
-                    const permRows = await sql`SELECT name FROM permissions`;
-                    const permNames = (permRows || [])
-                        .map((r: { name?: string }) => r.name)
-                        .filter(
-                            (v: unknown): v is string =>
-                                typeof v === 'string' && v.length > 0
-                        );
-
-                    // Assign role_id and custom_permissions to the created admin
+                    // Assign role_id and grant wildcard permission to the created admin
                     if (inserted && inserted[0]) {
                         const adminId = inserted[0].id;
 
@@ -77,20 +68,15 @@ export async function ensureAdmin(): Promise<void> {
                             );
                         }
 
-                        if (permNames.length > 0) {
-                            await sql`
-                                UPDATE admin_users SET custom_permissions = ${JSON.stringify(
-                                    permNames
-                                )}::jsonb WHERE id = ${adminId}
-                            `;
-                            console.log(
-                                '[EnsureAdmin] granted all permissions to admin via custom_permissions'
-                            );
-                        } else {
-                            console.warn(
-                                '[EnsureAdmin] no permissions found to grant'
-                            );
-                        }
+                        // Explicitly grant wildcard permission so this admin has full access
+                        await sql`
+                            UPDATE admin_users SET custom_permissions = ${JSON.stringify(
+                                ['*']
+                            )}::jsonb WHERE id = ${adminId}
+                        `;
+                        console.log(
+                            '[EnsureAdmin] granted wildcard permission to admin via custom_permissions'
+                        );
 
                         // Admin created and permissions assigned; no marker file.
                     }

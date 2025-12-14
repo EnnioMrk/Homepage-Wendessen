@@ -1,4 +1,4 @@
-#!/usr/bin/env bunx tsx
+#!/usr/bin/env bun
 /**
  * Ensure MinIO buckets exist and set public-read for GETs.
  * Run at server start to guarantee correct bucket policies.

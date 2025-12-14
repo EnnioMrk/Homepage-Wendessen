@@ -85,7 +85,7 @@ bun run scripts/setup-portraits-table.ts
 Convenience wrapper that runs the core scripts sequentially (with `.env` loading) so onboarded contributors can provision everything with a single command.
 
 ```bash
-bunx tsx scripts/run-full-setup.ts
+bun scripts/run-full-setup.ts
 ```
 
 #### `migrate-shared-gallery-images-to-minio.ts`
@@ -93,7 +93,7 @@ bunx tsx scripts/run-full-setup.ts
 Converts existing base64 stored gallery submissions to MinIO files and updates the database with their URLs/paths.
 
 ```bash
-bunx tsx scripts/migrate-shared-gallery-images-to-minio.ts
+bun scripts/migrate-shared-gallery-images-to-minio.ts
 ```
 
 ## 🚀 Quick Start Sequence

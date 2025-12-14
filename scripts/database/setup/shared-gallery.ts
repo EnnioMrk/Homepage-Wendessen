@@ -96,10 +96,6 @@ async function setupSharedGallery() {
         console.log('✓ shared_gallery_reports table created');
 
         console.log('\n✅ Shared gallery setup completed successfully!');
-        console.log('\nNext steps:');
-        console.log('1. Users can submit photos at /impressionen/einreichen');
-        console.log('2. Admins can review at /admin/shared-gallery');
-        console.log('3. Approved photos appear at /impressionen');
     } catch (error) {
         console.error('❌ Error setting up shared gallery:', error);
         throw error;

@@ -31,70 +31,70 @@ async function main() {
     const steps = [
         {
             name: 'Admin users',
-            cmd: 'bunx tsx scripts/database/setup-admin-users.ts',
+            cmd: 'bun /scripts/database/setup/admin-users.ts',
         },
         {
             name: 'Roles & permissions',
-            cmd: 'bunx tsx scripts/database/setup-roles-permissions.ts',
+            cmd: 'bun /scripts/database/setup/roles-permissions.ts',
         },
         {
             name: 'Admin logs',
-            cmd: 'bunx tsx scripts/database/setup-admin-logs.ts',
+            cmd: 'bun /scripts/database/setup/admin-logs.ts',
         },
         {
             name: 'Push subscriptions',
-            cmd: 'bunx tsx scripts/database/setup-push-subscriptions.ts',
+            cmd: 'bun /scripts/database/setup/push-subscriptions.ts',
         },
         {
             name: 'Contacts (seed)',
-            cmd: 'bunx tsx scripts/database/setup-contacts.ts',
+            cmd: 'bun /scripts/database/setup/contacts.ts',
         },
         {
             name: 'Portraits table',
-            cmd: 'bunx tsx scripts/database/setup-portraits-table.ts',
+            cmd: 'bun /scripts/database/setup/portraits-table.ts',
         },
         {
             name: 'Events table',
-            cmd: 'bunx tsx scripts/database/setup-events.ts',
+            cmd: 'bun /scripts/database/setup/events.ts',
+        },
+        {
+            name: 'Gallery images table',
+            cmd: 'bun /scripts/database/setup/admin-gallery.ts',
         },
         {
             name: 'News table',
-            cmd: 'bunx tsx scripts/database/setup-news.ts',
+            cmd: 'bun /scripts/database/setup/news.ts',
         },
         {
             name: 'Shared gallery',
-            cmd: 'bunx tsx scripts/database/setup-shared-gallery.ts',
+            cmd: 'bun /scripts/database/setup/shared-gallery.ts',
         },
         {
             name: 'Gallery reports',
-            cmd: 'bunx tsx scripts/database/setup-gallery-reports.ts',
+            cmd: 'bun /scripts/database/setup/gallery-reports.ts',
         },
         {
             name: 'MinIO buckets',
-            cmd: 'bunx tsx scripts/database/setup-minio-buckets.ts',
+            cmd: 'bun /scripts/database/setup/minio-buckets.ts',
         },
         {
             name: 'Vereinsverwalter role',
-            cmd: 'bunx tsx scripts/database/setup-verein-roles.ts',
+            cmd: 'bun /scripts/database/setup/verein-roles.ts',
         },
         {
             name: 'Site settings',
-            cmd: 'bunx tsx scripts/database/setup-settings.ts',
+            cmd: 'bun /scripts/database/setup/settings.ts',
         },
         {
             name: 'Archive table',
-            cmd: 'bunx tsx scripts/database/setup-archive-table.ts',
+            cmd: 'bun /scripts/database/setup/archive-table.ts',
         },
     ];
 
     for (const step of steps) {
         console.log(`\n=== Running: ${step.name} ===`);
-        // If .env exists, prefix so the child picks it up in shells without relying on external tooling
-        const prefix = fs.existsSync(envPath)
-            ? 'set -a && source .env && set +a && '
-            : '';
         try {
-            run(prefix + step.cmd);
+            run(step.cmd);
             console.log(`✅ ${step.name} completed`);
         } catch (err) {
             console.error(

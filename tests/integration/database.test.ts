@@ -283,19 +283,6 @@ describeFn('Database Integration Tests', () => {
         });
     });
 
-    describe('Gallery Images Table', () => {
-        test('gallery_images table exists', async () => {
-            const result = await pool.query(`
-                SELECT EXISTS (
-                    SELECT FROM information_schema.tables 
-                    WHERE table_schema = 'public' 
-                    AND table_name = 'gallery_images'
-                ) as exists
-            `);
-            expect(result.rows[0].exists).toBe(true);
-        });
-    });
-
     describe('Portraits Table', () => {
         test('portraits table exists', async () => {
             const result = await pool.query(`

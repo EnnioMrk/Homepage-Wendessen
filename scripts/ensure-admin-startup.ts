@@ -1,4 +1,4 @@
-#!/usr/bin/env bunx tsx
+#!/usr/bin/env bun
 // dotenv's types sometimes don't resolve correctly under the project's resolver.
 // use a safe import and call `config()` while silencing the specific TS module-resolution issue.
 // @ts-ignore: Fallback for dotenv types/exports resolution
@@ -30,8 +30,8 @@ async function ensureAdmin() {
             const password = randomBytes(12).toString('base64url');
             const hash = await bcrypt.hash(password, 10);
             await client.query(
-                'INSERT INTO admin_users (username, password_hash, must_change_password) VALUES ($1, $2, true)',
-                ['admin', hash]
+                'INSERT INTO admin_users (username, password_hash, custom_permissions, must_change_password) VALUES ($1, $2, $3, true)',
+                ['admin', hash, '["*"]']
             );
             console.log(
                 'DEFAULT ADMIN CREATED — username=admin password=' + password

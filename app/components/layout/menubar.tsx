@@ -6,8 +6,16 @@ import * as MenubarPrimitive from '@radix-ui/react-menubar';
 import { cn } from '@/app/lib/utils';
 import { useAdminAuth } from '@/lib/useAdminAuth';
 
+// `React.ElementRef` is deprecated in newer React type definitions.
+// Infer the element instance type from a component's props/ref instead.
+type InferElementRef<T> = T extends React.JSXElementConstructor<any>
+    ? React.ComponentPropsWithRef<T>['ref'] extends React.Ref<infer R>
+        ? R
+        : never
+    : never;
+
 const Menubar = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.Root>,
+    InferElementRef<typeof MenubarPrimitive.Root>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root>
 >(({ className, ...props }, ref) => (
     <MenubarPrimitive.Root
@@ -22,7 +30,7 @@ const Menubar = React.forwardRef<
 Menubar.displayName = MenubarPrimitive.Root.displayName;
 
 const MenubarTrigger = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.Trigger>,
+    InferElementRef<typeof MenubarPrimitive.Trigger>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
     <MenubarPrimitive.Trigger
@@ -37,7 +45,7 @@ const MenubarTrigger = React.forwardRef<
 MenubarTrigger.displayName = MenubarPrimitive.Trigger.displayName;
 
 const MenubarContent = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.Content>,
+    InferElementRef<typeof MenubarPrimitive.Content>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Content>
 >(
     (
@@ -68,7 +76,7 @@ const MenubarContent = React.forwardRef<
 MenubarContent.displayName = MenubarPrimitive.Content.displayName;
 
 const MenubarItem = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.Item>,
+    InferElementRef<typeof MenubarPrimitive.Item>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Item> & {
         inset?: boolean;
     }
@@ -86,7 +94,7 @@ const MenubarItem = React.forwardRef<
 MenubarItem.displayName = MenubarPrimitive.Item.displayName;
 
 const MenubarSubTrigger = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.SubTrigger>,
+    InferElementRef<typeof MenubarPrimitive.SubTrigger>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger> & {
         inset?: boolean;
     }
@@ -106,7 +114,7 @@ const MenubarSubTrigger = React.forwardRef<
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName;
 
 const MenubarSubContent = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.SubContent>,
+    InferElementRef<typeof MenubarPrimitive.SubContent>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubContent>
 >(({ className, ...props }, ref) => (
     <MenubarPrimitive.SubContent
@@ -121,7 +129,7 @@ const MenubarSubContent = React.forwardRef<
 MenubarSubContent.displayName = MenubarPrimitive.SubContent.displayName;
 
 const MenubarSeparator = React.forwardRef<
-    React.ElementRef<typeof MenubarPrimitive.Separator>,
+    InferElementRef<typeof MenubarPrimitive.Separator>,
     React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Separator>
 >(({ className, ...props }, ref) => (
     <MenubarPrimitive.Separator
@@ -305,7 +313,7 @@ const kontaktItems = [
     { title: 'Datenschutz', href: '/kontakt/datenschutz' },
 ];
 
-export function MenubarDemo() {
+function MenubarDemo() {
     const { isAuthenticated } = useAdminAuth();
 
     return (
@@ -433,4 +441,5 @@ export {
     MenubarSeparator,
     MenubarSubContent,
     MenubarSubTrigger,
+    MenubarDemo,
 };

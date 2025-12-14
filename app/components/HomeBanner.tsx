@@ -19,11 +19,16 @@ export default function HomeBanner() {
         img.style.height = 'auto';
 
         banner.appendChild(img);
+        
+        banner.setAttribute('role', 'banner');
+        banner.style.position = 'relative';
+        banner.style.zIndex = '60';
 
-        // Insert banner at the very beginning of the body's flex container
-        const flexContainer = document.querySelector('body > div');
-        if (flexContainer) {
-            flexContainer.insertBefore(banner, flexContainer.firstChild);
+        const firstBodyChild = document.body.firstChild;
+        if (firstBodyChild) {
+            document.body.insertBefore(banner, firstBodyChild);
+        } else {
+            document.body.appendChild(banner);
         }
 
         // Cleanup function

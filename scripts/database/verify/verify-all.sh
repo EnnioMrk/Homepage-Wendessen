@@ -21,7 +21,7 @@ SCRIPTS=(
 FAIL=0
 for s in "${SCRIPTS[@]}"; do
   echo "Running $s"
-  if ! bunx tsx "$DIR/$s"; then
+  if ! bun "$DIR/$s"; then
     echo "-> $s FAILED"
     FAIL=1
   fi

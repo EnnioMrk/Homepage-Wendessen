@@ -11,6 +11,7 @@ async function setupRolesAndPermissions() {
                 name VARCHAR(100) UNIQUE NOT NULL,
                 display_name VARCHAR(255) NOT NULL,
                 description TEXT,
+                default_permissions JSONB DEFAULT '[]'::jsonb,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
@@ -31,16 +32,6 @@ async function setupRolesAndPermissions() {
         `;
         console.log('✓ permissions table created');
 
-        // Add role_id and permissions columns to admin_users table
-        await sql`
-            ALTER TABLE admin_users 
-            ADD COLUMN IF NOT EXISTS role_id INTEGER REFERENCES roles(id),
-            ADD COLUMN IF NOT EXISTS custom_permissions JSONB DEFAULT '[]'::jsonb;
-        `;
-        console.log(
-            '✓ Added role_id and custom_permissions columns to admin_users'
-        );
-
         // Create indexes
         await sql`
             CREATE INDEX IF NOT EXISTS idx_admin_users_role_id 
@@ -55,11 +46,11 @@ async function setupRolesAndPermissions() {
         if (roleCount === 0) {
             // Insert default roles
             await sql`
-                INSERT INTO roles (name, display_name, description) VALUES
-                ('super_admin', 'Super Admin', 'Vollständiger Zugriff auf alle Funktionen und Einstellungen'),
-                ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern'),
-                ('editor', 'Redakteur', 'Bearbeitung von Inhalten (Events, News, Galerie)'),
-                ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen');
+                INSERT INTO roles (name, display_name, description, default_permissions) VALUES
+                ('super_admin', 'Super Admin', 'Vollständiger Zugriff auf alle Funktionen und Einstellungen', '[]'::jsonb),
+                ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern', '[]'::jsonb),
+                ('editor', 'Redakteur', 'Bearbeitung von Inhalten (Events, News, Galerie)', '[]'::jsonb),
+                ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen', '[]'::jsonb);
             `;
             console.log('✓ Created default roles');
         } else {
@@ -118,6 +109,19 @@ async function setupRolesAndPermissions() {
         } else {
             console.log(`✓ Found ${permCount} existing permission(s)`);
         }
+
+        // Normalize missing defaults and ensure super_admin has wildcard default_permissions
+        await sql`
+            UPDATE roles
+            SET default_permissions = '[]'::jsonb
+            WHERE default_permissions IS NULL;
+        `;
+
+        await sql`
+            UPDATE roles
+            SET default_permissions = '["*"]'::jsonb
+            WHERE name = 'super_admin' AND (default_permissions IS NULL OR default_permissions = '[]'::jsonb);
+        `;
 
         // Update existing admin users to have super_admin role
         const superAdminRole = await sql`

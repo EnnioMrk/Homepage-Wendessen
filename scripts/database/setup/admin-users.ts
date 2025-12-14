@@ -12,6 +12,8 @@ async function setupAdminUsers() {
                 username VARCHAR(255) UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 verein_id VARCHAR(50),
+                custom_permissions JSONB DEFAULT '[]'::jsonb,
+                role_id INTEGER REFERENCES roles(id),
                 must_change_password BOOLEAN DEFAULT false,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -55,8 +57,8 @@ async function setupAdminUsers() {
             const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
             await sql`
-                INSERT INTO admin_users (username, password_hash, must_change_password)
-                VALUES (${defaultUsername}, ${hashedPassword}, true);
+                INSERT INTO admin_users (username, password_hash, custom_permissions, must_change_password)
+                VALUES (${defaultUsername}, ${hashedPassword}, '["*"]', true);
             `;
 
             console.log('✓ Created default admin user');

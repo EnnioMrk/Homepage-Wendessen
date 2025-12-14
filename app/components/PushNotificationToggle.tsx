@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAdminAuth } from '@/lib/useAdminAuth';
 import {
     BellRinging,
     BellSlash,
@@ -14,6 +15,7 @@ export default function PushNotificationToggle() {
     const [error, setError] = useState<string | null>(null);
     const [showTestButton, setShowTestButton] = useState(false);
     const [testSending, setTestSending] = useState(false);
+    const { isAuthenticated } = useAdminAuth();
 
     useEffect(() => {
         checkSupport();
@@ -206,7 +208,7 @@ export default function PushNotificationToggle() {
                         : 'Benachrichtigungen aus'}
                 </span>
             </button>
-            {showTestButton && isSubscribed && (
+            {showTestButton && isSubscribed && isAuthenticated && (
                 <button
                     onClick={sendTestNotification}
                     disabled={testSending}

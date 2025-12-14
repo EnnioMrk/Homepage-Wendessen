@@ -97,16 +97,16 @@ describe('Event Utils', () => {
 
     describe('getCategoryIconEmoji', () => {
         test('returns correct emojis for all categories', () => {
-            expect(getCategoryIconEmoji('sitzung')).toBe('📋');
-            expect(getCategoryIconEmoji('veranstaltung')).toBe('🎉');
-            expect(getCategoryIconEmoji('sport')).toBe('⚽');
-            expect(getCategoryIconEmoji('kultur')).toBe('🎭');
-            expect(getCategoryIconEmoji('notfall')).toBe('🚨');
-            expect(getCategoryIconEmoji('sonstiges')).toBe('📅');
+            expect(getCategoryIconEmoji('sitzung')).toBe('users-three');
+            expect(getCategoryIconEmoji('veranstaltung')).toBe('calendar-blank');
+            expect(getCategoryIconEmoji('sport')).toBe('lightning');
+            expect(getCategoryIconEmoji('kultur')).toBe('music-notes-simple');
+            expect(getCategoryIconEmoji('notfall')).toBe('alert-circle');
+            expect(getCategoryIconEmoji('sonstiges')).toBe('calendar');
         });
 
         test('returns default emoji for unknown category', () => {
-            expect(getCategoryIconEmoji('invalid')).toBe('📅');
+            expect(getCategoryIconEmoji('invalid')).toBe('calendar');
         });
     });
 });
