@@ -98,15 +98,20 @@ async function addSampleContent() {
         // random day offset between -30 and +180
         const days = randInt(-30, 180);
 
-        // Determine if event is multi-day. Make multi-day events very rare:
-        // probability ≈ 1 / (2 * amount), capped at 2%.
-        const multiDayProb = Math.min(0.02, 1 / Math.max(1, amount * 2));
+        // Determine multi-day probability. Allow override via `MULTI_DAY_RATE` env (0..1).
+        // Default probability increases slightly with the requested amount, but is capped.
+        const envRate = process.env.MULTI_DAY_RATE ? Number(process.env.MULTI_DAY_RATE) : NaN;
+        const multiDayProb = Number.isFinite(envRate)
+            ? Math.max(0, Math.min(1, envRate))
+            : Math.min(0.35, 0.1 + amount / 200);
+
         const isMulti = Math.random() < multiDayProb;
         let durationDays = 0;
         if (isMulti) {
-            // Most multi-day events are 1 day (i.e., spanning to next day), occasionally 2 days.
-            const maxMulti = Math.min(2, Math.max(1, Math.floor(amount / 50)));
-            durationDays = randInt(1, maxMulti);
+            // Make multi-day durations usually 1-3 days, occasionally up to 5 depending on amount.
+            const scale = Math.max(2, Math.floor(amount / 20));
+            const maxMulti = Math.min(5, scale);
+            durationDays = randInt(1, Math.max(1, maxMulti));
         }
 
         // randomize start time in 30-minute steps between 08:00 and 20:00
