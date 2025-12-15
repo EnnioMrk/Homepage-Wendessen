@@ -55,6 +55,7 @@ interface AdminDashboardProps {
     canManageUsers: boolean;
     canViewSettings: boolean;
     canViewLogs: boolean;
+    canViewWendessen: boolean;
 }
 
 export default function AdminDashboard({
@@ -77,6 +78,7 @@ export default function AdminDashboard({
     canManageUsers,
     canViewSettings,
     canViewLogs,
+    canViewWendessen,
 }: AdminDashboardProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showEventModal, setShowEventModal] = useState(false);
@@ -282,21 +284,20 @@ export default function AdminDashboard({
                                                                 </p>
                                                             </div>
                                                             <span
-                                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                                    event.category ===
+                                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${event.category ===
                                                                     'sitzung'
-                                                                        ? 'bg-blue-100 text-blue-800'
-                                                                        : event.category ===
-                                                                          'veranstaltung'
+                                                                    ? 'bg-blue-100 text-blue-800'
+                                                                    : event.category ===
+                                                                        'veranstaltung'
                                                                         ? 'bg-green-100 text-green-800'
                                                                         : event.category ===
-                                                                          'sport'
-                                                                        ? 'bg-orange-100 text-orange-800'
-                                                                        : event.category ===
-                                                                          'kultur'
-                                                                        ? 'bg-purple-100 text-purple-800'
-                                                                        : 'bg-gray-100 text-gray-800'
-                                                                }`}
+                                                                            'sport'
+                                                                            ? 'bg-orange-100 text-orange-800'
+                                                                            : event.category ===
+                                                                                'kultur'
+                                                                                ? 'bg-purple-100 text-purple-800'
+                                                                                : 'bg-gray-100 text-gray-800'
+                                                                    }`}
                                                             >
                                                                 {event.category}
                                                             </span>
@@ -379,216 +380,241 @@ export default function AdminDashboard({
                         canManageUsers ||
                         canViewSettings ||
                         canViewLogs) && (
-                        <div className="mt-8">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
-                                Schnellaktionen
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {/* Add Event */}
-                                {canManageEvents && (
-                                    <button
-                                        onClick={() => setShowEventModal(true)}
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500 text-left"
-                                    >
-                                        <div className="flex items-center mb-3">
-                                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                <Calendar className="w-5 h-5 text-blue-600" />
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
+                                    Schnellaktionen
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {/* Add Event */}
+                                    {canManageEvents && (
+                                        <button
+                                            onClick={() => setShowEventModal(true)}
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500 text-left"
+                                        >
+                                            <div className="flex items-center mb-3">
+                                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                    <Calendar className="w-5 h-5 text-blue-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Neuer Termin
+                                                </h4>
                                             </div>
-                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                Neuer Termin
-                                            </h4>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Termin erstellen und veröffentlichen
-                                        </p>
-                                    </button>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Termin erstellen und veröffentlichen
+                                            </p>
+                                        </button>
+                                    )}
 
-                                {/* Add News */}
-                                {canManageNews && (
-                                    <Link
-                                        href="/admin/news/erstellen"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500 text-left block"
-                                    >
-                                        <div className="flex items-center mb-3">
-                                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                                <Newspaper className="w-5 h-5 text-green-600" />
+                                    {/* Add News */}
+                                    {canManageNews && (
+                                        <Link
+                                            href="/admin/news/erstellen"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500 text-left block"
+                                        >
+                                            <div className="flex items-center mb-3">
+                                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                    <Newspaper className="w-5 h-5 text-green-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Neue Nachricht
+                                                </h4>
                                             </div>
-                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                Neue Nachricht
-                                            </h4>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Nachricht erstellen und
-                                            veröffentlichen
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Nachricht erstellen und
+                                                veröffentlichen
+                                            </p>
+                                        </Link>
+                                    )}
 
-                                {/* Admin Users */}
-                                {canManageUsers && (
-                                    <Link
-                                        href="/admin/users"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-primary block"
-                                    >
-                                        <div className="flex items-center mb-3">
-                                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                                                <UserGear className="w-5 h-5 text-primary" />
+                                    {/* Admin Users */}
+                                    {canManageUsers && (
+                                        <Link
+                                            href="/admin/users"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-primary block"
+                                        >
+                                            <div className="flex items-center mb-3">
+                                                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                                                    <UserGear className="w-5 h-5 text-primary" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Benutzer
+                                                </h4>
                                             </div>
-                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                Benutzer
-                                            </h4>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Admins und Rechte verwalten
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Admins und Rechte verwalten
+                                            </p>
+                                        </Link>
+                                    )}
 
-                                {/* Settings */}
-                                {canViewSettings && (
-                                    <Link
-                                        href="/admin/settings"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-gray-500 block"
-                                    >
-                                        <div className="flex items-center mb-3">
-                                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <GearSix className="w-5 h-5 text-gray-600" />
+                                    {/* Settings */}
+                                    {canViewSettings && (
+                                        <Link
+                                            href="/admin/settings"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-gray-500 block"
+                                        >
+                                            <div className="flex items-center mb-3">
+                                                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                    <GearSix className="w-5 h-5 text-gray-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Einstellungen
+                                                </h4>
                                             </div>
-                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                Einstellungen
-                                            </h4>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Website-Einstellungen verwalten
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Website-Einstellungen verwalten
+                                            </p>
+                                        </Link>
+                                    )}
 
-                                {/* Activity Log */}
-                                {canViewLogs && (
-                                    <Link
-                                        href="/admin/logs"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-indigo-500 block"
-                                    >
-                                        <div className="flex items-center mb-3">
-                                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                                <ClockCounterClockwise className="w-5 h-5 text-indigo-600" />
+                                    {/* Activity Log */}
+                                    {canViewLogs && (
+                                        <Link
+                                            href="/admin/logs"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-indigo-500 block"
+                                        >
+                                            <div className="flex items-center mb-3">
+                                                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                                    <ClockCounterClockwise className="w-5 h-5 text-indigo-600" />
+                                                </div>
+                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                    Aktivitätslog
+                                                </h4>
                                             </div>
-                                            <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                Aktivitätslog
-                                            </h4>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Admin-Aktivitäten einsehen
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Admin-Aktivitäten einsehen
+                                            </p>
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
                     {/* Content Management */}
                     {(canViewAdminGallery ||
                         canViewSharedGallery ||
                         canViewPortraits ||
-                        canViewArchive) && (
-                        <div className="mt-8">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
-                                Inhalte verwalten
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {/* Gallery */}
-                                {canViewAdminGallery && (
-                                    <Link
-                                        href="/admin/gallery"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                    >
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center">
-                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                    <ImageSquare className="w-5 h-5 text-purple-600" />
+                        canViewArchive ||
+                        canViewWendessen) && (
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
+                                    Inhalte verwalten
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {/* Gallery */}
+                                    {canViewAdminGallery && (
+                                        <Link
+                                            href="/admin/gallery"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center">
+                                                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                        <ImageSquare className="w-5 h-5 text-purple-600" />
+                                                    </div>
+                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                        Admin Galerie
+                                                    </h4>
                                                 </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Admin Galerie
-                                                </h4>
                                             </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Bilder für Inhalte hochladen
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Bilder für Inhalte hochladen
+                                            </p>
+                                        </Link>
+                                    )}
 
-                                {/* Shared Gallery */}
-                                {canViewSharedGallery && (
-                                    <Link
-                                        href="/admin/shared-gallery"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                    >
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center">
-                                                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                                                    <ImageSquare className="w-5 h-5 text-pink-600" />
+                                    {/* Shared Gallery */}
+                                    {canViewSharedGallery && (
+                                        <Link
+                                            href="/admin/shared-gallery"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center">
+                                                    <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                                                        <ImageSquare className="w-5 h-5 text-pink-600" />
+                                                    </div>
+                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                        Impressionen
+                                                    </h4>
                                                 </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Impressionen
-                                                </h4>
                                             </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Von Bürgern eingereichte Fotos
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Von Bürgern eingereichte Fotos
+                                            </p>
+                                        </Link>
+                                    )}
 
-                                {/* Portraits */}
-                                {canViewPortraits && (
-                                    <Link
-                                        href="/admin/portraits"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                    >
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center">
-                                                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                                                    <UsersThree className="w-5 h-5 text-emerald-600" />
+                                    {/* Portraits */}
+                                    {canViewPortraits && (
+                                        <Link
+                                            href="/admin/portraits"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center">
+                                                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                                        <UsersThree className="w-5 h-5 text-emerald-600" />
+                                                    </div>
+                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                        Portraits
+                                                    </h4>
                                                 </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Portraits
-                                                </h4>
                                             </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Wir Wendessener - Einwohner stellen
-                                            sich vor
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Wir Wendessener - Einwohner stellen
+                                                sich vor
+                                            </p>
+                                        </Link>
+                                    )}
 
-                                {/* Archive */}
-                                {canViewArchive && (
-                                    <Link
-                                        href="/admin/archiv"
-                                        className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                    >
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center">
-                                                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                                                    <Article className="w-5 h-5 text-amber-600" />
+
+
+                                    {/* Wendessen Layouts */}
+                                    {canViewWendessen && (
+                                        <Link
+                                            href="/admin/wendessen"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center">
+                                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                        <ImageSquare className="w-5 h-5 text-blue-600" />
+                                                    </div>
+                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                        Das ist Wendessen
+                                                    </h4>
                                                 </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Archiv
-                                                </h4>
                                             </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            Historische Dokumente verwalten
-                                        </p>
-                                    </Link>
-                                )}
+                                            <p className="text-sm text-gray-600">
+                                                Startseite Layouts verwalten
+                                            </p>
+                                        </Link>
+                                    )}
+
+                                    {/* Archive */}
+                                    {canViewArchive && (
+                                        <Link
+                                            href="/admin/archiv"
+                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
+                                        >
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div className="flex items-center">
+                                                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                                        <Article className="w-5 h-5 text-amber-600" />
+                                                    </div>
+                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
+                                                        Archiv
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-gray-600">
+                                                Historische Dokumente verwalten
+                                            </p>
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
                     {/* Notification Tester - only in development */}
                     {process.env.NODE_ENV === 'development' && canViewLogs && (

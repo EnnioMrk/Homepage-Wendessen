@@ -180,8 +180,6 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         }
     };
 
-    const CARD_KEYS = ['card_1', 'card_2', 'card_3'] as const;
-
     if (loading) return <LoadingSpinner centered />;
 
     return (
@@ -228,8 +226,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
             {/* Cards Editor */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {CARD_KEYS.map((cardKey, index) => (
-                    <div key={cardKey} className={'bg-white p-6 rounded-lg shadow ' + (index === 0 ? 'lg:col-span-2' : '')}>
+                {(['card_1', 'card_2', 'card_3'] as const).map((cardKey, index) => (
+                    <div key={cardKey} className={`bg-white p-6 rounded-lg shadow ${index === 0 ? 'lg:col-span-2' : ''}`}>
                         <div className="flex justify-between items-start mb-6 border-b pb-4">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900">
@@ -241,7 +239,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                             </div>
                         </div>
 
-                        <div className={'grid grid-cols-1 gap-6 ' + (index === 0 ? 'md:grid-cols-2' : 'min-[1400px]:grid-cols-2')}>
+                        <div className={`grid grid-cols-1 gap-6 ${index === 0 ? 'md:grid-cols-2' : 'min-[1400px]:grid-cols-2'}`}>
                             {/* Editor Column */}
                             <div className="space-y-6">
                                 {/* Theme Controls */}
@@ -279,53 +277,55 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
                                 {/* Text Inputs */}
                                 <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Titel</label>
-                                    <input
-                                        type="text"
-                                        value={formData[cardKey].title}
-                                        onChange={(e) => updateCard(cardKey, 'title', e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-md mt-1"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Untertitel</label>
-                                    <input
-                                        type="text"
-                                        value={formData[cardKey].subtitle}
-                                        onChange={(e) => updateCard(cardKey, 'subtitle', e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-md mt-1"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
-                                    <textarea
-                                        value={formData[cardKey].description}
-                                        onChange={(e) => updateCard(cardKey, 'description', e.target.value)}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border rounded-md mt-1"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Button Text</label>
+                                        <label className="block text-sm font-medium text-gray-700">Titel</label>
                                         <input
                                             type="text"
-                                            value={formData[cardKey].button_text}
-                                            onChange={(e) => updateCard(cardKey, 'button_text', e.target.value)}
+                                            value={formData[cardKey].title}
+                                            onChange={(e) => updateCard(cardKey, 'title', e.target.value)}
                                             className="w-full px-3 py-2 border rounded-md mt-1"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Button Link</label>
+                                        <label className="block text-sm font-medium text-gray-700">Untertitel</label>
                                         <input
                                             type="text"
-                                            value={formData[cardKey].button_href}
-                                            onChange={(e) => updateCard(cardKey, 'button_href', e.target.value)}
+                                            value={formData[cardKey].subtitle}
+                                            onChange={(e) => updateCard(cardKey, 'subtitle', e.target.value)}
                                             className="w-full px-3 py-2 border rounded-md mt-1"
                                         />
                                     </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
+                                        <textarea
+                                            value={formData[cardKey].description}
+                                            onChange={(e) => updateCard(cardKey, 'description', e.target.value)}
+                                            rows={3}
+                                            className="w-full px-3 py-2 border rounded-md mt-1"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Button Text</label>
+                                            <input
+                                                type="text"
+                                                value={formData[cardKey].button_text}
+                                                onChange={(e) => updateCard(cardKey, 'button_text', e.target.value)}
+                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Button Link</label>
+                                            <input
+                                                type="text"
+                                                value={formData[cardKey].button_href}
+                                                onChange={(e) => updateCard(cardKey, 'button_href', e.target.value)}
+                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
 
                             <div className="space-y-4">
@@ -346,7 +346,58 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             buttonText={formData[cardKey].button_text || 'Button'}
                                             buttonHref="#"
                                             buttonColor={formData[cardKey].theme.button}
-                                                            <CardEditor cardKey="card_1" index={0} formData={formData} updateCard={updateCard} updateCardTheme={updateCardTheme} setShowImagePicker={setShowImagePicker} />
-                                                            <CardEditor cardKey="card_2" index={1} formData={formData} updateCard={updateCard} updateCardTheme={updateCardTheme} setShowImagePicker={setShowImagePicker} />
-                                                            <CardEditor cardKey="card_3" index={2} formData={formData} updateCard={updateCard} updateCardTheme={updateCardTheme} setShowImagePicker={setShowImagePicker} />
+                                            highlightColor={formData[cardKey].theme.highlight}
+                                            backgroundColor={formData[cardKey].theme.background}
+                                            imageSrc={formData[cardKey].image_url}
                                             isTextOnly={!formData[cardKey].image_url}
+                                            variant={cardKey === 'card_1' ? 'hero' : 'centered'}
+                                            className="min-h-[300px]"
+                                            compact={true}
+                                        />
+                                    </div>
+
+                                    {/* Image Controls */}
+                                    <div className="flex gap-2 mt-4">
+                                        <button
+                                            onClick={() => setShowImagePicker(cardKey)}
+                                            className="flex-1 flex items-center justify-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
+                                        >
+                                            {formData[cardKey].image_url ? (
+                                                <>
+                                                    <PencilSimple className="mr-2 h-4 w-4" />
+                                                    Bild ändern
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ImageSquare className="mr-2 h-4 w-4" />
+                                                    Bild auswählen
+                                                </>
+                                            )}
+                                        </button>
+                                        {formData[cardKey].image_url && (
+                                            <button
+                                                onClick={() => updateCard(cardKey, 'image_url', '')}
+                                                className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
+                                                title="Bild entfernen"
+                                            >
+                                                <Trash className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {showImagePicker && (
+                <GalleryImagePicker
+                    onSelect={handleImageSelect}
+                    onClose={() => setShowImagePicker(null)}
+                    canUpload={canUpload}
+                />
+            )}
+        </div>
+    );
+}
