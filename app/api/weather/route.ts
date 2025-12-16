@@ -17,45 +17,37 @@ export async function GET() {
 
         // Parse the weather report on the server
         console.log('Fetched weather report text:', text);
-            const weatherData = parseWeatherReport(text);
+        const weatherData = parseWeatherReport(text);
 
-            // Recursively escape string values to avoid embedding problematic
-            // characters (line separators, HTML brackets, control chars) in the JSON
-            const escapeString = (s: string) =>
-                s
-                    .replace(/\u2028/g, '\\u2028')
-                    .replace(/\u2029/g, '\\u2029')
-                    .replace(/</g, '\\u003C')
-                    .replace(/>/g, '\\u003E')
-                    .replace(/&/g, '\\u0026')
-                    .replace(/[\u0000-\u001F]/g, (c) => {
-                        return `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`;
-                    });
-
-            const escapeObj = (v: any): any => {
-                if (v == null) return v;
-                if (typeof v === 'string') return escapeString(v);
-                if (Array.isArray(v)) return v.map(escapeObj);
-                if (typeof v === 'object') {
-                    const out: Record<string, any> = {};
-                    for (const [k, val] of Object.entries(v)) {
-                        out[k] = escapeObj(val);
-                    }
-                    return out;
-                }
-                return v;
+        // Sanitize forecast string: remove control chars and escape HTML-sensitive chars
+        const sanitize = (s: string | undefined) => {
+            if (!s) return '';
+            // collapse newlines and trim
+            let out = s.replace(/\r?\n|\r/g, ' ').trim();
+            // remove other control characters
+            out = out.replace(/[\x00-\x1F\x7F]/g, '');
+            // escape HTML-sensitive characters to avoid injection when returned in JSON
+            const map: Record<string, string> = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+                '/': '&#x2F;',
             };
+            out = out.replace(/[&<>"'\/]/g, (c) => map[c]);
+            return out;
+        };
 
-            const safe = escapeObj(weatherData);
-            const body = JSON.stringify(safe);
+        weatherData.forecast = sanitize(String(weatherData.forecast));
+        console.log('Fetched and parsed weather data:', weatherData);
 
-            return new NextResponse(body, {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
-                },
-            });
+        return NextResponse.json(weatherData, {
+            status: 200,
+            headers: {
+                'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+            },
+        });
     } catch (error) {
         console.error('Error fetching weather data:', error);
         return NextResponse.json(
