@@ -83,19 +83,6 @@ export interface WeatherData {
 export function parseWeatherReport(reportText: string): WeatherData {
     const lines = reportText.split('\n').map(l => l.trim());
 
-    // Normalize strings for robust searching: remove diacritics and map ß -> ss
-    const normalize = (s: string) =>
-        s
-            .normalize('NFD')
-            .replace(/\p{Diacritic}/gu, '')
-            .replace(/ß/g, 'ss')
-            .replace(/\s+/g, ' ')
-            .trim();
-
-    const normalizedLines = lines.map(l => normalize(l).toLowerCase());
-    const findNormalizedIndex = (pattern: string) =>
-        normalizedLines.findIndex(l => l.includes(normalize(pattern).toLowerCase()));
-
     // Helper to extract number from text
     const extractNumber = (text: string): number => {
         const match = text.match(/-?\d+[,.]?\d*/);
@@ -127,19 +114,19 @@ export function parseWeatherReport(reportText: string): WeatherData {
         return extractTime(lines[lineIndex]);
     };
 
-    // Find section indices
-    const tempIndex = findNormalizedIndex('Temperatur Außen');
-    const humidityIndex = findNormalizedIndex('Luftfeuchte Außen');
-    const dewPointIndex = findNormalizedIndex('Taupunkt');
-    const windChillIndex = findNormalizedIndex('Windchill');
-    const solarIndex = findNormalizedIndex('Solarstrahlung');
-    const uvIndex = findNormalizedIndex('UV-Index');
-    const windSpeedIndex = findNormalizedIndex('Windgeschwindigkeit');
-    const windGustsIndex = findNormalizedIndex('Windböen');
-    const windDirIndex = findNormalizedIndex('Windrichtung');
-    const precipIndex = findNormalizedIndex('Niederschlag');
-    const pressureIndex = normalizedLines.findIndex(l => l.includes(normalize('Luftdruck').toLowerCase()) && !l.includes('anderung') && !l.includes('änderung'));
-    const forecastIndex = findNormalizedIndex('Wettervorhersage');
+    // Use fixed 0-based line indices based on the stable report layout
+    const tempIndex = 3; // "Temperatur Außen"
+    const humidityIndex = 19; // "Luftfeuchte Außen"
+    const dewPointIndex = 25; // "Taupunkt"
+    const windChillIndex = 31; // "Windchill"
+    const solarIndex = 37; // "Solarstrahlung"
+    const uvIndex = 43; // "UV-Index"
+    const windSpeedIndex = 53; // "Windgeschwindigkeit"
+    const windGustsIndex = 58; // "Windböen"
+    const windDirIndex = 63; // "Windrichtung"
+    const precipIndex = 67; // "Niederschlag"
+    const pressureIndex = 76; // "Luftdruck"
+    const forecastIndex = 89; // "Wettervorhersage"
 
     return {
         location: 'Wendessen bei Wolfenbüttel',
@@ -157,8 +144,8 @@ export function parseWeatherReport(reportText: string): WeatherData {
                 value: getValue(tempIndex + 4),
                 time: getTime(tempIndex + 4),
             },
-            change5min: getValue(lines.findIndex(l => l.includes('der letzen  5 Min.'))),
-            change60min: getValue(lines.findIndex(l => l.includes('der letzen 60 Min.'))),
+            change5min: getValue(16),
+            change60min: getValue(17),
         },
 
         humidity: {
@@ -225,11 +212,11 @@ export function parseWeatherReport(reportText: string): WeatherData {
                 value: getValue(pressureIndex + 4),
                 time: getTime(pressureIndex + 4),
             },
-            trend1h: getValue(lines.findIndex(l => l.includes('hPa/1h'))),
-            trend3h: getValue(lines.findIndex(l => l.includes('hPa/3h'))),
-            trend6h: getValue(lines.findIndex(l => l.includes('hPa/6h'))),
-            trend12h: getValue(lines.findIndex(l => l.includes('hPa/12h'))),
-            trend24h: getValue(lines.findIndex(l => l.includes('hPa/24h'))),
+            trend1h: getValue(82),
+            trend3h: getValue(84),
+            trend6h: getValue(85),
+            trend12h: getValue(86),
+            trend24h: getValue(87),
         },
 
         solar: {
@@ -240,18 +227,18 @@ export function parseWeatherReport(reportText: string): WeatherData {
             uvIndex: getValue(uvIndex + 1),
             uvIndexAvg: getValue(uvIndex + 2),
             uvIndexMax: getValue(uvIndex + 4),
-            sunshineToday: getValue(lines.findIndex(l => l.includes('Sonnenscheindauer') && l.includes('heute'))),
-            sunshineYear: lines.find(l => l.includes('Sonnenscheindauer') && l.includes('Jahr'))?.split(/\s+/).filter(p => p.includes(':'))[0] || '0:00',
+            sunshineToday: getValue(50),
+            sunshineYear: lines[51]?.split(/\s+/).filter(p => p.includes(':'))[0] || '0:00',
         },
 
         precipitation: {
-            lastHour: getValue(lines.findIndex(l => l.includes('letzte Std.'))),
-            last24h: getValue(lines.findIndex(l => l.includes('letzten 24 Std.'))),
-            today: getValue(lines.findIndex(l => l.includes('dieser Tag'))),
-            week: getValue(lines.findIndex(l => l.includes('aktuelle Woche'))),
-            month: getValue(lines.findIndex(l => l.includes('aktueller Monat'))),
-            year: getValue(lines.findIndex(l => l.includes('aktuelles Jahr'))),
-            daysYear: getValue(lines.findIndex(l => l.includes('Regen / Jahr'))),
+            lastHour: getValue(68),
+            last24h: getValue(69),
+            today: getValue(70),
+            week: getValue(71),
+            month: getValue(72),
+            year: getValue(73),
+            daysYear: getValue(74),
         },
 
         forecast: forecastIndex >= 0 ? lines[forecastIndex].split(':').pop()?.trim() || 'veränderlich' : 'veränderlich',
