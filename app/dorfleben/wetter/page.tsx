@@ -65,48 +65,66 @@ export default function WetterPage() {
         const fetchWeatherData = async () => {
             try {
                 setLoading(true);
-                // For now, we'll use mock data since we can't directly fetch from the external URL due to CORS
-                // In production, you'd need a backend endpoint to proxy this request
-                const mockData = {
-                    location: 'Wendessen bei Wolfenbüttel',
-                    elevation: '79 m über NN',
-                    lastUpdate: 'Mittwoch, 27. August 2025 - 12:15',
+
+                // Fetch pre-parsed JSON from API
+                const response = await fetch('/api/weather');
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch weather data');
+                }
+
+                // Ensure we actually received JSON. If not, log body for debugging.
+                const contentType = response.headers.get('content-type') || '';
+                let parsedData: any;
+                if (contentType.includes('application/json')) {
+                    parsedData = await response.json();
+                } else {
+                    const textBody = await response.text();
+                    console.error('Unexpected non-JSON response from /api/weather:', textBody);
+                    throw new Error('Received non-JSON response from weather API');
+                }
+
+                // Map to the simpler interface used by this page
+                const weatherData: WeatherData = {
+                    location: parsedData.location,
+                    elevation: parsedData.elevation,
+                    lastUpdate: parsedData.lastUpdate,
                     temperature: {
-                        current: 26.5,
-                        average: 20.3,
-                        min: { value: 15.5, time: '05:30' },
-                        max: { value: 26.7, time: '18:00' },
+                        current: parsedData.temperature.current,
+                        average: parsedData.temperature.average,
+                        min: parsedData.temperature.min,
+                        max: parsedData.temperature.max,
                     },
                     humidity: {
-                        current: 50,
-                        average: 61,
-                        min: { value: 38, time: '16:00' },
-                        max: { value: 80, time: '07:45' },
+                        current: parsedData.humidity.current,
+                        average: parsedData.humidity.average,
+                        min: parsedData.humidity.min,
+                        max: parsedData.humidity.max,
                     },
                     wind: {
-                        speed: 3.2,
-                        direction: 'W',
-                        degrees: 270,
-                        gusts: 9.7,
+                        speed: parsedData.wind.speed,
+                        direction: parsedData.wind.direction,
+                        degrees: parsedData.wind.degrees,
+                        gusts: parsedData.wind.gusts,
                     },
                     pressure: {
-                        current: 1008.1,
-                        trend: -0.2,
+                        current: parsedData.pressure.current,
+                        trend: parsedData.pressure.trend1h,
                     },
                     solar: {
-                        current: 613,
-                        uvIndex: 3,
+                        current: parsedData.solar.current,
+                        uvIndex: parsedData.solar.uvIndex,
                     },
                     precipitation: {
-                        today: 0.0,
-                        month: 10.0,
-                        year: 208.8,
+                        today: parsedData.precipitation.today,
+                        month: parsedData.precipitation.month,
+                        year: parsedData.precipitation.year,
                     },
-                    forecast: 'veränderlich',
+                    forecast: parsedData.forecast,
                 };
 
-                setWeatherData(mockData);
-                setLastUpdate(mockData.lastUpdate);
+                setWeatherData(weatherData);
+                setLastUpdate(parsedData.lastUpdate);
                 setError(null);
             } catch (err) {
                 setError('Fehler beim Laden der Wetterdaten');
@@ -270,15 +288,14 @@ export default function WetterPage() {
                                 </div>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div
-                                        className={`${
-                                            (weatherData?.pressure.trend ?? 0) >
+                                        className={`${(weatherData?.pressure.trend ?? 0) >
                                             0
-                                                ? 'text-green-600'
-                                                : (weatherData?.pressure
-                                                      .trend ?? 0) < 0
+                                            ? 'text-green-600'
+                                            : (weatherData?.pressure
+                                                .trend ?? 0) < 0
                                                 ? 'text-red-600'
                                                 : 'text-gray-600'
-                                        }`}
+                                            }`}
                                     >
                                         Trend:{' '}
                                         {(weatherData?.pressure.trend ?? 0) > 0
