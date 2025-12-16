@@ -110,6 +110,17 @@ async function setupRolesAndPermissions() {
             console.log(`✓ Found ${permCount} existing permission(s)`);
         }
 
+        // Ensure Verein permissions exist (added later)
+        await sql`
+            INSERT INTO permissions (name, display_name, description, category) VALUES
+            ('verein.events.create', 'Vereins-Termine erstellen', 'Kann Termine für den eigenen Verein erstellen', 'verein'),
+            ('verein.events.edit', 'Vereins-Termine bearbeiten', 'Kann Termine des eigenen Vereins bearbeiten', 'verein'),
+            ('verein.events.delete', 'Vereins-Termine löschen', 'Kann Termine des eigenen Vereins löschen', 'verein'),
+            ('verein.events.cancel', 'Vereins-Termine absagen', 'Kann Termine des eigenen Vereins absagen', 'verein')
+            ON CONFLICT (name) DO NOTHING;
+        `;
+        console.log('✓ Verified Verein permissions');
+
         // Normalize missing defaults and ensure super_admin has wildcard default_permissions
         await sql`
             UPDATE roles

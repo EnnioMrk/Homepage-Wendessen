@@ -5,7 +5,7 @@ import {
     deleteEvent,
     CalendarEvent,
 } from '@/lib/database';
-import { requireAnyPermission } from '@/lib/permissions';
+import { requireAnyPermission, hasPermission } from '@/lib/permissions';
 import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
@@ -57,14 +57,8 @@ export async function PUT(
         ]);
 
         // If user has verein permission, verify they can only edit their own verein's events
-        const hasGeneralPermission =
-            user.customPermissions?.includes('events.edit') ||
-            user.customPermissions?.includes('events.*') ||
-            user.customPermissions?.includes('*');
-        const hasVereinPermission =
-            user.customPermissions?.includes('verein.events.edit') ||
-            user.customPermissions?.includes('verein.events.*') ||
-            user.customPermissions?.includes('verein.*');
+        const hasGeneralPermission = hasPermission(user, 'events.edit');
+        const hasVereinPermission = hasPermission(user, 'verein.events.edit');
 
         if (!hasGeneralPermission && hasVereinPermission) {
             // User only has verein permission, check if they can edit this event
@@ -161,14 +155,8 @@ export async function DELETE(
         ]);
 
         // If user has verein permission, verify they can only delete their own verein's events
-        const hasGeneralPermission =
-            user.customPermissions?.includes('events.delete') ||
-            user.customPermissions?.includes('events.*') ||
-            user.customPermissions?.includes('*');
-        const hasVereinPermission =
-            user.customPermissions?.includes('verein.events.delete') ||
-            user.customPermissions?.includes('verein.events.*') ||
-            user.customPermissions?.includes('verein.*');
+        const hasGeneralPermission = hasPermission(user, 'events.delete');
+        const hasVereinPermission = hasPermission(user, 'verein.events.delete');
 
         if (!hasGeneralPermission && hasVereinPermission) {
             // User only has verein permission, check if they can delete this event

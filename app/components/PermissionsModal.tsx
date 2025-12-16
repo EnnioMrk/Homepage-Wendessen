@@ -233,8 +233,8 @@ export default function PermissionsModal({
 
     const extraPermissionsCount = rolePermissionsLoaded
         ? uniqueSelectedPermissions.filter(
-              (permission) => !rolePermissionsSet.has(permission)
-          ).length
+            (permission) => !rolePermissionsSet.has(permission)
+        ).length
         : 0;
 
     const isPermissionChecked = (permissionName: string) => {
@@ -313,6 +313,7 @@ export default function PermissionsModal({
         portraits: 'Portraits',
         archive: 'Archiv',
         settings: 'Einstellungen',
+        verein: 'Vereinsverwaltung',
         system: 'System',
         other: 'Sonstige',
     };
@@ -435,15 +436,13 @@ export default function PermissionsModal({
                                                     return (
                                                         <label
                                                             key={permission.id}
-                                                            className={`flex items-start p-2 rounded cursor-pointer hover:bg-gray-50 ${
-                                                                isFromRole
+                                                            className={`flex items-start p-2 rounded cursor-pointer hover:bg-gray-50 ${isFromRole
                                                                     ? 'bg-blue-50'
                                                                     : ''
-                                                            } ${
-                                                                isDisabled
+                                                                } ${isDisabled
                                                                     ? 'opacity-60 cursor-not-allowed'
                                                                     : ''
-                                                            }`}
+                                                                }`}
                                                         >
                                                             <input
                                                                 type="checkbox"
@@ -463,11 +462,10 @@ export default function PermissionsModal({
                                                             <div className="ml-3 flex-1">
                                                                 <div className="flex items-center gap-2">
                                                                     <span
-                                                                        className={`text-sm font-medium ${
-                                                                            isFromRole
+                                                                        className={`text-sm font-medium ${isFromRole
                                                                                 ? 'text-blue-900'
                                                                                 : 'text-gray-900'
-                                                                        }`}
+                                                                            }`}
                                                                     >
                                                                         {
                                                                             permission.displayName
@@ -481,11 +479,10 @@ export default function PermissionsModal({
                                                                 </div>
                                                                 {permission.description && (
                                                                     <p
-                                                                        className={`text-xs ${
-                                                                            isFromRole
+                                                                        className={`text-xs ${isFromRole
                                                                                 ? 'text-blue-700'
                                                                                 : 'text-gray-500'
-                                                                        }`}
+                                                                            }`}
                                                                     >
                                                                         {
                                                                             permission.description
@@ -555,13 +552,11 @@ export default function PermissionsModal({
             <PromptDialog
                 isOpen={Boolean(pendingRoleRemoval)}
                 title="Standard-Berechtigung entfernen?"
-                description={`"${
-                    pendingPermissionDetails?.displayName ??
+                description={`"${pendingPermissionDetails?.displayName ??
                     pendingRoleRemoval ??
                     ''
-                }" ist Teil der Standardrechte der Rolle ${
-                    user.roleDisplayName || user.roleName
-                }. Möchten Sie sie wirklich entfernen?`}
+                    }" ist Teil der Standardrechte der Rolle ${user.roleDisplayName || user.roleName
+                    }. Möchten Sie sie wirklich entfernen?`}
                 confirmText="Entfernen"
                 cancelText="Behalten"
                 onConfirm={handleConfirmRoleRemoval}

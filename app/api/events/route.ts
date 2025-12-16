@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
-import { requireAnyPermission } from '@/lib/permissions';
+import { requireAnyPermission, hasPermission } from '@/lib/permissions';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
@@ -25,10 +25,54 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
     try {
-        // Check permission for creating events
-        await requireAnyPermission(['events.create', 'verein.events.create']);
-
         const eventData = await request.json();
+
+        // Create context-aware permission check
+        const currentUser = await getCurrentAdminUser();
+
+        if (!currentUser) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+
+        const hasGlobalCreate = hasPermission(currentUser, 'events.create');
+        const hasVereinCreate = hasPermission(currentUser, 'verein.events.create');
+
+        if (!hasGlobalCreate && !hasVereinCreate) {
+            return NextResponse.json(
+                { error: 'Forbidden: Missing permission to create events' },
+                { status: 403 }
+            );
+        }
+
+        // Determine Verein ID and enforce validation
+        let vereinId: string | undefined = undefined;
+
+        if (hasGlobalCreate) {
+            // Global admins can create for any verein (or none)
+            vereinId = eventData.vereinId || currentUser.vereinId || undefined;
+        } else {
+            // Vereinsverwalter MUST have a verein assigned and can only create for it
+            if (!currentUser.vereinId) {
+                return NextResponse.json(
+                    { error: 'Forbidden: You have permission to create Vereins-Termine but are not assigned to a Verein.' },
+                    { status: 403 }
+                );
+            }
+
+            // Force the ID to match their own
+            vereinId = currentUser.vereinId;
+
+            // Optional: If they tried to send a different ID, we could error, but silently correcting it is also safe/admin-friendly
+            if (eventData.vereinId && eventData.vereinId !== vereinId) {
+                return NextResponse.json(
+                    { error: 'Forbidden: You can only create events for your own Verein.' },
+                    { status: 403 }
+                );
+            }
+        }
 
         // Validate required fields
         if (!eventData.title || !eventData.start || !eventData.end) {
@@ -37,10 +81,6 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
-
-        // Get current user to set vereinId if they're a vereinsverwalter
-        const currentUser = await getCurrentAdminUser();
-        const vereinId = currentUser?.vereinId || eventData.vereinId || null;
 
         // Create the event
         const newEvent: Omit<CalendarEvent, 'id'> = {
