@@ -448,38 +448,24 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                     <div className="fixed inset-0 bg-black/30" aria-hidden />
                     <div className="fixed inset-0 flex items-center justify-center p-2">
                         <div className="mx-auto max-w-md w-full bg-white rounded-lg p-4 shadow-md">
-                            <div className="flex items-center justify-between gap-4">
-                                    <h3 className="text-base font-semibold text-gray-900">Theme anpassen</h3>
-                                    <div className="flex items-center gap-2 sm:gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => setEditingThemeFor(null)}
-                                            className="px-3 py-1 rounded-md border bg-white text-gray-700 text-sm"
-                                        >Abbrechen</button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (editingThemeFor) updateCardTheme(editingThemeFor, tempTheme);
-                                                setEditingThemeFor(null);
-                                            }}
-                                            className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm"
-                                        >Speichern</button>
-                                    </div>
-                                </div>
+                            <div className="flex items-start justify-between gap-4">
+                                <h3 className="text-base font-semibold text-gray-900">Theme anpassen</h3>
+                                <div className="text-sm text-gray-500">Vorschau</div>
+                            </div>
 
-                                <div className="border-t mt-3 pt-3" />
+                            <p className="text-sm text-gray-600 mt-3 mb-3">Wähle Primärfarbe, Hintergrund und Buttonfarbe für diese Karte. Auf mobilen Geräten sind die Farbauswahlen gestapelt.</p>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end mt-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end mt-1">
                                 <div className="text-center">
-                                    <label className="block text-xs text-gray-600 mb-1">Primär</label>
+                                    <label className="block text-xs text-gray-600 mb-2">Primär</label>
                                     <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
                                 </div>
                                 <div className="text-center">
-                                    <label className="block text-xs text-gray-600 mb-1">Hintergrund</label>
+                                    <label className="block text-xs text-gray-600 mb-2">Hintergrund</label>
                                     <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
                                 </div>
                                 <div className="text-center">
-                                    <label className="block text-xs text-gray-600 mb-1">Button</label>
+                                    <label className="block text-xs text-gray-600 mb-2">Button</label>
                                     <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
                                 </div>
                             </div>
