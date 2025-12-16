@@ -406,7 +406,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         e.target.value
                                                     )
                                                 }
-                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                                className="w-full px-3 py-2 border rounded-md mt-2"
                                             />
                                         </div>
                                         <div>
@@ -444,8 +444,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         e.target.value
                                                     )
                                                 }
-                                                rows={3}
-                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                                rows={5}
+                                                className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5"
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
@@ -466,7 +466,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                             e.target.value
                                                         )
                                                     }
-                                                    className="w-full px-3 py-2 border rounded-md mt-1"
+                                                    className="w-full px-3 py-1.5 border rounded-md mt-1"
                                                 />
                                             </div>
                                             <div>
@@ -486,7 +486,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                             e.target.value
                                                         )
                                                     }
-                                                    className="w-full px-3 py-2 border rounded-md mt-1"
+                                                    className="w-full px-3 py-1.5 border rounded-md mt-1"
                                                 />
                                             </div>
                                         </div>

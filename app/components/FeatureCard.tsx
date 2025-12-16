@@ -10,6 +10,9 @@ interface FeatureCardProps {
     buttonText: string;
     buttonHref: string;
     buttonColor: string;
+    highlightColor?: string;
+    backgroundColor?: string;
+    subtitleClassName?: string;
     isTextOnly?: boolean;
     className?: string;
     variant?: 'centered' | 'hero';
@@ -160,6 +163,7 @@ export default function FeatureCard({
     className = '',
     variant = 'centered',
     compact = false,
+    subtitleClassName,
 }: FeatureCardProps) {
     // Determine effective colors with fallbacks
     const effectiveButtonColor = buttonColorClasses[buttonColor] ? buttonColor : 'green';
@@ -176,7 +180,7 @@ export default function FeatureCard({
                         {title}
                     </h3>
                     {subtitle && (
-                        <p className={`${textHighlightClasses[effectiveHighlightColor]} font-semibold text-center ${compact ? 'text-sm mb-3' : 'text-sm md:text-base lg:text-lg mb-3 md:mb-4'}`}>
+                        <p className={`${subtitleClassName || textHighlightClasses[effectiveHighlightColor]} font-semibold text-center ${compact ? 'text-sm mb-3' : 'text-sm md:text-base lg:text-lg mb-3 md:mb-4'}`}>
                             {subtitle}
                         </p>
                     )}
@@ -234,8 +238,8 @@ export default function FeatureCard({
                         {subtitle && (
                             <p
                                 className={`font-semibold drop-shadow-md ${isHero
-                                    ? overlayHighlightClasses[effectiveHighlightColor] + (compact ? ' text-lg mb-3' : ' text-lg md:text-xl lg:text-2xl mb-4 lg:mb-6')
-                                    : overlayHighlightClasses[effectiveHighlightColor] + (compact ? ' text-lg mb-3 text-center' : ' text-lg md:text-xl lg:text-2xl mb-3 md:mb-4 text-center')
+                                    ? (subtitleClassName || overlayHighlightClasses[effectiveHighlightColor]) + (compact ? ' text-lg mb-3' : ' text-lg md:text-xl lg:text-2xl mb-4 lg:mb-6')
+                                    : (subtitleClassName || overlayHighlightClasses[effectiveHighlightColor]) + (compact ? ' text-lg mb-3 text-center' : ' text-lg md:text-xl lg:text-2xl mb-3 md:mb-4 text-center')
                                     }`}
                             >
                                 {subtitle}

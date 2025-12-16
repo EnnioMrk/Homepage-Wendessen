@@ -17,6 +17,25 @@ async function getActiveLayout() {
     }
 }
 
+// Helper to determine subtitle class based on theme highlight
+function getSubtitleClass(themeHighlight: string | undefined, hasImage: boolean) {
+    if (!themeHighlight) return undefined;
+
+    // Extract color name/value from 'bg-foo'
+    const color = themeHighlight.replace('bg-', '');
+
+    // Check for standard Tailwind colors to apply shade logic
+    const validColors = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
+
+    if (validColors.includes(color.split('-')[0])) {
+        // Use -200 for overlays (hero/image), -700 for text-only
+        return hasImage ? `text-${color.split('-')[0]}-200` : `text-${color.split('-')[0]}-700`;
+    }
+
+    // Fallback/Custom (primary, etc)
+    return `text-${color}`;
+}
+
 export default async function WirSindWendessenSection() {
     const layout = await getActiveLayout();
 
@@ -49,6 +68,10 @@ export default async function WirSindWendessenSection() {
         image_url: "/images/Features/Hospiz.jpeg"
     };
 
+    const card1SubtitleClass = getSubtitleClass(card1.theme.highlight, !!card1.image_url);
+    const card2SubtitleClass = getSubtitleClass(card2.theme.highlight, !!card2.image_url);
+    const card3SubtitleClass = getSubtitleClass(card3.theme.highlight, !!card3.image_url);
+
     return (
         <div className="mb-16">
             {/* Section Title */}
@@ -72,6 +95,7 @@ export default async function WirSindWendessenSection() {
                         buttonText={card1.button_text}
                         buttonHref={card1.button_href}
                         buttonColor={card1.theme.button}
+                        subtitleClassName={card1SubtitleClass}
                         highlightColor={card1.theme.highlight}
                         backgroundColor={card1.theme.background}
                         isTextOnly={!card1.image_url}
@@ -86,6 +110,7 @@ export default async function WirSindWendessenSection() {
                         buttonText={card2.button_text}
                         buttonHref={card2.button_href}
                         buttonColor={card2.theme.button}
+                        subtitleClassName={card2SubtitleClass}
                         imageSrc={card2.image_url}
                         isTextOnly={!card2.image_url}
                         className="min-h-[300px]"
@@ -100,6 +125,7 @@ export default async function WirSindWendessenSection() {
                         buttonText={card3.button_text}
                         buttonHref={card3.button_href}
                         buttonColor={card3.theme.button}
+                        subtitleClassName={card3SubtitleClass}
                         imageSrc={card3.image_url}
                         isTextOnly={!card3.image_url}
                         className="h-96"
@@ -118,6 +144,7 @@ export default async function WirSindWendessenSection() {
                                 buttonText={card1.button_text}
                                 buttonHref={card1.button_href}
                                 buttonColor={card1.theme.button}
+                                subtitleClassName={card1SubtitleClass}
                                 imageSrc={card1.image_url}
                                 isTextOnly={!card1.image_url}
                                 className="h-full min-h-[350px]"
@@ -132,6 +159,7 @@ export default async function WirSindWendessenSection() {
                             buttonText={card2.button_text}
                             buttonHref={card2.button_href}
                             buttonColor={card2.theme.button}
+                            subtitleClassName={card2SubtitleClass}
                             imageSrc={card2.image_url}
                             isTextOnly={!card2.image_url}
                             className="text-xs h-full min-h-[350px]"
@@ -146,6 +174,7 @@ export default async function WirSindWendessenSection() {
                         buttonText={card3.button_text}
                         buttonHref={card3.button_href}
                         buttonColor={card3.theme.button}
+                        subtitleClassName={card3SubtitleClass}
                         imageSrc={card3.image_url}
                         isTextOnly={!card3.image_url}
                         className="mb-8"
@@ -163,6 +192,7 @@ export default async function WirSindWendessenSection() {
                             buttonText={card1.button_text}
                             buttonHref={card1.button_href}
                             buttonColor={card1.theme.button}
+                            subtitleClassName={card1SubtitleClass}
                             imageSrc={card1.image_url}
                             isTextOnly={!card1.image_url}
                             className="min-h-[500px]"
@@ -179,6 +209,7 @@ export default async function WirSindWendessenSection() {
                             buttonText={card2.button_text}
                             buttonHref={card2.button_href}
                             buttonColor={card2.theme.button}
+                            subtitleClassName={card2SubtitleClass}
                             imageSrc={card2.image_url}
                             isTextOnly={!card2.image_url}
                         />
@@ -190,6 +221,7 @@ export default async function WirSindWendessenSection() {
                             buttonText={card3.button_text}
                             buttonHref={card3.button_href}
                             buttonColor={card3.theme.button}
+                            subtitleClassName={card3SubtitleClass}
                             imageSrc={card3.image_url}
                             isTextOnly={!card3.image_url}
                             className="h-96"
