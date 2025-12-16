@@ -50,7 +50,7 @@ async function setupRolesAndPermissions() {
                 ('super_admin', 'Super Admin', 'Vollständiger Zugriff auf alle Funktionen und Einstellungen', '["*"]'::jsonb),
                 ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern', '["users.view","users.create","users.edit","users.delete","events.view","events.create","events.edit","events.delete","news.view","news.create","news.edit","news.delete","gallery.view","gallery.upload","gallery.edit","gallery.delete","shared_gallery.view","shared_gallery.approve","shared_gallery.reject","shared_gallery.reset","portraits.view","portraits.edit","portraits.delete","settings.view","settings.edit"]'::jsonb),
                 ('editor', 'Redakteur', 'Bearbeitung von Inhalten (Events, News, Galerie)', '["events.view","events.create","events.edit","news.view","news.create","news.edit","gallery.view","gallery.upload","portraits.view","portraits.edit"]'::jsonb),
-                ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen', '["shared_gallery.view","shared_gallery.approve","shared_gallery.reject","shared_gallery.reset","portraits.view","news.view","events.view"]'::jsonb);
+                ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen', '["shared_gallery.view","shared_gallery.approve","shared_gallery.reject","shared_gallery.reset","portraits.view","portraits.edit","news.view","events.view"]'::jsonb);
             `;
             console.log('✓ Created default roles with permissions');
         } else {
