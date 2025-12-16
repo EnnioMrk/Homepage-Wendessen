@@ -87,8 +87,21 @@ const nextConfig: NextConfig = {
                 ],
             },
             {
-                // Apply aggressive caching to favicon and other root static files
-                source: '/:file(favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.json|.+\\.png|.+\\.jpg|.+\\.jpeg|.+\\.gif|.+\\.webp|.+\\.svg|.+\\.ico)',
+                // Do NOT aggressively cache manifest or service worker - they change and Android Chrome relies on them.
+                source: '/manifest.json',
+                headers: [
+                    { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+                ],
+            },
+            {
+                source: '/sw.js',
+                headers: [
+                    { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+                ],
+            },
+            {
+                // Apply aggressive caching to favicon and other root static files (images, icons), excluding manifest
+                source: '/:file(favicon\\.ico|robots\\.txt|sitemap\\.xml|.+\\.png|.+\\.jpg|.+\\.jpeg|.+\\.gif|.+\\.webp|.+\\.svg|.+\\.ico)',
                 headers: [
                     {
                         key: 'Cache-Control',
