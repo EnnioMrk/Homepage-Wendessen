@@ -44,6 +44,20 @@ const DEFAULT_THEME: CardTheme = {
     button: 'green'
 };
 
+const THEME_PRESETS: Record<string, CardTheme> = {
+    Green: { highlight: 'green', background: 'green', button: 'green' },
+    Blue: { highlight: 'blue', background: 'blue', button: 'blue' },
+    Warm: { highlight: 'amber', background: 'orange', button: 'red' },
+    Slate: { highlight: 'slate', background: 'gray', button: 'gray' },
+};
+
+const PRESET_BG: Record<string, string> = {
+    Green: '#16a34a', // green-600
+    Blue: '#2563eb', // blue-600
+    Warm: '#f97316', // orange-500
+    Slate: '#64748b', // slate-500
+};
+
 const EMPTY_CARD: CardData = {
     title: '',
     subtitle: '',
@@ -245,6 +259,30 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 {/* Theme Controls */}
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                                     <h4 className="text-sm font-semibold text-gray-900 mb-3">Design & Farben</h4>
+                                    <div className="mb-3">
+                                        <div className="text-xs text-gray-500 mb-2">Vorgaben</div>
+                                        <div className="flex gap-2">
+                                            {Object.entries(THEME_PRESETS).map(([name, theme]) => (
+                                                <button
+                                                    key={name}
+                                                    type="button"
+                                                    onClick={() => updateCardTheme(cardKey, theme)}
+                                                    className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm"
+                                                >
+                                                    <span style={{ width: 20, height: 20, borderRadius: 4, backgroundColor: PRESET_BG[name] || '#ddd', display: 'inline-block', border: '1px solid rgba(0,0,0,0.08)' }} />
+                                                    <span className="text-sm text-gray-700">{name}</span>
+                                                </button>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => updateCardTheme(cardKey, { ...formData[cardKey].theme })}
+                                                className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm"
+                                            >
+                                                <PencilSimple className="h-4 w-4 text-gray-600" />
+                                                <span className="text-sm text-gray-700">Anpassen</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                         {/* Highlight Color */}
                                         <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
