@@ -240,10 +240,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                 </div>
             </div>
 
-            {/* Cards Editor */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Cards Editor: use 3-column layout, main card spans 2 columns */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {(['card_1', 'card_2', 'card_3'] as const).map((cardKey, index) => (
-                    <div key={cardKey} className={`bg-white p-4 rounded-lg shadow ${index === 0 ? 'lg:col-span-2' : ''}`}>
+                    <div key={cardKey} className={`bg-white p-4 rounded-lg shadow ${index === 0 ? 'lg:col-span-2' : 'lg:col-span-1'}`}>
                         <div className="flex justify-between items-start mb-4 border-b pb-3">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900">
@@ -394,7 +394,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             imageSrc={formData[cardKey].image_url}
                                             isTextOnly={!formData[cardKey].image_url}
                                             variant={cardKey === 'card_1' ? 'hero' : 'centered'}
-                                            className="min-h-[300px]"
+                                            className={cardKey === 'card_1' ? 'min-h-[420px]' : 'min-h-[320px]'}
                                             compact={true}
                                         />
                                     </div>
