@@ -76,6 +76,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showImagePicker, setShowImagePicker] = useState<'card_1' | 'card_2' | 'card_3' | null>(null);
+    const [editingThemeFor, setEditingThemeFor] = useState<null | 'card_1' | 'card_2' | 'card_3'>(null);
+    const [tempTheme, setTempTheme] = useState<CardTheme>(DEFAULT_THEME);
 
     const [formData, setFormData] = useState<LayoutData>({
         name: '',
@@ -275,7 +277,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => updateCardTheme(cardKey, { ...formData[cardKey].theme })}
+                                                onClick={() => {
+                                                    setTempTheme(formData[cardKey].theme);
+                                                    setEditingThemeFor(cardKey);
+                                                }}
                                                 className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm"
                                             >
                                                 <PencilSimple className="h-4 w-4 text-gray-600" />
@@ -435,6 +440,54 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                     onClose={() => setShowImagePicker(null)}
                     canUpload={canUpload}
                 />
+            )}
+
+            {/* Theme customization modal (inline, no external dependency) */}
+            {editingThemeFor && (
+                <div className="relative z-50">
+                    <div className="fixed inset-0 bg-black/30" aria-hidden />
+                    <div className="fixed inset-0 flex items-center justify-center p-4">
+                        <div className="mx-auto max-w-lg w-full bg-white rounded-lg p-6 shadow-lg">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Theme anpassen</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Primärfarbe</label>
+                                    <div className="mt-2">
+                                        <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Hintergrund</label>
+                                    <div className="mt-2">
+                                        <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Button</label>
+                                    <div className="mt-2">
+                                        <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex justify-end gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingThemeFor(null)}
+                                    className="px-4 py-2 rounded-md border bg-white text-gray-700"
+                                >Abbrechen</button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (editingThemeFor) updateCardTheme(editingThemeFor, tempTheme);
+                                        setEditingThemeFor(null);
+                                    }}
+                                    className="px-4 py-2 rounded-md bg-blue-600 text-white"
+                                >Speichern</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
