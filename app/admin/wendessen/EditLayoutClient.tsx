@@ -49,6 +49,8 @@ const THEME_PRESETS: Record<string, CardTheme> = {
     Blue: { highlight: 'blue', background: 'blue', button: 'blue' },
     Warm: { highlight: 'amber', background: 'orange', button: 'red' },
     Slate: { highlight: 'slate', background: 'gray', button: 'gray' },
+    Purple: { highlight: 'violet', background: 'purple', button: 'purple' },
+    Teal: { highlight: 'teal', background: 'teal', button: 'teal' },
 };
 
 const PRESET_BG: Record<string, string> = {
@@ -56,6 +58,8 @@ const PRESET_BG: Record<string, string> = {
     Blue: '#2563eb', // blue-600
     Warm: '#f97316', // orange-500
     Slate: '#64748b', // slate-500
+    Purple: '#7c3aed', // violet-600
+    Teal: '#0ea5a4', // teal-500
 };
 
 const EMPTY_CARD: CardData = {
@@ -263,18 +267,19 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     <h4 className="text-sm font-semibold text-gray-900 mb-3">Design & Farben</h4>
                                     <div className="mb-3">
                                         <div className="text-xs text-gray-500 mb-2">Vorgaben</div>
-                                        <div className="flex gap-2">
+                                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                                             {Object.entries(THEME_PRESETS).map(([name, theme]) => (
                                                 <button
                                                     key={name}
                                                     type="button"
                                                     onClick={() => updateCardTheme(cardKey, theme)}
-                                                    className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm"
+                                                    className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
                                                 >
-                                                    <span style={{ width: 20, height: 20, borderRadius: 4, backgroundColor: PRESET_BG[name] || '#ddd', display: 'inline-block', border: '1px solid rgba(0,0,0,0.08)' }} />
-                                                    <span className="text-sm text-gray-700">{name}</span>
+                                                    <span style={{ width: 18, height: 18, borderRadius: 4, backgroundColor: PRESET_BG[name] || '#ddd', display: 'inline-block', border: '1px solid rgba(0,0,0,0.08)' }} />
                                                 </button>
                                             ))}
+                                        </div>
+                                        <div className="mt-2">
                                             <button
                                                 type="button"
                                                 onClick={() => {
