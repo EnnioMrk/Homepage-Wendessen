@@ -453,8 +453,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white justify-start">
+                                    <div className="w-28 text-left">
                                         <span className="text-sm text-gray-600">Primär</span>
                                     </div>
                                     <div>
@@ -462,8 +462,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white justify-start">
+                                    <div className="w-28 text-left">
                                         <span className="text-sm text-gray-600">Hintergrund</span>
                                     </div>
                                     <div>
@@ -471,8 +471,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white justify-start">
+                                    <div className="w-28 text-left">
                                         <span className="text-sm text-gray-600">Button</span>
                                     </div>
                                     <div>
