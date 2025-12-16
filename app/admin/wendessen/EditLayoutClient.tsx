@@ -62,6 +62,15 @@ const PRESET_BG: Record<string, string> = {
     Teal: '#0ea5a4', // teal-500
 };
 
+const PRESET_LABEL_DE: Record<string, string> = {
+    Green: 'Grün',
+    Blue: 'Blau',
+    Warm: 'Warm',
+    Slate: 'Schiefer',
+    Purple: 'Violett',
+    Teal: 'Türkis',
+};
+
 const EMPTY_CARD: CardData = {
     title: '',
     subtitle: '',
@@ -273,9 +282,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     key={name}
                                                     type="button"
                                                     onClick={() => updateCardTheme(cardKey, theme)}
-                                                    className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
+                                                    className="flex flex-col items-center gap-1 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
                                                 >
                                                     <span style={{ width: 18, height: 18, borderRadius: 4, backgroundColor: PRESET_BG[name] || '#ddd', display: 'inline-block', border: '1px solid rgba(0,0,0,0.08)' }} />
+                                                    <span className="text-xs text-gray-700">{PRESET_LABEL_DE[name] || name}</span>
                                                 </button>
                                             ))}
                                         </div>
