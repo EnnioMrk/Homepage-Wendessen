@@ -457,7 +457,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     <div className="w-28 text-left">
                                         <span className="text-sm text-gray-600">Primär</span>
                                     </div>
-                                    <div className="flex-1 text-left">
+                                    <div className="flex-1 flex items-center">
                                         <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
                                     </div>
                                 </div>
@@ -466,7 +466,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     <div className="w-28 text-left">
                                         <span className="text-sm text-gray-600">Hintergrund</span>
                                     </div>
-                                    <div className="flex-1 text-left">
+                                    <div className="flex-1 flex items-center">
                                         <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
                                     </div>
                                 </div>
@@ -475,7 +475,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     <div className="w-28 text-left">
                                         <span className="text-sm text-gray-600">Button</span>
                                     </div>
-                                    <div className="flex-1 text-left">
+                                    <div className="flex-1 flex items-center">
                                         <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
                                     </div>
                                 </div>
