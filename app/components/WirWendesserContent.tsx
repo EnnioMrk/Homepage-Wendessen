@@ -273,92 +273,12 @@ export default function WirWendesserContent() {
                                     </p>
                                 </div>
 
-                                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                            <ImageSquare className="w-8 h-8 text-white" />
-                                        </div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                            Foto
-                                        </h4>
-                                        <p className="text-gray-600 text-sm">
-                                            Ein schönes Bild von Ihnen
-                                        </p>
-                                    </div>
-
-                                    <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                            <NotePencil className="w-8 h-8 text-white" />
-                                        </div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                            Text
-                                        </h4>
-                                        <p className="text-gray-600 text-sm">
-                                            Ein paar Zeilen über Sie
-                                        </p>
-                                    </div>
-
-                                    <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                            <UserPlus className="w-8 h-8 text-white" />
-                                        </div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-2">
-                                            Gemeinschaft
-                                        </h4>
-                                        <p className="text-gray-600 text-sm">
-                                            Teil unserer Vielfalt werden
-                                        </p>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
 
-                    {/* Community Values */}
-                    <div className="mt-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 shadow-lg">
-                        <div className="text-center">
-                            <h3 className="text-3xl font-bold text-blue-700 mb-6">
-                                Was uns verbindet
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                                <div className="text-center">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                        <Star className="w-8 h-8 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-semibold text-blue-800 mb-2">
-                                        Vielfalt
-                                    </h4>
-                                    <p className="text-gray-600">
-                                        Jeder bringt seine eigene Geschichte mit
-                                    </p>
-                                </div>
-
-                                <div className="text-center">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                        <Handshake className="w-8 h-8 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-semibold text-indigo-800 mb-2">
-                                        Gemeinschaft
-                                    </h4>
-                                    <p className="text-gray-600">
-                                        Zusammen sind wir stärker
-                                    </p>
-                                </div>
-
-                                <div className="text-center">
-                                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
-                                        <Heart className="w-8 h-8 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-semibold text-purple-800 mb-2">
-                                        Zusammenhalt
-                                    </h4>
-                                    <p className="text-gray-600">
-                                        Wendessen ist unser gemeinsames Zuhause
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
 
