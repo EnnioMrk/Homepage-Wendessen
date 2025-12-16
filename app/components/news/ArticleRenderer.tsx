@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Descendant } from 'slate';
+import Image from 'next/image';
 
 interface ArticleRendererProps {
     content: Descendant[];
@@ -181,12 +182,14 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                     src={src}
                     alt={alt}
-                    className="max-h-[85vh] max-w-[90vw] rounded-lg shadow-2xl"
+                    width={1200}
+                    height={800}
+                    className="max-h-[85vh] max-w-[90vw] rounded-lg shadow-2xl object-contain"
                     draggable={false}
+                    unoptimized
                 />
             </div>
 
@@ -331,10 +334,11 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                             className={getFloatClasses(position)}
                             style={{ maxWidth: sizeStyles[size] }}
                         >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 src={imageElement.url}
                                 alt={imageElement.alt || 'Bild'}
+                                width={parseInt(sizeStyles[size]) || 400}
+                                height={parseInt(sizeStyles[size]) || 400}
                                 className="rounded-lg shadow-md w-full h-auto cursor-zoom-in hover:opacity-90 transition-opacity"
                                 onClick={() =>
                                     setPreviewImage({
@@ -342,6 +346,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                                         alt: imageElement.alt || 'Bild',
                                     })
                                 }
+                                unoptimized
                             />
                         </div>
                     );
@@ -359,10 +364,11 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                             className="inline-block"
                             style={{ maxWidth: sizeStyles[size] }}
                         >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 src={imageElement.url}
                                 alt={imageElement.alt || 'Bild'}
+                                width={parseInt(sizeStyles[size]) || 400}
+                                height={parseInt(sizeStyles[size]) || 400}
                                 className="rounded-lg shadow-md w-full h-auto cursor-zoom-in hover:opacity-90 transition-opacity"
                                 onClick={() =>
                                     setPreviewImage({
@@ -370,6 +376,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                                         alt: imageElement.alt || 'Bild',
                                     })
                                 }
+                                unoptimized
                             />
                             {imageElement.alt && (
                                 <p className="text-sm text-gray-600 text-center mt-2 italic">

@@ -249,36 +249,33 @@ export default function WirWendesserContent() {
                                 </p>
 
                                 <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-green-300 shadow-lg">
-                                    <button
-                                        onClick={() =>
-                                            setShowPortraitModal(true)
-                                        }
-                                        className="w-full flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 group hover:scale-105 transition-transform"
-                                    >
-                                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
-                                            <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                                    <div className="text-center mb-4">
+                                        <div className="text-lg md:text-xl font-bold text-green-600">
+                                            Portrait einreichen
                                         </div>
-                                        <div className="text-center sm:text-left">
-                                            <div className="text-base sm:text-lg md:text-xl font-bold text-green-600 group-hover:text-green-800 transition-colors">
-                                                Portrait einreichen
-                                            </div>
-                                            <div className="text-sm text-gray-600">
-                                                Foto und Geschichte teilen
-                                            </div>
+                                        <div className="text-sm text-gray-600">
+                                            Foto und Geschichte teilen
                                         </div>
-                                    </button>
-                                    <p className="text-gray-600 text-center">
+                                    </div>
+                                    <p className="text-gray-600 text-center mb-6">
                                         Teilen Sie Ihr Foto und Ihre Geschichte
                                         mit der Dorfgemeinschaft!
                                     </p>
+                                    <button
+                                        onClick={() => setShowPortraitModal(true)}
+                                        className="mx-auto px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-green-500 flex items-center gap-2"
+                                    >
+                                        <UserPlus className="w-5 h-5" />
+                                        Jetzt einreichen
+                                    </button>
                                 </div>
 
-                                
+
                             </div>
                         </div>
                     </div>
 
-                    
+
                 </div>
             </div>
 

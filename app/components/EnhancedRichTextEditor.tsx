@@ -257,15 +257,16 @@ export default function EnhancedRichTextEditor({
                             <div
                                 {...props.attributes}
                                 contentEditable={false}
-                                className={`group relative ${
-                                    sizeClasses[size]
-                                } ${getFloatClasses(pos)}`}
+                                className={`group relative ${sizeClasses[size]
+                                    } ${getFloatClasses(pos)}`}
                             >
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                                <Image
                                     src={img.url}
                                     alt={img.alt || 'Bild'}
+                                    width={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
+                                    height={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
                                     className="rounded-lg shadow-md w-full h-auto"
+                                    unoptimized
                                 />
                                 {/* Edit/Delete overlay */}
                                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
@@ -303,11 +304,13 @@ export default function EnhancedRichTextEditor({
                             <div
                                 className={`relative inline-block ${sizeClasses[size]} group`}
                             >
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                                <Image
                                     src={img.url}
                                     alt={img.alt || 'Bild'}
+                                    width={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
+                                    height={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
                                     className="rounded-lg shadow-md w-full h-auto"
+                                    unoptimized
                                 />
                                 {img.alt && (
                                     <p className="text-sm text-gray-600 text-center mt-2 italic">
@@ -406,10 +409,10 @@ export default function EnhancedRichTextEditor({
         const chosen = isActive
             ? 'paragraph'
             : isList
-            ? 'list-item'
-            : possible.includes(formatStr)
-            ? formatStr
-            : 'paragraph';
+                ? 'list-item'
+                : possible.includes(formatStr)
+                    ? formatStr
+                    : 'paragraph';
         const newProps = { type: chosen as CustomElement['type'] };
         Transforms.setNodes(
             editor,
@@ -676,32 +679,32 @@ export default function EnhancedRichTextEditor({
                                         Vorschau:
                                     </p>
                                     <div
-                                        className={`${
-                                            imagePosition === 'left'
+                                        className={`${imagePosition === 'left'
                                                 ? 'text-left'
                                                 : imagePosition === 'right'
-                                                ? 'text-right'
-                                                : 'text-center'
-                                        }`}
+                                                    ? 'text-right'
+                                                    : 'text-center'
+                                            }`}
                                     >
                                         <div
-                                            className={`inline-block ${
-                                                imageSize === 'small'
+                                            className={`inline-block ${imageSize === 'small'
                                                     ? 'max-w-[150px]'
                                                     : imageSize === 'medium'
-                                                    ? 'max-w-[250px]'
-                                                    : imageSize === 'large'
-                                                    ? 'max-w-[350px]'
-                                                    : 'max-w-full'
-                                            }`}
+                                                        ? 'max-w-[250px]'
+                                                        : imageSize === 'large'
+                                                            ? 'max-w-[350px]'
+                                                            : 'max-w-full'
+                                                }`}
                                         >
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={selectedGalleryImage.url}
                                                 alt={
                                                     selectedGalleryImage.displayName
                                                 }
+                                                width={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
+                                                height={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
                                                 className="rounded-lg shadow-md w-full h-auto"
+                                                unoptimized
                                             />
                                         </div>
                                     </div>
@@ -749,11 +752,10 @@ export default function EnhancedRichTextEditor({
                                                         option.value as ImageSize
                                                     )
                                                 }
-                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                                    imageSize === option.value
+                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageSize === option.value
                                                         ? 'border-primary bg-primary/10 text-primary'
                                                         : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
+                                                    }`}
                                             >
                                                 <div>{option.label}</div>
                                                 <div className="text-xs text-gray-500">
@@ -795,12 +797,11 @@ export default function EnhancedRichTextEditor({
                                                         option.value as ImagePosition
                                                     )
                                                 }
-                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                                    imagePosition ===
-                                                    option.value
+                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imagePosition ===
+                                                        option.value
                                                         ? 'border-primary bg-primary/10 text-primary'
                                                         : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
+                                                    }`}
                                             >
                                                 <div>{option.label}</div>
                                                 <div className="text-xs text-gray-500">
@@ -822,11 +823,10 @@ export default function EnhancedRichTextEditor({
                                             onClick={() =>
                                                 setImageTextFlow(false)
                                             }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                                !imageTextFlow
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${!imageTextFlow
                                                     ? 'border-primary bg-primary/10 text-primary'
                                                     : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             <div>Eigene Zeile</div>
                                             <div className="text-xs text-gray-500">
@@ -841,14 +841,13 @@ export default function EnhancedRichTextEditor({
                                             disabled={
                                                 imagePosition === 'center'
                                             }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                                imageTextFlow &&
-                                                imagePosition !== 'center'
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageTextFlow &&
+                                                    imagePosition !== 'center'
                                                     ? 'border-primary bg-primary/10 text-primary'
                                                     : imagePosition === 'center'
-                                                    ? 'border-gray-100 text-gray-400 cursor-not-allowed'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                            }`}
+                                                        ? 'border-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                                }`}
                                         >
                                             <div>Text daneben</div>
                                             <div className="text-xs text-gray-500">
@@ -880,7 +879,7 @@ export default function EnhancedRichTextEditor({
                                                 imageSize,
                                                 imagePosition,
                                                 imageTextFlow &&
-                                                    imagePosition !== 'center'
+                                                imagePosition !== 'center'
                                             )
                                         }
                                         className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
@@ -980,33 +979,33 @@ export default function EnhancedRichTextEditor({
                                     Vorschau:
                                 </p>
                                 <div
-                                    className={`${
-                                        imagePosition === 'left'
+                                    className={`${imagePosition === 'left'
                                             ? 'text-left'
                                             : imagePosition === 'right'
-                                            ? 'text-right'
-                                            : 'text-center'
-                                    }`}
+                                                ? 'text-right'
+                                                : 'text-center'
+                                        }`}
                                 >
                                     <div
-                                        className={`inline-block ${
-                                            imageSize === 'small'
+                                        className={`inline-block ${imageSize === 'small'
                                                 ? 'max-w-[150px]'
                                                 : imageSize === 'medium'
-                                                ? 'max-w-[250px]'
-                                                : imageSize === 'large'
-                                                ? 'max-w-[350px]'
-                                                : 'max-w-full'
-                                        }`}
+                                                    ? 'max-w-[250px]'
+                                                    : imageSize === 'large'
+                                                        ? 'max-w-[350px]'
+                                                        : 'max-w-full'
+                                            }`}
                                     >
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
+                                        <Image
                                             src={editingImageElement.url}
                                             alt={
                                                 editingImageElement.alt ||
                                                 'Bild'
                                             }
+                                            width={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
+                                            height={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
                                             className="rounded-lg shadow-md w-full h-auto"
+                                            unoptimized
                                         />
                                     </div>
                                 </div>
@@ -1048,11 +1047,10 @@ export default function EnhancedRichTextEditor({
                                                     option.value as ImageSize
                                                 )
                                             }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                                imageSize === option.value
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageSize === option.value
                                                     ? 'border-primary bg-primary/10 text-primary'
                                                     : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             <div>{option.label}</div>
                                             <div className="text-xs text-gray-500">
@@ -1094,11 +1092,10 @@ export default function EnhancedRichTextEditor({
                                                     option.value as ImagePosition
                                                 )
                                             }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                                imagePosition === option.value
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imagePosition === option.value
                                                     ? 'border-primary bg-primary/10 text-primary'
                                                     : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             <div>{option.label}</div>
                                             <div className="text-xs text-gray-500">
@@ -1118,11 +1115,10 @@ export default function EnhancedRichTextEditor({
                                     <button
                                         type="button"
                                         onClick={() => setImageTextFlow(false)}
-                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                            !imageTextFlow
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${!imageTextFlow
                                                 ? 'border-primary bg-primary/10 text-primary'
                                                 : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                        }`}
+                                            }`}
                                     >
                                         <div>Eigene Zeile</div>
                                         <div className="text-xs text-gray-500">
@@ -1133,14 +1129,13 @@ export default function EnhancedRichTextEditor({
                                         type="button"
                                         onClick={() => setImageTextFlow(true)}
                                         disabled={imagePosition === 'center'}
-                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
-                                            imageTextFlow &&
-                                            imagePosition !== 'center'
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageTextFlow &&
+                                                imagePosition !== 'center'
                                                 ? 'border-primary bg-primary/10 text-primary'
                                                 : imagePosition === 'center'
-                                                ? 'border-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                        }`}
+                                                    ? 'border-gray-100 text-gray-400 cursor-not-allowed'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
                                     >
                                         <div>Text daneben</div>
                                         <div className="text-xs text-gray-500">
@@ -1175,7 +1170,7 @@ export default function EnhancedRichTextEditor({
                                             imageSize,
                                             imagePosition,
                                             imageTextFlow &&
-                                                imagePosition !== 'center'
+                                            imagePosition !== 'center'
                                         )
                                     }
                                     className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
@@ -1209,9 +1204,8 @@ function ToolbarButton({
                 e.preventDefault();
                 onMouseDown();
             }}
-            className={`p-2 rounded hover:bg-gray-200 transition-colors ${
-                active ? 'bg-gray-300 text-primary' : 'text-gray-700'
-            }`}
+            className={`p-2 rounded hover:bg-gray-200 transition-colors ${active ? 'bg-gray-300 text-primary' : 'text-gray-700'
+                }`}
             title={title}
         >
             {children}
