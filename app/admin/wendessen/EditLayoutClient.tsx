@@ -288,7 +288,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="text-sm text-gray-500">Farben lassen sich über "Anpassen" im Kontext bearbeiten.</div>
+                                    
                                 </div>
 
                                 {/* Text Inputs */}
