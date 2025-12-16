@@ -447,35 +447,35 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                 <div className="relative z-50">
                     <div className="fixed inset-0 bg-black/30" aria-hidden />
                     <div className="fixed inset-0 flex items-center justify-center p-2">
-                        <div className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[28rem] bg-white rounded-lg p-3 shadow-md">
+                        <div className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[28rem] lg:max-w-[28rem] xl:max-w-[28rem] bg-white rounded-lg p-3 shadow-md">
                             <div className="flex items-start justify-between gap-4">
                                 <h3 className="text-base font-semibold text-gray-900">Theme anpassen</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white justify-start">
-                                    <div className="w-28 text-left">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                                    <div className="w-28 text-right">
                                         <span className="text-sm text-gray-600">Primär</span>
                                     </div>
-                                    <div className="flex-1 flex items-center">
+                                    <div>
                                         <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white justify-start">
-                                    <div className="w-28 text-left">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                                    <div className="w-28 text-right">
                                         <span className="text-sm text-gray-600">Hintergrund</span>
                                     </div>
-                                    <div className="flex-1 flex items-center">
+                                    <div>
                                         <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white justify-start">
-                                    <div className="w-28 text-left">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                                    <div className="w-28 text-right">
                                         <span className="text-sm text-gray-600">Button</span>
                                     </div>
-                                    <div className="flex-1 flex items-center">
+                                    <div>
                                         <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
                                     </div>
                                 </div>
