@@ -288,34 +288,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        {/* Highlight Color */}
-                                        <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                                            <span className="text-sm text-gray-600 font-medium">Primärfarbe</span>
-                                            <TailwindColorPicker
-                                                value={formData[cardKey].theme.highlight}
-                                                onChange={(color) => updateCardTheme(cardKey, { ...formData[cardKey].theme, highlight: color })}
-                                            />
-                                        </div>
-
-                                        {/* Background Color */}
-                                        <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                                            <span className="text-sm text-gray-600 font-medium">Hintergrund</span>
-                                            <TailwindColorPicker
-                                                value={formData[cardKey].theme.background}
-                                                onChange={(color) => updateCardTheme(cardKey, { ...formData[cardKey].theme, background: color })}
-                                            />
-                                        </div>
-
-                                        {/* Button Color */}
-                                        <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                                            <span className="text-sm text-gray-600 font-medium">Button</span>
-                                            <TailwindColorPicker
-                                                value={formData[cardKey].theme.button}
-                                                onChange={(color) => updateCardTheme(cardKey, { ...formData[cardKey].theme, button: color })}
-                                            />
-                                        </div>
-                                    </div>
+                                    <div className="text-sm text-gray-500">Farben lassen sich über "Anpassen" im Kontext bearbeiten.</div>
                                 </div>
 
                                 {/* Text Inputs */}
