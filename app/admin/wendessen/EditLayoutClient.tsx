@@ -453,20 +453,32 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 <div className="text-sm text-gray-500">Vorschau</div>
                             </div>
 
-                            <p className="text-sm text-gray-600 mt-3 mb-3">Wähle Primärfarbe, Hintergrund und Buttonfarbe für diese Karte. Auf mobilen Geräten sind die Farbauswahlen gestapelt.</p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                                    <div className="w-28 text-right">
+                                        <span className="text-sm text-gray-600">Primär</span>
+                                    </div>
+                                    <div>
+                                        <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
+                                    </div>
+                                </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end mt-1">
-                                <div className="text-center">
-                                    <label className="block text-xs text-gray-600 mb-2">Primär</label>
-                                    <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                                    <div className="w-28 text-right">
+                                        <span className="text-sm text-gray-600">Hintergrund</span>
+                                    </div>
+                                    <div>
+                                        <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
+                                    </div>
                                 </div>
-                                <div className="text-center">
-                                    <label className="block text-xs text-gray-600 mb-2">Hintergrund</label>
-                                    <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
-                                </div>
-                                <div className="text-center">
-                                    <label className="block text-xs text-gray-600 mb-2">Button</label>
-                                    <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
+
+                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                                    <div className="w-28 text-right">
+                                        <span className="text-sm text-gray-600">Button</span>
+                                    </div>
+                                    <div>
+                                        <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
+                                    </div>
                                 </div>
                             </div>
 
