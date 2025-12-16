@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, FloppyDisk, ImageSquare, Trash, PencilSimple } from '@phosphor-icons/react/dist/ssr';
+import {
+    ArrowLeft,
+    FloppyDisk,
+    ImageSquare,
+    Trash,
+    PencilSimple,
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
@@ -41,7 +47,7 @@ interface LayoutData {
 const DEFAULT_THEME: CardTheme = {
     highlight: 'green',
     background: 'green',
-    button: 'green'
+    button: 'green',
 };
 
 const THEME_PRESETS: Record<string, CardTheme> = {
@@ -50,7 +56,6 @@ const THEME_PRESETS: Record<string, CardTheme> = {
     Warm: { highlight: 'amber', background: 'orange', button: 'red' },
     Slate: { highlight: 'slate', background: 'gray', button: 'gray' },
     Purple: { highlight: 'violet', background: 'purple', button: 'purple' },
-    Teal: { highlight: 'teal', background: 'teal', button: 'teal' },
 };
 
 const PRESET_BG: Record<string, string> = {
@@ -59,16 +64,14 @@ const PRESET_BG: Record<string, string> = {
     Warm: '#f97316', // orange-500
     Slate: '#64748b', // slate-500
     Purple: '#7c3aed', // violet-600
-    Teal: '#0ea5a4', // teal-500
 };
 
 const PRESET_LABEL_DE: Record<string, string> = {
     Green: 'Grün',
     Blue: 'Blau',
     Warm: 'Warm',
-    Slate: 'Schiefer',
+    Slate: 'Grau',
     Purple: 'Violett',
-    Teal: 'Türkis',
 };
 
 const EMPTY_CARD: CardData = {
@@ -77,7 +80,7 @@ const EMPTY_CARD: CardData = {
     description: '',
     button_text: 'Mehr erfahren',
     button_href: '#',
-    theme: DEFAULT_THEME
+    theme: DEFAULT_THEME,
 };
 
 export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
@@ -88,8 +91,12 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const [loading, setLoading] = useState(!!layoutId);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [showImagePicker, setShowImagePicker] = useState<'card_1' | 'card_2' | 'card_3' | null>(null);
-    const [editingThemeFor, setEditingThemeFor] = useState<null | 'card_1' | 'card_2' | 'card_3'>(null);
+    const [showImagePicker, setShowImagePicker] = useState<
+        'card_1' | 'card_2' | 'card_3' | null
+    >(null);
+    const [editingThemeFor, setEditingThemeFor] = useState<
+        null | 'card_1' | 'card_2' | 'card_3'
+    >(null);
     const [tempTheme, setTempTheme] = useState<CardTheme>(DEFAULT_THEME);
 
     const [formData, setFormData] = useState<LayoutData>({
@@ -111,17 +118,19 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             // Since we don't have a specific get-by-id API that returns just one (GET /admin/wendessen returns list)
             // Wait, I didn't implement GET /admin/wendessen/[id]. I implemented PUT and DELETE.
             // I should have implemented GET as well in that route.
-            // Let's check my route implementation. 
+            // Let's check my route implementation.
             // Ah, I missed GET in [id]/route.ts! I only did PUT and DELETE.
-            // I need to fix that or use the list endpoint and find it. 
-            // Using list endpoint is inefficient but works for now. 
+            // I need to fix that or use the list endpoint and find it.
+            // Using list endpoint is inefficient but works for now.
             // Better: I will fetch list and find it client side for now, or just implement GET in next step.
             // I'll assume I'll fix the API to support GET /api/admin/wendessen/[id] or just use list for now to save a step.
             // Let's use list for now.
             const response = await fetch('/api/admin/wendessen');
             if (response.ok) {
                 const data = await response.json();
-                const found = data.layouts.find((l: any) => l.id.toString() === id);
+                const found = data.layouts.find(
+                    (l: any) => l.id.toString() === id
+                );
                 if (found) {
                     setFormData(found);
                 } else {
@@ -175,35 +184,42 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         }
     };
 
-    const updateCard = (cardKey: 'card_1' | 'card_2' | 'card_3', field: string, value: any) => {
-        setFormData(prev => ({
+    const updateCard = (
+        cardKey: 'card_1' | 'card_2' | 'card_3',
+        field: string,
+        value: any
+    ) => {
+        setFormData((prev) => ({
             ...prev,
             [cardKey]: {
                 ...prev[cardKey],
-                [field]: value
-            }
+                [field]: value,
+            },
         }));
     };
 
-    const updateCardTheme = (cardKey: 'card_1' | 'card_2' | 'card_3', theme: CardTheme) => {
-        setFormData(prev => ({
+    const updateCardTheme = (
+        cardKey: 'card_1' | 'card_2' | 'card_3',
+        theme: CardTheme
+    ) => {
+        setFormData((prev) => ({
             ...prev,
             [cardKey]: {
                 ...prev[cardKey],
-                theme
-            }
+                theme,
+            },
         }));
     };
 
     const handleImageSelect = (image: { id: string; url: string }) => {
         if (showImagePicker) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
                 [showImagePicker]: {
                     ...prev[showImagePicker],
                     image_id: image.id,
-                    image_url: image.url
-                }
+                    image_url: image.url,
+                },
             }));
             setShowImagePicker(null);
         }
@@ -215,7 +231,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         <div className="space-y-6 pb-20">
             <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow sticky top-0 z-10">
                 <div className="flex items-center">
-                    <button onClick={() => router.back()} className="mr-4 text-gray-600 hover:text-gray-900">
+                    <button
+                        onClick={() => router.back()}
+                        className="mr-4 text-gray-600 hover:text-gray-900"
+                    >
                         <ArrowLeft size={24} />
                     </button>
                     <h1 className="text-2xl font-bold text-gray-900">
@@ -227,7 +246,15 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                     disabled={saving}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center disabled:opacity-50"
                 >
-                    {saving ? <LoadingSpinner size="sm" color="white" className="mr-2" /> : <FloppyDisk size={20} className="mr-2" />}
+                    {saving ? (
+                        <LoadingSpinner
+                            size="sm"
+                            color="white"
+                            className="mr-2"
+                        />
+                    ) : (
+                        <FloppyDisk size={20} className="mr-2" />
+                    )}
                     Speichern
                 </button>
             </div>
@@ -240,13 +267,19 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
             {/* General Settings */}
             <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Allgemein</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">
+                    Allgemein
+                </h2>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Layout Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Layout Name
+                    </label>
                     <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) =>
+                            setFormData({ ...formData, name: e.target.value })
+                        }
                         className="w-full px-3 py-2 border rounded-md"
                         placeholder="z.B. Sommer 2025"
                     />
@@ -255,171 +288,314 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
             {/* Cards Editor */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {(['card_1', 'card_2', 'card_3'] as const).map((cardKey, index) => (
-                    <div key={cardKey} className={`bg-white p-6 rounded-lg shadow ${index === 0 ? 'lg:col-span-2' : ''}`}>
-                        <div className="flex justify-between items-start mb-6 border-b pb-4">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {index === 0 ? 'Karte 1' : index === 1 ? 'Karte 2' : 'Karte 3'}
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                    {index === 0 ? 'Die Hauptkarte, nimmt viel Platz ein.' : 'Kleinere Karte an der Seite.'}
-                                </p>
+                {(['card_1', 'card_2', 'card_3'] as const).map(
+                    (cardKey, index) => (
+                        <div
+                            key={cardKey}
+                            className={`bg-white p-6 rounded-lg shadow ${
+                                index === 0 ? 'lg:col-span-2' : ''
+                            }`}
+                        >
+                            <div className="flex justify-between items-start mb-6 border-b pb-4">
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        {index === 0
+                                            ? 'Karte 1'
+                                            : index === 1
+                                            ? 'Karte 2'
+                                            : 'Karte 3'}
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                        {index === 0
+                                            ? 'Die Hauptkarte, nimmt viel Platz ein.'
+                                            : 'Kleinere Karte an der Seite.'}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className={`grid grid-cols-1 gap-6 ${index === 0 ? 'md:grid-cols-2' : 'min-[1400px]:grid-cols-2'}`}>
-                            {/* Editor Column */}
-                            <div className="space-y-6">
-                                {/* Theme Controls */}
-                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Design & Farben</h4>
-                                    <div className="mb-3">
-                                        <div className="text-xs text-gray-500 mb-2">Vorgaben</div>
-                                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                                            {Object.entries(THEME_PRESETS).map(([name, theme]) => (
+                            {/* Design & Farben moved above inputs and preview so it spans full width */}
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-6">
+                                <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                                    Design & Farben
+                                </h4>
+                                <div className="mb-3">
+                                    <div className="text-xs text-gray-500 mb-2">
+                                        Vorgaben
+                                    </div>
+                                    <div
+                                        className="grid gap-2"
+                                        style={{
+                                            gridTemplateColumns:
+                                                'repeat(auto-fit, minmax(140px, 1fr))',
+                                        }}
+                                    >
+                                        {Object.entries(THEME_PRESETS).map(
+                                            ([name, theme]) => (
                                                 <button
                                                     key={name}
                                                     type="button"
-                                                    onClick={() => updateCardTheme(cardKey, theme)}
+                                                    onClick={() =>
+                                                        updateCardTheme(
+                                                            cardKey,
+                                                            theme
+                                                        )
+                                                    }
                                                     className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
                                                 >
-                                                    <span style={{ width: 18, height: 18, borderRadius: 4, backgroundColor: PRESET_BG[name] || '#ddd', display: 'inline-block', border: '1px solid rgba(0,0,0,0.08)' }} />
-                                                    <span className="text-sm text-gray-700">{PRESET_LABEL_DE[name] || name}</span>
+                                                    <span
+                                                        style={{
+                                                            width: 18,
+                                                            height: 18,
+                                                            borderRadius: 4,
+                                                            backgroundColor:
+                                                                PRESET_BG[name] ||
+                                                                '#ddd',
+                                                            display:
+                                                                'inline-block',
+                                                            border: '1px solid rgba(0,0,0,0.08)',
+                                                        }}
+                                                    />
+                                                    <span className="text-sm text-gray-700">
+                                                        {PRESET_LABEL_DE[name] ||
+                                                            name}
+                                                    </span>
                                                 </button>
-                                            ))}
-                                        </div>
-                                        <div className="mt-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setTempTheme(formData[cardKey].theme);
-                                                    setEditingThemeFor(cardKey);
-                                                }}
-                                                className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm"
-                                            >
-                                                <PencilSimple className="h-4 w-4 text-gray-600" />
-                                                <span className="text-sm text-gray-700">Anpassen</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
+                                            )
+                                        )}
 
-                                {/* Text Inputs */}
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Titel</label>
-                                        <input
-                                            type="text"
-                                            value={formData[cardKey].title}
-                                            onChange={(e) => updateCard(cardKey, 'title', e.target.value)}
-                                            className="w-full px-3 py-2 border rounded-md mt-1"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Untertitel</label>
-                                        <input
-                                            type="text"
-                                            value={formData[cardKey].subtitle}
-                                            onChange={(e) => updateCard(cardKey, 'subtitle', e.target.value)}
-                                            className="w-full px-3 py-2 border rounded-md mt-1"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">Beschreibung</label>
-                                        <textarea
-                                            value={formData[cardKey].description}
-                                            onChange={(e) => updateCard(cardKey, 'description', e.target.value)}
-                                            rows={3}
-                                            className="w-full px-3 py-2 border rounded-md mt-1"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Button Text</label>
-                                            <input
-                                                type="text"
-                                                value={formData[cardKey].button_text}
-                                                onChange={(e) => updateCard(cardKey, 'button_text', e.target.value)}
-                                                className="w-full px-3 py-2 border rounded-md mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Button Link</label>
-                                            <input
-                                                type="text"
-                                                value={formData[cardKey].button_href}
-                                                onChange={(e) => updateCard(cardKey, 'button_href', e.target.value)}
-                                                className="w-full px-3 py-2 border rounded-md mt-1"
-                                            />
-                                        </div>
+                                        {/* Anpassen included as a grid item so total tiles (presets + Anpassen) = 6 */}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setTempTheme(formData[cardKey].theme);
+                                                setEditingThemeFor(cardKey);
+                                            }}
+                                            className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
+                                        >
+                                            <PencilSimple className="h-4 w-4 text-gray-600" />
+                                            <span className="text-sm text-gray-700">
+                                                Anpassen
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
-
                             </div>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <label className="block text-sm font-medium text-gray-700">Vorschau</label>
-                                        <div className="text-xs text-gray-500">
-                                            {formData[cardKey].image_url ? 'Mit Bild' : 'Nur Text'}
+                            <div
+                                className={`grid grid-cols-1 gap-6 ${
+                                    index === 0
+                                        ? 'md:grid-cols-2'
+                                        : 'min-[1400px]:grid-cols-2'
+                                }`}
+                            >
+                                {/* Editor Column */}
+                                <div className="space-y-6">
+                                    {/* Text Inputs */}
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Titel
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData[cardKey].title}
+                                                onChange={(e) =>
+                                                    updateCard(
+                                                        cardKey,
+                                                        'title',
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Untertitel
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={
+                                                    formData[cardKey].subtitle
+                                                }
+                                                onChange={(e) =>
+                                                    updateCard(
+                                                        cardKey,
+                                                        'subtitle',
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Beschreibung
+                                            </label>
+                                            <textarea
+                                                value={
+                                                    formData[cardKey]
+                                                        .description
+                                                }
+                                                onChange={(e) =>
+                                                    updateCard(
+                                                        cardKey,
+                                                        'description',
+                                                        e.target.value
+                                                    )
+                                                }
+                                                rows={3}
+                                                className="w-full px-3 py-2 border rounded-md mt-1"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">
+                                                    Button Text
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={
+                                                        formData[cardKey]
+                                                            .button_text
+                                                    }
+                                                    onChange={(e) =>
+                                                        updateCard(
+                                                            cardKey,
+                                                            'button_text',
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    className="w-full px-3 py-2 border rounded-md mt-1"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700">
+                                                    Button Link
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={
+                                                        formData[cardKey]
+                                                            .button_href
+                                                    }
+                                                    onChange={(e) =>
+                                                        updateCard(
+                                                            cardKey,
+                                                            'button_href',
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    className="w-full px-3 py-2 border rounded-md mt-1"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Component Preview */}
-                                    <div className="border rounded-xl p-4 bg-gray-50">
-                                        <FeatureCard
-                                            title={formData[cardKey].title || 'Titel'}
-                                            subtitle={formData[cardKey].subtitle}
-                                            description={formData[cardKey].description || 'Beschreibungstext...'}
-                                            buttonText={formData[cardKey].button_text || 'Button'}
-                                            buttonHref="#"
-                                            buttonColor={formData[cardKey].theme.button}
-                                            highlightColor={formData[cardKey].theme.highlight}
-                                            backgroundColor={formData[cardKey].theme.background}
-                                            imageSrc={formData[cardKey].image_url}
-                                            isTextOnly={!formData[cardKey].image_url}
-                                            variant={cardKey === 'card_1' ? 'hero' : 'centered'}
-                                            className="min-h-[300px]"
-                                            compact={true}
-                                        />
-                                    </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Vorschau
+                                            </label>
+                                            <div className="text-xs text-gray-500">
+                                                {formData[cardKey].image_url
+                                                    ? 'Mit Bild'
+                                                    : 'Nur Text'}
+                                            </div>
+                                        </div>
 
-                                    {/* Image Controls */}
-                                    <div className="flex gap-2 mt-4">
-                                        <button
-                                            onClick={() => setShowImagePicker(cardKey)}
-                                            className="flex-1 flex items-center justify-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
-                                        >
-                                            {formData[cardKey].image_url ? (
-                                                <>
-                                                    <PencilSimple className="mr-2 h-4 w-4" />
-                                                    Bild ändern
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <ImageSquare className="mr-2 h-4 w-4" />
-                                                    Bild auswählen
-                                                </>
-                                            )}
-                                        </button>
-                                        {formData[cardKey].image_url && (
+                                        {/* Component Preview */}
+                                        <div className="border rounded-xl p-4 bg-gray-50">
+                                            <FeatureCard
+                                                title={
+                                                    formData[cardKey].title ||
+                                                    'Titel'
+                                                }
+                                                subtitle={
+                                                    formData[cardKey].subtitle
+                                                }
+                                                description={
+                                                    formData[cardKey]
+                                                        .description ||
+                                                    'Beschreibungstext...'
+                                                }
+                                                buttonText={
+                                                    formData[cardKey]
+                                                        .button_text || 'Button'
+                                                }
+                                                buttonHref="#"
+                                                buttonColor={
+                                                    formData[cardKey].theme
+                                                        .button
+                                                }
+                                                highlightColor={
+                                                    formData[cardKey].theme
+                                                        .highlight
+                                                }
+                                                backgroundColor={
+                                                    formData[cardKey].theme
+                                                        .background
+                                                }
+                                                imageSrc={
+                                                    formData[cardKey].image_url
+                                                }
+                                                isTextOnly={
+                                                    !formData[cardKey].image_url
+                                                }
+                                                variant={
+                                                    cardKey === 'card_1'
+                                                        ? 'hero'
+                                                        : 'centered'
+                                                }
+                                                className="min-h-[300px]"
+                                                compact={true}
+                                            />
+                                        </div>
+
+                                        {/* Image Controls */}
+                                        <div className="flex gap-2 mt-4">
                                             <button
-                                                onClick={() => updateCard(cardKey, 'image_url', '')}
-                                                className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
-                                                title="Bild entfernen"
+                                                onClick={() =>
+                                                    setShowImagePicker(cardKey)
+                                                }
+                                                className="flex-1 flex items-center justify-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
                                             >
-                                                <Trash className="h-4 w-4" />
+                                                {formData[cardKey].image_url ? (
+                                                    <>
+                                                        <PencilSimple className="mr-2 h-4 w-4" />
+                                                        Bild ändern
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ImageSquare className="mr-2 h-4 w-4" />
+                                                        Bild auswählen
+                                                    </>
+                                                )}
                                             </button>
-                                        )}
+                                            {formData[cardKey].image_url && (
+                                                <button
+                                                    onClick={() =>
+                                                        updateCard(
+                                                            cardKey,
+                                                            'image_url',
+                                                            ''
+                                                        )
+                                                    }
+                                                    className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
+                                                    title="Bild entfernen"
+                                                >
+                                                    <Trash className="h-4 w-4" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    )
+                )}
             </div>
 
             {showImagePicker && (
@@ -437,34 +613,66 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                     <div className="fixed inset-0 flex items-center justify-center p-2">
                         <div className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[28rem] lg:max-w-[28rem] xl:max-w-[28rem] bg-white rounded-lg p-3 shadow-md">
                             <div className="flex items-start justify-between gap-4">
-                                <h3 className="text-base font-semibold text-gray-900">Theme anpassen</h3>
+                                <h3 className="text-base font-semibold text-gray-900">
+                                    Theme anpassen
+                                </h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
                                 <div className="flex items-center gap-4 p-2 rounded-md bg-white">
                                     <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">Primär</span>
+                                        <span className="text-sm text-gray-600">
+                                            Primär
+                                        </span>
                                     </div>
                                     <div>
-                                        <TailwindColorPicker value={tempTheme.highlight} onChange={(c) => setTempTheme(t => ({ ...t, highlight: c }))} />
+                                        <TailwindColorPicker
+                                            value={tempTheme.highlight}
+                                            onChange={(c) =>
+                                                setTempTheme((t) => ({
+                                                    ...t,
+                                                    highlight: c,
+                                                }))
+                                            }
+                                        />
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-4 p-2 rounded-md bg-white">
                                     <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">Hintergrund</span>
+                                        <span className="text-sm text-gray-600">
+                                            Hintergrund
+                                        </span>
                                     </div>
                                     <div>
-                                        <TailwindColorPicker value={tempTheme.background} onChange={(c) => setTempTheme(t => ({ ...t, background: c }))} />
+                                        <TailwindColorPicker
+                                            value={tempTheme.background}
+                                            onChange={(c) =>
+                                                setTempTheme((t) => ({
+                                                    ...t,
+                                                    background: c,
+                                                }))
+                                            }
+                                        />
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-4 p-2 rounded-md bg-white">
                                     <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">Button</span>
+                                        <span className="text-sm text-gray-600">
+                                            Button
+                                        </span>
                                     </div>
                                     <div>
-                                        <TailwindColorPicker value={tempTheme.button} onChange={(c) => setTempTheme(t => ({ ...t, button: c }))} />
+                                        <TailwindColorPicker
+                                            value={tempTheme.button}
+                                            onChange={(c) =>
+                                                setTempTheme((t) => ({
+                                                    ...t,
+                                                    button: c,
+                                                }))
+                                            }
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -474,15 +682,23 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     type="button"
                                     onClick={() => setEditingThemeFor(null)}
                                     className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
-                                >Abbrechen</button>
+                                >
+                                    Abbrechen
+                                </button>
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        if (editingThemeFor) updateCardTheme(editingThemeFor, tempTheme);
+                                        if (editingThemeFor)
+                                            updateCardTheme(
+                                                editingThemeFor,
+                                                tempTheme
+                                            );
                                         setEditingThemeFor(null);
                                     }}
                                     className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
-                                >Speichern</button>
+                                >
+                                    Speichern
+                                </button>
                             </div>
                         </div>
                     </div>

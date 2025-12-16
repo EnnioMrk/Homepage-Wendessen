@@ -2,6 +2,7 @@ import { sql, pool } from '@/lib/sql';
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
+import revalidate from '@/lib/revalidate';
 
 export const dynamic = 'force-dynamic';
 
@@ -94,6 +95,14 @@ export async function PUT(
 
         if (updatedLayout.length === 0) {
             return NextResponse.json({ error: 'Layout not found' }, { status: 404 });
+        }
+
+        // Revalidate homepage so custom theme updates are visible immediately
+        try {
+            revalidate.revalidatePathSafe('/');
+            revalidate.revalidateTagSafe('wendessen');
+        } catch (e) {
+            // no-op
         }
 
         return NextResponse.json({ layout: updatedLayout[0] });

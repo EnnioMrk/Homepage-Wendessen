@@ -1,6 +1,7 @@
 import { sql } from '@/lib/sql';
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
+import revalidate from '@/lib/revalidate';
 import { hasPermission } from '@/lib/permissions';
 
 export const dynamic = 'force-dynamic';
@@ -63,6 +64,14 @@ export async function POST(request: NextRequest) {
             VALUES (${name}, false, ${card_1}, ${card_2}, ${card_3})
             RETURNING *
         `;
+
+        // Revalidate homepage and related tag so changes (including custom themes) appear
+        try {
+            revalidate.revalidatePathSafe('/');
+            revalidate.revalidateTagSafe('wendessen');
+        } catch (e) {
+            // swallow - helper already logs if needed
+        }
 
         return NextResponse.json({ layout: newLayout[0] });
     } catch (error) {
