@@ -199,8 +199,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     if (loading) return <LoadingSpinner centered />;
 
     return (
-        <div className="space-y-6 pb-20">
-            <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow sticky top-0 z-10">
+        <div className="space-y-4 pb-8">
+            <div className="flex justify-between items-center bg-white p-3 rounded-lg shadow sticky top-0 z-10">
                 <div className="flex items-center">
                     <button onClick={() => router.back()} className="mr-4 text-gray-600 hover:text-gray-900">
                         <ArrowLeft size={24} />
@@ -226,7 +226,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             )}
 
             {/* General Settings */}
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="bg-white p-4 rounded-lg shadow">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Allgemein</h2>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Layout Name</label>
@@ -241,10 +241,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             </div>
 
             {/* Cards Editor */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {(['card_1', 'card_2', 'card_3'] as const).map((cardKey, index) => (
-                    <div key={cardKey} className={`bg-white p-6 rounded-lg shadow ${index === 0 ? 'lg:col-span-2' : ''}`}>
-                        <div className="flex justify-between items-start mb-6 border-b pb-4">
+                    <div key={cardKey} className={`bg-white p-4 rounded-lg shadow ${index === 0 ? 'lg:col-span-2' : ''}`}>
+                        <div className="flex justify-between items-start mb-4 border-b pb-3">
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900">
                                     {index === 0 ? 'Karte 1' : index === 1 ? 'Karte 2' : 'Karte 3'}
@@ -255,11 +255,11 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                             </div>
                         </div>
 
-                        <div className={`grid grid-cols-1 gap-6 ${index === 0 ? 'md:grid-cols-2' : 'min-[1400px]:grid-cols-2'}`}>
+                        <div className={`grid grid-cols-1 gap-4 ${index === 0 ? 'md:grid-cols-2' : 'min-[1400px]:grid-cols-2'}`}>
                             {/* Editor Column */}
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 {/* Theme Controls */}
-                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
                                     <h4 className="text-sm font-semibold text-gray-900 mb-3">Design & Farben</h4>
                                     <div className="mb-3">
                                         <div className="text-xs text-gray-500 mb-2">Vorgaben</div>
@@ -288,7 +288,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                         {/* Highlight Color */}
                                         <div className="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
                                             <span className="text-sm text-gray-600 font-medium">Primärfarbe</span>
@@ -319,7 +319,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 </div>
 
                                 {/* Text Inputs */}
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Titel</label>
                                         <input
@@ -347,7 +347,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             className="w-full px-3 py-2 border rounded-md mt-1"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Button Text</label>
                                             <input
@@ -381,7 +381,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     </div>
 
                                     {/* Component Preview */}
-                                    <div className="border rounded-xl p-4 bg-gray-50">
+                                    <div className="border rounded-xl p-3 bg-gray-50">
                                         <FeatureCard
                                             title={formData[cardKey].title || 'Titel'}
                                             subtitle={formData[cardKey].subtitle}
@@ -400,10 +400,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                     </div>
 
                                     {/* Image Controls */}
-                                    <div className="flex gap-2 mt-4">
+                                    <div className="flex gap-2 mt-3">
                                         <button
                                             onClick={() => setShowImagePicker(cardKey)}
-                                            className="flex-1 flex items-center justify-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
+                                            className="flex-1 flex items-center justify-center px-3 py-1 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
                                         >
                                             {formData[cardKey].image_url ? (
                                                 <>
@@ -420,7 +420,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         {formData[cardKey].image_url && (
                                             <button
                                                 onClick={() => updateCard(cardKey, 'image_url', '')}
-                                                className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
+                                                className="flex items-center justify-center px-3 py-1 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
                                                 title="Bild entfernen"
                                             >
                                                 <Trash className="h-4 w-4" />
@@ -445,11 +445,11 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             {/* Theme customization modal (inline, no external dependency) */}
             {editingThemeFor && (
                 <div className="relative z-50">
-                    <div className="fixed inset-0 bg-black/30" aria-hidden />
-                    <div className="fixed inset-0 flex items-center justify-center p-4">
-                        <div className="mx-auto max-w-lg w-full bg-white rounded-lg p-6 shadow-lg">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Theme anpassen</h3>
-                            <div className="grid grid-cols-1 gap-4">
+                    <div className="fixed inset-0 bg-black/20" aria-hidden />
+                    <div className="fixed inset-0 flex items-center justify-center p-2">
+                        <div className="mx-auto max-w-md w-full bg-white rounded-lg p-4 shadow-lg">
+                            <h3 className="text-base font-medium text-gray-900 mb-3">Theme anpassen</h3>
+                            <div className="grid grid-cols-1 gap-3">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Primärfarbe</label>
                                     <div className="mt-2">
@@ -470,11 +470,11 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 </div>
                             </div>
 
-                            <div className="mt-6 flex justify-end gap-2">
+                            <div className="mt-4 flex justify-end gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setEditingThemeFor(null)}
-                                    className="px-4 py-2 rounded-md border bg-white text-gray-700"
+                                    className="px-3 py-1 rounded-md border bg-white text-gray-700"
                                 >Abbrechen</button>
                                 <button
                                     type="button"
@@ -482,7 +482,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         if (editingThemeFor) updateCardTheme(editingThemeFor, tempTheme);
                                         setEditingThemeFor(null);
                                     }}
-                                    className="px-4 py-2 rounded-md bg-blue-600 text-white"
+                                    className="px-3 py-1 rounded-md bg-blue-600 text-white"
                                 >Speichern</button>
                             </div>
                         </div>
