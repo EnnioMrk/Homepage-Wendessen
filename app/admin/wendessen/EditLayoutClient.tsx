@@ -447,7 +447,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                 <div className="relative z-50">
                     <div className="fixed inset-0 bg-black/30" aria-hidden />
                     <div className="fixed inset-0 flex items-center justify-center p-2">
-                        <div className="mx-auto w-full max-w-xs sm:max-w-sm md:max-w-md bg-white rounded-lg p-4 shadow-md">
+                        <div className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[28rem] bg-white rounded-lg p-3 shadow-md">
                             <div className="flex items-start justify-between gap-4">
                                 <h3 className="text-base font-semibold text-gray-900">Theme anpassen</h3>
                             </div>
@@ -481,11 +481,11 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 </div>
                             </div>
 
-                            <div className="mt-4 flex justify-end gap-2">
+                            <div className="mt-4 flex flex-col gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setEditingThemeFor(null)}
-                                    className="px-3 py-1 rounded-md border bg-white text-gray-700 text-sm"
+                                    className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
                                 >Abbrechen</button>
                                 <button
                                     type="button"
@@ -493,7 +493,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         if (editingThemeFor) updateCardTheme(editingThemeFor, tempTheme);
                                         setEditingThemeFor(null);
                                     }}
-                                    className="px-3 py-1 rounded-md bg-blue-600 text-white text-sm"
+                                    className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
                                 >Speichern</button>
                             </div>
                         </div>
