@@ -187,11 +187,15 @@ export default function PermissionsModal({
                     : prev;
 
                 // When adding a permission, automatically add the view permission for that category
-                const [category] = permissionName.split('.');
-                // Special-case: permissions under `verein.events.*` should add the general `events.view` permission
-                const viewPermission = permissionName.startsWith('verein.events.')
-                    ? 'events.view'
-                    : `${category}.view`;
+                // Handle `verein.*` scoped permissions by using the second segment as the real category
+                let viewPermission: string;
+                if (permissionName.startsWith('verein.')) {
+                    const parts = permissionName.split('.');
+                    viewPermission = parts.length >= 2 ? `${parts[1]}.view` : 'events.view';
+                } else {
+                    const [category] = permissionName.split('.');
+                    viewPermission = `${category}.view`;
+                }
 
                 const permissionsToAdd: string[] = [permissionName];
 
