@@ -69,7 +69,7 @@ export default function ImagePicker({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[70] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center modal-z-70 overflow-y-auto">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 mt-20 mb-8">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">

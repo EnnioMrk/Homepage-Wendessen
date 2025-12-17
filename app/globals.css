@@ -73,6 +73,13 @@
     }
 }
 
+/* Custom utility for modal stacking to avoid relying on arbitrary z-classes */
+@layer utilities {
+    .modal-z-70 {
+        z-index: 70;
+    }
+}
+
 /* Ensure form controls have high-contrast text by default */
 @layer base {
     input,
