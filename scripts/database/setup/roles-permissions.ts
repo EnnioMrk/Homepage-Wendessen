@@ -77,6 +77,7 @@ async function setupRolesAndPermissions() {
                 ('events.create', 'Termine erstellen', 'Kann neue Termine erstellen', 'events'),
                 ('events.edit', 'Termine bearbeiten', 'Kann Termine bearbeiten', 'events'),
                 ('events.delete', 'Termine löschen', 'Kann Termine löschen', 'events'),
+                ('events.cancel', 'Termine absagen', 'Kann Termine absagen', 'events'),
 
                 -- Verein Events Management
                 ('verein.events.create', 'Vereins-Termine erstellen', 'Kann Termine für den eigenen Verein erstellen', 'verein'),
@@ -140,7 +141,9 @@ async function setupRolesAndPermissions() {
                 SELECT 1 FROM jsonb_array_elements_text(default_permissions) AS perm WHERE perm LIKE 'verein.events.%'
             );
         `;
-        console.log('✓ Ensured roles with verein permissions include events.view');
+        console.log(
+            '✓ Ensured roles with verein permissions include events.view'
+        );
 
         // Normalize missing defaults and ensure super_admin has wildcard default_permissions
         await sql`
