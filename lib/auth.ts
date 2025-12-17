@@ -147,13 +147,21 @@ export async function createSession(user: AdminUser): Promise<string> {
         vereinId: user.vereinId,
         timestamp: Date.now(),
     };
-    
+
     const token = generateSessionToken(sessionData);
     const cookieStore = await cookies();
 
+    // Only set Secure if in production and HTTPS.
+    // We avoid Vercel-specific envs; allow overriding via FORCE_HTTPS in environments where HTTPS is guaranteed.
+    const isProd = process.env.NODE_ENV === 'production';
+    const serverUrl = process.env.URL || process.env.BASE_URL || process.env.HOME_URL || '';
+    const isHttps = typeof window === 'undefined'
+        ? (process.env.FORCE_HTTPS === 'true') || serverUrl.startsWith('https://')
+        : window.location.protocol === 'https:';
+
     cookieStore.set(SESSION_COOKIE_NAME, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: Boolean(isProd && isHttps),
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
