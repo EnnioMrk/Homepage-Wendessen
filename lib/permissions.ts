@@ -27,8 +27,8 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
         'gallery.delete',
         // Shared Gallery
         'shared_gallery.view',
-        'shared_gallery.approve',
-        'shared_gallery.reject',
+        'shared_gallery.edit',
+        'shared_gallery.delete',
         // Portraits
         'portraits.view',
         'portraits.edit',
@@ -41,6 +41,11 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
         // Settings
         'settings.view',
         'settings.edit',
+        // Wendessen Layouts
+        'wendessen.view',
+        'wendessen.manage',
+        // log
+        'logs.view',
     ],
     editor: [
         // Events
@@ -66,10 +71,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
         'events.view',
         'news.view',
         'gallery.view',
-        // Approval permissions
+        // Approval / moderation permissions consolidated into edit
         'shared_gallery.view',
-        'shared_gallery.approve',
-        'shared_gallery.reject',
+        'shared_gallery.edit',
         'portraits.view',
         'portraits.edit',
     ],
@@ -99,7 +103,10 @@ export function getRoleDefaultPermissions(roleName: string): string[] {
  * Check if a user has a specific permission
  * Now purely permission-based - roles are just for organizing/grouping
  */
-export function hasPermission(user: AdminUser | null, permission: string): boolean {
+export function hasPermission(
+    user: AdminUser | null,
+    permission: string
+): boolean {
     if (!user) return false;
 
     const perms = user.customPermissions || [];
@@ -122,7 +129,10 @@ export function hasPermission(user: AdminUser | null, permission: string): boole
         }
         // Check if user has verein.* permission for the general permission
         // Only grant .view permissions automatically if user has verein permissions in that category
-        if (permission.endsWith('.view') && perms.some(p => p.startsWith(`verein.${category}.`))) {
+        if (
+            permission.endsWith('.view') &&
+            perms.some((p) => p.startsWith(`verein.${category}.`))
+        ) {
             return true;
         }
     }
@@ -133,23 +143,31 @@ export function hasPermission(user: AdminUser | null, permission: string): boole
 /**
  * Check if a user has any of the specified permissions
  */
-export function hasAnyPermission(user: AdminUser | null, permissions: string[]): boolean {
-    return permissions.some(permission => hasPermission(user, permission));
+export function hasAnyPermission(
+    user: AdminUser | null,
+    permissions: string[]
+): boolean {
+    return permissions.some((permission) => hasPermission(user, permission));
 }
 
 /**
  * Check if a user has all of the specified permissions
  */
-export function hasAllPermissions(user: AdminUser | null, permissions: string[]): boolean {
-    return permissions.every(permission => hasPermission(user, permission));
+export function hasAllPermissions(
+    user: AdminUser | null,
+    permissions: string[]
+): boolean {
+    return permissions.every((permission) => hasPermission(user, permission));
 }
 
 /**
  * Require a specific permission - throws error if not authorized
  */
-export async function requirePermission(permission: string): Promise<AdminUser> {
+export async function requirePermission(
+    permission: string
+): Promise<AdminUser> {
     const user = await getCurrentAdminUser();
-    
+
     if (!user) {
         throw new Error('Unauthorized: Not authenticated');
     }
@@ -174,15 +192,19 @@ export async function requirePermission(permission: string): Promise<AdminUser> 
 /**
  * Require any of the specified permissions - throws error if not authorized
  */
-export async function requireAnyPermission(permissions: string[]): Promise<AdminUser> {
+export async function requireAnyPermission(
+    permissions: string[]
+): Promise<AdminUser> {
     const user = await getCurrentAdminUser();
-    
+
     if (!user) {
         throw new Error('Unauthorized: Not authenticated');
     }
 
     if (!hasAnyPermission(user, permissions)) {
-        throw new Error(`Forbidden: Missing one of permissions: ${permissions.join(', ')}`);
+        throw new Error(
+            `Forbidden: Missing one of permissions: ${permissions.join(', ')}`
+        );
     }
 
     return user;
@@ -191,15 +213,19 @@ export async function requireAnyPermission(permissions: string[]): Promise<Admin
 /**
  * Require all of the specified permissions - throws error if not authorized
  */
-export async function requireAllPermissions(permissions: string[]): Promise<AdminUser> {
+export async function requireAllPermissions(
+    permissions: string[]
+): Promise<AdminUser> {
     const user = await getCurrentAdminUser();
-    
+
     if (!user) {
         throw new Error('Unauthorized: Not authenticated');
     }
 
     if (!hasAllPermissions(user, permissions)) {
-        throw new Error(`Forbidden: Missing required permissions: ${permissions.join(', ')}`);
+        throw new Error(
+            `Forbidden: Missing required permissions: ${permissions.join(', ')}`
+        );
     }
 
     return user;
@@ -208,7 +234,9 @@ export async function requireAllPermissions(permissions: string[]): Promise<Admi
 /**
  * Get default permissions for a user's role (used for calculating extras)
  */
-export function getRoleDefaultPermissionsForUser(user: AdminUser | null): string[] {
+export function getRoleDefaultPermissionsForUser(
+    user: AdminUser | null
+): string[] {
     if (!user || !user.roleName) return [];
     return getRoleDefaultPermissions(user.roleName);
 }
@@ -228,17 +256,19 @@ export function getUserPermissions(user: AdminUser | null): string[] {
  */
 export function getExtraPermissions(user: AdminUser | null): string[] {
     if (!user) return [];
-    
+
     const userPerms = new Set(user.customPermissions || []);
-    const defaultPerms = new Set(getRoleDefaultPermissions(user.roleName || ''));
-    
+    const defaultPerms = new Set(
+        getRoleDefaultPermissions(user.roleName || '')
+    );
+
     // Wildcard permissions are always considered extra
     if (userPerms.has('*')) {
         return ['*'];
     }
-    
+
     // Return permissions that are not in the default set
-    return Array.from(userPerms).filter(perm => !defaultPerms.has(perm));
+    return Array.from(userPerms).filter((perm) => !defaultPerms.has(perm));
 }
 
 /**
@@ -259,10 +289,12 @@ export const PERMISSION_CATEGORIES = {
 /**
  * Get category for a permission
  */
-export function getPermissionCategory(permission: string): keyof typeof PERMISSION_CATEGORIES | 'other' {
+export function getPermissionCategory(
+    permission: string
+): keyof typeof PERMISSION_CATEGORIES | 'other' {
     const [category] = permission.split('.');
-    return category in PERMISSION_CATEGORIES 
-        ? category as keyof typeof PERMISSION_CATEGORIES 
+    return category in PERMISSION_CATEGORIES
+        ? (category as keyof typeof PERMISSION_CATEGORIES)
         : 'other';
 }
 

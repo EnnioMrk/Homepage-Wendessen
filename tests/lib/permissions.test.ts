@@ -49,8 +49,7 @@ describe('Permissions', () => {
 
         test('moderator has approval permissions', () => {
             const modPerms = ROLE_DEFAULT_PERMISSIONS.moderator;
-            expect(modPerms).toContain('shared_gallery.approve');
-            expect(modPerms).toContain('shared_gallery.reject');
+            expect(modPerms).toContain('shared_gallery.edit');
             expect(modPerms).toContain('portraits.view');
             expect(modPerms).not.toContain('events.create');
         });
@@ -277,7 +276,7 @@ describe('Permissions', () => {
             expect(getPermissionCategory('events.create')).toBe('events');
             expect(getPermissionCategory('news.edit')).toBe('news');
             expect(getPermissionCategory('gallery.upload')).toBe('gallery');
-            expect(getPermissionCategory('shared_gallery.approve')).toBe(
+            expect(getPermissionCategory('shared_gallery.edit')).toBe(
                 'shared_gallery'
             );
             expect(getPermissionCategory('portraits.view')).toBe('portraits');

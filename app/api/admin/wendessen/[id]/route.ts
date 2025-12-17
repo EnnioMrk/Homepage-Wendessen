@@ -40,10 +40,13 @@ export async function PUT(
                 await client.query('BEGIN');
 
                 // Deactivate all
-                await client.query('UPDATE wendessen_layouts SET is_active = false');
+                await client.query(
+                    'UPDATE wendessen_layouts SET is_active = false'
+                );
 
                 // Update target and set active
-                let updateQuery = 'UPDATE wendessen_layouts SET is_active = true';
+                let updateQuery =
+                    'UPDATE wendessen_layouts SET is_active = true';
                 const values = [id];
                 let paramIndex = 2;
 
@@ -91,10 +94,14 @@ export async function PUT(
             `;
         }
 
-        const updatedLayout = await sql`SELECT * FROM wendessen_layouts WHERE id = ${id}`;
+        const updatedLayout =
+            await sql`SELECT * FROM wendessen_layouts WHERE id = ${id}`;
 
         if (updatedLayout.length === 0) {
-            return NextResponse.json({ error: 'Layout not found' }, { status: 404 });
+            return NextResponse.json(
+                { error: 'Layout not found' },
+                { status: 404 }
+            );
         }
 
         // Revalidate homepage so custom theme updates are visible immediately
@@ -106,7 +113,6 @@ export async function PUT(
         }
 
         return NextResponse.json({ layout: updatedLayout[0] });
-
     } catch (error) {
         console.error('Error updating wendessen layout:', error);
         return NextResponse.json(
@@ -135,10 +141,13 @@ export async function DELETE(
 
     try {
         // Prevent deleting the active layout?
-        const layout = await sql`SELECT is_active FROM wendessen_layouts WHERE id = ${id}`;
+        const layout =
+            await sql`SELECT is_active FROM wendessen_layouts WHERE id = ${id}`;
         if (layout.length > 0 && layout[0].is_active) {
             return NextResponse.json(
-                { error: 'Das aktive Layout kann nicht gelöscht werden. Bitte aktivieren Sie zuerst ein anderes.' },
+                {
+                    error: 'Das aktive Layout kann nicht gelöscht werden. Bitte aktivieren Sie zuerst ein anderes.',
+                },
                 { status: 400 }
             );
         }

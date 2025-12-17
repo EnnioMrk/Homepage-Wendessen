@@ -79,6 +79,9 @@ Permissions are organized into categories:
 - `shared_gallery.view` - View submissions
 - `shared_gallery.approve` - Approve submissions
 - `shared_gallery.reject` - Reject submissions
+### Shared Gallery / Impressionen (`shared_gallery`)
+- `shared_gallery.view` - View submissions
+- `shared_gallery.edit` - Manage submissions (approve, reject, reset)
 
 ### Portraits Management (`portraits`)
 - `portraits.view` - View portrait submissions

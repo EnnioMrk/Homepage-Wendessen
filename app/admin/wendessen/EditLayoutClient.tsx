@@ -9,7 +9,6 @@ import {
     Trash,
     PencilSimple,
 } from '@phosphor-icons/react/dist/ssr';
-import Image from 'next/image';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 import { usePermissions } from '@/lib/usePermissions';
@@ -127,9 +126,11 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             // Let's use list for now.
             const response = await fetch('/api/admin/wendessen');
             if (response.ok) {
-                const data = await response.json();
+                const data = (await response.json()) as {
+                    layouts: Array<LayoutData & { id: number }>;
+                };
                 const found = data.layouts.find(
-                    (l: any) => l.id.toString() === id
+                    (l) => l.id != null && l.id.toString() === id
                 );
                 if (found) {
                     setFormData(found);
@@ -184,10 +185,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         }
     };
 
-    const updateCard = (
+    const updateCard = <K extends keyof CardData>(
         cardKey: 'card_1' | 'card_2' | 'card_3',
-        field: string,
-        value: any
+        field: K,
+        value: CardData[K]
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -348,16 +349,18 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                             height: 18,
                                                             borderRadius: 4,
                                                             backgroundColor:
-                                                                PRESET_BG[name] ||
-                                                                '#ddd',
+                                                                PRESET_BG[
+                                                                    name
+                                                                ] || '#ddd',
                                                             display:
                                                                 'inline-block',
                                                             border: '1px solid rgba(0,0,0,0.08)',
                                                         }}
                                                     />
                                                     <span className="text-sm text-gray-700">
-                                                        {PRESET_LABEL_DE[name] ||
-                                                            name}
+                                                        {PRESET_LABEL_DE[
+                                                            name
+                                                        ] || name}
                                                     </span>
                                                 </button>
                                             )
@@ -367,7 +370,9 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setTempTheme(formData[cardKey].theme);
+                                                setTempTheme(
+                                                    formData[cardKey].theme
+                                                );
                                                 setEditingThemeFor(cardKey);
                                             }}
                                             className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"

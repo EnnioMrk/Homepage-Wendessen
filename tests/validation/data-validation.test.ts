@@ -210,7 +210,7 @@ describe('Data Validation Patterns', () => {
                 'events.view',
                 'events.create',
                 'events.*',
-                'shared_gallery.approve',
+                'shared_gallery.edit',
                 'verein.events.create',
             ];
 

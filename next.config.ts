@@ -13,8 +13,14 @@ function resolveMinioHost(endpoint?: string) {
     }
 }
 
-const minioHostname = resolveMinioHost(minioEndpoint) || process.env.MINIO_HOSTNAME || process.env.MINIO_HOST;
-const minioPort = process.env.MINIO_PORT || (minioEndpoint ? new URL(minioEndpoint).port || undefined : undefined) || '9000';
+const minioHostname =
+    resolveMinioHost(minioEndpoint) ||
+    process.env.MINIO_HOSTNAME ||
+    process.env.MINIO_HOST;
+const minioPort =
+    process.env.MINIO_PORT ||
+    (minioEndpoint ? new URL(minioEndpoint).port || undefined : undefined) ||
+    '9000';
 const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
 
 // Build remotePatterns as URL instances when MinIO is configured. Using
@@ -22,7 +28,9 @@ const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
 // allowed external image sources strict (blocks all others).
 const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
     ? (() => {
-          const portSegment = process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : '';
+          const portSegment = process.env.MINIO_PORT
+              ? `:${process.env.MINIO_PORT}`
+              : '';
           const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
           try {
               return [new URL(url)];
@@ -32,7 +40,9 @@ const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
                   {
                       protocol: minioProtocol,
                       hostname: minioHostname,
-                      ...(process.env.MINIO_PORT ? { port: process.env.MINIO_PORT } : {}),
+                      ...(process.env.MINIO_PORT
+                          ? { port: process.env.MINIO_PORT }
+                          : {}),
                       pathname: '/:path*',
                   },
               ];
@@ -41,7 +51,13 @@ const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
     : [];
 
 console.log(
-    `Next.js image remotePatterns configured for MinIO: ${minioHostname ? `${minioProtocol}://${minioHostname}${process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''}` : 'none'}`
+    `Next.js image remotePatterns configured for MinIO: ${
+        minioHostname
+            ? `${minioProtocol}://${minioHostname}${
+                  process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''
+              }`
+            : 'none'
+    }`
 );
 
 const nextConfig: NextConfig = {
@@ -90,13 +106,19 @@ const nextConfig: NextConfig = {
                 // Do NOT aggressively cache manifest or service worker - they change and Android Chrome relies on them.
                 source: '/manifest.json',
                 headers: [
-                    { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-cache, no-store, must-revalidate',
+                    },
                 ],
             },
             {
                 source: '/sw.js',
                 headers: [
-                    { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-cache, no-store, must-revalidate',
+                    },
                 ],
             },
             {

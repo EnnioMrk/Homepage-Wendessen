@@ -11,6 +11,7 @@ import {
     ArrowLeft,
     Check,
     X,
+    Trash,
     CheckCircle,
     XCircle,
     Clock,
@@ -50,15 +51,13 @@ interface SubmissionGroup {
 const PAGE_SIZE = 25;
 
 interface AdminSharedGalleryProps {
-    canApprove?: boolean;
-    canReject?: boolean;
-    canReset?: boolean;
+    canEdit?: boolean;
+    canDelete?: boolean;
 }
 
 export default function AdminSharedGallery({
-    canApprove = false,
-    canReject = false,
-    canReset = false,
+    canEdit = false,
+    canDelete = false,
 }: AdminSharedGalleryProps) {
     const router = useRouter();
     const [allGroups, setAllGroups] = useState<SubmissionGroup[]>([]);
@@ -77,6 +76,8 @@ export default function AdminSharedGallery({
     const [viewingImage, setViewingImage] = useState<SharedGalleryImage | null>(
         null
     );
+    const [imageToDelete, setImageToDelete] =
+        useState<SharedGalleryImage | null>(null);
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [rejectionReason, setRejectionReason] = useState('');
@@ -409,6 +410,52 @@ export default function AdminSharedGallery({
         } catch (error) {
             console.error('Error rejecting:', error);
             setError('Fehler beim Ablehnen');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleDeleteImage = async (imageId: string) => {
+        setProcessing(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/admin/shared-gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', id: imageId }),
+            });
+
+            if (response.ok) {
+                await fetchSubmissionGroups();
+                // Update selectedGroup with fresh data if modal is open
+                if (selectedGroup) {
+                    const allResponse = await fetch(
+                        '/api/admin/shared-gallery'
+                    );
+                    if (allResponse.ok) {
+                        const allData = await allResponse.json();
+                        const updatedGroup = allData.submissionGroups?.find(
+                            (g: SubmissionGroup) =>
+                                g.submissionGroupId ===
+                                selectedGroup.submissionGroupId
+                        );
+                        if (updatedGroup) {
+                            setSelectedGroup(updatedGroup);
+                        } else {
+                            setSelectedGroup(null);
+                        }
+                    }
+                }
+                setSelectedImages(new Set());
+                setViewingImage(null);
+            } else {
+                const data = await response.json();
+                setError(data.error || 'Fehler beim Löschen');
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            setError('Fehler beim Löschen');
         } finally {
             setProcessing(false);
         }
@@ -789,7 +836,7 @@ export default function AdminSharedGallery({
                                                     </button>
                                                     {group.pendingCount > 0 && (
                                                         <>
-                                                            {canApprove && (
+                                                            {canEdit && (
                                                                 <button
                                                                     onClick={() =>
                                                                         setGroupToApprove(
@@ -805,7 +852,7 @@ export default function AdminSharedGallery({
                                                                     freigeben
                                                                 </button>
                                                             )}
-                                                            {canReject && (
+                                                            {canEdit && (
                                                                 <button
                                                                     onClick={() => {
                                                                         setSelectedGroup(
@@ -829,7 +876,7 @@ export default function AdminSharedGallery({
                                                             )}
                                                         </>
                                                     )}
-                                                    {canReset &&
+                                                    {canEdit &&
                                                         (group.approvedCount >
                                                             0 ||
                                                             group.rejectedCount >
@@ -1056,7 +1103,7 @@ export default function AdminSharedGallery({
 
                                 {/* Actions */}
                                 <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
-                                    {canApprove &&
+                                    {canEdit &&
                                         selectedGroup.pendingCount > 0 && (
                                             <button
                                                 onClick={() =>
@@ -1077,7 +1124,7 @@ export default function AdminSharedGallery({
                                                 )}
                                             </button>
                                         )}
-                                    {canReset &&
+                                    {canEdit &&
                                         (selectedGroup.approvedCount > 0 ||
                                             selectedGroup.rejectedCount >
                                                 0) && (
@@ -1129,7 +1176,7 @@ export default function AdminSharedGallery({
 
                                             return (
                                                 <>
-                                                    {canApprove &&
+                                                    {canEdit &&
                                                         !allApproved && (
                                                             <button
                                                                 onClick={() =>
@@ -1150,7 +1197,7 @@ export default function AdminSharedGallery({
                                                                 )
                                                             </button>
                                                         )}
-                                                    {canReset &&
+                                                    {canEdit &&
                                                         (hasApproved ||
                                                             hasRejected) && (
                                                             <button
@@ -1172,7 +1219,7 @@ export default function AdminSharedGallery({
                                                                 )
                                                             </button>
                                                         )}
-                                                    {canReject &&
+                                                    {canEdit &&
                                                         !allRejected && (
                                                             <button
                                                                 onClick={() => {
@@ -1199,7 +1246,7 @@ export default function AdminSharedGallery({
                                                 </>
                                             );
                                         })()}
-                                    {canReject &&
+                                    {canEdit &&
                                         selectedGroup.pendingCount > 0 && (
                                             <button
                                                 onClick={() => {
@@ -1292,12 +1339,25 @@ export default function AdminSharedGallery({
                                 <h3 className="text-xl font-bold text-gray-900">
                                     Foto-Details
                                 </h3>
-                                <button
-                                    onClick={() => setViewingImage(null)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
-                                    <X size={24} />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {canDelete && (
+                                        <button
+                                            onClick={() =>
+                                                setImageToDelete(viewingImage)
+                                            }
+                                            className="text-red-600 hover:text-red-800"
+                                            title="Foto löschen"
+                                        >
+                                            <Trash size={20} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => setViewingImage(null)}
+                                        className="text-gray-400 hover:text-gray-600"
+                                    >
+                                        <X size={24} />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="p-6">
@@ -1571,6 +1631,24 @@ export default function AdminSharedGallery({
                     cancelText="Abbrechen"
                     icon={<ArrowCounterClockwise className="h-12 w-12" />}
                     accentColor="#374151"
+                />
+
+                {/* Delete Image Dialog */}
+                <PromptDialog
+                    isOpen={Boolean(imageToDelete)}
+                    onCancel={() => setImageToDelete(null)}
+                    onConfirm={async () => {
+                        if (imageToDelete) {
+                            await handleDeleteImage(imageToDelete.id);
+                            setImageToDelete(null);
+                        }
+                    }}
+                    title="Foto löschen?"
+                    description={`Möchten Sie das Foto wirklich löschen?`}
+                    confirmText={processing ? 'Löschen...' : 'Löschen'}
+                    cancelText="Abbrechen"
+                    icon={<Trash className="h-12 w-12" weight="duotone" />}
+                    accentColor="red"
                 />
             </div>
         </SharedGalleryImageProvider>

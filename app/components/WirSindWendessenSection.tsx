@@ -18,18 +18,46 @@ async function getActiveLayout() {
 }
 
 // Helper to determine subtitle class based on theme highlight
-function getSubtitleClass(themeHighlight: string | undefined, hasImage: boolean) {
+function getSubtitleClass(
+    themeHighlight: string | undefined,
+    hasImage: boolean
+) {
     if (!themeHighlight) return undefined;
 
     // Extract color name/value from 'bg-foo'
     const color = themeHighlight.replace('bg-', '');
 
     // Check for standard Tailwind colors to apply shade logic
-    const validColors = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
+    const validColors = [
+        'slate',
+        'gray',
+        'zinc',
+        'neutral',
+        'stone',
+        'red',
+        'orange',
+        'amber',
+        'yellow',
+        'lime',
+        'green',
+        'emerald',
+        'teal',
+        'cyan',
+        'sky',
+        'blue',
+        'indigo',
+        'violet',
+        'purple',
+        'fuchsia',
+        'pink',
+        'rose',
+    ];
 
     if (validColors.includes(color.split('-')[0])) {
         // Use -200 for overlays (hero/image), -700 for text-only
-        return hasImage ? `text-${color.split('-')[0]}-200` : `text-${color.split('-')[0]}-700`;
+        return hasImage
+            ? `text-${color.split('-')[0]}-200`
+            : `text-${color.split('-')[0]}-700`;
     }
 
     // Fallback/Custom (primary, etc)
@@ -41,36 +69,58 @@ export default async function WirSindWendessenSection() {
 
     // Default fallback if no layout found (safe fallback)
     const card1 = layout?.card_1 || {
-        title: "SPIELPLÄTZE IN WENDESSEN",
-        subtitle: "HIER KÖNNEN KINDER SPIELEN UND TOBEN",
-        description: "Wendessen bietet mehrere Spielplätze für verschiedene Altersgruppen.",
-        button_text: "Zur Karte",
-        button_href: "/karte?category=playground",
-        theme: { highlight: 'bg-primary', background: 'bg-white', button: 'primary' }
+        title: 'SPIELPLÄTZE IN WENDESSEN',
+        subtitle: 'HIER KÖNNEN KINDER SPIELEN UND TOBEN',
+        description:
+            'Wendessen bietet mehrere Spielplätze für verschiedene Altersgruppen.',
+        button_text: 'Zur Karte',
+        button_href: '/karte?category=playground',
+        theme: {
+            highlight: 'bg-primary',
+            background: 'bg-white',
+            button: 'primary',
+        },
     };
 
     const card2 = layout?.card_2 || {
-        title: "Lesefutter in Wendessen",
-        subtitle: "Bücherbus kommt jetzt auch regelmäßig!",
-        description: "Wendessen hat jetzt eine Bücherzelle...",
-        button_text: "Mehr erfahren",
-        button_href: "/lesefutter",
-        theme: { highlight: 'bg-green-500', background: 'bg-white', button: 'green' }
+        title: 'Lesefutter in Wendessen',
+        subtitle: 'Bücherbus kommt jetzt auch regelmäßig!',
+        description: 'Wendessen hat jetzt eine Bücherzelle...',
+        button_text: 'Mehr erfahren',
+        button_href: '/lesefutter',
+        theme: {
+            highlight: 'bg-green-500',
+            background: 'bg-white',
+            button: 'green',
+        },
     };
 
     const card3 = layout?.card_3 || {
-        title: "HERZ AM RICHTIGEN FLECK",
-        subtitle: "HOSPIZ WENDESSEN",
-        description: "In der Natur & in der historischen Mitte von Wendessen",
-        button_text: "Mehr erfahren",
-        button_href: "/hospiz",
-        theme: { highlight: 'bg-red-500', background: 'bg-white', button: 'red' },
-        image_url: "/images/Features/Hospiz.jpeg"
+        title: 'HERZ AM RICHTIGEN FLECK',
+        subtitle: 'HOSPIZ WENDESSEN',
+        description: 'In der Natur & in der historischen Mitte von Wendessen',
+        button_text: 'Mehr erfahren',
+        button_href: '/hospiz',
+        theme: {
+            highlight: 'bg-red-500',
+            background: 'bg-white',
+            button: 'red',
+        },
+        image_url: '/images/Features/Hospiz.jpeg',
     };
 
-    const card1SubtitleClass = getSubtitleClass(card1.theme.highlight, !!card1.image_url);
-    const card2SubtitleClass = getSubtitleClass(card2.theme.highlight, !!card2.image_url);
-    const card3SubtitleClass = getSubtitleClass(card3.theme.highlight, !!card3.image_url);
+    const card1SubtitleClass = getSubtitleClass(
+        card1.theme.highlight,
+        !!card1.image_url
+    );
+    const card2SubtitleClass = getSubtitleClass(
+        card2.theme.highlight,
+        !!card2.image_url
+    );
+    const card3SubtitleClass = getSubtitleClass(
+        card3.theme.highlight,
+        !!card3.image_url
+    );
 
     return (
         <div className="mb-16">

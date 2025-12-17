@@ -48,9 +48,9 @@ async function setupRolesAndPermissions() {
             await sql`
                 INSERT INTO roles (name, display_name, description, default_permissions) VALUES
                 ('super_admin', 'Super Admin', 'Vollständiger Zugriff auf alle Funktionen und Einstellungen', '["*"]'::jsonb),
-                ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern', '["users.view","users.create","users.edit","users.delete","events.view","events.create","events.edit","events.delete","news.view","news.create","news.edit","news.delete","gallery.view","gallery.upload","gallery.edit","gallery.delete","shared_gallery.view","shared_gallery.approve","shared_gallery.reject","shared_gallery.reset","portraits.view","portraits.edit","portraits.delete","settings.view","settings.edit"]'::jsonb),
+                ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern', '["users.view","users.create","users.edit","users.delete","events.view","events.create","events.edit","events.delete","news.view","news.create","news.edit","news.delete","gallery.view","gallery.upload","gallery.edit","gallery.delete","shared_gallery.view","shared_gallery.edit","shared_gallery.delete","portraits.view","portraits.edit","portraits.delete","settings.view","settings.edit","logs.view"]'::jsonb),
                 ('editor', 'Redakteur', 'Bearbeitung von Inhalten (Events, News, Galerie)', '["events.view","events.create","events.edit","news.view","news.create","news.edit","gallery.view","gallery.upload","portraits.view","portraits.edit"]'::jsonb),
-                ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen', '["shared_gallery.view","shared_gallery.approve","shared_gallery.reject","shared_gallery.reset","portraits.view","portraits.edit","news.view","events.view"]'::jsonb);
+                ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen', '["shared_gallery.view","shared_gallery.edit","portraits.view","portraits.edit","news.view","events.view"]'::jsonb);
             `;
             console.log('✓ Created default roles with permissions');
         } else {
@@ -92,9 +92,8 @@ async function setupRolesAndPermissions() {
                 
                 -- Shared Gallery (Impressionen)
                 ('shared_gallery.view', 'Einreichungen anzeigen', 'Kann eingereichte Bilder einsehen', 'shared_gallery'),
-                ('shared_gallery.approve', 'Einreichungen genehmigen', 'Kann Bildeinreichungen genehmigen', 'shared_gallery'),
-                ('shared_gallery.reject', 'Einreichungen ablehnen', 'Kann Bildeinreichungen ablehnen', 'shared_gallery'),
-                ('shared_gallery.reset', 'Einreichungen zurücksetzen', 'Kann Bildeinreichungen auf ausstehend zurücksetzen', 'shared_gallery'),
+                ('shared_gallery.edit', 'Einreichungen verwalten', 'Kann Einreichungen genehmigen, ablehnen und zurücksetzen', 'shared_gallery'),
+                ('shared_gallery.delete', 'Einreichungen löschen', 'Kann Einreichungen dauerhaft löschen', 'shared_gallery'),
                 
                 -- Portraits Management
                 ('portraits.view', 'Portraits anzeigen', 'Kann Portrait-Einreichungen einsehen', 'portraits'),
@@ -103,7 +102,10 @@ async function setupRolesAndPermissions() {
                 
                 -- Settings & Configuration
                 ('settings.view', 'Einstellungen anzeigen', 'Kann Einstellungen einsehen', 'settings'),
-                ('settings.edit', 'Einstellungen bearbeiten', 'Kann Einstellungen ändern', 'settings');
+                ('settings.edit', 'Einstellungen bearbeiten', 'Kann Einstellungen ändern', 'settings'),
+                
+                -- Admin Logs
+                ('logs.view', 'Aktivitätslog ansehen', 'Kann das Aktivitätsprotokoll einsehen', 'logs');
             `;
             console.log('✓ Created default permissions');
         } else {

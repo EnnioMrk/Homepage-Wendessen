@@ -18,6 +18,7 @@ import { usePermissions } from '@/lib/usePermissions';
 
 // Vereine data for display
 const VEREINE_MAP: Record<string, string> = {
+    'idw': 'IDW',
     'sv-wendessen': 'SV Wendessen',
     'feuerwehr': 'Freiwillige Feuerwehr',
     'jugendfeuerwehr': 'Jugendfeuerwehr',
@@ -371,6 +372,7 @@ function CreateUserModal({
 
     // Vereine data
     const vereine = [
+        { id: 'idw', name: 'IDW' },
         { id: 'sv-wendessen', name: 'SV Wendessen' },
         { id: 'feuerwehr', name: 'Freiwillige Feuerwehr' },
         { id: 'jugendfeuerwehr', name: 'Jugendfeuerwehr' },

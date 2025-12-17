@@ -12,7 +12,7 @@ import {
     deleteSharedGallerySubmission,
     getSharedGallerySubmissionById,
 } from '@/lib/database';
-import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
+import { revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
@@ -24,7 +24,7 @@ async function notifyClients() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: 'refresh' }),
-        }).catch(err => console.error('WS notify error:', err));
+        }).catch((err) => console.error('WS notify error:', err));
     } catch (error) {
         console.error('Error notifying WebSocket server:', error);
     }
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
         const requestInfo = getRequestInfo(request);
 
         if (action === 'approve-all' && submissionGroupId) {
-            if (!hasPermission(currentUser, 'shared_gallery.approve')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Freigeben' },
                     { status: 403 }
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
                 count,
             });
         } else if (action === 'reject-all' && submissionGroupId) {
-            if (!hasPermission(currentUser, 'shared_gallery.reject')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Ablehnen' },
                     { status: 403 }
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
                 count,
             });
         } else if (action === 'reset-all' && submissionGroupId) {
-            if (!hasPermission(currentUser, 'shared_gallery.reset')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Zurücksetzen' },
                     { status: 403 }
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
             imageIds &&
             Array.isArray(imageIds)
         ) {
-            if (!hasPermission(currentUser, 'shared_gallery.approve')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Freigeben' },
                     { status: 403 }
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
             imageIds &&
             Array.isArray(imageIds)
         ) {
-            if (!hasPermission(currentUser, 'shared_gallery.reject')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Ablehnen' },
                     { status: 403 }
@@ -246,7 +246,7 @@ export async function POST(request: NextRequest) {
             imageIds &&
             Array.isArray(imageIds)
         ) {
-            if (!hasPermission(currentUser, 'shared_gallery.reset')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Zurücksetzen' },
                     { status: 403 }
@@ -270,7 +270,7 @@ export async function POST(request: NextRequest) {
                 message: `${imageIds.length} images reset to pending`,
             });
         } else if (action === 'approve' && id) {
-            if (!hasPermission(currentUser, 'shared_gallery.approve')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Freigeben' },
                     { status: 403 }
@@ -294,7 +294,7 @@ export async function POST(request: NextRequest) {
 
             return NextResponse.json({ message: 'Image approved', submission });
         } else if (action === 'reject' && id) {
-            if (!hasPermission(currentUser, 'shared_gallery.reject')) {
+            if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Ablehnen' },
                     { status: 403 }
