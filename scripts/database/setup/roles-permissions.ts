@@ -48,8 +48,8 @@ async function setupRolesAndPermissions() {
             await sql`
                 INSERT INTO roles (name, display_name, description, default_permissions) VALUES
                 ('super_admin', 'Super Admin', 'Vollständiger Zugriff auf alle Funktionen und Einstellungen', '["*"]'::jsonb),
-                ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern', '["users.view","users.create","users.edit","users.delete","events.view","events.create","events.edit","events.delete","news.view","news.create","news.edit","news.delete","gallery.view","gallery.upload","gallery.edit","gallery.delete","shared_gallery.view","shared_gallery.edit","shared_gallery.delete","portraits.view","portraits.edit","portraits.delete","settings.view","settings.edit","logs.view"]'::jsonb),
-                ('editor', 'Redakteur', 'Bearbeitung von Inhalten (Events, News, Galerie)', '["events.view","events.create","events.edit","news.view","news.create","news.edit","gallery.view","gallery.upload","portraits.view","portraits.edit"]'::jsonb),
+                ('admin', 'Administrator', 'Verwaltung von Inhalten und Benutzern', '["users.view","users.create","users.edit","users.delete","events.view","events.create","events.edit","events.delete","news.view","news.create","news.edit","news.delete","gallery.view","gallery.upload","gallery.edit","gallery.delete","shared_gallery.view","shared_gallery.edit","shared_gallery.delete","portraits.view","portraits.edit","portraits.delete","settings.view","settings.edit","logs.view","wendessen.view","wendessen.manage","archive.view","archive.create","archive.edit","archive.delete"]'::jsonb),
+                ('editor', 'Redakteur', 'Bearbeitung von Inhalten (Events, News, Galerie)', '["events.view","events.create","events.edit","news.view","news.create","news.edit","gallery.view","gallery.upload","portraits.view","portraits.edit","archive.view","archive.create","archive.edit"]'::jsonb),
                 ('moderator', 'Moderator', 'Überprüfung und Genehmigung von Einreichungen', '["shared_gallery.view","shared_gallery.edit","portraits.view","portraits.edit","news.view","events.view"]'::jsonb);
             `;
             console.log('✓ Created default roles with permissions');
@@ -77,6 +77,13 @@ async function setupRolesAndPermissions() {
                 ('events.create', 'Termine erstellen', 'Kann neue Termine erstellen', 'events'),
                 ('events.edit', 'Termine bearbeiten', 'Kann Termine bearbeiten', 'events'),
                 ('events.delete', 'Termine löschen', 'Kann Termine löschen', 'events'),
+
+                -- Verein Events Management
+                ('verein.events.view', 'Vereins-Termine anzeigen', 'Kann Termine des eigenen Vereins einsehen', 'verein'),
+                ('verein.events.create', 'Vereins-Termine erstellen', 'Kann Termine für den eigenen Verein erstellen', 'verein'),
+                ('verein.events.edit', 'Vereins-Termine bearbeiten', 'Kann Termine des eigenen Vereins bearbeiten', 'verein'),
+                ('verein.events.delete', 'Vereins-Termine löschen', 'Kann Termine des eigenen Vereins löschen', 'verein'),
+                ('verein.events.cancel', 'Vereins-Termine absagen', 'Kann Termine des eigenen Vereins absagen', 'verein'),
                 
                 -- News Management
                 ('news.view', 'Neuigkeiten anzeigen', 'Kann Neuigkeiten einsehen', 'news'),
@@ -103,7 +110,18 @@ async function setupRolesAndPermissions() {
                 -- Settings & Configuration
                 ('settings.view', 'Einstellungen anzeigen', 'Kann Einstellungen einsehen', 'settings'),
                 ('settings.edit', 'Einstellungen bearbeiten', 'Kann Einstellungen ändern', 'settings'),
-                
+
+                -- Archiv
+                ('archive.view', 'Archiv anzeigen', 'Kann Archiv einsehen', 'archive'),
+                ('archive.create', 'Archiv Einträge erstellen', 'Kann neue Einträge im Archiv erstellen', 'archive'),
+                ('archive.edit', 'Archiv Einträge bearbeiten', 'Kann Einträge im Archiv bearbeiten', 'archive'),
+                ('archive.delete', 'Archiv Einträge löschen', 'Kann Einträge im Archiv löschen', 'archive'),
+
+                -- Das ist Wendessen
+                ('wendessen.view', 'Wendessen Layouts anzeigen', 'Kann Wendessen Layouts einsehen', 'wendessen'),
+                ('wendessen.manage', 'Wendessen Layouts verwalten', 'Kann Wendessen Layouts erstellen, bearbeiten, aktivieren und löschen', 'wendessen'),
+
+
                 -- Admin Logs
                 ('logs.view', 'Aktivitätslog ansehen', 'Kann das Aktivitätsprotokoll einsehen', 'logs');
             `;
@@ -112,16 +130,18 @@ async function setupRolesAndPermissions() {
             console.log(`✓ Found ${permCount} existing permission(s)`);
         }
 
-        // Ensure Verein permissions exist (added later)
+        // Ensure roles that have Verein-specific event permissions also include the base "events.view" permission
         await sql`
-            INSERT INTO permissions (name, display_name, description, category) VALUES
-            ('verein.events.create', 'Vereins-Termine erstellen', 'Kann Termine für den eigenen Verein erstellen', 'verein'),
-            ('verein.events.edit', 'Vereins-Termine bearbeiten', 'Kann Termine des eigenen Vereins bearbeiten', 'verein'),
-            ('verein.events.delete', 'Vereins-Termine löschen', 'Kann Termine des eigenen Vereins löschen', 'verein'),
-            ('verein.events.cancel', 'Vereins-Termine absagen', 'Kann Termine des eigenen Vereins absagen', 'verein')
-            ON CONFLICT (name) DO NOTHING;
+            UPDATE roles
+            SET default_permissions = default_permissions || '["events.view"]'::jsonb
+            WHERE NOT EXISTS (
+                SELECT 1 FROM jsonb_array_elements_text(default_permissions) AS perm WHERE perm = 'events.view'
+            )
+            AND EXISTS (
+                SELECT 1 FROM jsonb_array_elements_text(default_permissions) AS perm WHERE perm LIKE 'verein.events.%'
+            );
         `;
-        console.log('✓ Verified Verein permissions');
+        console.log('✓ Ensured roles with verein permissions include events.view');
 
         // Normalize missing defaults and ensure super_admin has wildcard default_permissions
         await sql`
