@@ -79,7 +79,6 @@ async function setupRolesAndPermissions() {
                 ('events.delete', 'Termine löschen', 'Kann Termine löschen', 'events'),
 
                 -- Verein Events Management
-                ('verein.events.view', 'Vereins-Termine anzeigen', 'Kann Termine des eigenen Vereins einsehen', 'verein'),
                 ('verein.events.create', 'Vereins-Termine erstellen', 'Kann Termine für den eigenen Verein erstellen', 'verein'),
                 ('verein.events.edit', 'Vereins-Termine bearbeiten', 'Kann Termine des eigenen Vereins bearbeiten', 'verein'),
                 ('verein.events.delete', 'Vereins-Termine löschen', 'Kann Termine des eigenen Vereins löschen', 'verein'),
