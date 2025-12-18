@@ -87,6 +87,9 @@ export default function AdminSharedGallery({
     const [groupToReset, setGroupToReset] = useState<string | null>(null);
     const [confirmApproveSelected, setConfirmApproveSelected] = useState(false);
     const [confirmResetSelected, setConfirmResetSelected] = useState(false);
+    const [groupToDelete, setGroupToDelete] = useState<SubmissionGroup | null>(
+        null
+    );
 
     // Statistics
     const totalPending = allGroups.reduce((sum, g) => sum + g.pendingCount, 0);
@@ -104,10 +107,10 @@ export default function AdminSharedGallery({
         filterStatus === 'all'
             ? allGroups
             : filterStatus === 'pending'
-            ? allGroups.filter((g) => g.pendingCount > 0)
-            : filterStatus === 'approved'
-            ? allGroups.filter((g) => g.approvedCount > 0)
-            : allGroups.filter((g) => g.rejectedCount > 0);
+                ? allGroups.filter((g) => g.pendingCount > 0)
+                : filterStatus === 'approved'
+                    ? allGroups.filter((g) => g.approvedCount > 0)
+                    : allGroups.filter((g) => g.rejectedCount > 0);
 
     const fetchSubmissionGroups = useCallback(
         async (reset = true) => {
@@ -427,7 +430,7 @@ export default function AdminSharedGallery({
             });
 
             if (response.ok) {
-                await fetchSubmissionGroups();
+                await fetchSubmissionGroups(true);
                 // Update selectedGroup with fresh data if modal is open
                 if (selectedGroup) {
                     const allResponse = await fetch(
@@ -456,6 +459,40 @@ export default function AdminSharedGallery({
         } catch (error) {
             console.error('Error deleting image:', error);
             setError('Fehler beim Löschen');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleDeleteGroup = async (groupId: string) => {
+        setProcessing(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/admin/shared-gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'delete-group',
+                    submissionGroupId: groupId,
+                }),
+            });
+
+            if (response.ok) {
+                if (selectedGroup?.submissionGroupId === groupId) {
+                    setSelectedGroup(null);
+                    setSelectedImages(new Set());
+                }
+                await fetchSubmissionGroups(true);
+            } else {
+                const data = await response.json();
+                setError(
+                    data.error || 'Fehler beim Löschen der gesamten Einreichung'
+                );
+            }
+        } catch (error) {
+            console.error('Error deleting group:', error);
+            setError('Fehler beim Löschen der gesamten Einreichung');
         } finally {
             setProcessing(false);
         }
@@ -614,17 +651,16 @@ export default function AdminSharedGallery({
                                                 onClick={() =>
                                                     setFilterStatus(
                                                         tab.key as
-                                                            | 'all'
-                                                            | 'pending'
-                                                            | 'approved'
-                                                            | 'rejected'
+                                                        | 'all'
+                                                        | 'pending'
+                                                        | 'approved'
+                                                        | 'rejected'
                                                     )
                                                 }
-                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                                    filterStatus === tab.key
-                                                        ? 'border-blue-500 text-blue-600'
-                                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                                }`}
+                                                className={`py-2 px-1 border-b-2 font-medium text-sm ${filterStatus === tab.key
+                                                    ? 'border-blue-500 text-blue-600'
+                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                                    }`}
                                             >
                                                 {tab.label}
                                                 <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2 rounded-full text-xs">
@@ -684,10 +720,10 @@ export default function AdminSharedGallery({
                                         {filterStatus === 'all'
                                             ? 'Es wurden noch keine Foto-Sammlungen eingereicht.'
                                             : filterStatus === 'pending'
-                                            ? 'Keine Einreichungen mit Status "Wartend".'
-                                            : filterStatus === 'approved'
-                                            ? 'Keine Einreichungen mit Status "Freigegeben".'
-                                            : 'Keine Einreichungen mit Status "Abgelehnt".'}
+                                                ? 'Keine Einreichungen mit Status "Wartend".'
+                                                : filterStatus === 'approved'
+                                                    ? 'Keine Einreichungen mit Status "Freigegeben".'
+                                                    : 'Keine Einreichungen mit Status "Abgelehnt".'}
                                     </p>
                                 </div>
                             ) : (
@@ -710,27 +746,25 @@ export default function AdminSharedGallery({
                                                         </div>
                                                         {group.submitterNames
                                                             .length > 0 && (
-                                                            <p className="text-gray-600 text-sm mb-1">
-                                                                Von:{' '}
-                                                                <strong>
-                                                                    {group
-                                                                        .submitterNames
-                                                                        .length ===
-                                                                    1
-                                                                        ? group
-                                                                              .submitterNames[0]
-                                                                        : `${
-                                                                              group
-                                                                                  .submitterNames[0]
-                                                                          } und ${
-                                                                              group
-                                                                                  .submitterNames
-                                                                                  .length -
-                                                                              1
-                                                                          } weitere`}
-                                                                </strong>
-                                                            </p>
-                                                        )}
+                                                                <p className="text-gray-600 text-sm mb-1">
+                                                                    Von:{' '}
+                                                                    <strong>
+                                                                        {group
+                                                                            .submitterNames
+                                                                            .length ===
+                                                                            1
+                                                                            ? group
+                                                                                .submitterNames[0]
+                                                                            : `${group
+                                                                                .submitterNames[0]
+                                                                            } und ${group
+                                                                                .submitterNames
+                                                                                .length -
+                                                                            1
+                                                                            } weitere`}
+                                                                    </strong>
+                                                                </p>
+                                                            )}
                                                         {group.description && (
                                                             <p className="text-gray-600 text-sm mb-2">
                                                                 {
@@ -748,7 +782,7 @@ export default function AdminSharedGallery({
                                                             • {group.totalCount}{' '}
                                                             Foto
                                                             {group.totalCount !==
-                                                            1
+                                                                1
                                                                 ? 's'
                                                                 : ''}
                                                             {group.pendingCount >
@@ -762,6 +796,19 @@ export default function AdminSharedGallery({
                                                                 ` (${group.rejectedCount} abgelehnt)`}
                                                         </p>
                                                     </div>
+                                                    {canDelete && (
+                                                        <button
+                                                            onClick={() =>
+                                                                setGroupToDelete(
+                                                                    group
+                                                                )
+                                                            }
+                                                            className="text-gray-400 hover:text-red-600 transition-colors p-1"
+                                                            title="Ganze Einreichung löschen"
+                                                        >
+                                                            <Trash size={20} />
+                                                        </button>
+                                                    )}
                                                 </div>
 
                                                 {/* Image Grid */}
@@ -784,42 +831,41 @@ export default function AdminSharedGallery({
                                                                 />
                                                                 {image.status !==
                                                                     'pending' && (
-                                                                    <div
-                                                                        className={`absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center ${
-                                                                            image.status ===
-                                                                            'approved'
+                                                                        <div
+                                                                            className={`absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center ${image.status ===
+                                                                                'approved'
                                                                                 ? 'bg-green-500'
                                                                                 : 'bg-red-500'
-                                                                        }`}
-                                                                    >
-                                                                        {image.status ===
-                                                                        'approved' ? (
-                                                                            <Check
-                                                                                size={
-                                                                                    14
-                                                                                }
-                                                                                className="text-white"
-                                                                            />
-                                                                        ) : (
-                                                                            <X
-                                                                                size={
-                                                                                    14
-                                                                                }
-                                                                                className="text-white"
-                                                                            />
-                                                                        )}
-                                                                    </div>
-                                                                )}
+                                                                                }`}
+                                                                        >
+                                                                            {image.status ===
+                                                                                'approved' ? (
+                                                                                <Check
+                                                                                    size={
+                                                                                        14
+                                                                                    }
+                                                                                    className="text-white"
+                                                                                />
+                                                                            ) : (
+                                                                                <X
+                                                                                    size={
+                                                                                        14
+                                                                                    }
+                                                                                    className="text-white"
+                                                                                />
+                                                                            )}
+                                                                        </div>
+                                                                    )}
                                                             </div>
                                                         ))}
                                                     {group.images.length >
                                                         6 && (
-                                                        <div className="aspect-square rounded-lg bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium">
-                                                            +
-                                                            {group.images
-                                                                .length - 6}
-                                                        </div>
-                                                    )}
+                                                            <div className="aspect-square rounded-lg bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium">
+                                                                +
+                                                                {group.images
+                                                                    .length - 6}
+                                                            </div>
+                                                        )}
                                                 </div>
 
                                                 {/* Action Buttons */}
@@ -880,7 +926,7 @@ export default function AdminSharedGallery({
                                                         (group.approvedCount >
                                                             0 ||
                                                             group.rejectedCount >
-                                                                0) && (
+                                                            0) && (
                                                             <button
                                                                 onClick={() =>
                                                                     setGroupToReset(
@@ -942,15 +988,15 @@ export default function AdminSharedGallery({
                                     </div>
                                     {selectedGroup.submitterNames.length >
                                         0 && (
-                                        <p className="text-gray-600">
-                                            Eingereicht von{' '}
-                                            <strong>
-                                                {selectedGroup.submitterNames.join(
-                                                    ', '
-                                                )}
-                                            </strong>
-                                        </p>
-                                    )}
+                                            <p className="text-gray-600">
+                                                Eingereicht von{' '}
+                                                <strong>
+                                                    {selectedGroup.submitterNames.join(
+                                                        ', '
+                                                    )}
+                                                </strong>
+                                            </p>
+                                        )}
                                 </div>
                                 <button
                                     onClick={() => {
@@ -961,6 +1007,18 @@ export default function AdminSharedGallery({
                                 >
                                     <X size={24} />
                                 </button>
+                            </div>
+                            <div className="flex items-center gap-4 px-6 pt-2">
+                                {canDelete && (
+                                    <button
+                                        onClick={() => setGroupToDelete(selectedGroup)}
+                                        className="text-red-600 hover:text-red-800 flex items-center gap-1 text-sm font-medium"
+                                        title="Ganze Einreichung löschen"
+                                    >
+                                        <Trash size={18} />
+                                        Ganze Einreichung löschen
+                                    </button>
+                                )}
                             </div>
 
                             <div className="p-6">
@@ -991,11 +1049,10 @@ export default function AdminSharedGallery({
                                         {selectedGroup.images.map((image) => (
                                             <div
                                                 key={image.id}
-                                                className={`relative aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-pointer border-4 transition-colors ${
-                                                    selectedImages.has(image.id)
-                                                        ? 'border-blue-500'
-                                                        : 'border-transparent hover:border-blue-200'
-                                                }`}
+                                                className={`relative aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-pointer border-4 transition-colors ${selectedImages.has(image.id)
+                                                    ? 'border-blue-500'
+                                                    : 'border-transparent hover:border-blue-200'
+                                                    }`}
                                                 onClick={() => {
                                                     const newSelected = new Set(
                                                         selectedImages
@@ -1037,15 +1094,14 @@ export default function AdminSharedGallery({
                                                 {image.status !== 'pending' && (
                                                     <div className="absolute inset-0 flex items-center justify-center">
                                                         <div
-                                                            className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                                                                image.status ===
+                                                            className={`w-12 h-12 rounded-full flex items-center justify-center ${image.status ===
                                                                 'approved'
-                                                                    ? 'bg-green-500'
-                                                                    : 'bg-red-500'
-                                                            }`}
+                                                                ? 'bg-green-500'
+                                                                : 'bg-red-500'
+                                                                }`}
                                                         >
                                                             {image.status ===
-                                                            'approved' ? (
+                                                                'approved' ? (
                                                                 <Check
                                                                     size={24}
                                                                     className="text-white"
@@ -1062,13 +1118,13 @@ export default function AdminSharedGallery({
                                                 {selectedImages.has(
                                                     image.id
                                                 ) && (
-                                                    <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                                                        <Check
-                                                            size={16}
-                                                            className="text-white"
-                                                        />
-                                                    </div>
-                                                )}
+                                                        <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                                            <Check
+                                                                size={16}
+                                                                className="text-white"
+                                                            />
+                                                        </div>
+                                                    )}
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -1127,7 +1183,7 @@ export default function AdminSharedGallery({
                                     {canEdit &&
                                         (selectedGroup.approvedCount > 0 ||
                                             selectedGroup.rejectedCount >
-                                                0) && (
+                                            0) && (
                                             <button
                                                 onClick={() =>
                                                     handleResetAll(
@@ -1395,27 +1451,27 @@ export default function AdminSharedGallery({
                                             <div className="flex items-center gap-2">
                                                 {viewingImage.status ===
                                                     'pending' && (
-                                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center gap-1">
-                                                        <Clock size={16} />
-                                                        Ausstehend
-                                                    </span>
-                                                )}
+                                                        <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center gap-1">
+                                                            <Clock size={16} />
+                                                            Ausstehend
+                                                        </span>
+                                                    )}
                                                 {viewingImage.status ===
                                                     'approved' && (
-                                                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium flex items-center gap-1">
-                                                        <CheckCircle
-                                                            size={16}
-                                                        />
-                                                        Freigegeben
-                                                    </span>
-                                                )}
+                                                        <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium flex items-center gap-1">
+                                                            <CheckCircle
+                                                                size={16}
+                                                            />
+                                                            Freigegeben
+                                                        </span>
+                                                    )}
                                                 {viewingImage.status ===
                                                     'rejected' && (
-                                                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium flex items-center gap-1">
-                                                        <XCircle size={16} />
-                                                        Abgelehnt
-                                                    </span>
-                                                )}
+                                                        <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium flex items-center gap-1">
+                                                            <XCircle size={16} />
+                                                            Abgelehnt
+                                                        </span>
+                                                    )}
                                             </div>
                                         </div>
 
@@ -1646,6 +1702,26 @@ export default function AdminSharedGallery({
                     title="Foto löschen?"
                     description={`Möchten Sie das Foto wirklich löschen?`}
                     confirmText={processing ? 'Löschen...' : 'Löschen'}
+                    cancelText="Abbrechen"
+                    icon={<Trash className="h-12 w-12" weight="duotone" />}
+                    accentColor="red"
+                />
+
+                {/* Delete Group Dialog */}
+                <PromptDialog
+                    isOpen={Boolean(groupToDelete)}
+                    onCancel={() => setGroupToDelete(null)}
+                    onConfirm={async () => {
+                        if (groupToDelete) {
+                            await handleDeleteGroup(
+                                groupToDelete.submissionGroupId
+                            );
+                            setGroupToDelete(null);
+                        }
+                    }}
+                    title="Komplette Einreichung löschen?"
+                    description={`Möchten Sie alle ${groupToDelete?.images.length} Fotos und die gesamte Einreichung von "${groupToDelete?.title}" wirklich unwiderruflich löschen?`}
+                    confirmText={processing ? 'Löschen...' : 'Ganze Einreichung löschen'}
                     cancelText="Abbrechen"
                     icon={<Trash className="h-12 w-12" weight="duotone" />}
                     accentColor="red"

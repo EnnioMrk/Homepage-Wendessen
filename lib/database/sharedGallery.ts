@@ -541,6 +541,15 @@ export async function resetAllInGroupToPending(
 
 export async function deleteSharedGallerySubmission(id: string): Promise<void> {
     try {
+        // First delete any associated reports due to foreign key if exists, 
+        // or just to maintain clean state if no FK. 
+        // Based on the schema inferred, it's better to do it explicitly or rely on CASCADE if configured.
+        // Assuming we should be explicit for safety.
+        await sql`
+            DELETE FROM shared_gallery_reports 
+            WHERE submission_id = ${id}
+        `;
+
         await sql`
             DELETE FROM shared_gallery_submissions 
             WHERE id = ${id}
@@ -548,6 +557,45 @@ export async function deleteSharedGallerySubmission(id: string): Promise<void> {
     } catch (error) {
         console.error('Error deleting shared gallery submission:', error);
         throw new Error('Failed to delete shared gallery submission');
+    }
+}
+
+export async function deleteSharedGallerySubmissionGroup(
+    submissionGroupId: string
+): Promise<void> {
+    try {
+        // Delete all reports for all submissions in the group
+        await sql`
+            DELETE FROM shared_gallery_reports 
+            WHERE submission_id IN (
+                SELECT id FROM shared_gallery_submissions 
+                WHERE submission_group_id = ${submissionGroupId}
+            )
+        `;
+
+        // Delete all submissions in the group
+        await sql`
+            DELETE FROM shared_gallery_submissions 
+            WHERE submission_group_id = ${submissionGroupId}
+        `;
+    } catch (error) {
+        console.error('Error deleting shared gallery submission group:', error);
+        throw new Error('Failed to delete shared gallery submission group');
+    }
+}
+
+export async function getSubmissionsInGroup(
+    submissionGroupId: string
+): Promise<SharedGallerySubmission[]> {
+    try {
+        const result = await sql`
+            SELECT * FROM shared_gallery_submissions 
+            WHERE submission_group_id = ${submissionGroupId}
+        `;
+        return result.map(convertToSharedGallerySubmission);
+    } catch (error) {
+        console.error('Error fetching submissions in group:', error);
+        throw new Error('Failed to fetch submissions in group');
     }
 }
 
@@ -659,5 +707,16 @@ export async function updateGalleryReportStatus(
     } catch (error) {
         console.error('Error updating gallery report status:', error);
         throw new Error('Failed to update gallery report status');
+    }
+}
+export async function deleteGalleryReport(id: string): Promise<void> {
+    try {
+        await sql`
+            DELETE FROM shared_gallery_reports 
+            WHERE id = ${id}
+        `;
+    } catch (error) {
+        console.error('Error deleting gallery report:', error);
+        throw new Error('Failed to delete gallery report');
     }
 }

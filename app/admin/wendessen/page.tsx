@@ -15,6 +15,7 @@ export default async function AdminWendessenPage() {
     // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canView = hasPermission(currentUser, 'wendessen.view');
+    const canManage = hasPermission(currentUser, 'wendessen.manage');
 
     if (!canView) {
         return (
@@ -67,7 +68,7 @@ export default async function AdminWendessenPage() {
             </header>
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <AdminWendessenClient />
+                <AdminWendessenClient canManage={canManage} />
             </main>
         </div>
     );

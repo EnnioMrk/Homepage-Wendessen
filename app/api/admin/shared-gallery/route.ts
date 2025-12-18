@@ -10,6 +10,8 @@ import {
     resetSharedGallerySubmissionToPending,
     resetAllInGroupToPending,
     deleteSharedGallerySubmission,
+    deleteSharedGallerySubmissionGroup,
+    getSubmissionsInGroup,
     getSharedGallerySubmissionById,
 } from '@/lib/database';
 import { revalidateTagSafe } from '@/lib/revalidate';
@@ -356,6 +358,46 @@ export async function POST(request: NextRequest) {
             });
 
             return NextResponse.json({ message: 'Submission deleted' });
+        } else if (action === 'delete-group' && submissionGroupId) {
+            if (!hasPermission(currentUser, 'shared_gallery.delete')) {
+                return NextResponse.json(
+                    { error: 'Keine Berechtigung zum Löschen' },
+                    { status: 403 }
+                );
+            }
+
+            // Get all submissions in the group to delete blobs
+            try {
+                const submissions = await getSubmissionsInGroup(
+                    submissionGroupId
+                );
+                for (const sub of submissions) {
+                    const objectPath = sub.imageStoragePath || sub.imageUrl;
+                    if (objectPath) {
+                        await deleteFromBlob(objectPath);
+                    }
+                }
+            } catch (blobError) {
+                console.warn(
+                    'Failed to delete shared gallery group blobs:',
+                    blobError
+                );
+            }
+
+            await deleteSharedGallerySubmissionGroup(submissionGroupId);
+            revalidateTagSafe('shared-gallery');
+
+            logAdminAction({
+                userId: currentUser?.id,
+                username: currentUser?.username,
+                action: 'shared_gallery.delete',
+                resourceType: 'shared_gallery',
+                resourceId: submissionGroupId,
+                details: { type: 'delete-group' },
+                ...requestInfo,
+            });
+
+            return NextResponse.json({ message: 'Submission group deleted' });
         } else {
             return NextResponse.json(
                 { error: 'Invalid action or missing parameters' },

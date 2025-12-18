@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { isAuthenticated } from '@/lib/auth';
-import { getGalleryReports, updateGalleryReportStatus } from '@/lib/database';
-import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
+import { getCurrentAdminUser, isAuthenticated } from '@/lib/auth';
+import { hasPermission } from '@/lib/permissions';
+import { getGalleryReports, updateGalleryReportStatus, deleteGalleryReport } from '@/lib/database';
+import { revalidateTagSafe } from '@/lib/revalidate';
 
 export async function GET(request: Request) {
     const authenticated = await isAuthenticated();
@@ -26,9 +27,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
+    const user = await getCurrentAdminUser();
+    if (!user) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!hasPermission(user, 'shared_gallery.edit')) {
+        return NextResponse.json({ error: 'Keine Berechtigung zum Bearbeiten von Meldungen' }, { status: 403 });
     }
 
     try {
@@ -42,15 +47,15 @@ export async function POST(request: Request) {
             );
         }
 
-        if (status !== 'reviewed' && status !== 'dismissed') {
+        if (status !== 'reviewed' && status !== 'dismissed' && status !== 'pending') {
             return NextResponse.json(
                 { error: 'Invalid status' },
                 { status: 400 }
             );
         }
 
-        const report = await updateGalleryReportStatus(reportId, status, 'admin');
-        
+        const report = await updateGalleryReportStatus(reportId, status, user.username || 'Admin');
+
         // Revalidate the reports cache
         revalidateTagSafe('gallery-reports');
 
@@ -59,6 +64,42 @@ export async function POST(request: Request) {
         console.error('Error updating report:', error);
         return NextResponse.json(
             { error: 'Failed to update report' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function DELETE(request: Request) {
+    const user = await getCurrentAdminUser();
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!hasPermission(user, 'shared_gallery.delete')) {
+        return NextResponse.json({ error: 'Keine Berechtigung zum Löschen von Meldungen' }, { status: 403 });
+    }
+
+    try {
+        const { searchParams } = new URL(request.url);
+        const reportId = searchParams.get('reportId');
+
+        if (!reportId) {
+            return NextResponse.json(
+                { error: 'Report ID is required' },
+                { status: 400 }
+            );
+        }
+
+        await deleteGalleryReport(reportId);
+
+        // Revalidate the reports cache
+        revalidateTagSafe('gallery-reports');
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting report:', error);
+        return NextResponse.json(
+            { error: 'Failed to delete report' },
             { status: 500 }
         );
     }

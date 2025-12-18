@@ -13,7 +13,11 @@ interface Layout {
     created_at: string;
 }
 
-export default function AdminWendessenClient() {
+interface AdminWendessenClientProps {
+    canManage?: boolean;
+}
+
+export default function AdminWendessenClient({ canManage = false }: AdminWendessenClientProps) {
     const router = useRouter();
     const [layouts, setLayouts] = useState<Layout[]>([]);
     const [loading, setLoading] = useState(true);
@@ -93,13 +97,15 @@ export default function AdminWendessenClient() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-gray-900">Verfügbare Layouts</h2>
-                <button
-                    onClick={() => router.push('/admin/wendessen/neu')}
-                    className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
-                >
-                    <Plus size={16} className="mr-2" />
-                    Neues Layout
-                </button>
+                {canManage && (
+                    <button
+                        onClick={() => router.push('/admin/wendessen/neu')}
+                        className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
+                    >
+                        <Plus size={16} className="mr-2" />
+                        Neues Layout
+                    </button>
+                )}
             </div>
 
             {error && (
@@ -133,7 +139,7 @@ export default function AdminWendessenClient() {
                                     </p>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    {!layout.is_active && (
+                                    {!layout.is_active && canManage && (
                                         <button
                                             onClick={() => handleSetActive(layout.id)}
                                             disabled={isActivating === layout.id}
@@ -147,24 +153,28 @@ export default function AdminWendessenClient() {
                                             )}
                                         </button>
                                     )}
-                                    <button
-                                        onClick={() => router.push(`/admin/wendessen/${layout.id}`)}
-                                        className="text-gray-400 hover:text-blue-600 p-2"
-                                        title="Bearbeiten"
-                                    >
-                                        <PencilSimple size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => setLayoutToDelete(layout)}
-                                        disabled={layout.is_active} // Cannot delete active
-                                        className={`p-2 transition-colors ${layout.is_active
-                                                ? 'text-gray-200 cursor-not-allowed'
-                                                : 'text-gray-400 hover:text-red-600'
-                                            }`}
-                                        title={layout.is_active ? "Aktives Layout kann nicht gelöscht werden" : "Löschen"}
-                                    >
-                                        <Trash size={20} />
-                                    </button>
+                                    {canManage && (
+                                        <>
+                                            <button
+                                                onClick={() => router.push(`/admin/wendessen/${layout.id}`)}
+                                                className="text-gray-400 hover:text-blue-600 p-2"
+                                                title="Bearbeiten"
+                                            >
+                                                <PencilSimple size={20} />
+                                            </button>
+                                            <button
+                                                onClick={() => setLayoutToDelete(layout)}
+                                                disabled={layout.is_active} // Cannot delete active
+                                                className={`p-2 transition-colors ${layout.is_active
+                                                    ? 'text-gray-200 cursor-not-allowed'
+                                                    : 'text-gray-400 hover:text-red-600'
+                                                    }`}
+                                                title={layout.is_active ? "Aktives Layout kann nicht gelöscht werden" : "Löschen"}
+                                            >
+                                                <Trash size={20} />
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </li>
                         ))
