@@ -184,9 +184,13 @@ export default function FeatureCard({
                             {subtitle}
                         </p>
                     )}
-                    <p className={`text-gray-700 leading-relaxed text-center ${compact ? 'text-sm mb-6' : 'text-sm md:text-base mb-6 md:mb-8'}`}>
-                        {description}
-                    </p>
+                    <div className={`text-gray-700 leading-relaxed text-center ${compact ? 'text-sm mb-6' : 'text-sm md:text-base mb-6 md:mb-8'}`}>
+                        {description.split('\n').map((line, i) => (
+                            <span key={i} className="block mb-1 last:mb-0">
+                                {line}
+                            </span>
+                        ))}
+                    </div>
                     <div className="text-center">
                         <a
                             href={buttonHref}
@@ -245,14 +249,18 @@ export default function FeatureCard({
                                 {subtitle}
                             </p>
                         )}
-                        <p
+                        <div
                             className={`leading-relaxed drop-shadow-md opacity-90 ${isHero
                                 ? compact ? 'text-sm mb-4' : 'text-sm md:text-base lg:text-xl mb-4 lg:mb-6'
                                 : `text-center ${compact ? 'text-sm mb-4' : 'text-sm md:text-base lg:text-lg mb-4 md:mb-6'}`
                                 }`}
                         >
-                            {description}
-                        </p>
+                            {description.split('\n').map((line, i) => (
+                                <span key={i} className="block mb-1 last:mb-0">
+                                    {line}
+                                </span>
+                            ))}
+                        </div>
                         <div className={`${isHero ? '' : 'text-center'}`}>
                             <a
                                 href={buttonHref}
