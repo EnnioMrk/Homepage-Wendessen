@@ -14,6 +14,8 @@ export interface ContactRecord {
 
 export type ContactListItem = Omit<ContactRecord, 'id'> & { id: string };
 
+export type ContactInput = Omit<ContactRecord, 'id'>;
+
 function convertToContactItem(row: Record<string, unknown>): ContactListItem {
     return {
         id: String(row.id),
@@ -77,5 +79,70 @@ export async function searchContacts(
     } catch (error) {
         console.error('Error searching contacts:', error);
         throw new Error('Failed to search contacts');
+    }
+}
+
+export async function getContactById(id: number): Promise<ContactListItem | null> {
+    try {
+        const result = await sql`SELECT * FROM contacts WHERE id = ${id}`;
+        if (result.length === 0) return null;
+        return convertToContactItem(result[0]);
+    } catch (error) {
+        console.error(`Error fetching contact ${id}:`, error);
+        throw new Error('Failed to fetch contact');
+    }
+}
+
+export async function createContact(contact: ContactInput): Promise<ContactListItem> {
+    try {
+        const result = await sql`
+            INSERT INTO contacts (
+                name, emails, phones, addresses, affiliations, sources, importance
+            ) VALUES (
+                ${contact.name},
+                ${JSON.stringify(contact.emails)}::jsonb,
+                ${JSON.stringify(contact.phones)}::jsonb,
+                ${JSON.stringify(contact.addresses)}::jsonb,
+                ${JSON.stringify(contact.affiliations)}::jsonb,
+                ${JSON.stringify(contact.sources)}::jsonb,
+                ${contact.importance}
+            )
+            RETURNING *;
+        `;
+        return convertToContactItem(result[0]);
+    } catch (error) {
+        console.error('Error creating contact:', error);
+        throw new Error('Failed to create contact');
+    }
+}
+
+export async function updateContact(id: number, contact: ContactInput): Promise<ContactListItem> {
+    try {
+        const result = await sql`
+            UPDATE contacts SET
+                name = ${contact.name},
+                emails = ${JSON.stringify(contact.emails)}::jsonb,
+                phones = ${JSON.stringify(contact.phones)}::jsonb,
+                addresses = ${JSON.stringify(contact.addresses)}::jsonb,
+                affiliations = ${JSON.stringify(contact.affiliations)}::jsonb,
+                sources = ${JSON.stringify(contact.sources)}::jsonb,
+                importance = ${contact.importance}
+            WHERE id = ${id}
+            RETURNING *;
+        `;
+        if (result.length === 0) throw new Error('Contact not found');
+        return convertToContactItem(result[0]);
+    } catch (error) {
+        console.error(`Error updating contact ${id}:`, error);
+        throw new Error('Failed to update contact');
+    }
+}
+
+export async function deleteContact(id: number): Promise<void> {
+    try {
+        await sql`DELETE FROM contacts WHERE id = ${id}`;
+    } catch (error) {
+        console.error(`Error deleting contact ${id}:`, error);
+        throw new Error('Failed to delete contact');
     }
 }

@@ -231,15 +231,15 @@ export default function AdminUsersClient() {
                                                             )}
                                                             {extraPermissionsCount >
                                                                 0 && (
-                                                                <span className="text-xs text-primary">
-                                                                    +
-                                                                    {
-                                                                        extraPermissionsCount
-                                                                    }{' '}
-                                                                    spezielle
-                                                                    Berechtigung(en)
-                                                                </span>
-                                                            )}
+                                                                    <span className="text-xs text-primary">
+                                                                        +
+                                                                        {
+                                                                            extraPermissionsCount
+                                                                        }{' '}
+                                                                        spezielle
+                                                                        Berechtigung(en)
+                                                                    </span>
+                                                                )}
                                                         </div>
                                                     </div>
                                                 </div>

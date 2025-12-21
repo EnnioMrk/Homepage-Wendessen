@@ -44,6 +44,11 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
         // Wendessen Layouts
         'wendessen.view',
         'wendessen.manage',
+        // Contacts
+        'contacts.view',
+        'contacts.create',
+        'contacts.edit',
+        'contacts.delete',
         // log
         'logs.view',
     ],
@@ -284,6 +289,7 @@ export const PERMISSION_CATEGORIES = {
     archive: 'Archiv',
     settings: 'Einstellungen',
     verein: 'Vereinsverwaltung',
+    contacts: 'Kontakte',
 } as const;
 
 /**

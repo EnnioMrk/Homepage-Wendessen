@@ -122,7 +122,9 @@ export default async function AdminDashboardPage() {
             canManageUsers={hasPermission(currentUser, 'users.view')}
             canViewSettings={hasPermission(currentUser, 'settings.view')}
             canViewLogs={hasPermission(currentUser, 'logs.view')}
+            canViewLogs={hasPermission(currentUser, 'logs.view')}
             canViewWendessen={hasPermission(currentUser, 'wendessen.view')}
+            canViewContacts={hasPermission(currentUser, 'contacts.view')}
         />
     );
 }

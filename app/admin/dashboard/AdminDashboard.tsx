@@ -18,22 +18,11 @@ import {
     Article,
     GearSix,
     ClockCounterClockwise,
+    AddressBook,
+    Plus,
+    SignOut,
+    CaretRight,
 } from '@phosphor-icons/react/dist/ssr';
-
-// Function to get category colors for news badges
-function getNewsCategoryColors(category: string): string {
-    const colorMap: Record<string, string> = {
-        Bildung: 'bg-amber-100 text-amber-800',
-        Gemeinschaft: 'bg-green-100 text-green-800',
-        Feuerwehr: 'bg-red-100 text-red-800',
-        Digital: 'bg-indigo-100 text-indigo-800',
-        Sport: 'bg-blue-100 text-blue-800',
-        Kultur: 'bg-purple-100 text-purple-800',
-        Verwaltung: 'bg-gray-100 text-gray-800',
-    };
-
-    return colorMap[category] || 'bg-gray-100 text-gray-800';
-}
 
 interface AdminDashboardProps {
     events: CalendarEvent[];
@@ -56,6 +45,7 @@ interface AdminDashboardProps {
     canViewSettings: boolean;
     canViewLogs: boolean;
     canViewWendessen: boolean;
+    canViewContacts: boolean;
 }
 
 export default function AdminDashboard({
@@ -79,6 +69,7 @@ export default function AdminDashboard({
     canViewSettings,
     canViewLogs,
     canViewWendessen,
+    canViewContacts,
 }: AdminDashboardProps) {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showEventModal, setShowEventModal] = useState(false);
@@ -99,535 +90,378 @@ export default function AdminDashboard({
         }
     };
 
+    const StatCard = ({
+        icon: Icon,
+        label,
+        value,
+        colorClass,
+        bgClass,
+    }: {
+        icon: any;
+        label: string;
+        value: string | number;
+        colorClass: string;
+        bgClass: string;
+    }) => (
+        <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-4 flex items-center space-x-4">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${bgClass}`}>
+                <Icon className={`w-6 h-6 ${colorClass}`} weight="fill" />
+            </div>
+            <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-500 truncate">{label}</p>
+                <p className="text-xl font-bold text-gray-900">{value}</p>
+            </div>
+        </div>
+    );
+
+    const MenuCard = ({
+        href,
+        icon: Icon,
+        title,
+        description,
+        colorClass,
+        bgClass,
+    }: {
+        href: string;
+        icon: any;
+        title: string;
+        description: string;
+        colorClass: string;
+        bgClass: string;
+    }) => (
+        <Link
+            href={href}
+            className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 flex flex-col h-full"
+        >
+            <div className="flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bgClass} group-hover:scale-110 transition-transform duration-200`}>
+                    <Icon className={`w-6 h-6 ${colorClass}`} weight="duotone" />
+                </div>
+                <CaretRight className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors">
+                {title}
+            </h3>
+            <p className="text-sm text-gray-500 line-clamp-2">
+                {description}
+            </p>
+        </Link>
+    );
+
+    const QuickActionBtn = ({
+        onClick,
+        icon: Icon,
+        label,
+        description,
+        colorClass,
+        bgClass,
+        href
+    }: {
+        onClick?: () => void;
+        icon: any;
+        label: string;
+        description: string;
+        colorClass: string;
+        bgClass: string;
+        href?: string;
+    }) => {
+        const content = (
+            <div className="flex items-center w-full">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${bgClass}`}>
+                    <Plus className={`w-5 h-5 ${colorClass}`} weight="bold" />
+                </div>
+                <div className="text-left">
+                    <div className="font-semibold text-gray-900">{label}</div>
+                    <div className="text-xs text-gray-500">{description}</div>
+                </div>
+            </div>
+        );
+
+        if (href) {
+            return (
+                <Link href={href} className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 shadow-sm rounded-lg p-3 transition-colors flex items-center">
+                    {content}
+                </Link>
+            );
+        }
+
+        return (
+            <button
+                onClick={onClick}
+                className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 shadow-sm rounded-lg p-3 transition-colors flex items-center w-full"
+            >
+                {content}
+            </button>
+        );
+    };
+
+
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div
+            className="min-h-screen bg-slate-50"
+            style={{
+                backgroundImage: 'radial-gradient(#e2e8f0 1px, transparent 1px)',
+                backgroundSize: '24px 24px'
+            }}
+        >
             {/* Header */}
-            <header className="bg-white shadow">
+            <header className="bg-white border-b border-gray-200 sticky top-0 z-10 bg-opacity-80 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-6 space-y-4 sm:space-y-0">
-                        <div className="min-w-0 flex-1 text-center sm:text-left">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center">
+                            <h1 className="text-xl font-bold text-gray-900">
                                 Admin Dashboard
                             </h1>
-                            <p className="text-sm text-gray-600 mt-1 hidden sm:block">
-                                Wendessen Website Verwaltung
-                            </p>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                            <PushNotificationToggle />
+                        <div className="flex items-center space-x-3 sm:space-x-4">
+                            <div className="hidden sm:block">
+                                <PushNotificationToggle />
+                            </div>
                             <NotificationBell />
+                            <div className="h-6 w-px bg-gray-200 mx-2" />
                             <button
                                 onClick={handleLogout}
                                 disabled={isLoggingOut}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium disabled:bg-gray-400 w-full sm:w-auto"
+                                className="flex items-center text-gray-500 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50"
+                                title="Abmelden"
                             >
-                                {isLoggingOut ? 'Abmelden...' : 'Abmelden'}
+                                <SignOut className="w-6 h-6" />
                             </button>
                         </div>
                     </div>
                 </div>
             </header>
 
-            {/* Main Content */}
-            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="px-4 py-6 sm:px-0">
-                    {/* Overview Cards */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
-                        {canViewEvents && (
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-3 sm:p-5">
-                                    <div className="flex flex-col sm:flex-row sm:items-center">
-                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                            <dl>
-                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                    Termine
-                                                </dt>
-                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                    {eventsError
-                                                        ? 'Fehler'
-                                                        : events.length}
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+            <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-10">
 
-                        {canViewNews && (
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-3 sm:p-5">
-                                    <div className="flex flex-col sm:flex-row sm:items-center">
-                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-md flex items-center justify-center">
-                                                <Newspaper className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                            <dl>
-                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                    Nachrichten
-                                                </dt>
-                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                    {newsError
-                                                        ? 'Fehler'
-                                                        : news.length}
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {canViewSharedGallery && (
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-3 sm:p-5">
-                                    <div className="flex flex-col sm:flex-row sm:items-center">
-                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                                <ImageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                            <dl>
-                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                    Impressionen
-                                                </dt>
-                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                    {galleryError
-                                                        ? 'Fehler'
-                                                        : galleryCount}
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {canViewPortraits && (
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-3 sm:p-5">
-                                    <div className="flex flex-col sm:flex-row sm:items-center">
-                                        <div className="flex-shrink-0 mx-auto sm:mx-0 mb-2 sm:mb-0">
-                                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500 rounded-md flex items-center justify-center">
-                                                <UsersThree className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="sm:ml-5 text-center sm:text-left sm:w-0 sm:flex-1">
-                                            <dl>
-                                                <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">
-                                                    Portraits
-                                                </dt>
-                                                <dd className="text-sm sm:text-lg font-medium text-gray-900">
-                                                    {portraitsError
-                                                        ? 'Fehler'
-                                                        : portraitsCount}
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Recent Content */}
-                    {(canViewEvents || canViewNews) && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Recent Events */}
-                            {canViewEvents && (
-                                <div className="bg-white shadow rounded-lg">
-                                    <div className="px-4 py-5 sm:p-6">
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
-                                            <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                                Aktuelle Termine
-                                            </h3>
-                                            <Link
-                                                href="/admin/events"
-                                                className="text-sm text-indigo-600 hover:text-indigo-800 font-medium self-center sm:self-auto"
-                                            >
-                                                Alle Termine →
-                                            </Link>
-                                        </div>
-                                        {eventsError ? (
-                                            <div className="text-red-600 text-sm">
-                                                {eventsError}
-                                            </div>
-                                        ) : events.length > 0 ? (
-                                            <div className="space-y-3">
-                                                {events
-                                                    .slice(0, 5)
-                                                    .map((event) => (
-                                                        <div
-                                                            key={event.id}
-                                                            className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
-                                                        >
-                                                            <div>
-                                                                <p className="text-sm font-medium text-gray-900">
-                                                                    {
-                                                                        event.title
-                                                                    }
-                                                                </p>
-                                                                <p className="text-xs text-gray-500">
-                                                                    {new Date(
-                                                                        event.start
-                                                                    ).toLocaleDateString(
-                                                                        'de-DE'
-                                                                    )}
-                                                                </p>
-                                                            </div>
-                                                            <span
-                                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${event.category ===
-                                                                    'sitzung'
-                                                                    ? 'bg-blue-100 text-blue-800'
-                                                                    : event.category ===
-                                                                        'veranstaltung'
-                                                                        ? 'bg-green-100 text-green-800'
-                                                                        : event.category ===
-                                                                            'sport'
-                                                                            ? 'bg-orange-100 text-orange-800'
-                                                                            : event.category ===
-                                                                                'kultur'
-                                                                                ? 'bg-purple-100 text-purple-800'
-                                                                                : 'bg-gray-100 text-gray-800'
-                                                                    }`}
-                                                            >
-                                                                {event.category}
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                            </div>
-                                        ) : (
-                                            <p className="text-gray-500 text-sm">
-                                                Keine Termine gefunden
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Recent News */}
-                            {canViewNews && (
-                                <div className="bg-white shadow rounded-lg">
-                                    <div className="px-4 py-5 sm:p-6">
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0 text-center sm:text-left">
-                                            <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                                Aktuelle Neugkeiten
-                                            </h3>
-                                            <Link
-                                                href="/admin/news"
-                                                className="text-sm text-blue-600 hover:text-blue-800 font-medium self-center sm:self-auto"
-                                            >
-                                                Alle Neuigkeiten →
-                                            </Link>
-                                        </div>
-                                        {newsError ? (
-                                            <div className="text-red-600 text-sm">
-                                                {newsError}
-                                            </div>
-                                        ) : news.length > 0 ? (
-                                            <div className="space-y-3">
-                                                {news
-                                                    .slice(0, 5)
-                                                    .map((item) => (
-                                                        <div
-                                                            key={item.id}
-                                                            className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0"
-                                                        >
-                                                            <div>
-                                                                <p className="text-sm font-medium text-gray-900">
-                                                                    {item.title}
-                                                                </p>
-                                                                <p className="text-xs text-gray-500">
-                                                                    {new Date(
-                                                                        item.publishedDate
-                                                                    ).toLocaleDateString(
-                                                                        'de-DE'
-                                                                    )}
-                                                                </p>
-                                                            </div>
-                                                            <span
-                                                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getNewsCategoryColors(
-                                                                    item.category
-                                                                )}`}
-                                                            >
-                                                                {item.category}
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                            </div>
-                                        ) : (
-                                            <p className="text-gray-500 text-sm">
-                                                Keine Nachrichten gefunden
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                {/* Stats Overview */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {canViewEvents && (
+                        <StatCard
+                            icon={Calendar}
+                            label="Termine"
+                            value={eventsError ? '!' : events.length}
+                            colorClass="text-blue-600"
+                            bgClass="bg-blue-50"
+                        />
                     )}
-
-                    {/* Quick Actions */}
-                    {(canManageEvents ||
-                        canManageNews ||
-                        canManageUsers ||
-                        canViewSettings ||
-                        canViewLogs) && (
-                            <div className="mt-8">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
-                                    Schnellaktionen
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {/* Add Event */}
-                                    {canManageEvents && (
-                                        <button
-                                            onClick={() => setShowEventModal(true)}
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500 text-left"
-                                        >
-                                            <div className="flex items-center mb-3">
-                                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                    <Calendar className="w-5 h-5 text-blue-600" />
-                                                </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Neuer Termin
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Termin erstellen und veröffentlichen
-                                            </p>
-                                        </button>
-                                    )}
-
-                                    {/* Add News */}
-                                    {canManageNews && (
-                                        <Link
-                                            href="/admin/news/erstellen"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500 text-left block"
-                                        >
-                                            <div className="flex items-center mb-3">
-                                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                                    <Newspaper className="w-5 h-5 text-green-600" />
-                                                </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Neue Nachricht
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Nachricht erstellen und
-                                                veröffentlichen
-                                            </p>
-                                        </Link>
-                                    )}
-
-                                    {/* Admin Users */}
-                                    {canManageUsers && (
-                                        <Link
-                                            href="/admin/users"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-primary block"
-                                        >
-                                            <div className="flex items-center mb-3">
-                                                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                                                    <UserGear className="w-5 h-5 text-primary" />
-                                                </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Benutzer
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Admins und Rechte verwalten
-                                            </p>
-                                        </Link>
-                                    )}
-
-                                    {/* Settings */}
-                                    {canViewSettings && (
-                                        <Link
-                                            href="/admin/settings"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-gray-500 block"
-                                        >
-                                            <div className="flex items-center mb-3">
-                                                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                    <GearSix className="w-5 h-5 text-gray-600" />
-                                                </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Einstellungen
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Website-Einstellungen verwalten
-                                            </p>
-                                        </Link>
-                                    )}
-
-                                    {/* Activity Log */}
-                                    {canViewLogs && (
-                                        <Link
-                                            href="/admin/logs"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-indigo-500 block"
-                                        >
-                                            <div className="flex items-center mb-3">
-                                                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                                    <ClockCounterClockwise className="w-5 h-5 text-indigo-600" />
-                                                </div>
-                                                <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                    Aktivitätslog
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Admin-Aktivitäten einsehen
-                                            </p>
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                    {/* Content Management */}
-                    {(canViewAdminGallery ||
-                        canViewSharedGallery ||
-                        canViewPortraits ||
-                        canViewArchive ||
-                        canViewWendessen) && (
-                            <div className="mt-8">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
-                                    Inhalte verwalten
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {/* Gallery */}
-                                    {canViewAdminGallery && (
-                                        <Link
-                                            href="/admin/gallery"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                        >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                        <ImageSquare className="w-5 h-5 text-purple-600" />
-                                                    </div>
-                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                        Admin Galerie
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Bilder für Inhalte hochladen
-                                            </p>
-                                        </Link>
-                                    )}
-
-                                    {/* Shared Gallery */}
-                                    {canViewSharedGallery && (
-                                        <Link
-                                            href="/admin/shared-gallery"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                        >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                                                        <ImageSquare className="w-5 h-5 text-pink-600" />
-                                                    </div>
-                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                        Impressionen
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Von Bürgern eingereichte Fotos
-                                            </p>
-                                        </Link>
-                                    )}
-
-                                    {/* Portraits */}
-                                    {canViewPortraits && (
-                                        <Link
-                                            href="/admin/portraits"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                        >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                                                        <UsersThree className="w-5 h-5 text-emerald-600" />
-                                                    </div>
-                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                        Portraits
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Wir Wendessener - Einwohner stellen
-                                                sich vor
-                                            </p>
-                                        </Link>
-                                    )}
-
-
-
-                                    {/* Wendessen Layouts */}
-                                    {canViewWendessen && (
-                                        <Link
-                                            href="/admin/wendessen"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                        >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                        <ImageSquare className="w-5 h-5 text-blue-600" />
-                                                    </div>
-                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                        Das ist Wendessen
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Startseite Layouts verwalten
-                                            </p>
-                                        </Link>
-                                    )}
-
-                                    {/* Archive */}
-                                    {canViewArchive && (
-                                        <Link
-                                            href="/admin/archiv"
-                                            className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow block"
-                                        >
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center">
-                                                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                                                        <Article className="w-5 h-5 text-amber-600" />
-                                                    </div>
-                                                    <h4 className="ml-3 text-base font-semibold text-gray-900">
-                                                        Archiv
-                                                    </h4>
-                                                </div>
-                                            </div>
-                                            <p className="text-sm text-gray-600">
-                                                Historische Dokumente verwalten
-                                            </p>
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                    {/* Notification Tester - only in development */}
-                    {process.env.NODE_ENV === 'development' && canViewLogs && (
-                        <div className="mt-8">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4 px-1">
-                                Entwickler-Tools
-                            </h3>
-                            <div className="max-w-2xl">
-                                <NotificationTester />
-                            </div>
-                        </div>
+                    {canViewNews && (
+                        <StatCard
+                            icon={Newspaper}
+                            label="News"
+                            value={newsError ? '!' : news.length}
+                            colorClass="text-green-600"
+                            bgClass="bg-green-50"
+                        />
+                    )}
+                    {canViewSharedGallery && (
+                        <StatCard
+                            icon={ImageSquare}
+                            label="Impressionen"
+                            value={galleryError ? '!' : galleryCount}
+                            colorClass="text-purple-600"
+                            bgClass="bg-purple-50"
+                        />
+                    )}
+                    {canViewPortraits && (
+                        <StatCard
+                            icon={UsersThree}
+                            label="Portraits"
+                            value={portraitsError ? '!' : portraitsCount}
+                            colorClass="text-emerald-600"
+                            bgClass="bg-emerald-50"
+                        />
                     )}
                 </div>
+
+                {/* Quick Actions */}
+                {(canManageEvents || canManageNews) && (
+                    <div className="mb-8">
+                        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                            Schnellzugriff
+                        </h2>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            {canManageEvents && (
+                                <QuickActionBtn
+                                    onClick={() => setShowEventModal(true)}
+                                    icon={Calendar}
+                                    label="Neuer Termin"
+                                    description="Einen Kalendereintrag erstellen"
+                                    colorClass="text-blue-600"
+                                    bgClass="bg-blue-50"
+                                />
+                            )}
+                            {canManageNews && (
+                                <QuickActionBtn
+                                    href="/admin/news/erstellen"
+                                    icon={Newspaper}
+                                    label="Neue Nachricht"
+                                    description="Einen News-Artikel verfassen"
+                                    colorClass="text-green-600"
+                                    bgClass="bg-green-50"
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Section: Einsendungen (User Content) */}
+                {(canViewSharedGallery || canViewPortraits) && (
+                    <div>
+                        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <span className="w-1.5 h-6 bg-purple-500 rounded-full mr-3"></span>
+                            Einsendungen & Community
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {canViewSharedGallery && (
+                                <MenuCard
+                                    href="/admin/shared-gallery"
+                                    icon={ImageSquare}
+                                    title="Impressionen"
+                                    description="Von Bürgern eingereichte Fotos verwalten und moderieren."
+                                    colorClass="text-purple-600"
+                                    bgClass="bg-purple-50"
+                                />
+                            )}
+                            {canViewPortraits && (
+                                <MenuCard
+                                    href="/admin/portraits"
+                                    icon={UsersThree}
+                                    title="Portraits"
+                                    description="'Wir Wendessener' - Einwohnerprofile und Vorstellungen."
+                                    colorClass="text-emerald-600"
+                                    bgClass="bg-emerald-50"
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Section: Inhalte (Website Content) */}
+                {(canViewEvents || canViewNews || canViewAdminGallery || canViewWendessen || canViewArchive || canViewContacts) && (
+                    <div>
+                        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <span className="w-1.5 h-6 bg-blue-500 rounded-full mr-3"></span>
+                            Website Inhalte
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {canViewNews && (
+                                <MenuCard
+                                    href="/admin/news"
+                                    icon={Newspaper}
+                                    title="Nachrichten"
+                                    description="Aktuelle Meldungen und Berichte verwalten."
+                                    colorClass="text-green-600"
+                                    bgClass="bg-green-50"
+                                />
+                            )}
+                            {canViewEvents && (
+                                <MenuCard
+                                    href="/admin/events"
+                                    icon={Calendar}
+                                    title="Termine"
+                                    description="Veranstaltungskalender pflegen."
+                                    colorClass="text-blue-600"
+                                    bgClass="bg-blue-50"
+                                />
+                            )}
+                            {canViewContacts && (
+                                <MenuCard
+                                    href="/admin/contacts"
+                                    icon={AddressBook}
+                                    title="Kontakte"
+                                    description="Ansprechpartner und Vereinsadressen pflegen."
+                                    colorClass="text-cyan-600"
+                                    bgClass="bg-cyan-50"
+                                />
+                            )}
+                            {canViewWendessen && (
+                                <MenuCard
+                                    href="/admin/wendessen"
+                                    icon={ImageSquare} // Keeping ImageSquare broadly for layout/visuals
+                                    title="Das ist Wendessen"
+                                    description="Startseiten-Layouts und Rubriken anpassen."
+                                    colorClass="text-indigo-600"
+                                    bgClass="bg-indigo-50"
+                                />
+                            )}
+                            {canViewAdminGallery && (
+                                <MenuCard
+                                    href="/admin/gallery"
+                                    icon={ImageSquare}
+                                    title="Galerie"
+                                    description="Zentrale Bilddatenbank für die Website."
+                                    colorClass="text-pink-600"
+                                    bgClass="bg-pink-50"
+                                />
+                            )}
+                            {canViewArchive && (
+                                <MenuCard
+                                    href="/admin/archiv"
+                                    icon={Article}
+                                    title="Archiv"
+                                    description="Historische Dokumente und Chroniken."
+                                    colorClass="text-amber-600"
+                                    bgClass="bg-amber-50"
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Section: System Actions */}
+                {(canManageUsers || canViewSettings || canViewLogs) && (
+                    <div>
+                        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <span className="w-1.5 h-6 bg-gray-500 rounded-full mr-3"></span>
+                            System & Verwaltung
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {canManageUsers && (
+                                <MenuCard
+                                    href="/admin/users"
+                                    icon={UserGear}
+                                    title="Benutzer"
+                                    description="Administratoren, Rollen und Berechtigungen verwalten."
+                                    colorClass="text-primary"
+                                    bgClass="bg-primary/10"
+                                />
+                            )}
+                            {canViewSettings && (
+                                <MenuCard
+                                    href="/admin/settings"
+                                    icon={GearSix}
+                                    title="Einstellungen"
+                                    description="Globale Konfigurationen der Website."
+                                    colorClass="text-gray-600"
+                                    bgClass="bg-gray-100"
+                                />
+                            )}
+                            {canViewLogs && (
+                                <MenuCard
+                                    href="/admin/logs"
+                                    icon={ClockCounterClockwise}
+                                    title="Aktivitätslog"
+                                    description="Protokoll aller Änderungen im Admin-Bereich."
+                                    colorClass="text-violet-600"
+                                    bgClass="bg-violet-50"
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Developer Tools (Dev only) */}
+                {process.env.NODE_ENV === 'development' && canViewLogs && (
+                    <div className="opacity-60 hover:opacity-100 transition-opacity">
+                        <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 border-t border-gray-200 pt-6">
+                            Entwickler-Tools
+                        </h3>
+                        <div className="max-w-xl">
+                            <NotificationTester />
+                        </div>
+                    </div>
+                )}
             </main>
 
             <EventModal
