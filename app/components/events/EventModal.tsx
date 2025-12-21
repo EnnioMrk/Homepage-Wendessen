@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, ImageSquare as ImageIcon } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
-import ImagePicker from '@/app/components/ui/ImagePicker';
+import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 import { usePermissions } from '@/lib/usePermissions';
 
 interface EventModalProps {
@@ -315,7 +315,7 @@ export default function EventModal({
                                                 erstellen.
                                             </p>
                                         )}
-                                </div>
+                                    </div>
                                 <select
                                     name="category"
                                     disabled={isLoading}
@@ -421,13 +421,13 @@ export default function EventModal({
 
             {/* Image Picker Modal */}
             {showImagePicker && (
-                <ImagePicker
-                    selectedImageUrl={imageUrl}
-                    onImageSelect={(selectedImageUrl) => {
-                        setImageUrl(selectedImageUrl || '');
+                <GalleryImagePicker
+                    onSelect={(img) => {
+                        setImageUrl(img.url || '');
                         setShowImagePicker(false);
                     }}
                     onClose={() => setShowImagePicker(false)}
+                    canUpload={true}
                 />
             )}
         </div>
