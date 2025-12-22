@@ -1,5 +1,5 @@
 import {
-    Star,
+    Cross,
     Calendar,
     Heart,
     FileText,
@@ -25,7 +25,7 @@ export default function KirchePage() {
             <PageHeader
                 title="Kirche"
                 subtitle="Kirchengemeinde Ahlum-Atzum-Wendessen"
-                icon={<Star />}
+                icon={<Cross />}
                 backgroundImage="/images/Kirche.webp"
                 color="purple"
             />
@@ -343,7 +343,7 @@ export default function KirchePage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-purple-600">
-                                <Star className="w-6 h-6" fill="currentColor" />
+                                <Cross className="w-6 h-6" fill="currentColor" />
                                 <span className="font-semibold">
                                     Willkommen in unserer Gemeinschaft
                                 </span>

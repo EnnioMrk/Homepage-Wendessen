@@ -1,390 +1,168 @@
-import Image from 'next/image';
 import {
-    Heart,
-    Buildings,
-    Check,
-    Globe,
-    MapPin,
-    FileText,
+    House,
     Clock,
+    Plant,
+    Heart,
+    MapPin,
+    UsersThree,
 } from '@phosphor-icons/react/dist/ssr';
-
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContentImage from '@/app/components/ContentImage';
 
 export const metadata = {
-    title: 'Hospiz - Wohnen & Bauen in Wendessen',
+    title: 'Hospiz im Gutspark - Institutionen',
     description:
-        'Hospiz des Hospizvereins Wolfenbüttel im alten Gutshaus Wendessen. Um- und Ausbau des historischen Gebäudes für 10 Hospizgäste.',
+        'Hospiz im Gutspark in Wendessen – Geborgenheit an einem geschichtsträchtigen Ort. Stationäre Versorgung und Begleitung.',
 };
 
-export default function HospizPage() {
+export default function HospizInstitutionPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        <div className="min-h-screen bg-slate-50">
             <PageHeader
-                title="Hospiz"
-                subtitle="Neues Zuhause im alten Gutshaus — Hospizverein Wolfenbüttel"
-                icon={<Heart />}
-                backgroundImage="/images/Features/Hospiz.jpeg"
-                color="purple"
+                title="Hospiz im Gutspark"
+                icon={<House />}
+                backgroundImage="/images/Hospiz.jpg"
+                color="red" // Using a warm color scheme
             />
 
             {/* Main Content */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="max-w-5xl mx-auto">
-                    {/* Introduction Section */}
-                    <div className="text-center mb-16">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                            Ein Ort der Würde und Geborgenheit
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto mb-6"></div>
-                        <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-                            Das historische Gutshaus wird zu einem modernen
-                            Hospiz für Menschen in ihrer letzten Lebensphase
-                        </p>
-                    </div>
+            <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
+                <div className="max-w-5xl mx-auto space-y-12 sm:space-y-16">
 
-                    {/* Hospiz Image */}
-                    <div className="mb-16">
-                        <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="relative w-full mb-8">
-                                <Image
-                                    src="/images/Hospiz_Bau.webp"
-                                    alt="Hospiz Bau - Altes Gutshaus Wendessen wird zum Hospiz umgebaut"
-                                    width={1200}
-                                    height={800}
-                                    className="w-full h-auto rounded-2xl shadow-lg"
-                                    priority
-                                />
-                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        Hospiz im Bau
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-l-4 border-purple-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center">
-                                    <Buildings className="w-6 h-6 mr-3" />
-                                    Hospiz des Hospizvereins Wolfenbüttel
-                                </h3>
-                                <p className="text-lg text-gray-800 font-medium">
-                                    Menschen, die aufgrund ihrer Symptome in
-                                    ihrer vertrauten Umgebung nicht mehr
-                                    versorgt werden können, finden künftig im
-                                    Hospiz des Hospizvereins Wolfenbüttel ein
-                                    neues Zuhause.
-                                </p>
-                            </div>
+                    {/* Introduction */}
+                    <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12">
+                        <div className="text-center mb-8">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                                Geborgenheit an einem geschichtsträchtigen Ort
+                            </h2>
+                            <div className="w-20 h-1 bg-red-500 mx-auto rounded-full"></div>
                         </div>
-                    </div>
-
-                    {/* Project Details */}
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="space-y-6 text-gray-700 leading-relaxed">
+                        <div className="prose prose-lg text-gray-700 mx-auto leading-relaxed">
                             <p>
-                                Zu diesem Zweck wird das alte Gutshaus im
-                                Zentrum Wendessens um- und ausgebaut. Die großen
-                                Terrassen und der Hausgarten können für
-                                Aufenthalte der Hospizgäste genutzt werden. Für
-                                Parkplätze gibt es eine ausreichend große
-                                Fläche. Die Bushaltestelle ist in der Nähe.
+                                In Sichtweite der Kirche St. Georg – gleich hinter der historischen Gutsmauer – erhebt sich ein viergeschossiger Bau: das <strong>HospizZentrum Wolfenbüttel</strong>. Neben dem stationären „Hospiz im Gutspark“ hat hier der Hospizverein seine Räume.
                             </p>
-
-                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 p-6 rounded-2xl">
-                                <h4 className="text-xl font-bold text-green-700 mb-3 flex items-center">
-                                    <Buildings className="w-6 h-6 mr-2" />
-                                    Ausstattung & Lage
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <p>
-                                            <strong>Kapazität:</strong> 10
-                                            Hospizgäste
-                                        </p>
-                                        <p>
-                                            <strong>Außenanlagen:</strong> Große
-                                            Terrassen
-                                        </p>
-                                        <p>
-                                            <strong>Garten:</strong> Hausgarten
-                                            für Aufenthalte
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p>
-                                            <strong>Parkplätze:</strong>{' '}
-                                            Ausreichend große Fläche
-                                        </p>
-                                        <p>
-                                            <strong>ÖPNV:</strong>{' '}
-                                            Bushaltestelle in der Nähe
-                                        </p>
-                                        <p>
-                                            <strong>Betrieb ab:</strong>{' '}
-                                            Anfang/Mitte 2024
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                            <p>
+                                Der weiße Außenputz und das rote Ziegeldach heben sich deutlich vom Grau der Mauer ab. Einzig die Gebäudeform und das große grüne Tor an der Westfront erinnern an die Geschichte des Hauses.
+                            </p>
+                            <ContentImage
+                                src="/images/Hospiz.jpg"
+                                alt="Hospiz im Gutspark"
+                                caption="Das Hospiz im Gutspark in Wendessen"
+                                className="mb-0"
+                            />
                         </div>
                     </div>
 
-                    {/* Historical Background */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                                Geschichte des Gutshauses
+
+                    {/* Timeline Section */}
+                    <div>
+                        <div className="text-center mb-10">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+                                <Clock className="w-8 h-8 text-red-600" />
+                                Vom Rittergut zum HospizZentrum
                             </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-amber-600 to-yellow-600 mx-auto mb-6"></div>
-                            <p className="text-base sm:text-lg text-gray-600">
-                                Über 360 Jahre Geschichte werden zu neuem Leben
-                                erweckt
+                            <p className="text-gray-600">Eine Reise durch die Jahrhunderte (1660 - 2024)</p>
+                        </div>
+
+                        <div className="relative border-l-4 border-red-200 ml-4 sm:ml-6 md:mx-auto md:max-w-3xl pl-6 sm:pl-8 md:pl-0">
+                            {/* Timeline Items */}
+                            <TimelineItem
+                                year="1660"
+                                title="Erste Erwähnung"
+                                text="Das „Rittergut Wendessen“ wird erstmals erwähnt."
+                            />
+                            <TimelineItem
+                                year="1860"
+                                title="Familie Seeliger"
+                                text="Familie Seeliger erwirbt das Gut und betreibt hier Landwirtschaft."
+                            />
+                            <TimelineItem
+                                year="1944"
+                                title="Zerstörung & Wiederaufbau"
+                                text="Im Januar wird das Gutshaus durch den Bombenabwurf auf die nahegelegene Bahnlinie zerstört. Nach dem Krieg wird es wieder aufgebaut. Daher stehen nur die Gutsmauer und der Gewölbekeller unter Denkmalschutz."
+                            />
+                            <TimelineItem
+                                year="2001"
+                                title="Verkauf an die Stadt"
+                                text="Familie Seeliger verkauft das Gut an die Stadt Wolfenbüttel. Sie nutzt ihr Wohnrecht bis 2017."
+                            />
+                            <TimelineItem
+                                year="2017"
+                                title="Leerstand"
+                                text="Das Gutshaus steht leer, unbeheizt und ohne Perspektive für die zukünftige Nutzung."
+                            />
+                            <TimelineItem
+                                year="2020"
+                                title="Erbbaurecht für den Hospizverein"
+                                text="Die Stadt übergibt das Haus im Erbbaurecht für 90 Jahre an den Hospizverein Wolfenbüttel – zur ausschließlichen Nutzung als HospizZentrum."
+                            />
+                            <TimelineItem
+                                year="2024"
+                                title="Eröffnung"
+                                text="Die umfangreichen Umbauarbeiten werden ausschließlich durch Spenden und Fördermittel finanziert. Am 16. Juni wird der Bau seiner Bestimmung übergeben. Der Hospizverein Wolfenbüttel eröffnet das „Hospiz im Gutspark“."
+                                isLast
+                            />
+                        </div>
+                    </div>
+
+                    {/* Das Hospiz im Gutspark Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 shadow-sm border border-red-100">
+                            <h3 className="text-xl font-bold text-red-900 mb-4 flex items-center gap-2">
+                                <Heart className="w-6 h-6 text-red-600" weight="fill" />
+                                Liebevolle Versorgung
+                            </h3>
+                            <p className="text-gray-800 leading-relaxed">
+                                Das Hospiz kann zehn Gäste aufnehmen – Menschen mit einer lebensverkürzenden Erkrankung, die absehbar zum Tod führen wird. Sie werden hier von Fachkräften medizinisch und pflegerisch versorgt und liebevoll umsorgt.
                             </p>
                         </div>
 
-                        <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="space-y-6">
-                                <div className="flex items-center space-x-4 p-4 bg-amber-50 rounded-xl border-l-4 border-amber-500">
-                                    <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                                        1660
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-amber-800">
-                                            Ursprüngliche Anlage
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Das Gut wurde um 1660 angelegt
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4 p-4 bg-red-50 rounded-xl border-l-4 border-red-500">
-                                    <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                                        1944
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-red-800">
-                                            Kriegszerstörung & Wiederaufbau
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Im Januar 1944 wurde das Haus durch
-                                            Bomben zerstört und nach dem Krieg
-                                            wiederaufgebaut
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                                        2001
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-blue-800">
-                                            Eigentümerwechsel
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Bis 2001 befand es sich im Besitz
-                                            der Familie Seeliger, danach der
-                                            Stadt Wolfenbüttel
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border-l-4 border-gray-400">
-                                    <div className="w-12 h-12 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                                        2017
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-700">
-                                            Leerstand
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Seit 2017 stand das Gutshaus leer,
-                                            ohne Perspektive für die zukünftige
-                                            Nutzung
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-xl border-l-4 border-purple-500">
-                                    <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <Check className="w-5 h-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-purple-800">
-                                            Neue Perspektive -
-                                            Erbbaurechtsvertrag
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Mit dem Erbbaurechtsvertrag zwischen
-                                            der Stadt Wolfenbüttel wurde die
-                                            langfristige Nutzung ausschließlich
-                                            als HospizZentrum festgeschrieben
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-sm border border-green-100">
+                            <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center gap-2">
+                                <Plant className="w-6 h-6 text-green-600" weight="fill" />
+                                Atmosphäre & Umgebung
+                            </h3>
+                            <p className="text-gray-800 leading-relaxed">
+                                Die Gäste und ihre An- und Zugehörigen schätzen die Lage des Hauses am Rande des Gutsparks mit seinen hohen Bäumen. Der schön angelegte Hospizgarten und die beiden Terrassen laden zum Verweilen ein. Mit dem Umbau ist es gelungen, bei aller notwendigen Funktionalität eine wohnliche Atmosphäre zu schaffen, die der Historie des Ortes gerecht wird.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Features */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                                Hospiz-Ausstattung
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto mb-6"></div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Heart className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-purple-800 mb-3">
-                                    Würdevolle Betreuung
-                                </h3>
-                                <p className="text-gray-700">
-                                    10 Gäste können dauerhaft betreut und
-                                    versorgt werden
-                                </p>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Globe className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-green-800 mb-3">
-                                    Naturnahe Umgebung
-                                </h3>
-                                <p className="text-gray-700">
-                                    Große Terrassen und Hausgarten für
-                                    Aufenthalte im Freien
-                                </p>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <MapPin className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-800 mb-3">
-                                    Zentrale Lage
-                                </h3>
-                                <p className="text-gray-700">
-                                    Im Zentrum Wendessens mit Bushaltestelle und
-                                    Parkplätzen
-                                </p>
-                            </div>
+                    {/* Footer Info */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex items-center justify-center text-center">
+                        <div className="max-w-2xl">
+                            <UsersThree className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+                            <p className="text-lg text-gray-600 font-medium">
+                                Mit über 30 Mitarbeitenden in Pflege, Hauswirtschaft und Verwaltung ist das Hospiz der größte Arbeitgeber von Wendessen.
+                            </p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
-                    {/* Legal Framework */}
-                    <div className="mb-16">
-                        <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-bold text-blue-800 mb-3 flex items-center">
-                                    <FileText className="w-6 h-6 mr-3" />
-                                    Rechtliche Grundlage
-                                </h3>
-                                <p className="text-lg text-gray-800 font-medium">
-                                    Mit dem Erbbaurechtsvertrag zwischen der
-                                    Stadt Wolfenbüttel wurde die langfristige
-                                    Nutzung ausschließlich als HospizZentrum
-                                    festgeschrieben.
-                                </p>
-                                <div className="mt-4 bg-white border border-blue-200 p-4 rounded-xl">
-                                    <p className="text-sm text-gray-700">
-                                        <strong>Vertragspartner:</strong> Stadt
-                                        Wolfenbüttel & Hospizverein Wolfenbüttel
-                                        <br />
-                                        <strong>Nutzung:</strong> Ausschließlich
-                                        als HospizZentrum
-                                        <br />
-                                        <strong>Laufzeit:</strong> Langfristig
-                                        über Erbbaurecht gesichert
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+function TimelineItem({ year, title, text, isLast = false }: { year: string, title: string, text: string, isLast?: boolean }) {
+    return (
+        <div className="relative md:ml-6 pb-6 md:pb-8">
 
-                    {/* Timeline */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                                Projektverlauf
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto mb-6"></div>
-                        </div>
+            {/* Dot on the line */}
+            <div className="absolute -left-[35px] md:-left-[43px] top-0 flex items-center justify-center w-8 h-8 rounded-full bg-red-100 border-4 border-white shadow-sm ring-2 ring-red-500">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-600"></div>
+            </div>
 
-                        <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="space-y-6">
-                                <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-xl border-l-4 border-purple-500">
-                                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                                        <Check className="w-4 h-4 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-purple-800">
-                                            Erbbaurechtsvertrag
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Langfristige Nutzung als
-                                            HospizZentrum vertraglich gesichert
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                        <Clock className="w-4 h-4 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-blue-800">
-                                            2022-2024 - Umbauarbeiten
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Um- und Ausbau des historischen
-                                            Gutshauses zum modernen Hospiz
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-xl border-l-4 border-green-500">
-                                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                        <Check className="w-4 h-4 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-green-800">
-                                            Anfang/Mitte 2024 - Eröffnung
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Hospiz nimmt Betrieb auf - 10 Gäste
-                                            können betreut werden
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Closing Statement */}
-                    <div className="text-center mt-16 bg-gradient-to-r from-purple-50 to-blue-50 rounded-3xl p-8 shadow-lg">
-                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-700 mb-6">
-                            Neues Leben für historische Mauern
-                        </h3>
-                        <p className="text-lg sm:text-xl text-gray-700 font-medium mb-4">
-                            Das alte Gutshaus wird zu einem Ort der Würde,
-                            Geborgenheit und professionellen Betreuung
-                        </p>
-                        <div className="flex justify-center mt-6">
-                            <div className="flex items-center space-x-2 text-purple-600">
-                                <Heart className="w-6 h-6" />
-                                <span className="font-semibold">
-                                    Hospizverein Wolfenbüttel
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+            <div className="flex flex-col md:flex-row md:items-start gap-2 md:gap-6">
+                <div className="flex-shrink-0">
+                    <span className="inline-block px-3 py-1 bg-red-600 text-white text-sm font-bold rounded-full shadow-sm">
+                        {year}
+                    </span>
+                </div>
+                <div className="mt-1">
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">{title}</h4>
+                    <p className="text-gray-700 leading-relaxed text-base">
+                        {text}
+                    </p>
                 </div>
             </div>
         </div>

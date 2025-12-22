@@ -53,6 +53,7 @@ const dorflebenItems = [
                 title: 'Evang. Frauenhilfe',
                 href: '/dorfleben/vereine/frauenhilfe',
             },
+            { title: 'Hospizverein', href: '/dorfleben/vereine/hospiz' },
         ],
     },
     { title: 'Kirche', href: '/dorfleben/institutionen/kirche' },
@@ -105,9 +106,8 @@ export default function MobileNavbar() {
                 />
             )}
             <nav
-                className={`fixed top-0 right-0 z-50 h-full w-72 bg-background shadow-lg transform transition-transform duration-300 ${
-                    open ? 'translate-x-0' : 'translate-x-full'
-                }`}
+                className={`fixed top-0 right-0 z-50 h-full w-72 bg-background shadow-lg transform transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'
+                    }`}
                 aria-label="Mobile Navigation"
             >
                 <div className="flex items-center justify-center p-4 border-b border-border relative">

@@ -10,8 +10,8 @@ import { useAdminAuth } from '@/lib/useAdminAuth';
 // Infer the element instance type from a component's props/ref instead.
 type InferElementRef<T> = T extends React.JSXElementConstructor<any>
     ? React.ComponentPropsWithRef<T>['ref'] extends React.Ref<infer R>
-        ? R
-        : never
+    ? R
+    : never
     : never;
 
 const Menubar = React.forwardRef<
@@ -234,6 +234,10 @@ const dorflebenItems = [
                 title: 'Evang. Frauenhilfe',
                 href: '/dorfleben/vereine/frauenhilfe',
             },
+            {
+                title: 'Hospizverein',
+                href: '/dorfleben/vereine/hospiz',
+            },
         ],
     },
     {
@@ -246,16 +250,6 @@ const dorflebenItems = [
             {
                 title: 'Das Hospiz',
                 href: '/dorfleben/institutionen/hospiz',
-                items: [
-                    {
-                        title: 'Über uns',
-                        href: '/dorfleben/institutionen/hospiz/ueber-uns',
-                    },
-                    {
-                        title: 'Spenden',
-                        href: '/dorfleben/institutionen/hospiz/spenden',
-                    },
-                ],
             },
         ],
     },

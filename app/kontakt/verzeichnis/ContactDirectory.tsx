@@ -149,7 +149,7 @@ function ContactModal({
                                             <a
                                                 key={idx}
                                                 href={`mailto:${email}`}
-                                                className="flex items-center text-emerald-700 hover:text-emerald-900 hover:underline transition-colors"
+                                                className="flex items-center text-blue-700 hover:text-blue-900 hover:underline transition-colors"
                                             >
                                                 <EnvelopeSimple className="w-4 h-4 mr-2 flex-shrink-0" />
                                                 <span>{email}</span>
@@ -214,8 +214,6 @@ function ContactModal({
                     </div>
                 </div>
 
-                {/* Footer Gradient */}
-                <div className="h-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 rounded-b-3xl" />
             </div>
         </div>
     );
@@ -275,7 +273,7 @@ function ContactCard({
                     {firstEmail && (
                         <a
                             href={`mailto:${firstEmail}`}
-                            className="flex items-center text-emerald-700 hover:text-emerald-900 hover:underline transition-colors group/link"
+                            className="flex items-center text-blue-700 hover:text-blue-900 hover:underline transition-colors group/link"
                         >
                             <EnvelopeSimple className="w-4 h-4 mr-2 flex-shrink-0" />
                             <span className="truncate text-sm">
@@ -317,8 +315,6 @@ function ContactCard({
                     </div>
                 )}
             </div>
-            {/* Accent */}
-            <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500" />
         </div>
     );
 }
@@ -375,14 +371,14 @@ export default function ContactDirectory({
                 sortKey === 'vorname'
                     ? getFirstName(a.name)
                     : sortKey === 'name'
-                    ? getLastName(a.name)
-                    : a.firstOrg; // org sorting
+                        ? getLastName(a.name)
+                        : a.firstOrg; // org sorting
             const bk =
                 sortKey === 'vorname'
                     ? getFirstName(b.name)
                     : sortKey === 'name'
-                    ? getLastName(b.name)
-                    : b.firstOrg;
+                        ? getLastName(b.name)
+                        : b.firstOrg;
             return asc ? ak.localeCompare(bk) : bk.localeCompare(ak);
         });
         return arr;
