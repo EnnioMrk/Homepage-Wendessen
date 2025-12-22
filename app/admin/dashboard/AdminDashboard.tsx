@@ -328,7 +328,7 @@ export default function AdminDashboard({
                                     href="/admin/portraits"
                                     icon={UsersThree}
                                     title="Portraits"
-                                    description="'Wir Wendessener' - Einwohnerprofile und Vorstellungen."
+                                    description="'Wir Wendesser' - Einwohnerprofile und Vorstellungen."
                                     colorClass="text-emerald-600"
                                     bgClass="bg-emerald-50"
                                 />
