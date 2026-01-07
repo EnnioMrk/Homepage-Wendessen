@@ -1,4 +1,5 @@
-import { randomBytes } from 'crypto';
+// crypto is imported dynamically to avoid module loading errors in restricted runtimes
+// import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 
 declare global {
@@ -29,6 +30,7 @@ export async function ensureAdmin(): Promise<void> {
             const count = rows?.[0]?.count ?? 0;
 
             if (Number(count) === 0) {
+                const { randomBytes } = await import('crypto');
                 const password = randomBytes(12).toString('base64url');
                 const hash = await bcrypt.hash(password, 10);
 
@@ -41,7 +43,7 @@ export async function ensureAdmin(): Promise<void> {
 
                 console.log(
                     '[EnsureAdmin] DEFAULT ADMIN CREATED — username=admin password=' +
-                        password
+                    password
                 );
 
                 try {
@@ -71,8 +73,8 @@ export async function ensureAdmin(): Promise<void> {
                         // Explicitly grant wildcard permission so this admin has full access
                         await sql`
                             UPDATE admin_users SET custom_permissions = ${JSON.stringify(
-                                ['*']
-                            )}::jsonb WHERE id = ${adminId}
+                            ['*']
+                        )}::jsonb WHERE id = ${adminId}
                         `;
                         console.log(
                             '[EnsureAdmin] granted wildcard permission to admin via custom_permissions'

@@ -1,4 +1,5 @@
-import sharp from 'sharp';
+// sharp is imported dynamically to avoid module loading errors in restricted runtimes
+// import sharp from 'sharp';
 
 export interface ConvertedImage {
     buffer: Buffer;
@@ -44,6 +45,7 @@ export async function convertToWebP(
     const newFilename = ensureWebpFilename(originalFilename);
 
     try {
+        const sharp = (await import('sharp')).default;
         const convertedBuffer = await sharp(buffer)
             .webp({ quality: WEBP_QUALITY })
             .toBuffer();

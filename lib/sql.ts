@@ -6,7 +6,10 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is required');
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 5000, // Fail fast if DB is unreachable (5s)
+});
 
 // Minimal tagged template helper that returns rows like the current code expects
 type SQLFragment = { text: string; values: unknown[] };

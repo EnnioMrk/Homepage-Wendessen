@@ -5,7 +5,8 @@
 
 // If the `minio` package is not installed in a consumer environment yet,
 // install `minio` in your environment to get full types.
-import * as Minio from 'minio';
+// MinIO is imported dynamically where needed to avoid module loading errors in restricted runtimes
+// import * as Minio from 'minio';
 
 // Bucket types for different storage purposes
 export type MinioBucket = 'gallery' | 'portraits' | 'impressions';
@@ -119,15 +120,21 @@ interface MinioClientLike {
 
 // Keep the client minimally typed to avoid depending on fragile upstream types
 // in the `minio` package. We only need the runtime behavior.
-const minioClient = new (
-    Minio as unknown as { Client: new (opts: unknown) => MinioClientLike }
-).Client({
-    endPoint: MINIO_ENDPOINT || 'localhost',
-    port: MINIO_PORT,
-    useSSL: MINIO_USE_SSL,
-    accessKey: MINIO_ACCESS_KEY || '',
-    secretKey: MINIO_SECRET_KEY || '',
-});
+let _minioClient: any = null;
+async function getMinioClient() {
+    if (_minioClient) return _minioClient;
+    const Minio = await import('minio');
+    _minioClient = new (
+        Minio as unknown as { Client: new (opts: unknown) => MinioClientLike }
+    ).Client({
+        endPoint: MINIO_ENDPOINT || 'localhost',
+        port: MINIO_PORT,
+        useSSL: MINIO_USE_SSL,
+        accessKey: MINIO_ACCESS_KEY || '',
+        secretKey: MINIO_SECRET_KEY || '',
+    });
+    return _minioClient;
+}
 
 function resolveBucketAndObject(
     urlOrPath: string
@@ -209,14 +216,15 @@ function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
     });
 }
 
-function ensureBucketExists(bucket: string) {
+async function ensureBucketExists(bucket: string) {
+    const client = await getMinioClient();
     return new Promise<void>((resolve, reject) => {
-        minioClient.bucketExists(
+        client.bucketExists(
             bucket,
             (err: Error | null, exists: boolean) => {
                 if (err) return reject(err);
                 if (exists) return resolve();
-                minioClient.makeBucket(bucket, '', (mkErr: Error | null) => {
+                client.makeBucket(bucket, '', (mkErr: Error | null) => {
                     if (mkErr) return reject(mkErr);
                     resolve();
                 });
@@ -286,11 +294,12 @@ export async function uploadToBlob(
     const contentType = providedContentType
         ? providedContentType
         : hasTypeProp(file)
-        ? file.type
-        : 'application/octet-stream';
+            ? file.type
+            : 'application/octet-stream';
 
-    await new Promise<void>((resolve, reject) => {
-        minioClient.putObject(
+    await new Promise<void>(async (resolve, reject) => {
+        const client = await getMinioClient();
+        client.putObject(
             bucket,
             finalFilename,
             buf,
@@ -328,8 +337,9 @@ export async function deleteFromBlob(urlOrPath: string): Promise<void> {
         throw new Error('Unable to resolve MinIO object for deletion');
     }
 
-    await new Promise<void>((resolve, reject) => {
-        minioClient.removeObject(
+    await new Promise<void>(async (resolve, reject) => {
+        const client = await getMinioClient();
+        client.removeObject(
             target.bucket,
             target.object,
             (err: Error | null) => {
@@ -356,8 +366,9 @@ export async function downloadFromBlob(urlOrPath: string): Promise<{
     }
 
     const dataStream = await new Promise<NodeJS.ReadableStream>(
-        (resolve, reject) => {
-            minioClient.getObject(
+        async (resolve, reject) => {
+            const client = await getMinioClient();
+            client.getObject(
                 target.bucket,
                 target.object,
                 (err: Error | null, stream?: NodeJS.ReadableStream) => {
@@ -373,8 +384,9 @@ export async function downloadFromBlob(urlOrPath: string): Promise<{
     let contentType: string | undefined;
     try {
         const stat = await new Promise<MinioStatLike | null>(
-            (resolve, reject) => {
-                minioClient.statObject(
+            async (resolve, reject) => {
+                const client = await getMinioClient();
+                client.statObject(
                     target.bucket,
                     target.object,
                     (err: Error | null, s?: MinioStatLike) => {

@@ -1,14 +1,22 @@
-import webpush from 'web-push';
-import { sql } from './sql';
+// web-push is imported dynamically where needed
+// import webpush from 'web-push';
 
 // VAPID keys for web push - these should be in environment variables
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@wendessen.de';
 
-// Configure web-push with VAPID keys
-if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
-    webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+let _webpush: any = null;
+import { sql } from './sql';
+
+async function getWebpush() {
+    if (_webpush) return _webpush;
+    const wp = (await import('web-push')).default;
+    if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+        wp.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+    }
+    _webpush = wp;
+    return _webpush;
 }
 
 export interface PushSubscription {
@@ -210,7 +218,8 @@ export async function sendPushNotification(
     };
 
     try {
-        await webpush.sendNotification(
+        const wp = await getWebpush();
+        await wp.sendNotification(
             pushSubscription,
             JSON.stringify(payload)
         );
@@ -306,9 +315,8 @@ export async function notifyNewSharedGallery(
         submissionGroupId,
         {
             title: 'Neue Impressionen eingereicht',
-            body: `${submitterName} hat ${imageCount} ${
-                imageCount === 1 ? 'Bild' : 'Bilder'
-            } eingereicht.`,
+            body: `${submitterName} hat ${imageCount} ${imageCount === 1 ? 'Bild' : 'Bilder'
+                } eingereicht.`,
             icon: '/images/logo.png',
             url: '/admin/shared-gallery',
             tag: 'new-shared-gallery',
@@ -330,9 +338,8 @@ export async function notifySharedGalleryAppended(
         submissionGroupId,
         {
             title: 'Impressionen ergänzt',
-            body: `${submitterName} hat ${imageCount} ${
-                imageCount === 1 ? 'Bild' : 'Bilder'
-            } zu einer bestehenden Einreichung hinzugefügt.`,
+            body: `${submitterName} hat ${imageCount} ${imageCount === 1 ? 'Bild' : 'Bilder'
+                } zu einer bestehenden Einreichung hinzugefügt.`,
             icon: '/images/logo.png',
             url: '/admin/shared-gallery',
             tag: 'shared-gallery-appended',
@@ -482,9 +489,8 @@ export async function sendSharedGalleryReminders(): Promise<{
                 resourceId,
                 {
                     title: `⏰ Impressionen warten seit ${reminderDay} Tagen`,
-                    body: `${imageText} von "${group.submitterName}" ${
-                        group.imageCount === 1 ? 'wartet' : 'warten'
-                    } seit ${reminderDay} Tagen auf Freigabe.`,
+                    body: `${imageText} von "${group.submitterName}" ${group.imageCount === 1 ? 'wartet' : 'warten'
+                        } seit ${reminderDay} Tagen auf Freigabe.`,
                     icon: '/images/logo.png',
                     url: '/admin/shared-gallery',
                     tag: `shared-gallery-reminder-${group.submissionGroupId}`,

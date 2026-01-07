@@ -21,15 +21,14 @@ export async function register() {
                 const { runVerifyAll } = await import(
                     './scripts/database/verify/run-verify-all'
                 );
-                // runVerifyAll may throw if verifications fail
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                console.time('instrumentation: database verification');
                 await runVerifyAll();
+                console.timeEnd('instrumentation: database verification');
             } catch (err) {
                 console.error(
                     'instrumentation: database verification failed',
                     err
                 );
-                // Do not throw — allow startup to continue, but surface failure in logs
             }
         } else {
             console.log(
@@ -38,29 +37,31 @@ export async function register() {
         }
 
         // Initialize MinIO buckets
+        console.time('instrumentation: MinIO initialization');
         const { initializeMinIOBuckets } = await import(
             './lib/utils/blob-utils'
         );
         await initializeMinIOBuckets();
+        console.timeEnd('instrumentation: MinIO initialization');
 
-        // Ensure default admin exists — run while startup logs are visible
+        // Ensure default admin exists
+        console.time('instrumentation: ensure-admin');
         try {
             const mod = await import('./lib/ensure-admin');
             const ensureAdmin = (mod &&
                 (mod.ensureAdmin || mod.default)) as () => Promise<void>;
             if (ensureAdmin) {
                 await ensureAdmin();
-            } else {
-                console.warn(
-                    'instrumentation: ensure-admin module found but no callable export'
-                );
             }
         } catch (err) {
             console.error('instrumentation: ensure-admin failed', err);
         }
+        console.timeEnd('instrumentation: ensure-admin');
 
         // Start the scheduler
+        console.time('instrumentation: scheduler');
         const { startScheduler } = await import('./lib/scheduler');
         startScheduler();
+        console.timeEnd('instrumentation: scheduler');
     }
 }

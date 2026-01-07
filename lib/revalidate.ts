@@ -5,7 +5,7 @@ export const revalidatePathSafe = revalidatePath;
 export function revalidateTagSafe(tag: string) {
     // Cast to any to avoid type signature changes across Next.js versions.
     try {
-        (revalidateTag as unknown as any)(tag);
+        (revalidateTag as unknown as any)(tag, 'max');
     } catch (e) {
         // Swallow runtime errors to avoid breaking admin APIs; log for visibility.
         // eslint-disable-next-line no-console
