@@ -8,7 +8,7 @@ async function setupEvents() {
         await sql`
             CREATE TABLE IF NOT EXISTS events (
                 id SERIAL PRIMARY KEY,
-                title VARCHAR(255) NOT NULL UNIQUE,
+                title VARCHAR(255) NOT NULL,
                 description TEXT,
                 start_date TIMESTAMP WITH TIME ZONE NOT NULL,
                 end_date TIMESTAMP WITH TIME ZONE,

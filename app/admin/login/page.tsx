@@ -16,7 +16,7 @@ export default function AdminLogin() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Guard against multiple submissions
         if (isLoading || isPending) return;
 
@@ -43,6 +43,8 @@ export default function AdminLogin() {
                         router.push('/admin/dashboard');
                     }
                 });
+                // Note: isLoading is NOT set to false here so the button stays disabled
+                // while isPending (from startTransition) is true during navigation.
             } else {
                 setError(data.error || 'Login failed');
                 setIsLoading(false);
@@ -91,7 +93,7 @@ export default function AdminLogin() {
                                 />
                             </div>
                         </div>
-                        
+
                         <div>
                             <label
                                 htmlFor="password"
