@@ -9,6 +9,7 @@ export interface DatabaseNews {
     published_date: string;
     is_pinned?: boolean;
     pinned_at?: string;
+    pinned_order?: number;
     created_at: string;
     updated_at: string;
 }
@@ -22,6 +23,7 @@ export interface NewsItem {
     articleId: string;
     isPinned?: boolean;
     pinnedAt?: Date;
+    pinnedOrder?: number;
 }
 
 function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
@@ -36,6 +38,7 @@ function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
         pinnedAt: dbNews.pinned_at
             ? new Date(String(dbNews.pinned_at))
             : undefined,
+        pinnedOrder: dbNews.pinned_order ? Number(dbNews.pinned_order) : 0,
     };
 }
 
@@ -59,7 +62,7 @@ export const getRecentNews = unstable_cache(
             const pinnedNews = await sql`
                 SELECT * FROM news 
                 WHERE is_pinned = TRUE
-                ORDER BY pinned_at DESC
+                ORDER BY pinned_order ASC, pinned_at DESC
                 LIMIT 3
             `;
 
@@ -193,7 +196,8 @@ export async function pinNews(id: string): Promise<NewsItem> {
             UPDATE news 
             SET 
                 is_pinned = TRUE,
-                pinned_at = ${new Date().toISOString()}
+                pinned_at = ${new Date().toISOString()},
+                pinned_order = ${pinnedCount + 1}
             WHERE id = ${id}
             RETURNING *
         `;
@@ -216,7 +220,8 @@ export async function unpinNews(id: string): Promise<NewsItem> {
             UPDATE news 
             SET 
                 is_pinned = FALSE,
-                pinned_at = NULL
+                pinned_at = NULL,
+                pinned_order = 0
             WHERE id = ${id}
             RETURNING *
         `;
@@ -225,10 +230,50 @@ export async function unpinNews(id: string): Promise<NewsItem> {
             throw new Error('News item not found');
         }
 
+        // Reorder remaining pinned items
+        const remainingPinned = await sql`
+            SELECT id FROM news 
+            WHERE is_pinned = TRUE 
+            ORDER BY pinned_order ASC, pinned_at ASC
+        `;
+
+        for (let i = 0; i < remainingPinned.length; i++) {
+            await sql`
+                UPDATE news 
+                SET pinned_order = ${i + 1} 
+                WHERE id = ${remainingPinned[i].id}
+            `;
+        }
+
         return convertToNewsItem(result[0]);
     } catch (error) {
         console.error('Error unpinning news:', error);
         throw new Error('Failed to unpin news in database');
+    }
+}
+
+export async function updatePinnedOrder(
+    orderedIds: string[]
+): Promise<NewsItem[]> {
+    try {
+        const results: Record<string, unknown>[] = [];
+
+        for (let i = 0; i < orderedIds.length; i++) {
+            const res = await sql`
+                UPDATE news 
+                SET pinned_order = ${i + 1}
+                WHERE id = ${orderedIds[i]} AND is_pinned = TRUE
+                RETURNING *
+            `;
+            if (res.length > 0) {
+                results.push(res[0]);
+            }
+        }
+
+        return results.map(convertToNewsItem);
+    } catch (error) {
+        console.error('Error updating pinned order:', error);
+        throw new Error('Failed to update pinned order in database');
     }
 }
 

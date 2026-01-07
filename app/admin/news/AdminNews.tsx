@@ -21,6 +21,9 @@ import {
     Tag,
     PushPin,
     PushPinSlash,
+    CaretUp,
+    CaretDown,
+    ListNumbers,
     // Article icon removed (unused)
 } from '@phosphor-icons/react/dist/ssr';
 import { usePermissions } from '@/lib/usePermissions';
@@ -34,6 +37,7 @@ interface NewsItem {
     articleId?: string;
     isPinned?: boolean;
     pinnedAt?: string;
+    pinnedOrder?: number;
 }
 
 export default function AdminNews() {
@@ -56,6 +60,8 @@ export default function AdminNews() {
     const [error, setError] = useState<string | null>(null);
     const [pinnedCount, setPinnedCount] = useState(0);
     const [pinLoading, setPinLoading] = useState<string | null>(null);
+    const [isReordering, setIsReordering] = useState(false);
+    const [reorderLoading, setReorderLoading] = useState(false);
     const [newsToDelete, setNewsToDelete] = useState<NewsItem | null>(null);
     const [formData, setFormData] = useState({
         title: '',
@@ -97,6 +103,48 @@ export default function AdminNews() {
             setError('Fehler beim Laden der Nachrichten');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const pinnedNewsItems = news
+        .filter((item) => item.isPinned)
+        .sort((a, b) => (a.pinnedOrder || 0) - (b.pinnedOrder || 0));
+
+    const handleReorder = async (orderedIds: string[]) => {
+        setReorderLoading(true);
+        try {
+            const response = await fetch('/api/admin/news/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderedIds }),
+            });
+
+            if (response.ok) {
+                await fetchNews();
+                setIsReordering(false);
+            } else {
+                setError('Fehler beim Speichern der Reihenfolge');
+            }
+        } catch (error) {
+            console.error('Reorder error:', error);
+            setError('Fehler beim Speichern der Reihenfolge');
+        } finally {
+            setReorderLoading(false);
+        }
+    };
+
+    const moveItem = (index: number, direction: 'up' | 'down') => {
+        const newPinned = [...pinnedNewsItems];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (targetIndex >= 0 && targetIndex < newPinned.length) {
+            const temp = newPinned[index];
+            newPinned[index] = newPinned[targetIndex];
+            newPinned[targetIndex] = temp;
+
+            handleReorder(newPinned.map((n) => n.id));
         }
     };
 
@@ -209,12 +257,12 @@ export default function AdminNews() {
                     prev.map((item) =>
                         item.id === id
                             ? {
-                                  ...item,
-                                  isPinned:
-                                      data.news.isPinned || data.news.is_pinned,
-                                  pinnedAt:
-                                      data.news.pinnedAt || data.news.pinned_at,
-                              }
+                                ...item,
+                                isPinned:
+                                    data.news.isPinned || data.news.is_pinned,
+                                pinnedAt:
+                                    data.news.pinnedAt || data.news.pinned_at,
+                            }
                             : item
                     )
                 );
@@ -325,6 +373,20 @@ export default function AdminNews() {
                                     <span className="text-amber-800 font-medium">
                                         {pinnedCount}/3 angepinnt
                                     </span>
+                                    {pinnedCount > 1 && (
+                                        <button
+                                            onClick={() =>
+                                                setIsReordering(!isReordering)
+                                            }
+                                            className={`ml-2 p-1 rounded hover:bg-amber-200 text-amber-700 transition-colors ${isReordering
+                                                    ? 'bg-amber-200'
+                                                    : ''
+                                                }`}
+                                            title="Reihenfolge ändern"
+                                        >
+                                            <ListNumbers size={18} />
+                                        </button>
+                                    )}
                                 </div>
                             )}
                             {canCreate && (
@@ -401,6 +463,82 @@ export default function AdminNews() {
                         </div>
                     )}
 
+                    {/* Pinned Reordering UI */}
+                    {isReordering && pinnedNewsItems.length > 1 && (
+                        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-6 shadow-sm">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+                                    <ListNumbers size={20} />
+                                    Reihenfolge der angepinnten Nachrichten
+                                </h3>
+                                <button
+                                    onClick={() => setIsReordering(false)}
+                                    className="text-amber-600 hover:text-amber-800"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="space-y-2">
+                                {pinnedNewsItems.map((item, index) => (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center gap-3 bg-white p-3 rounded-md border border-amber-100 shadow-sm"
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            <button
+                                                onClick={() =>
+                                                    moveItem(index, 'up')
+                                                }
+                                                disabled={
+                                                    index === 0 ||
+                                                    reorderLoading
+                                                }
+                                                className="p-1 text-gray-400 hover:text-amber-600 disabled:opacity-30"
+                                            >
+                                                <CaretUp
+                                                    size={16}
+                                                    weight="bold"
+                                                />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    moveItem(index, 'down')
+                                                }
+                                                disabled={
+                                                    index ===
+                                                    pinnedNewsItems.length -
+                                                    1 || reorderLoading
+                                                }
+                                                className="p-1 text-gray-400 hover:text-amber-600 disabled:opacity-30"
+                                            >
+                                                <CaretDown
+                                                    size={16}
+                                                    weight="bold"
+                                                />
+                                            </button>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-medium text-gray-900 truncate">
+                                                {item.title}
+                                            </div>
+                                            <div className="text-xs text-gray-500">
+                                                {item.category}
+                                            </div>
+                                        </div>
+                                        <div className="text-amber-600 font-mono font-bold px-3 py-1 bg-amber-50 rounded text-sm">
+                                            Pos. {index + 1}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-4 text-xs text-amber-700 italic">
+                                Die Reihenfolge bestimmt, welche Nachrichten in
+                                welcher Folge auf der Startseite oben
+                                erscheinen.
+                            </div>
+                        </div>
+                    )}
+
                     {/* News List */}
                     <div className="bg-white shadow rounded-lg">
                         {loading ? (
@@ -415,11 +553,10 @@ export default function AdminNews() {
                                 {sortedAndFilteredNews.map((item) => (
                                     <div
                                         key={item.id}
-                                        className={`p-6 hover:bg-gray-50 ${
-                                            item.isPinned
+                                        className={`p-6 hover:bg-gray-50 ${item.isPinned
                                                 ? 'bg-amber-50/50 border-l-4 border-amber-400'
                                                 : ''
-                                        }`}
+                                            }`}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
@@ -464,10 +601,10 @@ export default function AdminNews() {
                                                                     try {
                                                                         const parsed =
                                                                             typeof content ===
-                                                                            'string'
+                                                                                'string'
                                                                                 ? JSON.parse(
-                                                                                      content
-                                                                                  )
+                                                                                    content
+                                                                                )
                                                                                 : content;
 
                                                                         if (
@@ -475,20 +612,20 @@ export default function AdminNews() {
                                                                                 parsed
                                                                             ) &&
                                                                             parsed.length >
-                                                                                0
+                                                                            0
                                                                         ) {
                                                                             const first =
                                                                                 parsed[0] as unknown;
                                                                             if (
                                                                                 typeof first ===
-                                                                                    'object' &&
+                                                                                'object' &&
                                                                                 first !==
-                                                                                    null &&
+                                                                                null &&
                                                                                 'children' in
-                                                                                    (first as Record<
-                                                                                        string,
-                                                                                        unknown
-                                                                                    >) &&
+                                                                                (first as Record<
+                                                                                    string,
+                                                                                    unknown
+                                                                                >) &&
                                                                                 Array.isArray(
                                                                                     (
                                                                                         first as Record<
@@ -515,14 +652,14 @@ export default function AdminNews() {
                                                                                             ) => {
                                                                                                 if (
                                                                                                     typeof c ===
-                                                                                                        'object' &&
+                                                                                                    'object' &&
                                                                                                     c !==
-                                                                                                        null &&
+                                                                                                    null &&
                                                                                                     'text' in
-                                                                                                        (c as Record<
-                                                                                                            string,
-                                                                                                            unknown
-                                                                                                        >)
+                                                                                                    (c as Record<
+                                                                                                        string,
+                                                                                                        unknown
+                                                                                                    >)
                                                                                                 ) {
                                                                                                     const maybe =
                                                                                                         (
@@ -558,9 +695,9 @@ export default function AdminNews() {
                                                                         return typeof content ===
                                                                             'string'
                                                                             ? content.substring(
-                                                                                  0,
-                                                                                  200
-                                                                              )
+                                                                                0,
+                                                                                200
+                                                                            )
                                                                             : 'Vorschau nicht verfügbar';
                                                                     }
                                                                 };
@@ -584,32 +721,30 @@ export default function AdminNews() {
                                                         }
                                                         disabled={
                                                             pinLoading ===
-                                                                item.id ||
+                                                            item.id ||
                                                             (!item.isPinned &&
                                                                 pinnedCount >=
-                                                                    3)
+                                                                3)
                                                         }
                                                         title={
                                                             item.isPinned
                                                                 ? 'Nicht mehr anpinnen'
                                                                 : pinnedCount >=
-                                                                  3
-                                                                ? 'Maximal 3 angepinnte Nachrichten erlaubt'
-                                                                : 'Auf der Startseite anpinnen'
+                                                                    3
+                                                                    ? 'Maximal 3 angepinnte Nachrichten erlaubt'
+                                                                    : 'Auf der Startseite anpinnen'
                                                         }
-                                                        className={`p-2 rounded-full transition-colors ${
-                                                            item.isPinned
+                                                        className={`p-2 rounded-full transition-colors ${item.isPinned
                                                                 ? 'text-amber-600 hover:text-amber-700 hover:bg-amber-100'
                                                                 : pinnedCount >=
-                                                                  3
-                                                                ? 'text-gray-300 cursor-not-allowed'
-                                                                : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                                                        } ${
-                                                            pinLoading ===
-                                                            item.id
+                                                                    3
+                                                                    ? 'text-gray-300 cursor-not-allowed'
+                                                                    : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                                                            } ${pinLoading ===
+                                                                item.id
                                                                 ? 'opacity-50'
                                                                 : ''
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {item.isPinned ? (
                                                             <PushPinSlash
@@ -727,10 +862,10 @@ export default function AdminNews() {
                                     <ArticleRenderer
                                         content={
                                             typeof selectedNews.content ===
-                                            'string'
+                                                'string'
                                                 ? JSON.parse(
-                                                      selectedNews.content
-                                                  )
+                                                    selectedNews.content
+                                                )
                                                 : selectedNews.content
                                         }
                                     />

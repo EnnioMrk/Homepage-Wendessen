@@ -64,12 +64,12 @@ interface EventFormData {
     end: string;
     location: string;
     category:
-        | 'sitzung'
-        | 'veranstaltung'
-        | 'sport'
-        | 'kultur'
-        | 'notfall'
-        | 'sonstiges';
+    | 'sitzung'
+    | 'veranstaltung'
+    | 'sport'
+    | 'kultur'
+    | 'notfall'
+    | 'sonstiges';
     organizer: string;
     imageUrl: string;
 }
@@ -91,11 +91,10 @@ const EventComponent = ({ event }: { event: CalendarEvent }) => {
 
     return (
         <div
-            className={`${
-                isCancelled
-                    ? 'bg-gray-400 line-through opacity-70'
-                    : getCategoryBackgroundColor(event.category || 'sonstiges')
-            } text-white p-1 rounded text-xs font-medium overflow-hidden`}
+            className={`${isCancelled
+                ? 'bg-gray-400 line-through opacity-70'
+                : getCategoryBackgroundColor(event.category || 'sonstiges')
+                } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
             <div className="truncate">
                 {isCancelled && '🚫 '}
@@ -111,26 +110,23 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
 
     return (
         <div
-            className={`flex items-center space-x-3 ${
-                isCancelled ? 'opacity-60' : ''
-            }`}
+            className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''
+                }`}
         >
             <div
-                className={`w-3 h-3 rounded-full ${
-                    isCancelled
-                        ? 'bg-gray-400'
-                        : getCategoryBackgroundColor(
-                              event.category || 'sonstiges'
-                          )
-                }`}
+                className={`w-3 h-3 rounded-full ${isCancelled
+                    ? 'bg-gray-400'
+                    : getCategoryBackgroundColor(
+                        event.category || 'sonstiges'
+                    )
+                    }`}
             ></div>
             <div className="flex-1">
                 <div
-                    className={`font-medium ${
-                        isCancelled
-                            ? 'text-gray-500 line-through'
-                            : 'text-gray-900'
-                    }`}
+                    className={`font-medium ${isCancelled
+                        ? 'text-gray-500 line-through'
+                        : 'text-gray-900'
+                        }`}
                 >
                     {isCancelled && '🚫 '}
                     {event.title}
@@ -155,35 +151,34 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                     {event.end && ` - ${moment(event.end).format('HH:mm')}`}
                 </div>
                 <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${
-                        isCancelled
-                            ? 'bg-gray-100 text-gray-600'
-                            : event.category === 'sitzung'
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${isCancelled
+                        ? 'bg-gray-100 text-gray-600'
+                        : event.category === 'sitzung'
                             ? 'bg-blue-100 text-blue-800'
                             : event.category === 'veranstaltung'
-                            ? 'bg-green-100 text-green-800'
-                            : event.category === 'sport'
-                            ? 'bg-orange-100 text-orange-800'
-                            : event.category === 'kultur'
-                            ? 'bg-purple-100 text-purple-800'
-                            : event.category === 'notfall'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-gray-100 text-gray-800'
-                    }`}
+                                ? 'bg-green-100 text-green-800'
+                                : event.category === 'sport'
+                                    ? 'bg-orange-100 text-orange-800'
+                                    : event.category === 'kultur'
+                                        ? 'bg-purple-100 text-purple-800'
+                                        : event.category === 'notfall'
+                                            ? 'bg-red-100 text-red-800'
+                                            : 'bg-gray-100 text-gray-800'
+                        }`}
                 >
                     {isCancelled
                         ? 'Abgesagt'
                         : event.category === 'sitzung'
-                        ? 'Sitzung'
-                        : event.category === 'veranstaltung'
-                        ? 'Veranstaltung'
-                        : event.category === 'sport'
-                        ? 'Sport'
-                        : event.category === 'kultur'
-                        ? 'Kultur'
-                        : event.category === 'notfall'
-                        ? 'Notfall'
-                        : 'Sonstiges'}
+                            ? 'Sitzung'
+                            : event.category === 'veranstaltung'
+                                ? 'Veranstaltung'
+                                : event.category === 'sport'
+                                    ? 'Sport'
+                                    : event.category === 'kultur'
+                                        ? 'Kultur'
+                                        : event.category === 'notfall'
+                                            ? 'Notfall'
+                                            : 'Sonstiges'}
                 </span>
             </div>
         </div>
@@ -436,7 +431,7 @@ export default function AdminEventsCalendar({
                 console.error('Delete failed with status:', response.status);
                 alert(
                     errorData.error ||
-                        'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.'
+                    'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.'
                 );
             }
         } catch (error) {
@@ -506,7 +501,7 @@ export default function AdminEventsCalendar({
                 console.error('Restore failed with status:', response.status);
                 alert(
                     errorData.error ||
-                        'Fehler beim Wiederherstellen des Termins'
+                    'Fehler beim Wiederherstellen des Termins'
                 );
             }
         } catch (error) {
@@ -896,24 +891,23 @@ export default function AdminEventsCalendar({
 
                                 <div className="flex items-center space-x-3">
                                     <div
-                                        className={`p-2 rounded-lg ${
-                                            selectedEvent.category === 'sitzung'
-                                                ? 'bg-blue-100 text-blue-600'
-                                                : selectedEvent.category ===
-                                                  'veranstaltung'
+                                        className={`p-2 rounded-lg ${selectedEvent.category === 'sitzung'
+                                            ? 'bg-blue-100 text-blue-600'
+                                            : selectedEvent.category ===
+                                                'veranstaltung'
                                                 ? 'bg-green-100 text-green-600'
                                                 : selectedEvent.category ===
-                                                  'sport'
-                                                ? 'bg-orange-100 text-orange-600'
-                                                : selectedEvent.category ===
-                                                  'kultur'
-                                                ? 'bg-purple-100 text-purple-600'
-                                                : 'bg-gray-100 text-gray-600'
-                                        }`}
+                                                    'sport'
+                                                    ? 'bg-orange-100 text-orange-600'
+                                                    : selectedEvent.category ===
+                                                        'kultur'
+                                                        ? 'bg-purple-100 text-purple-600'
+                                                        : 'bg-gray-100 text-gray-600'
+                                            }`}
                                     >
                                         {getCategoryIcon(
                                             selectedEvent.category ||
-                                                'sonstiges'
+                                            'sonstiges'
                                         )}
                                     </div>
                                     <span className="font-medium text-gray-700">
@@ -956,10 +950,9 @@ export default function AdminEventsCalendar({
                                         </span>
                                     </div>
                                 )}
-
                                 {selectedEvent.vereinId &&
                                     typeof selectedEvent.vereinId ===
-                                        'string' && (
+                                    'string' && (
                                         <div className="flex items-center space-x-3">
                                             <Buildings className="w-5 h-5 text-gray-500" />
                                             <span className="text-gray-700">
@@ -969,6 +962,17 @@ export default function AdminEventsCalendar({
                                             </span>
                                         </div>
                                     )}
+
+                                {selectedEvent.imageUrl && (
+                                    <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 relative aspect-video">
+                                        <Image
+                                            src={selectedEvent.imageUrl}
+                                            alt={selectedEvent.title}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                )}
 
                                 {selectedEvent.description && (
                                     <div className="mt-6">
@@ -1013,19 +1017,21 @@ export default function AdminEventsCalendar({
             />
 
             {/* Image Picker Modal */}
-            {showImagePicker && (
-                <GalleryImagePicker
-                    onSelect={(image) => {
-                        setEventForm({
-                            ...eventForm,
-                            imageUrl: image.url || '',
-                        });
-                        setShowImagePicker(false);
-                    }}
-                    onClose={() => setShowImagePicker(false)}
-                    canUpload={hasPermission('gallery.upload')}
-                />
-            )}
+            {
+                showImagePicker && (
+                    <GalleryImagePicker
+                        onSelect={(image) => {
+                            setEventForm({
+                                ...eventForm,
+                                imageUrl: image.url || '',
+                            });
+                            setShowImagePicker(false);
+                        }}
+                        onClose={() => setShowImagePicker(false)}
+                        canUpload={hasPermission('gallery.upload')}
+                    />
+                )
+            }
 
             <style jsx global>{`
                 .calendar-container .rbc-calendar {
@@ -1120,6 +1126,6 @@ export default function AdminEventsCalendar({
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

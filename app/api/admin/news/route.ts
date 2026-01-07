@@ -29,16 +29,18 @@ export async function GET() {
         // Get news from database
         const result = await sql`
             SELECT id, title, content, category, published_date as "publishedDate",
-                   article_id as "articleId", is_pinned as "isPinned", pinned_at as "pinnedAt"
+                   article_id as "articleId", is_pinned as "isPinned", pinned_at as "pinnedAt",
+                   pinned_order as "pinnedOrder"
             FROM news 
             ORDER BY published_date DESC
         `;
 
-        const news = (result as NewsRow[]).map((row) => ({
+        const news = (result as (NewsRow & { pinnedOrder: number })[]).map((row) => ({
             ...row,
             publishedDate: row.publishedDate.toISOString(),
             isPinned: row.isPinned || false,
             pinnedAt: row.pinnedAt ? row.pinnedAt.toISOString() : null,
+            pinnedOrder: row.pinnedOrder || 0,
         }));
 
         return NextResponse.json({ news });

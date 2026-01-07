@@ -57,219 +57,106 @@ export default function WirWendesserContent() {
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16 overflow-x-hidden">
-                <div className="max-w-5xl mx-auto w-full">
-                    {/* Welcome Section */}
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Unsere wachsende Gemeinschaft
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-green-600 to-teal-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            1100 Menschen, die Wendessen zu dem machen, was es
-                            ist
-                        </p>
-                    </div>
-
-                    {/* Statistics Section */}
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="text-center mb-8">
-                            <h3 className="text-3xl font-bold text-foreground mb-4">
-                                Wendessen wächst
-                            </h3>
-                            <div className="w-20 h-1 bg-gradient-to-r from-emerald-600 to-green-600 mx-auto"></div>
-                        </div>
-
-                        <div className="space-y-6 text-gray-700 leading-relaxed">
-                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-2xl">
-                                <h4 className="text-xl font-bold text-green-800 mb-3 flex items-center">
-                                    <Users className="w-6 h-6 mr-3" />
-                                    Aktuelle Einwohnerzahl
-                                </h4>
-                                <p className="text-lg">
-                                    In Wendessen leben aktuell rund{' '}
-                                    <strong>1100 Menschen</strong> - und wir
-                                    werden immer mehr.
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100">
-                                    <h4 className="text-lg font-bold text-blue-800 mb-3 flex items-center">
-                                        <Buildings className="w-5 h-5 mr-2" />
-                                        Leipziger Allee
-                                    </h4>
-                                    <p className="text-gray-700">
-                                        An der Leipziger Allee entsteht aktuell
-                                        neben dem ehemaligen Hotel Gala ein
-                                        Mehrfamilienhaus.
-                                    </p>
-                                </div>
-
-                                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-100">
-                                    <h4 className="text-lg font-bold text-green-800 mb-3 flex items-center">
-                                        <Bank className="w-5 h-5 mr-2" />
-                                        Neues Baugebiet
-                                    </h4>
-                                    <p className="text-gray-700">
-                                        Im Baugebiet neben der Bahn wird es ab
-                                        2024 Platz für fast{' '}
-                                        <strong>200 Neu-Wendesser</strong> und{' '}
-                                        <strong>Neu-Wendesserinnen</strong>{' '}
-                                        geben.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Portrait Section */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                                Gesichter unserer Gemeinschaft
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6"></div>
-                            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                                Kurzportraits, die die Vielfalt unserer
-                                Dorfgemeinschaft deutlich machen
+                <div className="max-w-4xl mx-auto w-full">
+                    {/* Intro Section */}
+                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-12 border border-slate-100">
+                        <div className="space-y-6 text-gray-700 leading-relaxed text-lg">
+                            <p>
+                                Wendessen ist in den letzten Jahrzehnten durch
+                                drei Baugebiete kontinuierlich gewachsen,
+                                aktuell (Stand: Januar 2026) leben rund 1100
+                                Menschen hier. Und wenn alles läuft wie seit
+                                Jahren geplant, werden wir bald noch mehr sein -
+                                das neue Baugebiet an der Leipziger Allee, wo
+                                früher die alte Zuckerfabrik stand, wird Platz
+                                für über 100 Neu-Wendesser bieten.
+                            </p>
+                            <p>
+                                <strong>EINIGE</strong> unserer Mitbürgerinnen
+                                und Mitbürger wollen wir an dieser Stelle mit
+                                Kurzportraits vorstellen, als Gesichter unserer
+                                Gemeinschaft. Ohne Anspruch auf Vollständigkeit
+                                oder darauf, repräsentativ zu sein, versteht
+                                sich.
+                            </p>
+                            <p className="font-semibold text-emerald-700 italic">
+                                Wer sind sie, was machen sie, was bewegt sie,
+                                was wünschen sie sich?
                             </p>
                         </div>
-
-                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-8 md:p-12 shadow-xl">
-                            <div className="text-center mb-8">
-                                <h3 className="text-3xl font-bold text-foreground mb-4">
-                                    Wer sind wir?
-                                </h3>
-                                <div className="w-20 h-1 bg-gradient-to-r from-amber-600 to-orange-600 mx-auto mb-6"></div>
-                            </div>
-
-                            <div className="space-y-6 text-gray-700 leading-relaxed text-center">
-                                {approvedPortraits.length === 0 && (
-                                    <p className="text-lg">
-                                        Einige von uns wollen wir künftig an
-                                        dieser Stelle kurz vorstellen.
-                                        <strong>
-                                            {' '}
-                                            Wer sind sie, was bewegt sie, was
-                                            wünschen sie sich?
-                                        </strong>
-                                    </p>
-                                )}
-
-                                {/* Approved Portraits Display */}
-                                {isLoading ? (
-                                    <div className="bg-white p-6 rounded-2xl border-2 border-amber-200 text-center">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto mb-4"></div>
-                                        <p className="text-gray-600">
-                                            Lade Portraits...
-                                        </p>
-                                    </div>
-                                ) : approvedPortraits.length > 0 ? (
-                                    <div className="space-y-8">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                                            {approvedPortraits.map(
-                                                (portrait) => (
-                                                    <div
-                                                        key={portrait.id}
-                                                        className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-amber-100 w-full min-w-0"
-                                                    >
-                                                        <div className="aspect-square relative">
-                                                            <Image
-                                                                src={
-                                                                    portrait.imageUrl
-                                                                }
-                                                                alt={`Portrait von ${portrait.name}`}
-                                                                fill
-                                                                className="object-cover"
-                                                            />
-                                                        </div>
-                                                        <div className="p-6">
-                                                            <h5 className="text-xl font-bold text-amber-800 mb-3 break-words">
-                                                                {portrait.name}
-                                                            </h5>
-                                                            <p className="text-gray-700 leading-relaxed break-words">
-                                                                {
-                                                                    portrait.description
-                                                                }
-                                                            </p>
-                                                            <div className="mt-4 text-xs text-gray-500">
-                                                                {new Date(
-                                                                    portrait.submittedAt
-                                                                ).toLocaleDateString(
-                                                                    'de-DE',
-                                                                    {
-                                                                        year: 'numeric',
-                                                                        month: 'long',
-                                                                    }
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="bg-white p-6 rounded-2xl border-2 border-amber-200">
-                                        <h4 className="text-xl font-bold text-amber-800 mb-4 flex items-center justify-center">
-                                            <BookOpen className="w-6 h-6 mr-3" />
-                                            Portraits in Vorbereitung
-                                        </h4>
-                                        <p className="text-gray-700 text-center">
-                                            Seien Sie der Erste! Teilen Sie Ihr
-                                            Portrait mit der Dorfgemeinschaft.
-                                            Ihre Geschichte macht Wendessen zu
-                                            dem besonderen Ort, der es ist.
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
 
-                    {/* Call to Action */}
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 md:p-12 shadow-xl">
-                        <div className="text-center">
-                            <h3 className="text-3xl font-bold text-green-700 mb-6">
-                                Stellen Sie sich vor!
-                            </h3>
-                            <div className="w-20 h-1 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto mb-8"></div>
-
-                            <div className="max-w-3xl mx-auto">
-                                <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                                    Wenn auch Sie Interesse haben, sich hier
-                                    vorzustellen, dann teilen Sie doch einfach
-                                    ein Foto mit ein paar Textzeilen mit uns:
-                                </p>
-
-                                <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-green-300 shadow-lg">
-                                    <div className="text-center mb-4">
-                                        <div className="text-lg md:text-xl font-bold text-green-600">
-                                            Portrait einreichen
-                                        </div>
-                                        <div className="text-sm text-gray-600">
-                                            Foto und Geschichte teilen
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-600 text-center mb-6">
-                                        Teilen Sie Ihr Foto und Ihre Geschichte
-                                        mit der Dorfgemeinschaft!
-                                    </p>
-                                    <button
-                                        onClick={() => setShowPortraitModal(true)}
-                                        className="mx-auto px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-green-500 flex items-center gap-2"
+                    {/* Approved Portraits Display */}
+                    <div className="mb-16">
+                        {isLoading ? (
+                            <div className="bg-white p-12 rounded-3xl shadow-lg text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+                                <p className="text-gray-600">Lade Portraits...</p>
+                            </div>
+                        ) : approvedPortraits.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+                                {approvedPortraits.map((portrait) => (
+                                    <div
+                                        key={portrait.id}
+                                        className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-slate-100 group"
                                     >
-                                        <UserPlus className="w-5 h-5" />
-                                        Jetzt einreichen
-                                    </button>
-                                </div>
-
-
+                                        <div className="aspect-[4/5] relative overflow-hidden">
+                                            <Image
+                                                src={portrait.imageUrl}
+                                                alt={`Portrait von ${portrait.name}`}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                            />
+                                        </div>
+                                        <div className="p-6">
+                                            <h5 className="text-xl font-bold text-gray-900 mb-3 break-words">
+                                                {portrait.name}
+                                            </h5>
+                                            <p className="text-gray-700 leading-relaxed break-words text-sm">
+                                                {portrait.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
+                        ) : (
+                            <div className="bg-white p-12 rounded-3xl shadow-lg text-center border-2 border-dashed border-emerald-100">
+                                <BookOpen className="w-12 h-12 text-emerald-200 mx-auto mb-4" />
+                                <p className="text-gray-500 italic">
+                                    Die ersten Portraits befinden sich in
+                                    Vorbereitung.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
+                    {/* Call to Action Section */}
+                    <div className="bg-gradient-to-br from-emerald-600 to-green-700 rounded-3xl p-8 md:p-12 shadow-2xl text-white">
+                        <div className="max-w-3xl mx-auto text-center">
+                            <h3 className="text-3xl font-bold mb-6">
+                                Wir Wendesser
+                            </h3>
+                            <p className="text-lg text-emerald-50 mb-8 leading-relaxed">
+                                Möchten auch Sie selbst hier vorkommen, etwas zu
+                                Ihrer Person und ihrer Geschichte erzählen? Dann
+                                schicken Sie uns doch einfach ein Foto und ein
+                                paar Textzeilen:
+                            </p>
 
+                            <button
+                                onClick={() => setShowPortraitModal(true)}
+                                className="inline-flex items-center px-8 py-4 bg-white text-emerald-700 font-bold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 gap-3"
+                            >
+                                <UserPlus className="w-6 h-6" />
+                                <span>Portrait einreichen</span>
+                            </button>
+
+                            <p className="mt-8 text-sm text-emerald-100/70">
+                                Hinweis zur Klarstellung: Ein Rechtsanspruch auf
+                                Veröffentlichung des Beitrages besteht nicht.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -279,8 +166,6 @@ export default function WirWendesserContent() {
                 onClose={() => setShowPortraitModal(false)}
                 onSuccess={() => {
                     setShowPortraitModal(false);
-                    // Note: Portraits need admin approval before appearing
-                    // refreshPortraits(); // Uncomment when we want immediate display
                 }}
             />
         </div>

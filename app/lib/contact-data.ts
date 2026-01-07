@@ -3,7 +3,7 @@ export interface ContactData {
     slug: string;
     name: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
     birthYear: number;
     profession: string;
     imageSrc: string;
@@ -21,7 +21,6 @@ export const contactData: ContactData[] = [
         slug: 'andreas-rink',
         name: 'Andreas Rink',
         title: 'Ortsbürgermeister',
-        subtitle: 'Ihr Ansprechpartner für alle Belange der Gemeinde Wendessen',
         birthYear: 1956,
         profession: 'Marketingberater',
         imageSrc: '/images/Ortsrat/Andreas_Rink.JPG',
@@ -37,8 +36,6 @@ export const contactData: ContactData[] = [
         slug: 'christina-balder',
         name: 'Christina Balder',
         title: 'stellv. Ortsbürgermeisterin',
-        subtitle:
-            'Ihre stellvertretende Ansprechpartnerin für die Gemeinde Wendessen',
         birthYear: 1984,
         profession: 'Fraktionsgeschäftsführerin',
         imageSrc: '/images/Ortsrat/Christina_Balder.jpg',
@@ -55,7 +52,6 @@ export const contactData: ContactData[] = [
         slug: 'renate-huebner',
         name: 'Renate Hübner',
         title: 'Ortsratsmitglied',
-        subtitle: 'Engagiert für die Entwicklung und Zukunft von Wendessen',
         birthYear: 1955,
         profession: 'Geschäftsführende Gesellschafterin Ing.-Büro',
         imageSrc: '/images/Ortsrat/Renate_Hübner.jpg',
@@ -70,7 +66,6 @@ export const contactData: ContactData[] = [
         slug: 'klaus-martin-jungkurth',
         name: 'Klaus-Martin Jungkurth',
         title: 'Ortsratsmitglied',
-        subtitle: 'Mit Expertise und Engagement für unsere Gemeinde',
         birthYear: 1954,
         profession: 'Diplom-Bauingenieur',
         imageSrc: '/images/Ortsrat/Klaus-Martin_Jungkurth.JPG',
@@ -86,7 +81,6 @@ export const contactData: ContactData[] = [
         slug: 'reiner-asche',
         name: 'Reiner Asche',
         title: 'Ortsratsmitglied',
-        subtitle: 'Erfahrung und Weitsicht für die Belange von Wendessen',
         birthYear: 1956,
         profession: 'Beamter im Ruhestand',
         imageSrc: '/images/Ortsrat/Reiner_Asche.JPG',
@@ -102,7 +96,6 @@ export const contactData: ContactData[] = [
         slug: 'femmke-brandl',
         name: 'Femmke Brandl',
         title: 'Ortsratsmitglied',
-        subtitle: 'Soziales Engagement und frische Perspektiven für Wendessen',
         birthYear: 1978,
         profession: 'Krankenschwester',
         imageSrc: '/images/Ortsrat/Femmke_Brandl.jpeg',
@@ -117,7 +110,6 @@ export const contactData: ContactData[] = [
         slug: 'marc-both',
         name: 'Marc Both',
         title: 'Ortsratsmitglied',
-        subtitle: 'Junges Engagement für eine moderne Gemeinde',
         birthYear: 1988,
         profession: 'Vertriebsleiter',
         imageSrc: '/images/Ortsrat/Marc_Both.JPG',

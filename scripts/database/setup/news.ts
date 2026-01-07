@@ -23,7 +23,8 @@ async function setupNews() {
             ALTER TABLE news
             ADD COLUMN IF NOT EXISTS article_id VARCHAR(32) UNIQUE,
             ADD COLUMN IF NOT EXISTS is_pinned BOOLEAN DEFAULT false,
-            ADD COLUMN IF NOT EXISTS pinned_at TIMESTAMP WITH TIME ZONE NULL;
+            ADD COLUMN IF NOT EXISTS pinned_at TIMESTAMP WITH TIME ZONE NULL,
+            ADD COLUMN IF NOT EXISTS pinned_order INT DEFAULT 0;
         `;
         console.log('✓ news columns ensured');
 
