@@ -1,4 +1,3 @@
-import PlaygroundsSection from './PlaygroundsSection';
 import FeatureCard from './FeatureCard';
 import { sql } from '@/lib/sql';
 

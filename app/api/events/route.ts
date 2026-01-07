@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
-import { requireAnyPermission, hasPermission } from '@/lib/permissions';
+import { hasPermission } from '@/lib/permissions';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
@@ -58,14 +58,14 @@ export async function POST(request: NextRequest) {
             if (!currentUser.vereinId) {
                 // If they have permission but no Verein, they can ONLY create general events (no vereinId)
                 if (eventData.vereinId) {
-                     return NextResponse.json(
+                    return NextResponse.json(
                         { error: 'Forbidden: You are not assigned to a Verein and cannot create events for one.' },
                         { status: 403 }
                     );
                 }
                 vereinId = undefined;
             } else {
-                 // Vereinsverwalter MUST have a verein assigned and can only create for it
+                // Vereinsverwalter MUST have a verein assigned and can only create for it
                 // Force the ID to match their own
                 vereinId = currentUser.vereinId;
 

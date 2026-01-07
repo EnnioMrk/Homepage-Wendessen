@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ImageSquare, MagnifyingGlass, X, UploadSimple } from '@phosphor-icons/react/dist/ssr';
+import { MagnifyingGlass, X, UploadSimple } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 

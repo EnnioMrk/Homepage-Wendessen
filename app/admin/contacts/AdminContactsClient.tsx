@@ -45,7 +45,7 @@ export default function AdminContactsClient({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [_isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchContacts();

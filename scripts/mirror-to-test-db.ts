@@ -263,7 +263,7 @@ async function copyTableData(
         const batch = sourceData.rows.slice(i, i + batchSize);
 
         for (const row of batch) {
-            const values = columns.map((col, idx) => `$${idx + 1}`).join(', ');
+            const values = columns.map((_col, idx) => `$${idx + 1}`).join(', ');
             const params = columns.map((col) => {
                 const value = row[col];
                 // Serialize JSON/JSONB columns properly
@@ -329,8 +329,7 @@ async function resetSequences(
                 `);
             } catch (error) {
                 console.warn(
-                    `  ⚠️  Could not reset sequence ${seqName}: ${
-                        (error as Error).message
+                    `  ⚠️  Could not reset sequence ${seqName}: ${(error as Error).message
                     }`
                 );
             }
@@ -365,8 +364,7 @@ async function mirrorDatabase() {
                 console.log(`   ✓ Dropped ${tableName}`);
             } catch (error) {
                 console.warn(
-                    `   ⚠️  Could not drop ${tableName}: ${
-                        (error as Error).message
+                    `   ⚠️  Could not drop ${tableName}: ${(error as Error).message
                     }`
                 );
             }
@@ -382,8 +380,7 @@ async function mirrorDatabase() {
                 console.log(`   ✓ Created ${tableName}`);
             } catch (error) {
                 console.error(
-                    `   ❌ Failed to create ${tableName}: ${
-                        (error as Error).message
+                    `   ❌ Failed to create ${tableName}: ${(error as Error).message
                     }`
                 );
             }
@@ -402,8 +399,7 @@ async function mirrorDatabase() {
                 console.log(`   ✓ Copied ${count} rows to ${tableName}`);
             } catch (error) {
                 console.error(
-                    `   ❌ Failed to copy data to ${tableName}: ${
-                        (error as Error).message
+                    `   ❌ Failed to copy data to ${tableName}: ${(error as Error).message
                     }`
                 );
             }
@@ -426,8 +422,7 @@ async function mirrorDatabase() {
                             )
                         ) {
                             console.warn(
-                                `   ⚠️  Index creation warning: ${
-                                    (error as Error).message
+                                `   ⚠️  Index creation warning: ${(error as Error).message
                                 }`
                             );
                         }
@@ -440,8 +435,7 @@ async function mirrorDatabase() {
                 }
             } catch (error) {
                 console.warn(
-                    `   ⚠️  Could not create indexes for ${tableName}: ${
-                        (error as Error).message
+                    `   ⚠️  Could not create indexes for ${tableName}: ${(error as Error).message
                     }`
                 );
             }

@@ -31,7 +31,7 @@ export function SharedGalleryImageProvider({ children }: { children: ReactNode }
     const [imageCache, setImageCache] = useState<Map<string, ImageData>>(new Map());
     const [loadingSet, setLoadingSet] = useState<Set<string>>(new Set());
     const [errorSet, setErrorSet] = useState<Set<string>>(new Set());
-    
+
     const pendingRequests = useRef<Set<string>>(new Set());
     const callbacks = useRef<Map<string, ((imageUrl: string) => void)[]>>(new Map());
     const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -72,7 +72,7 @@ export function SharedGalleryImageProvider({ children }: { children: ReactNode }
             // Mark missing images as errors
             const fetchedIds = new Set(Object.keys(images));
             const missingIds = imageIds.filter(id => !fetchedIds.has(id));
-            
+
             if (missingIds.length > 0) {
                 setErrorSet(prev => {
                     const next = new Set(prev);
@@ -187,7 +187,7 @@ export function useSharedGalleryImage(imageId: string, onLoad?: (imageUrl: strin
     const context = useContext(SharedGalleryImageContext);
     const onLoadRef = useRef(onLoad);
     onLoadRef.current = onLoad;
-    
+
     // Fallback for when context is not available (backwards compatibility)
     const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
     const [fallbackLoading, setFallbackLoading] = useState(false);
@@ -224,6 +224,7 @@ export function useSharedGalleryImage(imageId: string, onLoad?: (imageUrl: strin
                 mounted = false;
             };
         }
+        return undefined;
     }, [imageId, context]);
 
     if (context) {

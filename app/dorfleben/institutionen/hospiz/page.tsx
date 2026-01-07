@@ -3,7 +3,6 @@ import {
     Clock,
     Plant,
     Heart,
-    MapPin,
     UsersThree,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
@@ -100,7 +99,6 @@ export default function HospizInstitutionPage() {
                                 year="2024"
                                 title="Eröffnung"
                                 text="Die umfangreichen Umbauarbeiten werden ausschließlich durch Spenden und Fördermittel finanziert. Am 16. Juni wird der Bau seiner Bestimmung übergeben. Der Hospizverein Wolfenbüttel eröffnet das „Hospiz im Gutspark“."
-                                isLast
                             />
                         </div>
                     </div>
@@ -143,7 +141,7 @@ export default function HospizInstitutionPage() {
     );
 }
 
-function TimelineItem({ year, title, text, isLast = false }: { year: string, title: string, text: string, isLast?: boolean }) {
+function TimelineItem({ year, title, text }: { year: string, title: string, text: string }) {
     return (
         <div className="relative md:ml-6 pb-6 md:pb-8">
 

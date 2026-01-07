@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPortraitSubmission } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
-import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
+import { revalidateTagSafe } from '@/lib/revalidate';
 import { convertFileToWebP } from '@/lib/utils/image-utils';
 import { uploadToBlob } from '@/lib/utils/blob-utils';
 import { notifyNewPortrait } from '@/lib/push-notifications';

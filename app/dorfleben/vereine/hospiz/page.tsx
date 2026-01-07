@@ -1,15 +1,9 @@
 import {
     Heart,
     House,
-    UsersThree,
-    Clock,
-    MapPin,
     HandHeart,
     FirstAid,
     Flower,
-    Phone,
-    Globe,
-    Envelope,
     ShieldCheck,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';

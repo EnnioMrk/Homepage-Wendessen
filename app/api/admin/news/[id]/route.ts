@@ -6,7 +6,7 @@ import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 // GET - Get single news item
 export async function GET(
-    request: NextRequest,
+    _request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {

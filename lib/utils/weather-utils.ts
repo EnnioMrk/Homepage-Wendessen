@@ -86,11 +86,7 @@ export function parseWeatherReport(reportText: string): WeatherData {
     const rawLines = reportText.split('\n').map(l => l.replace(/\r?$/, ''));
 
     // Helper to extract number from text
-    const extractNumber = (text: string): number => {
-        const match = text.match(/-?\d+[,.]?\d*/);
-        if (!match) return 0;
-        return parseFloat(match[0].replace(',', '.'));
-    };
+
 
     // Helper to extract time
     const extractTime = (text: string): string => {
@@ -148,7 +144,7 @@ export function parseWeatherReport(reportText: string): WeatherData {
     const windSpeedIndex = 53; // "Windgeschwindigkeit"
     const windGustsIndex = 58; // "Windböen"
     const windDirIndex = 63; // "Windrichtung"
-    const precipIndex = 67; // "Niederschlag"
+
     const pressureIndex = 76; // "Luftdruck"
     const forecastIndex = 89; // "Wettervorhersage"
 

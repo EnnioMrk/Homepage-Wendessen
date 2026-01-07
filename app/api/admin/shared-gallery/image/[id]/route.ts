@@ -3,7 +3,7 @@ import { isAuthenticated } from '@/lib/auth';
 import { sql } from '@/lib/sql';
 
 export async function GET(
-    request: NextRequest,
+    _request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const authenticated = await isAuthenticated();

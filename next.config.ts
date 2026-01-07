@@ -17,10 +17,7 @@ const minioHostname =
     resolveMinioHost(minioEndpoint) ||
     process.env.MINIO_HOSTNAME ||
     process.env.MINIO_HOST;
-const minioPort =
-    process.env.MINIO_PORT ||
-    (minioEndpoint ? new URL(minioEndpoint).port || undefined : undefined) ||
-    '9000';
+
 const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
 
 // Build remotePatterns as URL instances when MinIO is configured. Using
@@ -28,35 +25,33 @@ const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
 // allowed external image sources strict (blocks all others).
 const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
     ? (() => {
-          const portSegment = process.env.MINIO_PORT
-              ? `:${process.env.MINIO_PORT}`
-              : '';
-          const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
-          try {
-              return [new URL(url)];
-          } catch {
-              // fallback to object pattern if URL constructor fails for any reason
-              return [
-                  {
-                      protocol: minioProtocol,
-                      hostname: minioHostname,
-                      ...(process.env.MINIO_PORT
-                          ? { port: process.env.MINIO_PORT }
-                          : {}),
-                      pathname: '/:path*',
-                  },
-              ];
-          }
-      })()
+        const portSegment = process.env.MINIO_PORT
+            ? `:${process.env.MINIO_PORT}`
+            : '';
+        const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
+        try {
+            return [new URL(url)];
+        } catch {
+            // fallback to object pattern if URL constructor fails for any reason
+            return [
+                {
+                    protocol: minioProtocol,
+                    hostname: minioHostname,
+                    ...(process.env.MINIO_PORT
+                        ? { port: process.env.MINIO_PORT }
+                        : {}),
+                    pathname: '/:path*',
+                },
+            ];
+        }
+    })()
     : [];
 
 console.log(
-    `Next.js image remotePatterns configured for MinIO: ${
-        minioHostname
-            ? `${minioProtocol}://${minioHostname}${
-                  process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''
-              }`
-            : 'none'
+    `Next.js image remotePatterns configured for MinIO: ${minioHostname
+        ? `${minioProtocol}://${minioHostname}${process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''
+        }`
+        : 'none'
     }`
 );
 

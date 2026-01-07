@@ -21,6 +21,7 @@ export default function ErrorNotification({
             const timer = setTimeout(onClose, duration);
             return () => clearTimeout(timer);
         }
+        return undefined;
     }, [autoClose, duration, onClose]);
 
     return (

@@ -3,7 +3,7 @@ import { getContactById, updateContact, deleteContact } from '@/lib/database/con
 import { withPermission } from '@/lib/permissions';
 
 export async function GET(
-    request: NextRequest,
+    _request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id: idStr } = await params;
@@ -31,7 +31,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-    request: NextRequest,
+    _request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id: idStr } = await params;

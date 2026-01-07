@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSharedGallerySubmission } from '@/lib/database';
 import { sql } from '@/lib/sql';
-import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
+import { revalidateTagSafe } from '@/lib/revalidate';
 import { uploadToBlob } from '@/lib/utils/blob-utils';
 import { convertDataUrlToWebP } from '@/lib/utils/image-utils';
 import {

@@ -6,13 +6,7 @@ import {
     Buildings,
     Bank,
     BookOpen,
-    ImageSquare,
-    NotePencil,
     UserPlus,
-    Camera,
-    Star,
-    Handshake,
-    Heart,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import PortraitSubmissionModal from '@/app/components/PortraitSubmissionModal';

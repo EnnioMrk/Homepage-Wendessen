@@ -150,7 +150,6 @@ export default function AdminDashboard({
 
     const QuickActionBtn = ({
         onClick,
-        icon: Icon,
         label,
         description,
         colorClass,
@@ -158,7 +157,6 @@ export default function AdminDashboard({
         href
     }: {
         onClick?: () => void;
-        icon: any;
         label: string;
         description: string;
         colorClass: string;
@@ -284,7 +282,6 @@ export default function AdminDashboard({
                             {canManageEvents && (
                                 <QuickActionBtn
                                     onClick={() => setShowEventModal(true)}
-                                    icon={Calendar}
                                     label="Neuer Termin"
                                     description="Einen Kalendereintrag erstellen"
                                     colorClass="text-blue-600"
@@ -294,7 +291,6 @@ export default function AdminDashboard({
                             {canManageNews && (
                                 <QuickActionBtn
                                     href="/admin/news/erstellen"
-                                    icon={Newspaper}
                                     label="Neue Nachricht"
                                     description="Einen News-Artikel verfassen"
                                     colorClass="text-green-600"

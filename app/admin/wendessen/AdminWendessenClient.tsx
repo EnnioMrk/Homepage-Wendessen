@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Check, Trash, PencilSimple, Eye } from '@phosphor-icons/react/dist/ssr';
+import { Plus, Check, Trash, PencilSimple } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 
@@ -23,7 +23,7 @@ export default function AdminWendessenClient({ canManage = false }: AdminWendess
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [layoutToDelete, setLayoutToDelete] = useState<Layout | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [_isDeleting, setIsDeleting] = useState(false);
     const [isActivating, setIsActivating] = useState<number | null>(null);
 
     useEffect(() => {

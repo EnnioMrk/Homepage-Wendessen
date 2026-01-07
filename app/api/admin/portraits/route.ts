@@ -8,7 +8,7 @@ import {
     cleanupOldRejectedPortraits,
 } from '@/lib/database';
 import { PORTRAIT_CONFIG } from '@/lib/portrait-config';
-import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
+import { revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
@@ -101,8 +101,8 @@ export async function PATCH(request: NextRequest) {
             action === 'approve'
                 ? 'approved'
                 : action === 'reset'
-                ? 'pending'
-                : 'rejected';
+                    ? 'pending'
+                    : 'rejected';
         const submission = await updatePortraitStatus(id, status, 'admin');
 
         // If rejecting, trigger cleanup of old rejected portraits
@@ -145,14 +145,14 @@ export async function PATCH(request: NextRequest) {
             action === 'approve'
                 ? 'approved'
                 : action === 'reset'
-                ? 'reset to pending'
-                : 'rejected';
+                    ? 'reset to pending'
+                    : 'rejected';
         const messageText =
             action === 'approve'
                 ? 'freigegeben'
                 : action === 'reset'
-                ? 'zurückgesetzt'
-                : 'abgelehnt';
+                    ? 'zurückgesetzt'
+                    : 'abgelehnt';
 
         console.log(`Portrait submission ${id} ${actionText} by admin`);
 
@@ -165,8 +165,8 @@ export async function PATCH(request: NextRequest) {
                 action === 'approve'
                     ? 'portrait.approve'
                     : action === 'reject'
-                    ? 'portrait.reject'
-                    : 'portrait.reset',
+                        ? 'portrait.reject'
+                        : 'portrait.reset',
             resourceType: 'portrait',
             resourceId: id,
             resourceTitle: submission.name,
