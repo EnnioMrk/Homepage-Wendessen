@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import {
     Users,
-    Buildings,
-    Bank,
     BookOpen,
     UserPlus,
 } from '@phosphor-icons/react/dist/ssr';

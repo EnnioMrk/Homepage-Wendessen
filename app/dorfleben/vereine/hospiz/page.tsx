@@ -57,7 +57,7 @@ export default function HospizPage() {
 
                             <div className="bg-green-50 p-6 rounded-xl border border-green-100">
                                 <p className="text-green-900 italic">
-                                    "Hospizarbeit ist in den 1980-er Jahren in Deutschland aus Bürgerinitiativen hervorgegangen. Sie wird nur in Teilen von den Krankenkassen finanziert und beruht bis heute auf bürgerschaftlichem Engagement."
+                                    &quot;Hospizarbeit ist in den 1980-er Jahren in Deutschland aus Bürgerinitiativen hervorgegangen. Sie wird nur in Teilen von den Krankenkassen finanziert und beruht bis heute auf bürgerschaftlichem Engagement.&quot;
                                 </p>
                             </div>
 
@@ -135,6 +135,6 @@ export default function HospizPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
