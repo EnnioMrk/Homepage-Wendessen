@@ -28,7 +28,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import EventModal from '@/app/components/events/EventModal';
-import ImagePicker from '@/app/components/ui/ImagePicker';
+import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 
 // Set German locale and configure moment properly
 moment.locale('de');
@@ -1014,16 +1014,16 @@ export default function AdminEventsCalendar({
 
             {/* Image Picker Modal */}
             {showImagePicker && (
-                <ImagePicker
-                    selectedImageUrl={eventForm.imageUrl}
-                    onImageSelect={(imageUrl) => {
+                <GalleryImagePicker
+                    onSelect={(image) => {
                         setEventForm({
                             ...eventForm,
-                            imageUrl: imageUrl || '',
+                            imageUrl: image.url || '',
                         });
                         setShowImagePicker(false);
                     }}
                     onClose={() => setShowImagePicker(false)}
+                    canUpload={hasPermission('gallery.upload')}
                 />
             )}
 

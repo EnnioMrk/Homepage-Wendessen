@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeSlash } from '@phosphor-icons/react/dist/ssr';
@@ -9,12 +9,17 @@ export default function AdminLogin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Guard against multiple submissions
+        if (isLoading || isPending) return;
+
         setIsLoading(true);
         setError('');
 
@@ -30,20 +35,26 @@ export default function AdminLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                // Check if user must change password
-                if (data.mustChangePassword) {
-                    router.push('/admin/change-password');
-                } else {
-                    router.push('/admin/dashboard');
-                }
+                // Wrap navigation in startTransition to track its state
+                startTransition(() => {
+                    if (data.mustChangePassword) {
+                        router.push('/admin/change-password');
+                    } else {
+                        router.push('/admin/dashboard');
+                    }
+                });
             } else {
                 setError(data.error || 'Login failed');
+                setIsLoading(false);
             }
-        } catch {
+        } catch (err) {
+            console.error('Login error:', err);
             setError('Network error. Please try again.');
-        } finally {
             setIsLoading(false);
         }
+        // NOTE: We don't set isLoading(false) in a finally block here 
+        // because we want the button to stay disabled during the 
+        // navigation transition (isPending) if successful.
     };
 
     return (
@@ -129,10 +140,10 @@ export default function AdminLogin() {
                         <div>
                             <button
                                 type="submit"
-                                disabled={isLoading}
+                                disabled={isLoading || isPending}
                                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
-                                {isLoading ? 'Anmelden...' : 'Anmelden'}
+                                {isLoading || isPending ? 'Anmelden...' : 'Anmelden'}
                             </button>
                         </div>
                     </form>

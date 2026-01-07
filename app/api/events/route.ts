@@ -54,23 +54,28 @@ export async function POST(request: NextRequest) {
             // Global admins can create for any verein (or none)
             vereinId = eventData.vereinId || currentUser.vereinId || undefined;
         } else {
-            // Vereinsverwalter MUST have a verein assigned and can only create for it
+            // Users with Verein permissions
             if (!currentUser.vereinId) {
-                return NextResponse.json(
-                    { error: 'Forbidden: You have permission to create Vereins-Termine but are not assigned to a Verein.' },
-                    { status: 403 }
-                );
-            }
+                // If they have permission but no Verein, they can ONLY create general events (no vereinId)
+                if (eventData.vereinId) {
+                     return NextResponse.json(
+                        { error: 'Forbidden: You are not assigned to a Verein and cannot create events for one.' },
+                        { status: 403 }
+                    );
+                }
+                vereinId = undefined;
+            } else {
+                 // Vereinsverwalter MUST have a verein assigned and can only create for it
+                // Force the ID to match their own
+                vereinId = currentUser.vereinId;
 
-            // Force the ID to match their own
-            vereinId = currentUser.vereinId;
-
-            // Optional: If they tried to send a different ID, we could error, but silently correcting it is also safe/admin-friendly
-            if (eventData.vereinId && eventData.vereinId !== vereinId) {
-                return NextResponse.json(
-                    { error: 'Forbidden: You can only create events for your own Verein.' },
-                    { status: 403 }
-                );
+                // Optional: If they tried to send a different ID, we could error, but silently correcting it is also safe/admin-friendly
+                if (eventData.vereinId && eventData.vereinId !== vereinId) {
+                    return NextResponse.json(
+                        { error: 'Forbidden: You can only create events for your own Verein.' },
+                        { status: 403 }
+                    );
+                }
             }
         }
 

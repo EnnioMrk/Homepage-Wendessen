@@ -78,7 +78,6 @@ app/components/
 ├── 📄 Footer.tsx              # Site footer
 ├── 📄 HeroTitle.tsx           # Homepage hero
 ├── 📄 HomeBanner.tsx          # Homepage banner
-├── 📄 ImagePicker.tsx         # Image upload component
 ├── 📄 LoadingSpinner.tsx      # Loading indicator
 ├── 📄 NewsCard.tsx            # News display component
 ├── 📄 NewsModal.tsx           # News detail modal
