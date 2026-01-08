@@ -35,10 +35,18 @@ export async function initMinio(): Promise<void> {
 
         const parsed = parseEndpoint(MINIO_ENDPOINT);
 
+        const SERVER_MINIO_ENDPOINT = env.MINIO_SERVER_ENDPOINT || parsed.host;
+        const SERVER_MINIO_PORT = env.MINIO_SERVER_PORT
+            ? parseInt(env.MINIO_SERVER_PORT, 10)
+            : (parseInt(MINIO_PORT, 10) || parseInt(parsed.port, 10) || 9000);
+        const SERVER_MINIO_USE_SSL = env.MINIO_SERVER_USE_SSL === undefined
+            ? MINIO_USE_SSL
+            : env.MINIO_SERVER_USE_SSL === 'true';
+
         const client = new Client({
-            endPoint: parsed.host,
-            port: parseInt(MINIO_PORT, 10) || parseInt(parsed.port, 10) || 9000,
-            useSSL: MINIO_USE_SSL,
+            endPoint: SERVER_MINIO_ENDPOINT,
+            port: SERVER_MINIO_PORT,
+            useSSL: SERVER_MINIO_USE_SSL,
             accessKey: MINIO_ACCESS_KEY,
             secretKey: MINIO_SECRET_KEY,
         });
