@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { isMinioUrl } from '@/lib/utils/blob-utils';
 import {
     X,
     DownloadSimple,
@@ -127,7 +128,7 @@ export default function ImageLightbox({
                         className="object-contain"
                         sizes="(max-width: 1280px) 100vw, 1280px"
                         priority
-                        unoptimized
+                        unoptimized={isMinioUrl(imageUrl)}
                     />
                 </div>
 

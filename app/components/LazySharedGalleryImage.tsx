@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useSharedGalleryImage } from './SharedGalleryImageContext';
+import { isMinioUrl } from '@/lib/utils/blob-utils';
 
 interface LazySharedGalleryImageProps {
     imageId: string;
@@ -44,9 +45,8 @@ export default function LazySharedGalleryImage({
     if (error || !imageUrl) {
         return (
             <div
-                className={`bg-gray-300 flex items-center justify-center text-gray-500 text-xs ${
-                    className || ''
-                }`}
+                className={`bg-gray-300 flex items-center justify-center text-gray-500 text-xs ${className || ''
+                    }`}
                 style={
                     fill
                         ? { position: 'absolute', inset: 0 }
@@ -67,6 +67,7 @@ export default function LazySharedGalleryImage({
                 className={className}
                 sizes={sizes}
                 onClick={onClick}
+                unoptimized={isMinioUrl(imageUrl)}
             />
         );
     }
@@ -79,6 +80,7 @@ export default function LazySharedGalleryImage({
             height={height || 100}
             className={className}
             onClick={onClick}
+            unoptimized={isMinioUrl(imageUrl)}
         />
     );
 }

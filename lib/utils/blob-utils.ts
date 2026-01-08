@@ -186,6 +186,20 @@ export function isMinioConfigured(): boolean {
 }
 
 /**
+ * Check if a URL points to the MinIO instance.
+ * Used to determine if image optimization should be bypassed.
+ */
+export function isMinioUrl(url?: string): boolean {
+    if (!url) return false;
+    try {
+        const parsed = new URL(url);
+        return parsed.hostname === PUBLIC_MINIO_ENDPOINT;
+    } catch {
+        return false;
+    }
+}
+
+/**
  * Initialize all MinIO buckets on server startup.
  * Creates buckets if they don't exist.
  */
@@ -195,24 +209,44 @@ export async function initializeMinIOBuckets(): Promise<void> {
         return;
     }
 
-    console.log('[MinIO] Initializing buckets...');
+    console.log(
+        `[MinIO] Initializing buckets at ${SERVER_MINIO_ENDPOINT}:${SERVER_MINIO_PORT} (SSL: ${SERVER_MINIO_USE_SSL})...`
+    );
 
     const bucketTypes: MinioBucket[] = ['gallery', 'portraits', 'impressions'];
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY_MS = 3000;
 
     for (const bucketType of bucketTypes) {
         const bucketName = MINIO_BUCKETS[bucketType];
-        try {
-            await ensureBucketExists(bucketName);
-            console.log(`[MinIO] ✓ Bucket "${bucketName}" ready`);
-        } catch (error) {
-            console.error(
-                `[MinIO] ✗ Failed to initialize bucket "${bucketName}":`,
-                error
-            );
+        let success = false;
+        let retries = 0;
+
+        while (!success && retries < MAX_RETRIES) {
+            try {
+                await ensureBucketExists(bucketName);
+                console.log(`[MinIO] ✓ Bucket "${bucketName}" ready`);
+                success = true;
+            } catch (error) {
+                retries++;
+                if (retries < MAX_RETRIES) {
+                    console.warn(
+                        `[MinIO] ! Failed to initialize bucket "${bucketName}" (Attempt ${retries}/${MAX_RETRIES}). Retrying in ${RETRY_DELAY_MS / 1000}s...`
+                    );
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, RETRY_DELAY_MS)
+                    );
+                } else {
+                    console.error(
+                        `[MinIO] ✗ Failed to initialize bucket "${bucketName}" after ${MAX_RETRIES} attempts:`,
+                        error
+                    );
+                }
+            }
         }
     }
 
-    console.log('[MinIO] Bucket initialization complete');
+    console.log('[MinIO] Bucket initialization probe finished');
 }
 
 function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {

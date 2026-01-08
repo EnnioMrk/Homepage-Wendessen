@@ -52,36 +52,65 @@ export async function initMinio(): Promise<void> {
         });
 
         const buckets = [MINIO_BUCKET_GALLERY, MINIO_BUCKET_PORTRAITS, MINIO_BUCKET_IMPRESSIONS];
+        const MAX_RETRIES = 5;
+        const RETRY_DELAY_MS = 3000;
+
+        console.log(`minio-init: Initializing buckets at ${SERVER_MINIO_ENDPOINT}:${SERVER_MINIO_PORT} (SSL: ${SERVER_MINIO_USE_SSL})`);
 
         for (const bucket of buckets) {
             if (!bucket) continue;
-            try {
-                const exists = await client.bucketExists(bucket);
-                if (!exists) {
-                    await client.makeBucket(bucket, '');
-                    console.log(`minio-init: created bucket ${bucket}`);
-                } else {
-                    console.log(`minio-init: bucket exists ${bucket}`);
-                }
+            let success = false;
+            let retries = 0;
 
-                // Always apply the public-read policy so GETs work for all.
-                const policy = {
-                    Version: '2012-10-17',
-                    Statement: [
+            while (!success && retries < MAX_RETRIES) {
+                try {
+                    const exists = await client.bucketExists(bucket);
+                    if (!exists) {
+                        await client.makeBucket(bucket, '');
+                        console.log(`minio-init: created bucket ${bucket}`);
+                    } else {
+                        console.log(`minio-init: bucket exists ${bucket}`);
+                    }
+
+                    // Always apply the public-read policy so GETs work for all.
+                    const policy = {
+                        Version: '2012-10-17',
+                        Statement: [
+                            {
+                                Action: ['s3:GetObject'],
+                                Effect: 'Allow',
+                                Principal: { AWS: ['*'] },
+                                Resource: [`arn:aws:s3:::${bucket}/*`],
+                                Sid: '',
+                            },
+                        ],
+                    };
+
+                    await client.setBucketPolicy(bucket, JSON.stringify(policy));
+                    console.log(`minio-init: applied public-read policy to ${bucket}`);
+
+                    // Apply CORS policy to allow direct access from the browser
+                    const corsConfig = [
                         {
-                            Action: ['s3:GetObject'],
-                            Effect: 'Allow',
-                            Principal: { AWS: ['*'] },
-                            Resource: [`arn:aws:s3:::${bucket}/*`],
-                            Sid: '',
+                            AllowedHeaders: ['*'],
+                            AllowedMethods: ['GET', 'HEAD'],
+                            AllowedOrigins: ['*'],
+                            ExposeHeaders: [],
+                            MaxAgeSeconds: 3600,
                         },
-                    ],
-                };
-
-                await client.setBucketPolicy(bucket, JSON.stringify(policy));
-                console.log(`minio-init: applied public-read policy to ${bucket}`);
-            } catch (err) {
-                console.warn(`minio-init: failed for bucket ${bucket}:`, err);
+                    ];
+                    await client.setBucketCors(bucket, corsConfig);
+                    console.log(`minio-init: applied CORS policy to ${bucket}`);
+                    success = true;
+                } catch (err) {
+                    retries++;
+                    if (retries < MAX_RETRIES) {
+                        console.warn(`minio-init: ! Failed for bucket ${bucket} (Attempt ${retries}/${MAX_RETRIES}). Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+                    } else {
+                        console.error(`minio-init: ✗ Failed for bucket ${bucket} after ${MAX_RETRIES} attempts:`, err);
+                    }
+                }
             }
         }
 

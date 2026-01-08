@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import ImageLightbox from './ImageLightbox';
 import AddPhotosModal from './AddPhotosModal';
+import { isMinioUrl } from '@/lib/utils/blob-utils';
 
 interface GalleryImage {
     id: string;
@@ -126,24 +127,24 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                                     {group.submitterNames[0]}
                                                     {group.submitterNames
                                                         .length > 1 && (
-                                                        <>
-                                                            {' und '}
-                                                            <button
-                                                                onClick={() =>
-                                                                    setShowAuthorsPopup(
-                                                                        group.submissionGroupId
-                                                                    )
-                                                                }
-                                                                className="text-blue-600 hover:text-blue-700 underline"
-                                                            >
-                                                                {group
-                                                                    .submitterNames
-                                                                    .length -
-                                                                    1}{' '}
-                                                                mehr
-                                                            </button>
-                                                        </>
-                                                    )}
+                                                            <>
+                                                                {' und '}
+                                                                <button
+                                                                    onClick={() =>
+                                                                        setShowAuthorsPopup(
+                                                                            group.submissionGroupId
+                                                                        )
+                                                                    }
+                                                                    className="text-blue-600 hover:text-blue-700 underline"
+                                                                >
+                                                                    {group
+                                                                        .submitterNames
+                                                                        .length -
+                                                                        1}{' '}
+                                                                    mehr
+                                                                </button>
+                                                            </>
+                                                        )}
                                                 </span>
                                                 <span className="text-gray-400">
                                                     •
@@ -169,9 +170,8 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                             key={photo.id}
                                             className="group relative cursor-pointer mb-4"
                                             style={{
-                                                animationDelay: `${
-                                                    photoIndex * 100
-                                                }ms`,
+                                                animationDelay: `${photoIndex * 100
+                                                    }ms`,
                                             }}
                                             onClick={() =>
                                                 setSelectedImage({
@@ -201,6 +201,7 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                                         fill
                                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                                                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                                        unoptimized={isMinioUrl(photo.imageUrl)}
                                                     />
                                                 </div>
                                             </div>
@@ -216,25 +217,25 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                                                     <span className="text-sm text-gray-500">
                                                         {photo.dateTaken
                                                             ? new Date(
-                                                                  photo.dateTaken
-                                                              ).toLocaleDateString(
-                                                                  'de-DE',
-                                                                  {
-                                                                      day: 'numeric',
-                                                                      month: 'short',
-                                                                      year: 'numeric',
-                                                                  }
-                                                              )
+                                                                photo.dateTaken
+                                                            ).toLocaleDateString(
+                                                                'de-DE',
+                                                                {
+                                                                    day: 'numeric',
+                                                                    month: 'short',
+                                                                    year: 'numeric',
+                                                                }
+                                                            )
                                                             : new Date(
-                                                                  group.submittedAt
-                                                              ).toLocaleDateString(
-                                                                  'de-DE',
-                                                                  {
-                                                                      day: 'numeric',
-                                                                      month: 'short',
-                                                                      year: 'numeric',
-                                                                  }
-                                                              )}
+                                                                group.submittedAt
+                                                            ).toLocaleDateString(
+                                                                'de-DE',
+                                                                {
+                                                                    day: 'numeric',
+                                                                    month: 'short',
+                                                                    year: 'numeric',
+                                                                }
+                                                            )}
                                                     </span>
                                                 </div>
 
