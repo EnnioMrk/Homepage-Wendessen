@@ -309,6 +309,24 @@ export async function updateAdminUserRoleAndPermissions(
     }
 }
 
+export async function resetAdminPassword(
+    id: number,
+    passwordHash: string
+): Promise<void> {
+    try {
+        await sql`
+            UPDATE admin_users
+            SET password_hash = ${passwordHash},
+                must_change_password = true,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${id}
+        `;
+    } catch (error) {
+        console.error('Error resetting admin password:', error);
+        throw new Error('Failed to reset admin password');
+    }
+}
+
 function removeExcludedPermissions(permissions: string[]): string[] {
     return permissions.filter(
         (permission) =>

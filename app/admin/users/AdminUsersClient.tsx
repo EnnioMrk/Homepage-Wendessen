@@ -11,6 +11,8 @@ import {
     Warning,
     ShieldCheck,
     Gear,
+    ArrowClockwise,
+    CheckCircle,
 } from '@phosphor-icons/react/dist/ssr';
 import { AdminUserRecord } from '@/lib/database';
 import PermissionsModal from '@/app/components/PermissionsModal';
@@ -41,6 +43,12 @@ export default function AdminUsersClient() {
     const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(
         null
     );
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [resetSuccessData, setResetSuccessData] = useState<{
+        password: string;
+        username: string;
+    } | null>(null);
+    const [isResetting, setIsResetting] = useState(false);
 
     // Wait for permissions to load before checking
     const canCreate = !permissionsLoading && hasPermission('users.create');
@@ -80,6 +88,11 @@ export default function AdminUsersClient() {
         setShowPermissionsModal(true);
     };
 
+    const handleResetClick = (user: AdminUserRecord) => {
+        setSelectedUser(user);
+        setShowResetModal(true);
+    };
+
     const getExtraPermissionsCount = (user: AdminUserRecord): number => {
         const defaults = user.roleDefaultPermissions;
         if (!defaults) return 0;
@@ -116,6 +129,43 @@ export default function AdminUsersClient() {
                     ? err.message
                     : 'Fehler beim Löschen des Benutzers'
             );
+        }
+    };
+
+    const handleResetConfirm = async () => {
+        if (!selectedUser) return;
+
+        try {
+            setIsResetting(true);
+            const response = await fetch('/api/admin/users/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: selectedUser.id }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to reset password');
+            }
+
+            setResetSuccessData({
+                password: data.initialPassword,
+                username: data.username,
+            });
+            setShowResetModal(false);
+            await loadUsers();
+        } catch (err) {
+            console.error('Error resetting password:', err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : 'Fehler beim Zurücksetzen des Passworts'
+            );
+        } finally {
+            setIsResetting(false);
         }
     };
 
@@ -257,6 +307,19 @@ export default function AdminUsersClient() {
                                                             <Gear className="w-5 h-5" />
                                                         </button>
                                                     )}
+                                                    {canEdit && (
+                                                        <button
+                                                            onClick={() =>
+                                                                handleResetClick(
+                                                                    user
+                                                                )
+                                                            }
+                                                            className="text-amber-600 hover:text-amber-800"
+                                                            title="Passwort zurücksetzen"
+                                                        >
+                                                            <ArrowClockwise className="w-5 h-5" />
+                                                        </button>
+                                                    )}
                                                     {canDelete && (
                                                         <button
                                                             onClick={() =>
@@ -335,6 +398,111 @@ export default function AdminUsersClient() {
                                 className="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700"
                             >
                                 Löschen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Password Reset Confirmation Modal */}
+            {showResetModal && selectedUser && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+                    <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex items-center mb-4">
+                            <div className="flex-shrink-0 bg-amber-100 rounded-full p-2">
+                                <ArrowClockwise className="h-6 w-6 text-amber-600" />
+                            </div>
+                            <h3 className="ml-3 text-lg font-medium text-gray-900">
+                                Passwort zurücksetzen
+                            </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-6">
+                            Möchten Sie das Passwort für den Benutzer{' '}
+                            <strong>{selectedUser.username}</strong> wirklich
+                            zurücksetzen? Ein neues temporäres Passwort wird
+                            generiert und der Benutzer muss es beim nächsten
+                            Login ändern.
+                        </p>
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => {
+                                    setShowResetModal(false);
+                                    setSelectedUser(null);
+                                }}
+                                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Abbrechen
+                            </button>
+                            <button
+                                onClick={handleResetConfirm}
+                                disabled={isResetting}
+                                className="px-4 py-2 bg-amber-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-amber-700 disabled:bg-gray-400"
+                            >
+                                {isResetting
+                                    ? 'Setze zurück...'
+                                    : 'Passwort zurücksetzen'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Password Reset Success Modal */}
+            {resetSuccessData && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+                    <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex items-center mb-4">
+                            <div className="flex-shrink-0 bg-green-100 rounded-full p-2">
+                                <CheckCircle className="h-6 w-6 text-green-600" />
+                            </div>
+                            <h3 className="ml-3 text-lg font-medium text-gray-900">
+                                Passwort zurückgesetzt
+                            </h3>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                                <p className="text-sm text-green-800 mb-2">
+                                    Das Passwort wurde erfolgreich
+                                    zurückgesetzt!
+                                </p>
+                                <div className="bg-white rounded border border-green-300 p-3 mt-2">
+                                    <p className="text-xs text-gray-600 mb-1">
+                                        Benutzername:
+                                    </p>
+                                    <p className="text-sm font-mono font-medium text-gray-900 mb-3">
+                                        {resetSuccessData.username}
+                                    </p>
+                                    <p className="text-xs text-gray-600 mb-1">
+                                        Neues temporäres Passwort (6-stellig):
+                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-lg font-mono font-bold text-gray-900">
+                                            {resetSuccessData.password}
+                                        </p>
+                                        <button
+                                            onClick={() =>
+                                                navigator.clipboard.writeText(
+                                                    resetSuccessData.password
+                                                )
+                                            }
+                                            className="text-primary hover:text-primary-dark text-sm"
+                                        >
+                                            Kopieren
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-3">
+                                <strong>Wichtig:</strong> Bitte teilen Sie dem
+                                Benutzer dieses Passwort sicher mit. Er wird
+                                aufgefordert, es beim nächsten Einloggen zu
+                                ändern.
+                            </p>
+                            <button
+                                onClick={() => setResetSuccessData(null)}
+                                className="w-full px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-md text-sm font-medium"
+                            >
+                                Schließen
                             </button>
                         </div>
                     </div>
