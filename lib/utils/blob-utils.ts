@@ -18,56 +18,17 @@ interface BlobUploadResponse {
     contentDisposition: string;
 }
 
-// 1. PUBLIC CONFIG (for generating URLs accessible by the browser)
+// Read raw env values. We support either a plain host (like "localhost") or a
+// full URL (like "http://host:9000") in MINIO_ENDPOINT. If a full URL is
+// provided we parse it to extract host, port and protocol.
 const DEFAULT_MINIO_PORT = 9000;
 const RAW_MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || '';
-let PUBLIC_MINIO_ENDPOINT = RAW_MINIO_ENDPOINT;
-let PUBLIC_MINIO_PORT = process.env.MINIO_PORT
+let MINIO_ENDPOINT = RAW_MINIO_ENDPOINT;
+let MINIO_PORT = process.env.MINIO_PORT
     ? Number(process.env.MINIO_PORT)
     : undefined;
-let PUBLIC_MINIO_USE_SSL = process.env.MINIO_USE_SSL === 'true' || false;
-
-// If the user supplied a full URL in MINIO_ENDPOINT, parse it
-if (
-    RAW_MINIO_ENDPOINT.startsWith('http://') ||
-    RAW_MINIO_ENDPOINT.startsWith('https://')
-) {
-    try {
-        const parsed = new URL(RAW_MINIO_ENDPOINT);
-        PUBLIC_MINIO_ENDPOINT = parsed.hostname;
-        if (!process.env.MINIO_PORT && parsed.port) {
-            PUBLIC_MINIO_PORT = Number(parsed.port);
-        }
-        if (!process.env.MINIO_USE_SSL) {
-            PUBLIC_MINIO_USE_SSL = parsed.protocol === 'https:';
-        }
-    } catch {
-        // use as-is
-    }
-}
-
-if (!PUBLIC_MINIO_PORT || Number.isNaN(PUBLIC_MINIO_PORT)) {
-    PUBLIC_MINIO_PORT = DEFAULT_MINIO_PORT;
-}
-
-// 2. SERVER CONFIG (for the client's direct connection to MinIO)
-// This can be different (e.g., "localhost" or "minio" in Docker) if the public URL is not reachable from the server.
-let SERVER_MINIO_ENDPOINT = process.env.MINIO_SERVER_ENDPOINT || PUBLIC_MINIO_ENDPOINT;
-let SERVER_MINIO_PORT = process.env.MINIO_SERVER_PORT
-    ? Number(process.env.MINIO_SERVER_PORT)
-    : PUBLIC_MINIO_PORT;
-let SERVER_MINIO_USE_SSL = process.env.MINIO_SERVER_USE_SSL === undefined
-    ? PUBLIC_MINIO_USE_SSL
-    : process.env.MINIO_SERVER_USE_SSL === 'true';
-
 const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY;
 const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY;
-
-if (!PUBLIC_MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
-    console.warn(
-        'MinIO not fully configured. Ensure MINIO_ENDPOINT (host or full URL), MINIO_ACCESS_KEY and MINIO_SECRET_KEY are set.'
-    );
-}
 
 // Bucket names from environment variables
 const MINIO_BUCKETS: Record<MinioBucket, string> = {
@@ -79,6 +40,37 @@ const MINIO_BUCKETS: Record<MinioBucket, string> = {
 // Legacy support: if old MINIO_BUCKET is set, use it as default for gallery
 if (process.env.MINIO_BUCKET && !process.env.MINIO_BUCKET_GALLERY) {
     MINIO_BUCKETS.gallery = process.env.MINIO_BUCKET;
+}
+
+let MINIO_USE_SSL = process.env.MINIO_USE_SSL === 'true' || false;
+
+// If the user supplied a full URL, parse it and derive host/port/ssl defaults
+if (
+    RAW_MINIO_ENDPOINT.startsWith('http://') ||
+    RAW_MINIO_ENDPOINT.startsWith('https://')
+) {
+    try {
+        const parsed = new URL(RAW_MINIO_ENDPOINT);
+        MINIO_ENDPOINT = parsed.hostname;
+        if (!process.env.MINIO_PORT && parsed.port) {
+            MINIO_PORT = Number(parsed.port);
+        }
+        if (!process.env.MINIO_USE_SSL) {
+            MINIO_USE_SSL = parsed.protocol === 'https:';
+        }
+    } catch {
+        // leave values as-is; downstream code will warn if something is wrong
+    }
+}
+
+if (!MINIO_PORT || Number.isNaN(MINIO_PORT)) {
+    MINIO_PORT = DEFAULT_MINIO_PORT;
+}
+
+if (!MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
+    console.warn(
+        'MinIO not fully configured. Ensure MINIO_ENDPOINT (host or full URL), MINIO_ACCESS_KEY and MINIO_SECRET_KEY are set.'
+    );
 }
 
 // Define a minimal interface for the MinIO client methods we use
@@ -135,9 +127,9 @@ async function getMinioClient() {
     _minioClient = new (
         Minio as unknown as { Client: new (opts: unknown) => MinioClientLike }
     ).Client({
-        endPoint: SERVER_MINIO_ENDPOINT || 'localhost',
-        port: SERVER_MINIO_PORT,
-        useSSL: SERVER_MINIO_USE_SSL,
+        endPoint: MINIO_ENDPOINT || 'localhost',
+        port: MINIO_PORT,
+        useSSL: MINIO_USE_SSL,
         accessKey: MINIO_ACCESS_KEY || '',
         secretKey: MINIO_SECRET_KEY || '',
     });
@@ -182,21 +174,7 @@ export function getAllBucketNames(): string[] {
 
 // Check if MinIO is configured
 export function isMinioConfigured(): boolean {
-    return !!(PUBLIC_MINIO_ENDPOINT && MINIO_ACCESS_KEY && MINIO_SECRET_KEY);
-}
-
-/**
- * Check if a URL points to the MinIO instance.
- * Used to determine if image optimization should be bypassed.
- */
-export function isMinioUrl(url?: string): boolean {
-    if (!url) return false;
-    try {
-        const parsed = new URL(url);
-        return parsed.hostname === PUBLIC_MINIO_ENDPOINT;
-    } catch {
-        return false;
-    }
+    return !!(MINIO_ENDPOINT && MINIO_ACCESS_KEY && MINIO_SECRET_KEY);
 }
 
 /**
@@ -209,44 +187,24 @@ export async function initializeMinIOBuckets(): Promise<void> {
         return;
     }
 
-    console.log(
-        `[MinIO] Initializing buckets at ${SERVER_MINIO_ENDPOINT}:${SERVER_MINIO_PORT} (SSL: ${SERVER_MINIO_USE_SSL})...`
-    );
+    console.log('[MinIO] Initializing buckets...');
 
     const bucketTypes: MinioBucket[] = ['gallery', 'portraits', 'impressions'];
-    const MAX_RETRIES = 5;
-    const RETRY_DELAY_MS = 3000;
 
     for (const bucketType of bucketTypes) {
         const bucketName = MINIO_BUCKETS[bucketType];
-        let success = false;
-        let retries = 0;
-
-        while (!success && retries < MAX_RETRIES) {
-            try {
-                await ensureBucketExists(bucketName);
-                console.log(`[MinIO] ✓ Bucket "${bucketName}" ready`);
-                success = true;
-            } catch (error) {
-                retries++;
-                if (retries < MAX_RETRIES) {
-                    console.warn(
-                        `[MinIO] ! Failed to initialize bucket "${bucketName}" (Attempt ${retries}/${MAX_RETRIES}). Retrying in ${RETRY_DELAY_MS / 1000}s...`
-                    );
-                    await new Promise((resolve) =>
-                        setTimeout(resolve, RETRY_DELAY_MS)
-                    );
-                } else {
-                    console.error(
-                        `[MinIO] ✗ Failed to initialize bucket "${bucketName}" after ${MAX_RETRIES} attempts:`,
-                        error
-                    );
-                }
-            }
+        try {
+            await ensureBucketExists(bucketName);
+            console.log(`[MinIO] ✓ Bucket "${bucketName}" ready`);
+        } catch (error) {
+            console.error(
+                `[MinIO] ✗ Failed to initialize bucket "${bucketName}":`,
+                error
+            );
         }
     }
 
-    console.log('[MinIO] Bucket initialization probe finished');
+    console.log('[MinIO] Bucket initialization complete');
 }
 
 function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -300,9 +258,9 @@ export async function uploadToBlob(
         bucket?: MinioBucket;
     } = {}
 ): Promise<BlobUploadResponse> {
-    if (!SERVER_MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
+    if (!MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
         throw new Error(
-            'MinIO server environment variables not configured (MINIO_ENDPOINT/SERVER_MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY)'
+            'MinIO environment variables not configured (MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY)'
         );
     }
 
@@ -354,14 +312,8 @@ export async function uploadToBlob(
         );
     });
 
-    const protocol = PUBLIC_MINIO_USE_SSL ? 'https' : 'http';
-    const portSuffix =
-        (protocol === 'http' && PUBLIC_MINIO_PORT === 80) ||
-            (protocol === 'https' && PUBLIC_MINIO_PORT === 443)
-            ? ''
-            : `:${PUBLIC_MINIO_PORT}`;
-
-    const url = `${protocol}://${PUBLIC_MINIO_ENDPOINT}${portSuffix}/${bucket}/${encodeURIComponent(
+    const protocol = MINIO_USE_SSL ? 'https' : 'http';
+    const url = `${protocol}://${MINIO_ENDPOINT}:${MINIO_PORT}/${bucket}/${encodeURIComponent(
         finalFilename
     )}`;
 
@@ -374,9 +326,9 @@ export async function uploadToBlob(
 }
 
 export async function deleteFromBlob(urlOrPath: string): Promise<void> {
-    if (!SERVER_MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
+    if (!MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
         throw new Error(
-            'MinIO server environment variables not configured (MINIO_ENDPOINT/SERVER_MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY)'
+            'MinIO environment variables not configured (MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY)'
         );
     }
 
@@ -402,9 +354,9 @@ export async function downloadFromBlob(urlOrPath: string): Promise<{
     buffer: Buffer;
     contentType?: string;
 }> {
-    if (!SERVER_MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
+    if (!MINIO_ENDPOINT || !MINIO_ACCESS_KEY || !MINIO_SECRET_KEY) {
         throw new Error(
-            'MinIO server environment variables not configured (MINIO_ENDPOINT/SERVER_MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY)'
+            'MinIO environment variables not configured (MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY)'
         );
     }
 
