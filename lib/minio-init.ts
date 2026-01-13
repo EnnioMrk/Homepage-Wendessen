@@ -35,82 +35,45 @@ export async function initMinio(): Promise<void> {
 
         const parsed = parseEndpoint(MINIO_ENDPOINT);
 
-        const SERVER_MINIO_ENDPOINT = env.MINIO_SERVER_ENDPOINT || parsed.host;
-        const SERVER_MINIO_PORT = env.MINIO_SERVER_PORT
-            ? parseInt(env.MINIO_SERVER_PORT, 10)
-            : (parseInt(MINIO_PORT, 10) || parseInt(parsed.port, 10) || 9000);
-        const SERVER_MINIO_USE_SSL = env.MINIO_SERVER_USE_SSL === undefined
-            ? MINIO_USE_SSL
-            : env.MINIO_SERVER_USE_SSL === 'true';
-
         const client = new Client({
-            endPoint: SERVER_MINIO_ENDPOINT,
-            port: SERVER_MINIO_PORT,
-            useSSL: SERVER_MINIO_USE_SSL,
+            endPoint: parsed.host,
+            port: parseInt(MINIO_PORT, 10) || parseInt(parsed.port, 10) || 9000,
+            useSSL: MINIO_USE_SSL,
             accessKey: MINIO_ACCESS_KEY,
             secretKey: MINIO_SECRET_KEY,
         });
 
         const buckets = [MINIO_BUCKET_GALLERY, MINIO_BUCKET_PORTRAITS, MINIO_BUCKET_IMPRESSIONS];
-        const MAX_RETRIES = 5;
-        const RETRY_DELAY_MS = 3000;
-
-        console.log(`minio-init: Initializing buckets at ${SERVER_MINIO_ENDPOINT}:${SERVER_MINIO_PORT} (SSL: ${SERVER_MINIO_USE_SSL})`);
 
         for (const bucket of buckets) {
             if (!bucket) continue;
-            let success = false;
-            let retries = 0;
-
-            while (!success && retries < MAX_RETRIES) {
-                try {
-                    const exists = await client.bucketExists(bucket);
-                    if (!exists) {
-                        await client.makeBucket(bucket, '');
-                        console.log(`minio-init: created bucket ${bucket}`);
-                    } else {
-                        console.log(`minio-init: bucket exists ${bucket}`);
-                    }
-
-                    // Always apply the public-read policy so GETs work for all.
-                    const policy = {
-                        Version: '2012-10-17',
-                        Statement: [
-                            {
-                                Action: ['s3:GetObject'],
-                                Effect: 'Allow',
-                                Principal: { AWS: ['*'] },
-                                Resource: [`arn:aws:s3:::${bucket}/*`],
-                                Sid: '',
-                            },
-                        ],
-                    };
-
-                    await client.setBucketPolicy(bucket, JSON.stringify(policy));
-                    console.log(`minio-init: applied public-read policy to ${bucket}`);
-
-                    // Apply CORS policy to allow direct access from the browser
-                    const corsConfig = [
-                        {
-                            AllowedHeaders: ['*'],
-                            AllowedMethods: ['GET', 'HEAD'],
-                            AllowedOrigins: ['*'],
-                            ExposeHeaders: [],
-                            MaxAgeSeconds: 3600,
-                        },
-                    ];
-                    await client.setBucketCors(bucket, corsConfig);
-                    console.log(`minio-init: applied CORS policy to ${bucket}`);
-                    success = true;
-                } catch (err) {
-                    retries++;
-                    if (retries < MAX_RETRIES) {
-                        console.warn(`minio-init: ! Failed for bucket ${bucket} (Attempt ${retries}/${MAX_RETRIES}). Retrying in ${RETRY_DELAY_MS / 1000}s...`);
-                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
-                    } else {
-                        console.error(`minio-init: ✗ Failed for bucket ${bucket} after ${MAX_RETRIES} attempts:`, err);
-                    }
+            try {
+                const exists = await client.bucketExists(bucket);
+                if (!exists) {
+                    await client.makeBucket(bucket, '');
+                    console.log(`minio-init: created bucket ${bucket}`);
+                } else {
+                    console.log(`minio-init: bucket exists ${bucket}`);
                 }
+
+                // Always apply the public-read policy so GETs work for all.
+                const policy = {
+                    Version: '2012-10-17',
+                    Statement: [
+                        {
+                            Action: ['s3:GetObject'],
+                            Effect: 'Allow',
+                            Principal: { AWS: ['*'] },
+                            Resource: [`arn:aws:s3:::${bucket}/*`],
+                            Sid: '',
+                        },
+                    ],
+                };
+
+                await client.setBucketPolicy(bucket, JSON.stringify(policy));
+                console.log(`minio-init: applied public-read policy to ${bucket}`);
+            } catch (err) {
+                console.warn(`minio-init: failed for bucket ${bucket}:`, err);
             }
         }
 
