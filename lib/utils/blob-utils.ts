@@ -11,6 +11,8 @@
 // Bucket types for different storage purposes
 export type MinioBucket = 'gallery' | 'portraits' | 'impressions';
 
+export { isMinioUrl } from './blob-utils-client';
+
 interface BlobUploadResponse {
     url: string;
     pathname: string;
@@ -120,8 +122,8 @@ interface MinioClientLike {
 
 // Keep the client minimally typed to avoid depending on fragile upstream types
 // in the `minio` package. We only need the runtime behavior.
-let _minioClient: any = null;
-async function getMinioClient() {
+let _minioClient: MinioClientLike | null = null;
+async function getMinioClient(): Promise<MinioClientLike> {
     if (_minioClient) return _minioClient;
     const Minio = await import('minio');
     _minioClient = new (

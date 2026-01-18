@@ -8,7 +8,9 @@ import { useAdminAuth } from '@/lib/useAdminAuth';
 
 // `React.ElementRef` is deprecated in newer React type definitions.
 // Infer the element instance type from a component's props/ref instead.
-type InferElementRef<T> = T extends React.JSXElementConstructor<any>
+type InferElementRef<T> = T extends React.JSXElementConstructor<
+    Record<string, unknown>
+>
     ? React.ComponentPropsWithRef<T>['ref'] extends React.Ref<infer R>
     ? R
     : never

@@ -6,16 +6,21 @@ const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@wendessen.de';
 
-let _webpush: any = null;
+interface WebPushLike {
+    setVapidDetails: (subject: string, publicKey: string, privateKey: string) => void;
+    sendNotification: (subscription: unknown, payload: string) => Promise<unknown>;
+}
+
+let _webpush: WebPushLike | null = null;
 import { sql } from './sql';
 
-async function getWebpush() {
+async function getWebpush(): Promise<WebPushLike> {
     if (_webpush) return _webpush;
     const wp = (await import('web-push')).default;
     if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
         wp.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
     }
-    _webpush = wp;
+    _webpush = wp as unknown as WebPushLike;
     return _webpush;
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // dotenv's types sometimes don't resolve correctly under the project's resolver.
 // use a safe import and call `config()` while silencing the specific TS module-resolution issue.
-// @ts-ignore: Fallback for dotenv types/exports resolution
+// @ts-expect-error: Fallback for dotenv types/exports resolution
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,7 +9,7 @@ import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 // `pg` exports can be ESM/has default; import the package and extract `Pool` to satisfy different environments.
 import Pg from 'pg';
-const { Pool } = Pg as any;
+const Pool = Pg.Pool;
 
 async function ensureAdmin() {
     const databaseUrl = process.env.DATABASE_URL;

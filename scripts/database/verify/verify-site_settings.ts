@@ -15,7 +15,7 @@ async function verify() {
     ];
     const rows =
         await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'site_settings'`;
-    const cols = rows.map((r: any) => String(r.column_name));
+    const cols = rows.map((r: { column_name: string }) => String(r.column_name));
     const missing = expected.filter((c) => !cols.includes(c));
     if (!missing.length) {
         console.log('site_settings: OK');

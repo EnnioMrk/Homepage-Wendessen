@@ -75,56 +75,60 @@ export default function WetterPage() {
 
                 // Ensure we actually received JSON. If not, log body for debugging.
                 const contentType = response.headers.get('content-type') || '';
-                let parsedData: any;
                 if (contentType.includes('application/json')) {
-                    parsedData = await response.json();
+                    const parsedData = await response.json();
+
+                    // Map to the simpler interface used by this page
+                    const weatherData: WeatherData = {
+                        location: parsedData.location,
+                        elevation: parsedData.elevation,
+                        lastUpdate: parsedData.lastUpdate,
+                        temperature: {
+                            current: parsedData.temperature.current,
+                            average: parsedData.temperature.average,
+                            min: parsedData.temperature.min,
+                            max: parsedData.temperature.max,
+                        },
+                        humidity: {
+                            current: parsedData.humidity.current,
+                            average: parsedData.humidity.average,
+                            min: parsedData.humidity.min,
+                            max: parsedData.humidity.max,
+                        },
+                        wind: {
+                            speed: parsedData.wind.speed,
+                            direction: parsedData.wind.direction,
+                            degrees: parsedData.wind.degrees,
+                            gusts: parsedData.wind.gusts,
+                        },
+                        pressure: {
+                            current: parsedData.pressure.current,
+                            trend: parsedData.pressure.trend1h,
+                        },
+                        solar: {
+                            current: parsedData.solar.current,
+                            uvIndex: parsedData.solar.uvIndex,
+                        },
+                        precipitation: {
+                            today: parsedData.precipitation.today,
+                            month: parsedData.precipitation.month,
+                            year: parsedData.precipitation.year,
+                        },
+                        forecast: parsedData.forecast,
+                    };
+
+                    setWeatherData(weatherData);
+                    setLastUpdate(parsedData.lastUpdate);
                 } else {
                     const textBody = await response.text();
-                    console.error('Unexpected non-JSON response from /api/weather:', textBody);
-                    throw new Error('Received non-JSON response from weather API');
+                    console.error(
+                        'Unexpected non-JSON response from /api/weather:',
+                        textBody
+                    );
+                    throw new Error(
+                        'Received non-JSON response from weather API'
+                    );
                 }
-
-                // Map to the simpler interface used by this page
-                const weatherData: WeatherData = {
-                    location: parsedData.location,
-                    elevation: parsedData.elevation,
-                    lastUpdate: parsedData.lastUpdate,
-                    temperature: {
-                        current: parsedData.temperature.current,
-                        average: parsedData.temperature.average,
-                        min: parsedData.temperature.min,
-                        max: parsedData.temperature.max,
-                    },
-                    humidity: {
-                        current: parsedData.humidity.current,
-                        average: parsedData.humidity.average,
-                        min: parsedData.humidity.min,
-                        max: parsedData.humidity.max,
-                    },
-                    wind: {
-                        speed: parsedData.wind.speed,
-                        direction: parsedData.wind.direction,
-                        degrees: parsedData.wind.degrees,
-                        gusts: parsedData.wind.gusts,
-                    },
-                    pressure: {
-                        current: parsedData.pressure.current,
-                        trend: parsedData.pressure.trend1h,
-                    },
-                    solar: {
-                        current: parsedData.solar.current,
-                        uvIndex: parsedData.solar.uvIndex,
-                    },
-                    precipitation: {
-                        today: parsedData.precipitation.today,
-                        month: parsedData.precipitation.month,
-                        year: parsedData.precipitation.year,
-                    },
-                    forecast: parsedData.forecast,
-                };
-
-                setWeatherData(weatherData);
-                setLastUpdate(parsedData.lastUpdate);
                 setError(null);
             } catch (err) {
                 setError('Fehler beim Laden der Wetterdaten');

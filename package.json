@@ -4,9 +4,9 @@
     "private": true,
     "scripts": {
         "dev": "bun run --bun next dev --turbopack",
-        "build": "next build",
+        "build": "bun run lint && next build",
         "start": "bun run --bun next start",
-        "lint": "next lint",
+        "lint": "eslint .",
         "test": "bun test",
         "test:unit": "bun test tests/lib tests/validation",
         "test:integration": "bun test tests/integration",

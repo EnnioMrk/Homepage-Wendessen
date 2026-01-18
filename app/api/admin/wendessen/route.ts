@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         try {
             revalidate.revalidatePathSafe('/');
             revalidate.revalidateTagSafe('wendessen');
-        } catch (e) {
+        } catch {
             // swallow - helper already logs if needed
         }
 

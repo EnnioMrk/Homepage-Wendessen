@@ -108,7 +108,7 @@ export async function PUT(
         try {
             revalidate.revalidatePathSafe('/');
             revalidate.revalidateTagSafe('wendessen');
-        } catch (e) {
+        } catch {
             // no-op
         }
 

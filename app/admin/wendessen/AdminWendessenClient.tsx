@@ -23,7 +23,7 @@ export default function AdminWendessenClient({ canManage = false }: AdminWendess
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [layoutToDelete, setLayoutToDelete] = useState<Layout | null>(null);
-    const [_isDeleting, setIsDeleting] = useState(false);
+    const [, setIsDeleting] = useState(false);
     const [isActivating, setIsActivating] = useState<number | null>(null);
 
     useEffect(() => {

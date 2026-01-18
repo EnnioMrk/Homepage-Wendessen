@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import ImageLightbox from './ImageLightbox';
 import AddPhotosModal from './AddPhotosModal';
-import { isMinioUrl } from '@/lib/utils/blob-utils';
+import { isMinioUrl } from '@/lib/utils/blob-utils-client';
 
 interface GalleryImage {
     id: string;

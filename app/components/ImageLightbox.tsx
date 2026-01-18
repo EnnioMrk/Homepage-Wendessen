@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { isMinioUrl } from '@/lib/utils/blob-utils';
+import { isMinioUrl } from '@/lib/utils/blob-utils-client';
 import {
     X,
     DownloadSimple,

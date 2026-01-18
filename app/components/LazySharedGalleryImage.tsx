@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useSharedGalleryImage } from './SharedGalleryImageContext';
-import { isMinioUrl } from '@/lib/utils/blob-utils';
+import { isMinioUrl } from '@/lib/utils/blob-utils-client';
 
 interface LazySharedGalleryImageProps {
     imageId: string;

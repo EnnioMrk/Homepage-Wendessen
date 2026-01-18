@@ -1,0 +1,102 @@
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\app\admin\contacts\AdminContactsClient.tsx
+  48:12  error  '_isDeleting' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\app\admin\contacts\components\ContactForm.tsx
+  60:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\app\admin\dashboard\AdminDashboard.tsx
+  100:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\lib\ensure-admin.ts
+  8:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/naming-convention')
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\lib\push-notifications.ts
+  9:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\lib\utils\blob-utils.ts
+  125:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\next.config.ts
+  64:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\postcss.config.mjs
+  1:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\nuke-db.ts
+  27:14   error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  83:60   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  84:37   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:54   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  92:50   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  92:75   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  92:103  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  93:43   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-admin_logs.ts
+  20:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-admin_users.ts
+  20:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-archive.ts
+  17:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-contacts.ts
+  19:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-events.ts
+  24:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-gallery.ts
+  21:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-news.ts
+  19:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-notification_events.ts
+  8:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-permissions.ts
+  16:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-portraits.ts
+  23:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-push_subscriptions.ts
+  16:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-roles.ts
+  16:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-shared_gallery_reports.ts
+  18:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\database\verify\verify-shared_gallery_submissions.ts
+  27:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\scripts\verify-db.cjs
+   3:22  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  12:14  error  'e' is defined but never used            @typescript-eslint/no-unused-vars
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\tests\integration\database.test.ts
+   31:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   78:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  135:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  177:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  205:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  249:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\tests\validation\edge-cases.test.ts
+  93:38  warning  Unused eslint-disable directive (no problems were reported from 'no-sparse-arrays')
+
+C:\Users\Ennio\Documents\dev\websites\Homepage-Wendessen\types\pg.d.ts
+  2:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  7:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 44 problems (41 errors, 3 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+

@@ -13,6 +13,7 @@ export type AdminAction =
     | 'news.delete'
     | 'news.pin'
     | 'news.unpin'
+    | 'news.reorder'
     // Gallery
     | 'gallery.upload'
     | 'gallery.edit'

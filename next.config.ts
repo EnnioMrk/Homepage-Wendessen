@@ -61,7 +61,7 @@ const nextConfig: NextConfig = {
         // and only enable them when a MinIO hostname is configured via env.
         // Type assertion is required so TS accepts the plain-object patterns
         // as the expected `(URL | RemotePattern)[]` union.
-        remotePatterns: imageRemotePatterns as unknown as any,
+        remotePatterns: imageRemotePatterns as unknown as import('next/dist/shared/lib/image-config').RemotePattern[],
         // Aggressive caching for optimized images (1 year)
         minimumCacheTTL: 31536000,
     },
@@ -158,17 +158,8 @@ const nextConfig: NextConfig = {
             },
         ];
     },
-    eslint: {
-        // Warning: This allows production builds to successfully complete even if
-        // your project has ESLint errors.
-        ignoreDuringBuilds: true,
-    },
     typescript: {
-        // !! WARN !!
-        // Dangerously allow production builds to successfully complete even if
-        // your project has type errors.
-        // !! WARN !!
-        ignoreBuildErrors: true,
+        ignoreBuildErrors: false,
     },
 };
 

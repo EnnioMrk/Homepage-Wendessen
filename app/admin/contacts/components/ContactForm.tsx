@@ -57,7 +57,7 @@ export default function ContactForm({ initialData, onSubmit, onCancel, isSubmitt
     const removeArrayItem = (key: keyof ContactData, index: number) => {
         setFormData(prev => ({
             ...prev,
-            [key]: (prev[key] as any[]).filter((_, i) => i !== index)
+            [key]: (prev[key] as unknown[]).filter((_, i) => i !== index)
         }));
     };
 

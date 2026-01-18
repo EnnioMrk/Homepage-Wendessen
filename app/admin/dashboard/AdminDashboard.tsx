@@ -97,7 +97,7 @@ export default function AdminDashboard({
         colorClass,
         bgClass,
     }: {
-        icon: any;
+        icon: React.ElementType;
         label: string;
         value: string | number;
         colorClass: string;
@@ -123,7 +123,7 @@ export default function AdminDashboard({
         bgClass,
     }: {
         href: string;
-        icon: any;
+        icon: React.ElementType;
         title: string;
         description: string;
         colorClass: string;
