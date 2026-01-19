@@ -10,7 +10,6 @@ export interface ContactData {
     phones: { type: string; value: string }[];
     addresses: string[];
     affiliations: { org: string; role: string }[];
-    sources: string[];
     importance: number;
 }
 
@@ -27,7 +26,6 @@ const emptyContact: ContactData = {
     phones: [],
     addresses: [],
     affiliations: [],
-    sources: [],
     importance: 0
 };
 
@@ -211,32 +209,7 @@ export default function ContactForm({ initialData, onSubmit, onCancel, isSubmitt
                 </div>
             </div>
 
-            {/* Sources */}
-            <div>
-                <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">Quellen</label>
-                    <button type="button" onClick={() => addArrayItem('sources', '')} className="text-sm text-primary hover:text-primary-dark flex items-center">
-                        <Plus size={16} className="mr-1" /> Hinzufügen
-                    </button>
-                </div>
-                <div className="space-y-2">
-                    {formData.sources.map((source, index) => (
-                        <div key={index} className="flex gap-2">
-                            <input
-                                type="text"
-                                value={source}
-                                onChange={e => updateArrayItem('sources', index, e.target.value)}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="Quelle (z.B. Webseite)"
-                            />
-                            <button type="button" onClick={() => removeArrayItem('sources', index)} className="text-red-500 hover:text-red-700 p-2">
-                                <Trash size={18} />
-                            </button>
-                        </div>
-                    ))}
-                    {formData.sources.length === 0 && <p className="text-sm text-gray-500 italic">Keine Quellen</p>}
-                </div>
-            </div>
+
 
             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                 <button

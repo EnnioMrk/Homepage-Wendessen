@@ -527,8 +527,7 @@ export default function ContactDirectory({
             {/* Footer Info */}
             <div className="mt-12 text-center text-sm text-gray-500">
                 <p>
-                    Die Kontakte stammen aus verschiedenen Quellen und werden
-                    regelmäßig aktualisiert.
+                    Die Kontakte werden regelmäßig aktualisiert.
                 </p>
                 <p className="mt-1">
                     Bei Änderungen oder Ergänzungen wenden Sie sich bitte an den{' '}

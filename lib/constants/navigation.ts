@@ -105,3 +105,29 @@ export const MAIN_NAV = [
     { title: 'IMPRESSIONEN', href: '/impressionen' },
     { title: 'KONTAKT', items: KONTAKT_NAV },
 ];
+
+export interface LinkOption {
+    title: string;
+    href: string;
+}
+
+export function getAllNavLinks(): LinkOption[] {
+    const links: LinkOption[] = [];
+
+    const processItem = (item: NavItem, parentTitle?: string) => {
+        const fullTitle = parentTitle ? `${parentTitle} > ${item.title}` : item.title;
+        
+        if (item.href) {
+            links.push({ title: fullTitle, href: item.href });
+        }
+        
+        if (item.items) {
+            item.items.forEach((subItem: NavItem) => processItem(subItem, fullTitle));
+        }
+    };
+
+    MAIN_NAV.forEach(item => processItem(item));
+
+    return links;
+}
+

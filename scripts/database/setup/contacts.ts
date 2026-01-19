@@ -15,7 +15,6 @@ async function setupContacts() {
             phones JSONB DEFAULT '[]'::jsonb,
             addresses JSONB DEFAULT '[]'::jsonb,
             affiliations JSONB DEFAULT '[]'::jsonb,
-            sources JSONB DEFAULT '[]'::jsonb,
             importance INTEGER NOT NULL DEFAULT 0,
             created_at TIMESTAMPTZ DEFAULT NOW(),
             updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -47,7 +46,6 @@ async function setupContacts() {
         phones?: Array<{ type: string; value: string }>;
         addresses?: string[];
         affiliations?: Array<{ org: string; role: string }>;
-        sources?: string[];
     }>;
 
     // 3) Upsert contacts by (name + first email/phone as weak key)
@@ -57,14 +55,13 @@ async function setupContacts() {
     for (const c of contacts) {
         const importance = calculateImportance(c.affiliations ?? []);
         await sql`
-            INSERT INTO contacts (name, emails, phones, addresses, affiliations, sources, importance)
+            INSERT INTO contacts (name, emails, phones, addresses, affiliations, importance)
             VALUES (
                 ${c.name},
                 ${JSON.stringify(c.emails ?? [])}::jsonb,
                 ${JSON.stringify(c.phones ?? [])}::jsonb,
                 ${JSON.stringify(c.addresses ?? [])}::jsonb,
                 ${JSON.stringify(c.affiliations ?? [])}::jsonb,
-                ${JSON.stringify(c.sources ?? [])}::jsonb,
                 ${importance}
             )
         `;

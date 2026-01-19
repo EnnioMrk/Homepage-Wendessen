@@ -14,6 +14,8 @@ import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 import { usePermissions } from '@/lib/usePermissions';
 import FeatureCard from '@/app/components/FeatureCard';
 import TailwindColorPicker from '@/app/admin/components/TailwindColorPicker';
+import PageSelector from '@/app/admin/components/PageSelector';
+
 
 // ... (existing imports)
 
@@ -91,6 +93,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showImagePicker, setShowImagePicker] = useState<
+
         'card_1' | 'card_2' | 'card_3' | null
     >(null);
     const [editingThemeFor, setEditingThemeFor] = useState<
@@ -105,6 +108,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         card_2: { ...EMPTY_CARD, title: 'Karte 2' },
         card_3: { ...EMPTY_CARD, title: 'Karte 3' },
     });
+
 
     useEffect(() => {
         if (layoutId) {
@@ -453,66 +457,74 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5"
                                             />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700">
-                                                    Button Text
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={
-                                                        formData[cardKey]
-                                                            .button_text
-                                                    }
-                                                    onChange={(e) =>
-                                                        updateCard(
-                                                            cardKey,
-                                                            'button_text',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    className="w-full px-3 py-1.5 border rounded-md mt-1"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700">
-                                                    Button Link
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={
-                                                        formData[cardKey]
-                                                            .button_href
-                                                    }
-                                                    onChange={(e) =>
-                                                        updateCard(
-                                                            cardKey,
-                                                            'button_href',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    className="w-full px-3 py-1.5 border rounded-md mt-1"
-                                                />
+                                        {/* Button Configuration */}
+                                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                                            <h5 className="text-sm font-medium text-gray-900 mb-3">Button Einstellungen</h5>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {/* Button Text */}
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                                                        Button Text
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData[cardKey].button_text}
+                                                        onChange={(e) =>
+                                                            updateCard(cardKey, 'button_text', e.target.value)
+                                                        }
+                                                        placeholder="Mehr erfahren"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    />
+                                                </div>
+                                                
+                                                {/* Page Selector */}
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                                                        Seite verlinken
+                                                    </label>
+                                                    <PageSelector
+                                                        value={formData[cardKey].button_href}
+                                                        onChange={(href) => updateCard(cardKey, 'button_href', href)}
+                                                        placeholder="Seite wählen..."
+                                                    />
+                                                </div>
+                                                
+                                                {/* Custom Link */}
+                                                <div>
+                                                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                                                        Oder eigener Link
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData[cardKey].button_href}
+                                                        onChange={(e) =>
+                                                            updateCard(cardKey, 'button_href', e.target.value)
+                                                        }
+                                                        placeholder="/pfad/zur/seite"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Vorschau
-                                            </label>
-                                            <div className="text-xs text-gray-500">
-                                                {formData[cardKey].image_url
-                                                    ? 'Mit Bild'
-                                                    : 'Nur Text'}
-                                            </div>
+                                <div className="flex flex-col h-full">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Vorschau
+                                        </label>
+                                        <div className="text-xs text-gray-500">
+                                            {formData[cardKey].image_url
+                                                ? 'Mit Bild'
+                                                : 'Nur Text'}
                                         </div>
+                                    </div>
 
-                                        {/* Component Preview */}
-                                        <div className="border rounded-xl p-4 bg-gray-50">
+                                    {/* Component Preview */}
+                                    <div className="border rounded-xl p-4 bg-gray-50 flex-1 flex flex-col">
+                                        <div className="flex-1 flex flex-col">
                                             <FeatureCard
                                                 title={
                                                     formData[cardKey].title ||
@@ -554,10 +566,11 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         ? 'hero'
                                                         : 'centered'
                                                 }
-                                                className="min-h-[300px]"
+                                                className="h-full min-h-[300px]"
                                                 compact={true}
                                             />
                                         </div>
+
 
                                         {/* Image Controls */}
                                         <div className="flex gap-2 mt-4">

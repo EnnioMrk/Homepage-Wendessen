@@ -13,7 +13,6 @@ interface Contact {
     phones: { type: string; value: string }[];
     addresses: string[];
     affiliations: { org: string; role: string }[];
-    sources: string[];
     importance: number;
 }
 

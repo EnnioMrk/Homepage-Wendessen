@@ -8,7 +8,6 @@ export interface ContactRecord {
     phones: { type: string; value: string }[];
     addresses: string[];
     affiliations: { org: string; role: string }[];
-    sources: string[];
     importance: number;
 }
 
@@ -32,9 +31,6 @@ function convertToContactItem(row: Record<string, unknown>): ContactListItem {
         affiliations: Array.isArray(row.affiliations)
             ? row.affiliations
             : JSON.parse((row.affiliations as string) ?? '[]'),
-        sources: Array.isArray(row.sources)
-            ? row.sources
-            : JSON.parse((row.sources as string) ?? '[]'),
         importance: Number(row.importance ?? 0),
     };
 }
@@ -97,14 +93,13 @@ export async function createContact(contact: ContactInput): Promise<ContactListI
     try {
         const result = await sql`
             INSERT INTO contacts (
-                name, emails, phones, addresses, affiliations, sources, importance
+                name, emails, phones, addresses, affiliations, importance
             ) VALUES (
                 ${contact.name},
                 ${JSON.stringify(contact.emails)}::jsonb,
                 ${JSON.stringify(contact.phones)}::jsonb,
                 ${JSON.stringify(contact.addresses)}::jsonb,
                 ${JSON.stringify(contact.affiliations)}::jsonb,
-                ${JSON.stringify(contact.sources)}::jsonb,
                 ${contact.importance}
             )
             RETURNING *;
@@ -125,7 +120,6 @@ export async function updateContact(id: number, contact: ContactInput): Promise<
                 phones = ${JSON.stringify(contact.phones)}::jsonb,
                 addresses = ${JSON.stringify(contact.addresses)}::jsonb,
                 affiliations = ${JSON.stringify(contact.affiliations)}::jsonb,
-                sources = ${JSON.stringify(contact.sources)}::jsonb,
                 importance = ${contact.importance}
             WHERE id = ${id}
             RETURNING *;
