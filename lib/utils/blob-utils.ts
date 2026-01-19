@@ -224,10 +224,22 @@ async function ensureBucketExists(bucket: string) {
         client.bucketExists(
             bucket,
             (err: Error | null, exists: boolean) => {
-                if (err) return reject(err);
+                if (err) {
+                    console.error(`[MinIO] Connection error for bucket "${bucket}":`, {
+                        endpoint: MINIO_ENDPOINT,
+                        port: MINIO_PORT,
+                        useSSL: MINIO_USE_SSL,
+                        errorMessage: err.message,
+                        errorCode: (err as { code?: string }).code,
+                    });
+                    return reject(err);
+                }
                 if (exists) return resolve();
                 client.makeBucket(bucket, '', (mkErr: Error | null) => {
-                    if (mkErr) return reject(mkErr);
+                    if (mkErr) {
+                        console.error(`[MinIO] Failed to create bucket "${bucket}":`, mkErr.message);
+                        return reject(mkErr);
+                    }
                     resolve();
                 });
             }
