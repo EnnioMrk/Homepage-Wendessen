@@ -142,172 +142,11 @@ const MenubarSeparator = React.forwardRef<
 ));
 MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName;
 
-const dorflebenItems = [
-    {
-        title: 'Ortsrat',
-        items: [
-            {
-                title: 'Die Mitglieder',
-                href: '/dorfleben/ortsrat/mitglieder',
-                items: [
-                    {
-                        title: 'Aktuelle Mitglieder',
-                        href: '/dorfleben/ortsrat/mitglieder/aktuell',
-                    },
-                    {
-                        title: 'Mitglied werden',
-                        href: '/dorfleben/ortsrat/mitglieder/werden',
-                    },
-                ],
-            },
-            {
-                title: 'Der Ortsbürgermeister berichtet',
-                href: '/dorfleben/ortsrat/bericht',
-                items: [
-                    {
-                        title: 'Aktuelle Berichte',
-                        href: '/dorfleben/ortsrat/bericht/aktuell',
-                    },
-                    {
-                        title: 'Archiv',
-                        href: '/dorfleben/ortsrat/bericht/archiv',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        title: 'Vereinsleben',
-        items: [
-            {
-                title: 'IDW',
-                href: '/dorfleben/vereine/idw',
-                items: [
-                    {
-                        title: 'Über uns',
-                        href: '/dorfleben/vereine/idw/ueber-uns',
-                    },
-                    {
-                        title: 'Veranstaltungen',
-                        href: '/dorfleben/vereine/idw/veranstaltungen',
-                    },
-                ],
-            },
-            {
-                title: 'Freiwillige Feuerwehr',
-                href: '/dorfleben/vereine/feuerwehr',
-                items: [
-                    {
-                        title: 'Über uns',
-                        href: '/dorfleben/vereine/feuerwehr/ueber-uns',
-                    },
-                    {
-                        title: 'Einsätze',
-                        href: '/dorfleben/vereine/feuerwehr/einsaetze',
-                    },
-                ],
-            },
-            {
-                title: 'Initiative Spritzenhaus',
-                href: '/dorfleben/vereine/spritzenhaus',
-            },
-            {
-                title: 'Jugendfeuerwehr',
-                href: '/dorfleben/vereine/jugendfeuerwehr',
-            },
-            {
-                title: 'Kirchbauverein',
-                href: '/dorfleben/vereine/kirchbauverein',
-            },
-            {
-                title: 'Kleingärtnerverein',
-                href: '/dorfleben/vereine/kleingaertner',
-            },
-            {
-                title: 'Schützenverein',
-                href: '/dorfleben/vereine/schuetzenverein',
-            },
-            { title: 'SV Wendessen', href: '/dorfleben/vereine/sv-wendessen' },
-            {
-                title: 'Evang. Seniorenkreis',
-                href: '/dorfleben/vereine/seniorenkreis',
-            },
-            {
-                title: 'Evang. Frauenhilfe',
-                href: '/dorfleben/vereine/frauenhilfe',
-            },
-            {
-                title: 'Hospizverein',
-                href: '/dorfleben/vereine/hospiz',
-            },
-        ],
-    },
-    {
-        title: 'Institutionen',
-        items: [
-            {
-                title: 'Kirche',
-                href: '/dorfleben/institutionen/kirche',
-            },
-            {
-                title: 'Das Hospiz',
-                href: '/dorfleben/institutionen/hospiz',
-            },
-        ],
-    },
-    {
-        title: 'Wir Wendesser',
-        href: '/dorfleben/wir-wendesser',
-    },
-    {
-        title: 'Wetter',
-        href: '/dorfleben/wetter',
-    },
-    {
-        title: 'Archiv',
-        href: '/dorfleben/archiv',
-    },
-];
+import { DORFLEBEN_NAV, WOHNEN_BAUEN_NAV, KONTAKT_NAV } from '@/lib/constants/navigation';
 
-const wohnenBauenItems = [
-    {
-        title: 'Neubaugebiet Leipziger Allee',
-        href: '/wohnen-bauen/neubaugebiet',
-        items: [
-            {
-                title: 'Übersicht',
-                href: '/wohnen-bauen/neubaugebiet/uebersicht',
-            },
-            {
-                title: 'Baufortschritt',
-                href: '/wohnen-bauen/neubaugebiet/fortschritt',
-            },
-        ],
-    },
-    {
-        title: 'Feuerwehrgerätehaus',
-        href: '/wohnen-bauen/feuerwehrgeraetehaus',
-        items: [
-            {
-                title: 'Planung',
-                href: '/wohnen-bauen/feuerwehrgeraetehaus/planung',
-            },
-            {
-                title: 'Baufortschritt',
-                href: '/wohnen-bauen/feuerwehrgeraetehaus/fortschritt',
-            },
-        ],
-    },
-];
-
-const kontaktItems = [
-    { title: 'Verzeichnis', href: '/kontakt/verzeichnis' },
-    { title: 'Redaktionsteam', href: '/kontakt/redaktionsteam' },
-    { title: 'WhatsApp-Kanal', href: '/kontakt/whatsapp' },
-    { title: 'Kontaktformular', href: '/kontakt/formular' },
-    { title: 'Impressum', href: '/kontakt/impressum' },
-    { title: 'Datenschutz', href: '/kontakt/datenschutz' },
-];
+const dorflebenItems = DORFLEBEN_NAV;
+const wohnenBauenItems = WOHNEN_BAUEN_NAV;
+const kontaktItems = KONTAKT_NAV;
 
 function MenubarDemo() {
     const { isAuthenticated } = useAdminAuth();
@@ -343,15 +182,21 @@ function MenubarDemo() {
                             {item.items && (
                                 <>
                                     {item.items.map((subItem) => (
-                                        <Link
-                                            key={subItem.title}
-                                            href={subItem.href}
-                                            passHref
-                                        >
-                                            <MenubarItem className="pl-4 cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
+                                        subItem.href ? (
+                                            <Link
+                                                key={subItem.title}
+                                                href={subItem.href}
+                                                passHref
+                                            >
+                                                <MenubarItem className="pl-4 cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
+                                                    {subItem.title}
+                                                </MenubarItem>
+                                            </Link>
+                                        ) : (
+                                            <div key={subItem.title} className="pl-6 py-1 select-none text-sm font-semibold text-primary">
                                                 {subItem.title}
-                                            </MenubarItem>
-                                        </Link>
+                                            </div>
+                                        )
                                     ))}
                                     <MenubarSeparator />
                                 </>
@@ -367,11 +212,13 @@ function MenubarDemo() {
                 </MenubarTrigger>
                 <MenubarContent>
                     {wohnenBauenItems.map((item) => (
-                        <Link key={item.title} href={item.href} passHref>
-                            <MenubarItem className="cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
-                                {item.title}
-                            </MenubarItem>
-                        </Link>
+                        item.href && (
+                            <Link key={item.title} href={item.href} passHref>
+                                <MenubarItem className="cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
+                                    {item.title}
+                                </MenubarItem>
+                            </Link>
+                        )
                     ))}
                 </MenubarContent>
             </MenubarPrimitive.Menu>
@@ -406,11 +253,13 @@ function MenubarDemo() {
                 </MenubarTrigger>
                 <MenubarContent>
                     {kontaktItems.map((item) => (
-                        <Link key={item.title} href={item.href} passHref>
-                            <MenubarItem className="cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
-                                {item.title}
-                            </MenubarItem>
-                        </Link>
+                        item.href && (
+                            <Link key={item.title} href={item.href} passHref>
+                                <MenubarItem className="cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
+                                    {item.title}
+                                </MenubarItem>
+                            </Link>
+                        )
                     ))}
                 </MenubarContent>
             </MenubarPrimitive.Menu>

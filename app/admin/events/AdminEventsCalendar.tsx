@@ -33,18 +33,11 @@ import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 // Set German locale and configure moment properly
 moment.locale('de');
 
+import { ASSOCIATIONS_MAP } from '@/lib/constants/associations';
+import { EVENT_CATEGORIES, EVENT_CATEGORY_MAP } from '@/lib/constants/categories';
+
 // Vereine map for display
-const VEREINE_MAP: Record<string, string> = {
-    'sv-wendessen': 'SV Wendessen',
-    'feuerwehr': 'Freiwillige Feuerwehr',
-    'jugendfeuerwehr': 'Jugendfeuerwehr',
-    'kleingaertner': 'Kleingärtner-Verein',
-    'kirchbauverein': 'Kirchbauverein',
-    'initiative-spritzenhaus': 'Initiative Spritzenhaus',
-    'schuetzenverein': 'Schützenverein',
-    'seniorenkreis': 'Evang. Seniorenkreis',
-    'frauenhilfe': 'Evang. Frauenhilfe',
-};
+const VEREINE_MAP: Record<string, string> = ASSOCIATIONS_MAP;
 
 // Create localizer with proper configuration
 const localizer = momentLocalizer(moment);
@@ -151,34 +144,15 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                     {event.end && ` - ${moment(event.end).format('HH:mm')}`}
                 </div>
                 <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${isCancelled
-                        ? 'bg-gray-100 text-gray-600'
-                        : event.category === 'sitzung'
-                            ? 'bg-blue-100 text-blue-800'
-                            : event.category === 'veranstaltung'
-                                ? 'bg-green-100 text-green-800'
-                                : event.category === 'sport'
-                                    ? 'bg-orange-100 text-orange-800'
-                                    : event.category === 'kultur'
-                                        ? 'bg-purple-100 text-purple-800'
-                                        : event.category === 'notfall'
-                                            ? 'bg-red-100 text-red-800'
-                                            : 'bg-gray-100 text-gray-800'
-                        }`}
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${
+                        isCancelled
+                            ? 'bg-gray-100 text-gray-600'
+                            : `${EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.bgLight || 'bg-gray-100'} ${EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.textDark || 'text-gray-800'}`
+                    }`}
                 >
-                    {isCancelled
-                        ? 'Abgesagt'
-                        : event.category === 'sitzung'
-                            ? 'Sitzung'
-                            : event.category === 'veranstaltung'
-                                ? 'Veranstaltung'
-                                : event.category === 'sport'
-                                    ? 'Sport'
-                                    : event.category === 'kultur'
-                                        ? 'Kultur'
-                                        : event.category === 'notfall'
-                                            ? 'Notfall'
-                                            : 'Sonstiges'}
+                    {isCancelled 
+                        ? 'Abgesagt' 
+                        : EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.label || 'Sonstiges'}
                 </span>
             </div>
         </div>
@@ -527,14 +501,7 @@ export default function AdminEventsCalendar({
         setIsEditing(true);
     };
 
-    const categoryOptions = [
-        { value: 'sitzung', label: 'Sitzung' },
-        { value: 'veranstaltung', label: 'Veranstaltung' },
-        { value: 'sport', label: 'Sport' },
-        { value: 'kultur', label: 'Kultur' },
-        { value: 'notfall', label: 'Notfall' },
-        { value: 'sonstiges', label: 'Sonstiges' },
-    ];
+    const categoryOptions = EVENT_CATEGORIES.map(c => ({ value: c.id, label: c.label }));
 
     return (
         <div className="bg-white rounded-lg shadow-lg p-6 mt-8">

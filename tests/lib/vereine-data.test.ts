@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test';
-import { vereineData, type Verein } from '../../lib/vereine-data';
+import { ASSOCIATIONS as vereineData, type Verein } from '../../lib/constants/associations';
 
 describe('Vereine Data', () => {
     describe('vereineData array', () => {

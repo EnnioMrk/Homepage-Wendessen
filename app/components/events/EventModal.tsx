@@ -23,18 +23,12 @@ interface EventModalProps {
     };
 }
 
+import { VEREINE_OPTIONS as GLOBAL_VEREINE_OPTIONS } from '@/lib/constants/associations';
+
 // Vereine data for dropdown
 const VEREINE_OPTIONS = [
     { id: '', label: 'Kein Verein' },
-    { id: 'sv-wendessen', label: 'SV Wendessen' },
-    { id: 'feuerwehr', label: 'Freiwillige Feuerwehr' },
-    { id: 'jugendfeuerwehr', label: 'Jugendfeuerwehr' },
-    { id: 'kleingaertner', label: 'Kleingärtner-Verein' },
-    { id: 'kirchbauverein', label: 'Kirchbauverein' },
-    { id: 'initiative-spritzenhaus', label: 'Initiative Spritzenhaus' },
-    { id: 'schuetzenverein', label: 'Schützenverein' },
-    { id: 'seniorenkreis', label: 'Evang. Seniorenkreis' },
-    { id: 'frauenhilfe', label: 'Evang. Frauenhilfe' },
+    ...GLOBAL_VEREINE_OPTIONS
 ];
 
 export default function EventModal({

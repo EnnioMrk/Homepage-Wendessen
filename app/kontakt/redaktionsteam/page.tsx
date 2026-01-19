@@ -1,31 +1,10 @@
 import PageHeader from '@/app/components/layout/PageHeader';
 import { Users, UserCircle } from '@phosphor-icons/react/dist/ssr';
 
-interface TeamMember {
-    name: string;
-    role: string;
-    area?: string;
-}
+import { REDAKTIONSTEAM_KERNTEAM, REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE, TeamMember } from '@/lib/constants/members';
 
-const kernteam: TeamMember[] = [
-    { name: 'Andreas Rink', role: 'Ortsrat' },
-    { name: 'Christina Balder', role: 'Ortsrat' },
-    { name: 'Mark Both', role: 'Ortsrat' },
-    { name: 'Ennio Marke', role: 'Gestaltung' },
-];
-
-const bereichsverantwortliche: TeamMember[] = [
-    { name: 'Ulrike Jürgens', role: 'Verantwortliche', area: 'Hospiz' },
-    {
-        name: 'Ulrike Jungkurth',
-        role: 'Verantwortliche',
-        area: 'Kirchbauverein',
-    },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'SV Wendessen' },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'Feuerwehr' },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'Kirche' },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'IDW' },
-];
+const kernteam = REDAKTIONSTEAM_KERNTEAM;
+const bereichsverantwortliche = REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE;
 
 function TeamCard({ member }: { member: TeamMember }) {
     const isPlaceholder = member.name === 'N.N.';

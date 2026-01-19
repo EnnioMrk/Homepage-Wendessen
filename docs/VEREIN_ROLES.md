@@ -86,7 +86,7 @@ This script:
 
 1. Creates 9 new permissions in the `verein` category
 2. Creates 7 roles (one for each Verein)
-3. Links roles to the Verein IDs from `lib/vereine-data.ts`
+3. Links roles to the Verein IDs from `lib/constants/associations.ts`
 
 ### Permission Checking
 
@@ -205,7 +205,7 @@ function EventManager() {
 
 If a new Verein is added to the system:
 
-1. **Update `lib/vereine-data.ts`**: Add the new Verein to the `vereineData` array
+1. **Update `lib/constants/associations.ts`**: Add the new Verein to the `ASSOCIATIONS` array
 2. **Update Setup Script**: Add the Verein to `scripts/setup-verein-roles.ts`
 3. **Run Setup**: Execute `bun run setup-verein-roles`
 4. **Create Admin User**: Create a new admin user with the new Verein role

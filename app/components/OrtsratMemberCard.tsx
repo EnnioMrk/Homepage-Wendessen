@@ -11,14 +11,8 @@ interface OrtsratMemberCardProps {
     contactSlug?: string;
 }
 
-const partyColors: { [key: string]: string } = {
-    'SPD': 'from-red-600 to-red-700',
-    'FDP': 'from-yellow-500 to-yellow-600',
-    'CDU': 'from-blue-600 to-blue-700',
-    'parteilos': 'from-gray-500 to-gray-600',
-    "parteilos (aufgestellt für B'90)": 'from-green-600 to-green-700',
-    'parteilos (aufgestellt für CDU)': 'from-blue-600 to-blue-700',
-};
+import { PARTY_GRADIENTS } from '@/lib/constants/ui';
+
 
 export default function OrtsratMemberCard({
     name,
@@ -28,7 +22,7 @@ export default function OrtsratMemberCard({
     imageAlt,
     contactSlug,
 }: OrtsratMemberCardProps) {
-    const partyGradient = partyColors[party] || 'from-gray-500 to-gray-600';
+    const partyGradient = PARTY_GRADIENTS[party] || 'from-gray-500 to-gray-600';
 
     const CardContent = () => (
         <div

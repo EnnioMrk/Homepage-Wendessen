@@ -40,6 +40,8 @@ interface NewsItem {
     pinnedOrder?: number;
 }
 
+import { NEWS_CATEGORIES, NEWS_CATEGORY_MAP } from '@/lib/constants/categories';
+
 export default function AdminNews() {
     const router = useRouter();
     const { hasPermission } = usePermissions();
@@ -69,17 +71,7 @@ export default function AdminNews() {
         category: '',
     });
 
-    const categories = [
-        'allgemein',
-        'veranstaltung',
-        'ortsrat',
-        'verein',
-        'feuerwehr',
-        'sport',
-        'kultur',
-        'bau',
-        'wichtig',
-    ];
+    const categories = NEWS_CATEGORIES;
 
     useEffect(() => {
         fetchNews();
@@ -325,18 +317,13 @@ export default function AdminNews() {
         });
     };
 
-    const getCategoryColor = (category: string) => {
-        const colorMap: Record<string, string> = {
-            Bildung: 'bg-amber-100 text-amber-800',
-            Gemeinschaft: 'bg-green-100 text-green-800',
-            Feuerwehr: 'bg-red-100 text-red-800',
-            Digital: 'bg-indigo-100 text-indigo-800',
-            Sport: 'bg-blue-100 text-blue-800',
-            Kultur: 'bg-purple-100 text-purple-800',
-            Verwaltung: 'bg-gray-100 text-gray-800',
-        };
+    const getCategoryStyles = (categoryId: string) => {
+        const config = NEWS_CATEGORY_MAP[categoryId];
+        return config ? `${config.bgLight} ${config.text}` : 'bg-gray-100 text-gray-800';
+    };
 
-        return colorMap[category] || 'bg-gray-100 text-gray-800';
+    const getCategoryLabel = (categoryId: string) => {
+        return NEWS_CATEGORY_MAP[categoryId]?.label || categoryId;
     };
 
     return (
@@ -575,11 +562,11 @@ export default function AdminNews() {
                                                         {item.title}
                                                     </h3>
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryStyles(
                                                             item.category
                                                         )}`}
                                                     >
-                                                        {item.category}
+                                                        {getCategoryLabel(item.category)}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center text-sm text-gray-500 mb-2">
@@ -848,12 +835,12 @@ export default function AdminNews() {
                                         {formatDate(selectedNews.publishedDate)}
                                     </div>
                                     <span
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryStyles(
                                             selectedNews.category
                                         )}`}
                                     >
                                         <Tag size={12} className="mr-1" />
-                                        {selectedNews.category}
+                                        {getCategoryLabel(selectedNews.category)}
                                     </span>
                                 </div>
                             </div>
@@ -953,8 +940,8 @@ export default function AdminNews() {
                                         Kategorie wählen...
                                     </option>
                                     {categories.map((cat) => (
-                                        <option key={cat} value={cat}>
-                                            {cat}
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.label}
                                         </option>
                                     ))}
                                 </select>

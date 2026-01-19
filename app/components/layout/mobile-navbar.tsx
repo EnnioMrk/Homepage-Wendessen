@@ -5,82 +5,11 @@ import Link from 'next/link';
 import { List, X } from '@phosphor-icons/react/dist/ssr';
 import { useAdminAuth } from '@/lib/useAdminAuth';
 
-const dorflebenItems = [
-    {
-        title: 'Ortsrat',
-        items: [
-            { title: 'Die Mitglieder', href: '/dorfleben/ortsrat/mitglieder' },
-            {
-                title: 'Der Ortsbürgermeister berichtet',
-                href: '/dorfleben/ortsrat/bericht',
-            },
-        ],
-    },
-    {
-        title: 'Vereinsleben',
-        items: [
-            { title: 'IDW', href: '/dorfleben/vereine/idw' },
-            {
-                title: 'Freiwillige Feuerwehr',
-                href: '/dorfleben/vereine/feuerwehr',
-            },
-            {
-                title: 'Initiative Spritzenhaus',
-                href: '/dorfleben/vereine/spritzenhaus',
-            },
-            {
-                title: 'Jugendfeuerwehr',
-                href: '/dorfleben/vereine/jugendfeuerwehr',
-            },
-            {
-                title: 'Kirchbauverein',
-                href: '/dorfleben/vereine/kirchbauverein',
-            },
-            {
-                title: 'Kleingärtnerverein',
-                href: '/dorfleben/vereine/kleingaertner',
-            },
-            {
-                title: 'Schützenverein',
-                href: '/dorfleben/vereine/schuetzenverein',
-            },
-            { title: 'SV Wendessen', href: '/dorfleben/vereine/sv-wendessen' },
-            {
-                title: 'Evang. Seniorenkreis',
-                href: '/dorfleben/vereine/seniorenkreis',
-            },
-            {
-                title: 'Evang. Frauenhilfe',
-                href: '/dorfleben/vereine/frauenhilfe',
-            },
-            { title: 'Hospizverein', href: '/dorfleben/vereine/hospiz' },
-        ],
-    },
-    { title: 'Kirche', href: '/dorfleben/institutionen/kirche' },
-    { title: 'Wir Wendesser', href: '/dorfleben/wir-wendesser' },
-    { title: 'Wetter', href: '/dorfleben/wetter' },
-    { title: 'Archiv', href: '/dorfleben/archiv' },
-];
+import { DORFLEBEN_NAV, WOHNEN_BAUEN_NAV, KONTAKT_NAV } from '@/lib/constants/navigation';
 
-const wohnenBauenItems = [
-    {
-        title: 'Neubaugebiet Leipziger Allee',
-        href: '/wohnen-bauen/neubaugebiet',
-    },
-    {
-        title: 'Feuerwehrgerätehaus',
-        href: '/wohnen-bauen/feuerwehrgeraetehaus',
-    },
-    { title: 'Das Hospiz', href: '/dorfleben/institutionen/hospiz' },
-];
-
-const kontaktItems = [
-    { title: 'Verzeichnis', href: '/kontakt/verzeichnis' },
-    { title: 'Redaktionsteam', href: '/kontakt/redaktionsteam' },
-    { title: 'Impressum', href: '/kontakt/impressum' },
-    { title: 'Datenschutz', href: '/kontakt/datenschutz' },
-    { title: 'Kontaktformular', href: '/kontakt/formular' },
-];
+const dorflebenItems = DORFLEBEN_NAV;
+const wohnenBauenItems = WOHNEN_BAUEN_NAV;
+const kontaktItems = KONTAKT_NAV;
 
 export default function MobileNavbar() {
     const [open, setOpen] = useState(false);
@@ -161,15 +90,21 @@ export default function MobileNavbar() {
                                             <ul className="pl-4">
                                                 {item.items.map((subItem) => (
                                                     <li key={subItem.title}>
-                                                        <Link
-                                                            href={subItem.href}
-                                                            className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                            onClick={() =>
-                                                                setOpen(false)
-                                                            }
-                                                        >
-                                                            {subItem.title}
-                                                        </Link>
+                                                        {subItem.href ? (
+                                                            <Link
+                                                                href={subItem.href}
+                                                                className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                                                onClick={() =>
+                                                                    setOpen(false)
+                                                                }
+                                                            >
+                                                                {subItem.title}
+                                                            </Link>
+                                                        ) : (
+                                                            <span className="block py-1 px-2 text-foreground font-medium">
+                                                                {subItem.title}
+                                                            </span>
+                                                        )}
                                                     </li>
                                                 ))}
                                             </ul>
@@ -185,13 +120,15 @@ export default function MobileNavbar() {
                             <ul className="pl-4">
                                 {wohnenBauenItems.map((item) => (
                                     <li key={item.title}>
-                                        <Link
-                                            href={item.href}
-                                            className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                            onClick={() => setOpen(false)}
-                                        >
-                                            {item.title}
-                                        </Link>
+                                        {item.href && (
+                                            <Link
+                                                href={item.href}
+                                                className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                                onClick={() => setOpen(false)}
+                                            >
+                                                {item.title}
+                                            </Link>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
@@ -230,13 +167,15 @@ export default function MobileNavbar() {
                             <ul className="pl-4">
                                 {kontaktItems.map((item) => (
                                     <li key={item.title}>
-                                        <Link
-                                            href={item.href}
-                                            className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                            onClick={() => setOpen(false)}
-                                        >
-                                            {item.title}
-                                        </Link>
+                                        {item.href && (
+                                            <Link
+                                                href={item.href}
+                                                className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                                onClick={() => setOpen(false)}
+                                            >
+                                                {item.title}
+                                            </Link>
+                                        )}
                                     </li>
                                 ))}
                             </ul>

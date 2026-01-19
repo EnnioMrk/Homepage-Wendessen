@@ -5,6 +5,13 @@ import { X, ShieldCheck } from '@phosphor-icons/react/dist/ssr';
 import { AdminUserRecord } from '@/lib/database';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 
+interface Role {
+    id: number;
+    name: string;
+    displayName: string;
+    description?: string;
+}
+
 interface Permission {
     id: number;
     name: string;
@@ -20,18 +27,10 @@ interface PermissionsModalProps {
     onSuccess: () => void;
 }
 
+import { ASSOCIATIONS } from '@/lib/constants/associations';
+
 // Vereine data
-const VEREINE = [
-    { id: 'sv-wendessen', name: 'SV Wendessen' },
-    { id: 'feuerwehr', name: 'Freiwillige Feuerwehr' },
-    { id: 'jugendfeuerwehr', name: 'Jugendfeuerwehr' },
-    { id: 'kleingaertner', name: 'Kleingärtner-Verein' },
-    { id: 'kirchbauverein', name: 'Kirchbauverein' },
-    { id: 'initiative-spritzenhaus', name: 'Initiative Spritzenhaus' },
-    { id: 'schuetzenverein', name: 'Schützenverein' },
-    { id: 'seniorenkreis', name: 'Evang. Seniorenkreis' },
-    { id: 'frauenhilfe', name: 'Evang. Frauenhilfe' },
-];
+const VEREINE = ASSOCIATIONS.map(a => ({ id: a.id, name: a.title }));
 
 export default function PermissionsModal({
     user,
@@ -49,7 +48,12 @@ export default function PermissionsModal({
     const [selectedVereinId, setSelectedVereinId] = useState<string>(
         user.vereinId || ''
     );
+    const [selectedRoleId, setSelectedRoleId] = useState<number | undefined>(
+        user.roleId
+    );
+    const [roles, setRoles] = useState<Role[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingRoles, setIsLoadingRoles] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
     const [pendingRoleRemoval, setPendingRoleRemoval] = useState<string | null>(
@@ -60,6 +64,7 @@ export default function PermissionsModal({
     useEffect(() => {
         if (isOpen) {
             loadPermissions();
+            loadRoles();
             setRolePermissionsLoaded(false);
 
             (async () => {
@@ -80,8 +85,24 @@ export default function PermissionsModal({
 
             setSelectedPermissions(user.customPermissions || []);
             setSelectedVereinId(user.vereinId || '');
+            setSelectedRoleId(user.roleId);
         }
     }, [isOpen, user]);
+
+    const loadRoles = async () => {
+        try {
+            setIsLoadingRoles(true);
+            const response = await fetch('/api/admin/roles');
+            if (response.ok) {
+                const data = await response.json();
+                setRoles(data.roles);
+            }
+        } catch (err) {
+            console.error('Error loading roles:', err);
+        } finally {
+            setIsLoadingRoles(false);
+        }
+    };
 
     const loadPermissions = async () => {
         try {
@@ -278,7 +299,7 @@ export default function PermissionsModal({
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        roleId: user.roleId,
+                        roleId: selectedRoleId || null,
                         customPermissions: selectedPermissions,
                         vereinId: selectedVereinId || null,
                     }),
@@ -341,7 +362,7 @@ export default function PermissionsModal({
                             <ShieldCheck className="w-6 h-6 text-primary mr-2" />
                             <div>
                                 <h3 className="text-lg font-medium text-gray-900">
-                                    Berechtigungen bearbeiten
+                                    Benutzer & Berechtigungen bearbeiten
                                 </h3>
                                 <p className="text-sm text-gray-600">
                                     Benutzer: <strong>{user.username}</strong>
@@ -363,32 +384,68 @@ export default function PermissionsModal({
 
                     {/* Content */}
                     <div className="px-6 py-4 overflow-y-auto max-h-[calc(90vh-180px)]">
-                        {/* Verein Selection */}
-                        <div className="mb-6 border border-gray-200 rounded-lg p-4">
-                            <label
-                                htmlFor="verein"
-                                className="block text-md font-semibold text-gray-900 mb-2"
-                            >
-                                Verein
-                            </label>
-                            <select
-                                id="verein"
-                                value={selectedVereinId}
-                                onChange={(e) =>
-                                    setSelectedVereinId(e.target.value)
-                                }
-                                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                            >
-                                <option value="">Kein Verein</option>
-                                {VEREINE.map((verein) => (
-                                    <option key={verein.id} value={verein.id}>
-                                        {verein.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <p className="mt-1 text-xs text-gray-500">
-                                Ordnet den Admin einem spezifischen Verein zu
-                            </p>
+                        {/* General Info Selection */}
+                        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-200 rounded-lg p-4">
+                            <div>
+                                <label
+                                    htmlFor="role"
+                                    className="block text-md font-semibold text-gray-900 mb-2"
+                                >
+                                    Rolle
+                                </label>
+                                {isLoadingRoles ? (
+                                    <div className="text-sm text-gray-500">Lade Rollen...</div>
+                                ) : (
+                                    <select
+                                        id="role"
+                                        value={selectedRoleId || ''}
+                                        onChange={(e) =>
+                                            setSelectedRoleId(
+                                                e.target.value
+                                                    ? Number(e.target.value)
+                                                    : undefined
+                                            )
+                                        }
+                                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                    >
+                                        <option value="">Keine Rolle</option>
+                                        {roles.map((role) => (
+                                            <option key={role.id} value={role.id}>
+                                                {role.displayName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Bestimmt die Grundberechtigungen
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="verein"
+                                    className="block text-md font-semibold text-gray-900 mb-2"
+                                >
+                                    Verein (Zugehörigkeit)
+                                </label>
+                                <select
+                                    id="verein"
+                                    value={selectedVereinId}
+                                    onChange={(e) =>
+                                        setSelectedVereinId(e.target.value)
+                                    }
+                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                >
+                                    <option value="">Kein Verein</option>
+                                    {VEREINE.map((verein) => (
+                                        <option key={verein.id} value={verein.id}>
+                                            {verein.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Ordnet den Admin einem Verein zu
+                                </p>
+                            </div>
                         </div>
 
                         {/* Info Box */}

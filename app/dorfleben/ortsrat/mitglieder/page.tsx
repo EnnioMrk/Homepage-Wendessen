@@ -12,64 +12,9 @@ export const metadata = {
         'Lernen Sie die Mitglieder unseres Ortsrates kennen - Ihre Vertreter vor Ort',
 };
 
-const ortsratMembers = [
-    {
-        name: 'Andreas Rink',
-        position: 'Ortsbürgermeister',
-        party: 'SPD',
-        imageSrc: '/images/Ortsrat/Andreas_Rink.JPG',
-        imageAlt: 'Andreas Rink - Ortsbürgermeister',
-        contactSlug: 'andreas-rink',
-    },
-    {
-        name: 'Christina Balder',
-        position: 'stellv. Ortsbürgermeisterin',
-        party: 'FDP',
-        imageSrc: '/images/Ortsrat/Christina_Balder.jpg',
-        imageAlt: 'Christina Balder - stellvertretende Ortsbürgermeisterin',
-        contactSlug: 'christina-balder',
-    },
-    {
-        name: 'Renate Hübner',
-        position: 'Ortsratsmitglied',
-        party: 'CDU',
-        imageSrc: '/images/Ortsrat/Renate_Hübner.jpg',
-        imageAlt: 'Renate Hübner - Ortsratsmitglied',
-        contactSlug: 'renate-huebner',
-    },
-    {
-        name: 'Klaus-Martin Jungkurth',
-        position: 'Ortsratsmitglied',
-        party: 'parteilos',
-        imageSrc: '/images/Ortsrat/Klaus-Martin_Jungkurth.JPG',
-        imageAlt: 'Klaus-Martin Jungkurth - Ortsratsmitglied',
-        contactSlug: 'klaus-martin-jungkurth',
-    },
-    {
-        name: 'Reiner Asche',
-        position: 'Ortsratsmitglied',
-        party: 'SPD',
-        imageSrc: '/images/Ortsrat/Reiner_Asche.JPG',
-        imageAlt: 'Reiner Asche - Ortsratsmitglied',
-        contactSlug: 'reiner-asche',
-    },
-    {
-        name: 'Femmke Brandl',
-        position: 'Ortsratsmitglied',
-        party: "parteilos (aufgestellt für B'90)",
-        imageSrc: '/images/Ortsrat/Femmke_Brandl.jpeg',
-        imageAlt: 'Femmke Brandl - Ortsratsmitglied',
-        contactSlug: 'femmke-brandl',
-    },
-    {
-        name: 'Marc Both',
-        position: 'Ortsratsmitglied',
-        party: 'parteilos (aufgestellt für CDU)',
-        imageSrc: '/images/Ortsrat/Marc_Both.JPG',
-        imageAlt: 'Marc Both - Ortsratsmitglied',
-        contactSlug: 'marc-both',
-    },
-];
+import { ORTSRAT_MEMBERS } from '@/lib/constants/members';
+
+const ortsratMembers = ORTSRAT_MEMBERS;
 
 export default function OrtsratMitgliederPage() {
     return (
@@ -91,10 +36,10 @@ export default function OrtsratMitgliederPage() {
                             <OrtsratMemberCard
                                 key={member.name}
                                 name={member.name}
-                                position={member.position}
-                                party={member.party}
-                                imageSrc={member.imageSrc}
-                                imageAlt={member.imageAlt}
+                                position={member.position || member.role}
+                                party={member.party || 'parteilos'}
+                                imageSrc={member.imageSrc || '/images/Placeholder/member.webp'}
+                                imageAlt={member.imageAlt || member.name}
                                 contactSlug={member.contactSlug}
                             />
                         ))}

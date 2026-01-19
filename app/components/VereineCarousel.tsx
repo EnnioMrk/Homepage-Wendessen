@@ -3,7 +3,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import FeatureCard from './FeatureCard';
-import { vereineData } from '@/lib/vereine-data';
+import { ASSOCIATIONS } from '@/lib/constants/associations';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -13,7 +13,7 @@ import 'swiper/css/pagination';
 export default function VereineCarousel() {
     // Create multiple copies for infinite effect
     const slides = Array.from({ length: 3 }, (_, cycle) =>
-        vereineData.map((verein, index) => ({
+        ASSOCIATIONS.map((verein, index) => ({
             ...verein,
             key: `${verein.id}-${cycle}-${index}`,
         }))

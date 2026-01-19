@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import ContactPersonCard from '../../components/ContactPersonCard';
-import { getContactBySlug, getAllContactSlugs } from '../../lib/contact-data';
+import { getMemberBySlug, getAllMemberSlugs } from '@/lib/constants/members';
 
 export async function generateStaticParams() {
-    const slugs = getAllContactSlugs();
+    const slugs = getAllMemberSlugs();
     return slugs.map((slug) => ({
         slug: slug,
     }));
@@ -15,7 +15,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const contact = getContactBySlug(slug);
+    const contact = getMemberBySlug(slug);
 
     if (!contact) {
         return {
@@ -25,8 +25,8 @@ export async function generateMetadata({
     }
 
     return {
-        title: `Kontakt ${contact.name} - ${contact.title} Wendessen`,
-        description: `Kontaktinformationen von ${contact.name}, ${contact.title} von Wendessen. Telefon, E-Mail und Adresse.`,
+        title: `Kontakt ${contact.name} - ${contact.position || contact.role} Wendessen`,
+        description: `Kontaktinformationen von ${contact.name}, ${contact.position || contact.role} von Wendessen. Telefon, E-Mail und Adresse.`,
     };
 }
 
@@ -36,22 +36,23 @@ export default async function ContactPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const contact = getContactBySlug(slug);
+    const contact = getMemberBySlug(slug);
 
-    if (!contact) {
+    if (!contact || !contact.contactInfo) {
         notFound();
     }
 
     return (
         <ContactPersonCard
             name={contact.name}
-            title={contact.title}
+            title={contact.position || contact.role}
             subtitle={contact.subtitle}
-            birthYear={contact.birthYear}
-            profession={contact.profession}
-            imageSrc={contact.imageSrc}
-            imageAlt={contact.imageAlt}
+            birthYear={contact.birthYear || 0}
+            profession={contact.profession || ''}
+            imageSrc={contact.imageSrc || ''}
+            imageAlt={contact.imageAlt || contact.name}
             contactInfo={contact.contactInfo}
         />
     );
 }
+

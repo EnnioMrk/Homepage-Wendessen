@@ -5,7 +5,6 @@ import * as bcrypt from 'bcryptjs';
 declare global {
     // Use a global promise guard so multiple imports/callers in the same
     // process won't execute the logic more than once.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     var __ensureAdminPromise: Promise<void> | undefined;
 }
 

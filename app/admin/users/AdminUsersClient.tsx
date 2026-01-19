@@ -10,7 +10,7 @@ import {
     ArrowLeft,
     Warning,
     ShieldCheck,
-    Gear,
+    Pencil,
     ArrowClockwise,
     CheckCircle,
 } from '@phosphor-icons/react/dist/ssr';
@@ -18,19 +18,10 @@ import { AdminUserRecord } from '@/lib/database';
 import PermissionsModal from '@/app/components/PermissionsModal';
 import { usePermissions } from '@/lib/usePermissions';
 
+import { ASSOCIATIONS_MAP, ASSOCIATIONS } from '@/lib/constants/associations';
+
 // Vereine data for display
-const VEREINE_MAP: Record<string, string> = {
-    'idw': 'IDW',
-    'sv-wendessen': 'SV Wendessen',
-    'feuerwehr': 'Freiwillige Feuerwehr',
-    'jugendfeuerwehr': 'Jugendfeuerwehr',
-    'kleingaertner': 'Kleingärtner-Verein',
-    'kirchbauverein': 'Kirchbauverein',
-    'initiative-spritzenhaus': 'Initiative Spritzenhaus',
-    'schuetzenverein': 'Schützenverein',
-    'seniorenkreis': 'Evang. Seniorenkreis',
-    'frauenhilfe': 'Evang. Frauenhilfe',
-};
+const VEREINE_MAP: Record<string, string> = ASSOCIATIONS_MAP;
 
 export default function AdminUsersClient() {
     const { hasPermission, loading: permissionsLoading } = usePermissions();
@@ -302,9 +293,9 @@ export default function AdminUsersClient() {
                                                                 )
                                                             }
                                                             className="text-primary hover:text-primary-dark"
-                                                            title="Berechtigungen bearbeiten"
+                                                            title="Benutzer & Berechtigungen bearbeiten"
                                                         >
-                                                            <Gear className="w-5 h-5" />
+                                                            <Pencil className="w-5 h-5" />
                                                         </button>
                                                     )}
                                                     {canEdit && (
@@ -539,18 +530,7 @@ function CreateUserModal({
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Vereine data
-    const vereine = [
-        { id: 'idw', name: 'IDW' },
-        { id: 'sv-wendessen', name: 'SV Wendessen' },
-        { id: 'feuerwehr', name: 'Freiwillige Feuerwehr' },
-        { id: 'jugendfeuerwehr', name: 'Jugendfeuerwehr' },
-        { id: 'kleingaertner', name: 'Kleingärtner-Verein' },
-        { id: 'kirchbauverein', name: 'Kirchbauverein' },
-        { id: 'initiative-spritzenhaus', name: 'Initiative Spritzenhaus' },
-        { id: 'schuetzenverein', name: 'Schützenverein' },
-        { id: 'seniorenkreis', name: 'Evang. Seniorenkreis' },
-        { id: 'frauenhilfe', name: 'Evang. Frauenhilfe' },
-    ];
+    const vereine = ASSOCIATIONS.map(a => ({ id: a.id, name: a.title }));
 
     useEffect(() => {
         const loadRoles = async () => {
