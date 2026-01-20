@@ -8,12 +8,11 @@ import {
     UsersThree,
     FileText,
     Shield,
-    User,
-    Phone,
     Buildings,
     Heart,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Kleingärtner Wendessen - Dorfleben',
@@ -21,7 +20,7 @@ export const metadata = {
         'Kleingärtner Wendessen - 58 Gärten mit je 500 m² für Arbeit und Erholung. Sozialverträgliche Kosten mit Wasser- und Stromanschluss.',
 };
 
-export default function KleingaertnerPage() {
+export default async function KleingaertnerPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
@@ -230,39 +229,24 @@ export default function KleingaertnerPage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600">
-                            Ihr Kontakt für alle Fragen rund um die Kleingärten
-                        </p>
-                    </div>
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-green-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Interesse an einem Kleingarten oder Fragen zum Verein?
+                                Unser Vorstand ist gerne für Sie da.
+                            </p>
+                        </div>
 
-                    <div className="max-w-2xl mx-auto">
-                        {/* Contact Person */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-green-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-2">
-                                    1. Vorsitzender
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-4">
-                                    Felix Siebert
-                                </h3>
-                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl">
-                                    <a
-                                        href="tel:0533188667"
-                                        className="flex items-center justify-center text-green-600 hover:text-green-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331 / 88 57 67
-                                    </a>
-                                </div>
-                            </div>
+                        <div className="max-w-xl mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Felix Siebert"
+                                fallbackRole="1. Vorsitzender"
+                                colorClassName="text-green-600"
+                            />
                         </div>
                     </div>
 

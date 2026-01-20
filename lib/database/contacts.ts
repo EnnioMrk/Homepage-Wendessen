@@ -49,6 +49,21 @@ export const getContacts = unstable_cache(
     { tags: ['contacts'], revalidate: 3600 }
 );
 
+export const getContactByName = unstable_cache(
+    async (name: string): Promise<ContactListItem | null> => {
+        try {
+            const result = await sql`SELECT * FROM contacts WHERE LOWER(name) = ${name.toLowerCase()}`;
+            if (result.length === 0) return null;
+            return convertToContactItem(result[0]);
+        } catch (error) {
+            console.error(`Error fetching contact by name ${name}:`, error);
+            throw new Error('Failed to fetch contact');
+        }
+    },
+    ['contact-by-name'],
+    { tags: ['contacts'], revalidate: 3600 }
+);
+
 export async function searchContacts(
     query: string
 ): Promise<ContactListItem[]> {

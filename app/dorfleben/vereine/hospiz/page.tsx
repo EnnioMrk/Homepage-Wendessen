@@ -7,6 +7,7 @@ import {
     ShieldCheck,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Hospizverein Wolfenbüttel e. V. - Vereine',
@@ -14,7 +15,7 @@ export const metadata = {
         'Hospizverein Wolfenbüttel e. V. - Begleitung schwerstkranker und sterbender Menschen sowie deren Angehörige.',
 };
 
-export default function HospizPage() {
+export default async function HospizPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
             <PageHeader
@@ -131,6 +132,29 @@ export default function HospizPage() {
                                     Seit 2024 können Menschen, deren Symptomlast zu Hause nicht mehr gelindert werden kann, nach ärztlicher Verordnung einen Platz im „Hospiz im Gutspark“ bekommen. Das Hospiz wird in Trägerschaft des Hospizvereins geführt.
                                 </p>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Section */}
+                    <div className="mt-16 sm:mt-24">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Kontakt
+                            </h2>
+                            <div className="w-20 h-1 bg-green-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zu unserer Arbeit oder möchten Sie uns unterstützen?
+                                Wir sind gerne für Sie da.
+                            </p>
+                        </div>
+
+                        <div className="max-w-md mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Hospizverein Wolfenbüttel e.V."
+                                fallbackRole="HospizZentrum"
+                                manualEmail="info@hospizverein-wf.de"
+                                colorClassName="text-green-600"
+                            />
                         </div>
                     </div>
                 </div>

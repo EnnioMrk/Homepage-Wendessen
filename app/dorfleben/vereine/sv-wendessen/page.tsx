@@ -12,6 +12,7 @@ import {
     Baby,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'SV Wendessen - Dorfleben',
@@ -19,7 +20,7 @@ export const metadata = {
         'SV Wendessen - Über 75 Jahre Vereinstradition. Fußball, Gymnastik, Tennis, Tischtennis, Tanzsport und vieles mehr für die ganze Familie.',
 };
 
-export default function SVWendessenPage() {
+export default async function SVWendessenPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
@@ -332,259 +333,72 @@ export default function SVWendessenPage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-green-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600">
-                            Ihre direkten Kontakte zu den verschiedenen
-                            Abteilungen
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Football */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-green-500">
-                            <h3 className="text-lg font-bold text-green-700 mb-3">
-                                Fußball
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Lennart Meinberg
-                                    </p>
-                                    <a
-                                        href="tel:016044887045"
-                                        className="text-green-600 hover:text-green-700"
-                                    >
-                                        0160 44 87 045
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:fussball@sv-wendessen.de"
-                                        className="text-green-600 hover:text-green-700 text-sm"
-                                    >
-                                        fussball@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Youth Football */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-blue-500">
-                            <h3 className="text-lg font-bold text-blue-700 mb-3">
-                                Jugendfußball
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Stefan Landsperger
-                                    </p>
-                                    <a
-                                        href="tel:017161110209"
-                                        className="text-blue-600 hover:text-blue-700"
-                                    >
-                                        0171 61 10 209
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:fussball-ju@sv-wendessen.de"
-                                        className="text-blue-600 hover:text-blue-700 text-sm"
-                                    >
-                                        fussball-ju@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Gymnastics */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-pink-500">
-                            <h3 className="text-lg font-bold text-pink-700 mb-3">
-                                Gymnastikabteilung
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-2">
-                                Damengymnastik, Aerobic, Fit and Fun,
-                                Wirbelsäulengymnastik
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zu unseren Abteilungen oder möchten Sie Mitglied werden?
+                                Unsere Ansprechpartner sind gerne für Sie da.
                             </p>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Karlheinz Bock
-                                    </p>
-                                    <a
-                                        href="tel:0533144133"
-                                        className="text-pink-600 hover:text-pink-700"
-                                    >
-                                        05331-4 41 33
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:gymnastik@sv-wendessen.de"
-                                        className="text-pink-600 hover:text-pink-700 text-sm"
-                                    >
-                                        gymnastik@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
                         </div>
 
-                        {/* Children's Gymnastics */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-orange-500">
-                            <h3 className="text-lg font-bold text-orange-700 mb-3">
-                                Kinderturnen
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Hanna Simon
-                                    </p>
-                                    <a
-                                        href="tel:015901334664"
-                                        className="text-orange-600 hover:text-orange-700"
-                                    >
-                                        0159 01 33 46 64
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:kinderturnen@sv-wendessen.de"
-                                        className="text-orange-600 hover:text-orange-700 text-sm"
-                                    >
-                                        kinderturnen@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Dance Sport */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-purple-500">
-                            <h3 className="text-lg font-bold text-purple-700 mb-3">
-                                Tanzsport
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-2">
-                                Paare, Standard und lateinamerikanische Tänze
-                            </p>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Manfred Rasche
-                                    </p>
-                                    <a
-                                        href="tel:053313186867"
-                                        className="text-purple-600 hover:text-purple-700"
-                                    >
-                                        05331 31 86 7
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:tanzsport@sv-wendessen.de"
-                                        className="text-purple-600 hover:text-purple-700 text-sm"
-                                    >
-                                        tanzsport@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Tennis */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-indigo-500">
-                            <h3 className="text-lg font-bold text-indigo-700 mb-3">
-                                Tennis
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Johannes Grieger
-                                    </p>
-                                    <a
-                                        href="tel:017148297336"
-                                        className="text-indigo-600 hover:text-indigo-700"
-                                    >
-                                        0171 48 29 73 6
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:tennis@sv-wendessen.de"
-                                        className="text-indigo-600 hover:text-indigo-700 text-sm"
-                                    >
-                                        tennis@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Table Tennis */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-teal-500">
-                            <h3 className="text-lg font-bold text-teal-700 mb-3">
-                                Tischtennis
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Achim Schmeida
-                                    </p>
-                                    <a
-                                        href="tel:015754110495"
-                                        className="text-teal-600 hover:text-teal-700"
-                                    >
-                                        0157 54 11 04 95
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:tischtennis@sv-wendessen.de"
-                                        className="text-teal-600 hover:text-teal-700 text-sm"
-                                    >
-                                        tischtennis@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Pool 99 */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-yellow-500">
-                            <h3 className="text-lg font-bold text-yellow-700 mb-3">
-                                Fußballförderkreis &quot;Pool 99&quot;
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Thomas Rettberg
-                                    </p>
-                                    <a
-                                        href="tel:017254998704"
-                                        className="text-yellow-600 hover:text-yellow-700"
-                                    >
-                                        0172 54 98 704
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="mailto:pool99@sv-wendessen.de"
-                                        className="text-yellow-600 hover:text-yellow-700 text-sm"
-                                    >
-                                        pool99@sv-wendessen.de
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Club Host */}
-                        <div className="bg-white rounded-3xl p-6 shadow-xl border-l-4 border-red-500">
-                            <h3 className="text-lg font-bold text-red-700 mb-3">
-                                Vereinswirt
-                            </h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <p className="font-semibold text-gray-800">
-                                        Maruan Nissan
-                                    </p>
-                                    <a
-                                        href="tel:017655491268"
-                                        className="text-red-600 hover:text-red-700"
-                                    >
-                                        0176 55491268
-                                    </a>
-                                </div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Lennart Meinberg"
+                                fallbackRole="Fußballobmann"
+                                manualEmail="fussball@sv-wendessen.de"
+                                colorClassName="text-green-600"
+                            />
+                            <ContactCardFetcher
+                                name="Stefan Landsperger"
+                                fallbackRole="Jugendfußball"
+                                manualEmail="fussball-ju@sv-wendessen.de"
+                                colorClassName="text-blue-600"
+                            />
+                            <ContactCardFetcher
+                                name="Karlheinz Bock"
+                                fallbackRole="Gymnastikabteilung"
+                                colorClassName="text-pink-600"
+                                manualEmail="gymnastik@sv-wendessen.de"
+                            />
+                            <ContactCardFetcher
+                                name="Hanna Simon"
+                                fallbackRole="Kinderturnen"
+                                manualEmail="kinderturnen@sv-wendessen.de"
+                                colorClassName="text-orange-600"
+                            />
+                            <ContactCardFetcher
+                                name="Manfred Rasche"
+                                fallbackRole="Tanzsport"
+                                manualEmail="tanzsport@sv-wendessen.de"
+                                colorClassName="text-purple-600"
+                            />
+                            <ContactCardFetcher
+                                name="Johannes Grieger"
+                                fallbackRole="Tennis"
+                                manualEmail="tennis@sv-wendessen.de"
+                                colorClassName="text-indigo-600"
+                            />
+                            <ContactCardFetcher
+                                name="Achim Schmeida"
+                                fallbackRole="Tischtennis"
+                                manualEmail="tischtennis@sv-wendessen.de"
+                                colorClassName="text-teal-600"
+                            />
+                            <ContactCardFetcher
+                                name="Thomas Rettberg"
+                                fallbackRole={'Fußballförderkreis "Pool 99"'}
+                                manualEmail="pool99@sv-wendessen.de"
+                                colorClassName="text-yellow-600"
+                            />
+                            <ContactCardFetcher
+                                name="Maruan Nissan"
+                                fallbackRole="Vereinswirt"
+                                colorClassName="text-red-600"
+                            />
                         </div>
                     </div>
 

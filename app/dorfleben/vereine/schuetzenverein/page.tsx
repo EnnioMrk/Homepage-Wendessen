@@ -8,13 +8,12 @@ import {
     Trophy,
     Warning,
     UsersThree,
-    Phone,
-    User,
     Lightbulb,
     Egg,
     BowlFood,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Schützenverein Wendessen e.V. - Dorfleben',
@@ -22,7 +21,7 @@ export const metadata = {
         'Schützenverein Wendessen e.V. - Sportliche Heimat für über 50 Mitglieder. Schießsport für Kinder, Jugendliche, Frauen und Männer.',
 };
 
-export default function SchuetzenvereinsPage() {
+export default async function SchuetzenvereinsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader title="Schützenverein" icon={<Target />} color="red" />
@@ -331,44 +330,24 @@ export default function SchuetzenvereinsPage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600">
-                            Ihr Kontakt für alle Fragen rund um den
-                            Schützenverein
-                        </p>
-                    </div>
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zum Schießsport oder unserem Verein?
+                                Unser Vorstand ist gerne für Sie da.
+                            </p>
+                        </div>
 
-                    <div className="max-w-2xl mx-auto">
-                        {/* Contact Person */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-red-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-2">
-                                    Schriftführer
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-3">
-                                    Lothar Lange
-                                </h3>
-                                <div className="space-y-2 text-gray-600 mb-4">
-                                    <p>Im Weingarten 9a</p>
-                                    <p>38300 Wolfenbüttel</p>
-                                </div>
-                                <div className="bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-xl">
-                                    <a
-                                        href="tel:05331966756"
-                                        className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331 / 966756
-                                    </a>
-                                </div>
-                            </div>
+                        <div className="max-w-xl mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Lothar Lange"
+                                fallbackRole="Schriftführer"
+                                colorClassName="text-red-600"
+                            />
                         </div>
                     </div>
 

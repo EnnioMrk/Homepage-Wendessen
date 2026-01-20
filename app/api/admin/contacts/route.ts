@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getContacts, createContact } from '@/lib/database/contacts';
+import { getContacts, createContact, searchContacts } from '@/lib/database/contacts';
 import { withPermission } from '@/lib/permissions';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     return withPermission('contacts.view', async () => {
-        const contacts = await getContacts();
+        const searchParams = request.nextUrl.searchParams;
+        const query = searchParams.get('q');
+
+        const contacts = query
+            ? await searchContacts(query)
+            : await getContacts();
+
         return NextResponse.json({ contacts });
     });
 }

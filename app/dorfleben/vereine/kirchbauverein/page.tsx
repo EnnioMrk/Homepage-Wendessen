@@ -15,6 +15,7 @@ import {
     Globe,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Kirchbauverein St. Georg Wendessen - Dorfleben',
@@ -22,7 +23,7 @@ export const metadata = {
         'Der Kirchbauverein St. Georg Wendessen - Erhaltung und Pflege der historischen Wehrkirche aus dem 12. Jahrhundert',
 };
 
-export default function KirchbauvereinsPage() {
+export default async function KirchbauvereinsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
@@ -422,6 +423,29 @@ export default function KirchbauvereinsPage() {
                                 E-Mail schreiben
                             </a>
                         </div>
+                    </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="mt-16 sm:mt-24">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                            Kontakt
+                        </h2>
+                        <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
+                        <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                            Möchten Sie unsere Arbeit unterstützen oder haben Sie Fragen zu unseren Veranstaltungen?
+                            Wir freuen uns über Ihre Nachricht.
+                        </p>
+                    </div>
+
+                    <div className="max-w-md mx-auto px-4">
+                        <ContactCardFetcher
+                            name="Kirchbauverein St. Georg"
+                            fallbackRole="Kulturerhalt & Gemeinschaft"
+                            manualEmail="kirchbauverein.wendessen@gmail.com"
+                            colorClassName="text-blue-600"
+                        />
                     </div>
                 </div>
             </div>

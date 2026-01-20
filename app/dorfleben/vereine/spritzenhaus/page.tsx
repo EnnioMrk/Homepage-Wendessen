@@ -7,11 +7,9 @@ import {
     UsersThree,
     User,
     Heart,
-    CreditCard,
-    PenNib,
-    Phone,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Initiative Wendesser Spritzenhaus e.V. - Vereine',
@@ -19,7 +17,7 @@ export const metadata = {
         'Die Initiative Wendesser Spritzenhaus e.V. - Erhalt und Pflege des historischen Spritzenhauses im Herzen von Wendessen',
 };
 
-export default function SpritzenhausPage() {
+export default async function SpritzenhausPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
@@ -220,128 +218,39 @@ export default function SpritzenhausPage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-amber-600 to-yellow-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600">
-                            Der Vorstand der Initiative Wendesser Spritzenhaus
-                            e.V.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* 1. Vorsitzende */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-amber-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-amber-600 uppercase tracking-wide mb-2">
-                                    1. Vorsitzende
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-3">
-                                    Ines Lange
-                                </h3>
-                                <div className="space-y-2 text-gray-600">
-                                    <p>Am Gute 3</p>
-                                    <p>38300 Wolfenbüttel</p>
-                                </div>
-                                <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl mt-4">
-                                    <a
-                                        href="tel:053319455640"
-                                        className="flex items-center justify-center text-amber-600 hover:text-amber-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331/9455640
-                                    </a>
-                                </div>
-                            </div>
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-amber-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zum Verein oder zur Erhaltung des Spritzenhauses?
+                                Unser Vorstand steht Ihnen gerne zur Verfügung.
+                            </p>
                         </div>
 
-                        {/* 2. Vorsitzende */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-yellow-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-yellow-600 uppercase tracking-wide mb-2">
-                                    2. Vorsitzende
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-3">
-                                    Ursula Hanke
-                                </h3>
-                                <div className="space-y-2 text-gray-600">
-                                    <p>Am Gute 22</p>
-                                    <p>38300 Wolfenbüttel</p>
-                                </div>
-                                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-xl mt-4">
-                                    <a
-                                        href="tel:053319357411"
-                                        className="flex items-center justify-center text-yellow-600 hover:text-yellow-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331/9357411
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Kassenführer */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-green-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <CreditCard className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-2">
-                                    Kassenführer
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-3">
-                                    Klaus-Martin Jungkurth
-                                </h3>
-                                <div className="space-y-2 text-gray-600">
-                                    <p>Dorfstraße 18</p>
-                                    <p>38300 Wolfenbüttel</p>
-                                </div>
-                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-xl mt-4">
-                                    <a
-                                        href="tel:0533168680"
-                                        className="flex items-center justify-center text-green-600 hover:text-green-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331/68680
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Schriftführer */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <PenNib className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-2">
-                                    Schriftführer
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-3">
-                                    Peter Dorn
-                                </h3>
-                                <div className="space-y-2 text-gray-600">
-                                    <p>Im Weingarten 10</p>
-                                    <p>38300 Wolfenbüttel</p>
-                                </div>
-                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl mt-4">
-                                    <a
-                                        href="tel:05331906681"
-                                        className="flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        05331/906681
-                                    </a>
-                                </div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Ines Lange"
+                                fallbackRole="1. Vorsitzende"
+                                colorClassName="text-amber-600"
+                            />
+                            <ContactCardFetcher
+                                name="Ursula Hanke"
+                                fallbackRole="2. Vorsitzende"
+                                colorClassName="text-yellow-600"
+                            />
+                            <ContactCardFetcher
+                                name="Klaus-Martin Jungkurth"
+                                fallbackRole="Kassenführer"
+                                colorClassName="text-green-600"
+                            />
+                            <ContactCardFetcher
+                                name="Peter Dorn"
+                                fallbackRole="Schriftführer"
+                                colorClassName="text-blue-600"
+                            />
                         </div>
                     </div>
                 </div>

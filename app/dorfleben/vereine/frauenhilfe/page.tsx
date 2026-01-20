@@ -9,12 +9,10 @@ import {
     ShieldCheck,
     Heart,
     CalendarBlank,
-    User,
-    Phone,
-    MapPin,
     HandHeart,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Evang. Frauenhilfe Wendessen - Dorfleben',
@@ -249,50 +247,24 @@ export default function FrauenhilfePage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartnerin
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-pink-600 to-rose-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600">
-                            Ihre Kontaktperson für alle Fragen
-                        </p>
-                    </div>
+                    <div className="mt-16 sm:mt-24">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ansprechpartnerin
+                            </h2>
+                            <div className="w-20 h-1 bg-pink-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zu unseren Treffen oder möchten Sie Mitglied werden?
+                                Unsere Vorsitzende ist gerne für Sie da.
+                            </p>
+                        </div>
 
-                    <div className="max-w-2xl mx-auto">
-                        {/* Contact Person */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-pink-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-pink-600 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-pink-600 uppercase tracking-wide mb-2">
-                                    1. Vorsitzende
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-4">
-                                    Sigrid Haasner
-                                </h3>
-                                <div className="space-y-3">
-                                    <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-xl">
-                                        <div className="flex items-center justify-center text-pink-600">
-                                            <MapPin className="w-5 h-5 mr-2" />
-                                            <div className="text-left">
-                                                <p>Bäckergasse 1</p>
-                                                <p>38300 Wolfenbüttel</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-xl">
-                                        <a
-                                            href="tel:0533163531"
-                                            className="flex items-center justify-center text-pink-600 hover:text-pink-700 transition-colors"
-                                        >
-                                            <Phone className="w-5 h-5 mr-2" />
-                                            05331 / 63531
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="max-w-md mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Sigrid Haasner"
+                                fallbackRole="1. Vorsitzende"
+                                colorClassName="text-pink-600"
+                            />
                         </div>
                     </div>
 

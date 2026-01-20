@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash, PencilSimple, Envelope, Phone, Buildings } from '@phosphor-icons/react/dist/ssr';
+import { Plus, Trash, PencilSimple, Envelope, Phone, Buildings, MagnifyingGlass } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 
@@ -45,12 +45,11 @@ export default function AdminContactsClient({
     const [error, setError] = useState<string | null>(null);
     const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
     const [, setIsDeleting] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        fetchContacts();
-    }, []);
-
-    const fetchContacts = async () => {
+    const fetchContacts = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         try {
             const response = await fetch('/api/admin/contacts');
             if (response.ok) {
@@ -65,7 +64,25 @@ export default function AdminContactsClient({
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchContacts();
+    }, [fetchContacts]);
+
+    const filteredContacts = contacts.filter(contact => {
+        const query = searchQuery.toLowerCase();
+        if (!query) return true;
+
+        const nameMatch = contact.name.toLowerCase().includes(query);
+        const emailMatch = contact.emails.some(email => email.toLowerCase().includes(query));
+        const phoneMatch = contact.phones.some(phone => phone.value.toLowerCase().includes(query));
+        const orgMatch = contact.affiliations.some(aff =>
+            aff.org.toLowerCase().includes(query) || aff.role.toLowerCase().includes(query)
+        );
+
+        return nameMatch || emailMatch || phoneMatch || orgMatch;
+    });
 
     const handleDelete = async (id: string) => {
         setIsDeleting(true);
@@ -106,6 +123,21 @@ export default function AdminContactsClient({
                 )}
             </div>
 
+            <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <MagnifyingGlass className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </div>
+                <input
+                    type="text"
+                    name="search"
+                    id="search"
+                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 placeholder-gray-500 focus:border-primary focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
+                    placeholder="Suche nach Name, E-Mail, Telefon oder Organisation..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+
             {error && (
                 <div className="bg-red-50 text-red-700 p-4 rounded-md">
                     {error}
@@ -114,12 +146,12 @@ export default function AdminContactsClient({
 
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
                 <ul className="divide-y divide-gray-200">
-                    {contacts.length === 0 ? (
+                    {filteredContacts.length === 0 ? (
                         <li className="px-6 py-12 text-center text-gray-500">
-                            Keine Kontakte vorhanden.
+                            Keine Kontakte gefunden.
                         </li>
                     ) : (
-                        contacts.map((contact) => (
+                        filteredContacts.map((contact) => (
                             <li key={contact.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between">
                                 <div className="flex-1 min-w-0 pr-4">
                                     <div className="flex items-center justify-between mb-1">

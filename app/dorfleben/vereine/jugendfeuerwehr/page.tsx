@@ -6,11 +6,9 @@ import {
     Lightning,
     UserPlus,
     MapPin,
-    User,
-    Phone,
-    DeviceMobile,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Jugendfeuerwehr Wendessen - Vereine',
@@ -18,7 +16,7 @@ export const metadata = {
         'Die Jugendfeuerwehr Wendessen - Spaß, Action und feuerwehrtechnisches Wissen für Kinder und Jugendliche von 10 bis 16 Jahren',
 };
 
-export default function JugendfeuerwehrPage() {
+export default async function JugendfeuerwehrPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
@@ -268,85 +266,29 @@ export default function JugendfeuerwehrPage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-orange-600 to-red-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600">
-                            Unsere Jugendwarte sind für euch da
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Jugendfeuerwehrwart */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-orange-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-orange-600 uppercase tracking-wide mb-2">
-                                    Jugendfeuerwehrwart
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-4">
-                                    Christoph Ruprecht
-                                </h3>
-                                <div className="space-y-3">
-                                    <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-xl">
-                                        <a
-                                            href="tel:053319358049"
-                                            className="flex items-center justify-center text-orange-600 hover:text-orange-700 transition-colors"
-                                        >
-                                            <Phone className="w-5 h-5 mr-2" />
-                                            05331 / 935849
-                                        </a>
-                                    </div>
-                                    <div className="bg-gradient-to-r from-orange-50 to-red-50 p-4 rounded-xl">
-                                        <a
-                                            href="tel:015170168231"
-                                            className="flex items-center justify-center text-orange-600 hover:text-orange-700 transition-colors"
-                                        >
-                                            <DeviceMobile className="w-5 h-5 mr-2" />
-                                            0151 / 70168231
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-orange-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zur Jugendfeuerwehr oder möchten Sie uns kennenlernen?
+                                Unsere Jugendwarte sind gerne für Sie da.
+                            </p>
                         </div>
 
-                        {/* Stellvertretender Jugendfeuerwehrwart */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-red-500">
-                            <div className="text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-red-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <User className="w-10 h-10 text-white" />
-                                </div>
-                                <p className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-2">
-                                    stellv. Jugendfeuerwehrwart
-                                </p>
-                                <h3 className="text-2xl font-bold text-foreground mb-4">
-                                    Frederick Witte
-                                </h3>
-                                <div className="space-y-3">
-                                    <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-xl">
-                                        <a
-                                            href="tel:0533164618"
-                                            className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
-                                        >
-                                            <Phone className="w-5 h-5 mr-2" />
-                                            05331 / 64618
-                                        </a>
-                                    </div>
-                                    <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-xl">
-                                        <a
-                                            href="tel:015775767067"
-                                            className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
-                                        >
-                                            <DeviceMobile className="w-5 h-5 mr-2" />
-                                            01577 / 5767067
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Christoph Ruprecht"
+                                fallbackRole="Jugendfeuerwehrwart"
+                                colorClassName="text-orange-600"
+                            />
+                            <ContactCardFetcher
+                                name="Frederick Witte"
+                                fallbackRole="stellv. Jugendfeuerwehrwart"
+                                colorClassName="text-red-600"
+                            />
                         </div>
                     </div>
 

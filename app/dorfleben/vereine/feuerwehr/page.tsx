@@ -5,11 +5,10 @@ import {
     UsersThree,
     Clock,
     MapPin,
-    User,
-    Phone,
     Globe,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ContactCardFetcher from '@/app/components/ContactCardFetcher';
 
 export const metadata = {
     title: 'Freiwillige Feuerwehr Wendessen - Vereine',
@@ -17,7 +16,7 @@ export const metadata = {
         'Die Freiwillige Feuerwehr Wendessen - Retten, Löschen, Bergen, Schützen. Werden Sie Teil unserer Gemeinschaft!',
 };
 
-export default function FeuerwehrPage() {
+export default async function FeuerwehrPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
@@ -281,60 +280,28 @@ export default function FeuerwehrPage() {
                     </div>
 
                     {/* Contact Section */}
-                    <div className="text-center mb-6 sm:mb-8 md:mb-12">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 px-2">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 mx-auto mb-4 sm:mb-6"></div>
-                        <p className="text-base sm:text-lg text-gray-600 px-4">
-                            Ihre direkten Kontakte bei der Freiwilligen
-                            Feuerwehr Wendessen
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-4xl mx-auto">
-                        {/* Ortsbrandmeister */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl border-l-4 border-red-500">
-                            <div className="text-center">
-                                <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 flex-shrink-0">
-                                    <User className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-white" />
-                                </div>
-                                <p className="text-xs sm:text-sm font-semibold text-red-600 uppercase tracking-wide mb-1 sm:mb-2">
-                                    Ortsbrandmeister
-                                </p>
-                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3 sm:mb-4">
-                                    Kai Brackmann
-                                </h3>
-                                <div className="bg-gradient-to-r from-red-50 to-orange-50 p-3 sm:p-4 rounded-xl">
-                                    <a
-                                        href="tel:015678945961"
-                                        className="flex items-center justify-center text-red-600 hover:text-red-700 transition-colors"
-                                    >
-                                        <Phone className="w-5 h-5 mr-2" />
-                                        015678 945961
-                                    </a>
-                                </div>
-                            </div>
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zur Einsatzabteilung, der Jugendfeuerwehr oder
+                                unserem Förderverein? Wir sind gerne für Sie da.
+                            </p>
                         </div>
 
-                        {/* Stellvertretender Ortsbrandmeister */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl border-l-4 border-orange-500">
-                            <div className="text-center">
-                                <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 flex-shrink-0">
-                                    <User className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-white" />
-                                </div>
-                                <p className="text-xs sm:text-sm font-semibold text-orange-600 uppercase tracking-wide mb-1 sm:mb-2">
-                                    stellv. Ortsbrandmeister
-                                </p>
-                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3 sm:mb-4">
-                                    Jessica Schulz
-                                </h3>
-                                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-3 sm:p-4 rounded-xl">
-                                    <p className="text-sm text-gray-600">
-                                        Keine Telefonnummer angegeben
-                                    </p>
-                                </div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
+                            <ContactCardFetcher
+                                name="Kai Brackmann"
+                                fallbackRole="Ortsbrandmeister"
+                            />
+                            <ContactCardFetcher
+                                name="Jessica Schulz"
+                                fallbackRole="stellv. Ortsbrandmeisterin"
+                                colorClassName="text-orange-600"
+                            />
                         </div>
                     </div>
 
