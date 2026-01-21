@@ -31,63 +31,71 @@ async function main() {
     const steps = [
         {
             name: 'Admin users',
-            cmd: 'bun /scripts/database/setup/admin-users.ts',
+            cmd: 'bun scripts/database/setup/admin-users.ts',
         },
         {
             name: 'Roles & permissions',
-            cmd: 'bun /scripts/database/setup/roles-permissions.ts',
+            cmd: 'bun scripts/database/setup/roles-permissions.ts',
         },
         {
             name: 'Admin logs',
-            cmd: 'bun /scripts/database/setup/admin-logs.ts',
+            cmd: 'bun scripts/database/setup/admin-logs.ts',
         },
         {
             name: 'Push subscriptions',
-            cmd: 'bun /scripts/database/setup/push-subscriptions.ts',
+            cmd: 'bun scripts/database/setup/push-subscriptions.ts',
         },
         {
             name: 'Contacts (seed)',
-            cmd: 'bun /scripts/database/setup/contacts.ts',
+            cmd: 'bun scripts/database/setup/contacts.ts',
         },
         {
             name: 'Portraits table',
-            cmd: 'bun /scripts/database/setup/portraits-table.ts',
+            cmd: 'bun scripts/database/setup/portraits-table.ts',
         },
         {
             name: 'Events table',
-            cmd: 'bun /scripts/database/setup/events.ts',
+            cmd: 'bun scripts/database/setup/events.ts',
         },
         {
             name: 'Gallery images table',
-            cmd: 'bun /scripts/database/setup/admin-gallery.ts',
+            cmd: 'bun scripts/database/setup/admin-gallery.ts',
         },
         {
             name: 'News table',
-            cmd: 'bun /scripts/database/setup/news.ts',
+            cmd: 'bun scripts/database/setup/news.ts',
         },
         {
             name: 'Shared gallery',
-            cmd: 'bun /scripts/database/setup/shared-gallery.ts',
+            cmd: 'bun scripts/database/setup/shared-gallery.ts',
         },
         {
             name: 'Gallery reports',
-            cmd: 'bun /scripts/database/setup/gallery-reports.ts',
+            cmd: 'bun scripts/database/setup/gallery-reports.ts',
         },
         {
             name: 'MinIO buckets',
-            cmd: 'bun /scripts/database/setup/minio-buckets.ts',
+            cmd: 'bun scripts/database/setup/minio-buckets.ts',
         },
         {
             name: 'Vereinsverwalter role',
-            cmd: 'bun /scripts/database/setup/verein-roles.ts',
+            cmd: 'bun scripts/database/setup/verein-roles.ts',
         },
         {
             name: 'Site settings',
-            cmd: 'bun /scripts/database/setup/settings.ts',
+            cmd: 'bun scripts/database/setup/settings.ts',
         },
         {
             name: 'Archive table',
-            cmd: 'bun /scripts/database/setup/archive-table.ts',
+            cmd: 'bun scripts/database/setup/archive-table.ts',
+        },
+        {
+            name: 'Wendessen section',
+            cmd: 'bun scripts/database/setup/wendessen-section.ts',
+        },
+        {
+            name: 'Contact permissions',
+            cmd: 'bun scripts/database/setup/add-contact-permissions.ts',
         },
     ];
 
