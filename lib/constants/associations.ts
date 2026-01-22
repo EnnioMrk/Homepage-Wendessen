@@ -7,18 +7,18 @@ export interface Verein {
     buttonText: string;
     buttonHref: string;
     buttonColor:
-        | 'green'
-        | 'red'
-        | 'blue'
-        | 'orange'
-        | 'lime'
-        | 'pink'
-        | 'indigo'
-        | 'emerald'
-        | 'violet'
-        | 'teal'
-        | 'cyan'
-        | 'yellow';
+    | 'green'
+    | 'red'
+    | 'blue'
+    | 'orange'
+    | 'lime'
+    | 'pink'
+    | 'indigo'
+    | 'emerald'
+    | 'violet'
+    | 'teal'
+    | 'cyan'
+    | 'yellow';
 }
 
 export const ASSOCIATIONS: Verein[] = [
@@ -121,6 +121,16 @@ export const ASSOCIATIONS: Verein[] = [
         buttonText: 'Mehr erfahren',
         buttonHref: '/dorfleben/vereine/frauenhilfe',
         buttonColor: 'pink',
+    },
+    {
+        id: 'hospiz-verein',
+        title: 'Hospizverein Wolfenbüttel',
+        description: 'Begleitung schwerstkranker und sterbender Menschen sowie deren Angehörige.',
+        imageSrc: '/images/Hospiz.jpg',
+        imageAlt: 'Hospizverein Wolfenbüttel',
+        buttonText: 'Mehr erfahren',
+        buttonHref: '/dorfleben/vereine/hospiz',
+        buttonColor: 'green',
     },
 ];
 
