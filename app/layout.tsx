@@ -14,6 +14,20 @@ export const metadata: Metadata = {
     title: 'Wendessen.de - Unser Dorf im Netz',
     description:
         'Willkommen auf der offiziellen Webseite von Wendessen. Neuigkeiten, Termine, Vereine und mehr.',
+    icons: {
+        icon: [
+            { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+            { url: '/favicon.svg', type: 'image/svg+xml' },
+        ],
+        shortcut: '/favicon.ico',
+        apple: [
+            { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+        ],
+    },
+    manifest: '/site.webmanifest',
+    appleWebApp: {
+        title: 'Wendessen',
+    },
 };
 
 export default async function RootLayout({
@@ -24,7 +38,7 @@ export default async function RootLayout({
     // NOTE: Do not run startup initialization here. Initialization (MinIO,
     // default admin user) should run from a controlled startup script so it
     // only executes once, not per Next/Turbopack build worker.
-     return (
+    return (
         <html lang="de" className="h-full" suppressHydrationWarning={true}>
             <body
                 className={`${inter.className} min-h-full bg-background-secondary`}
