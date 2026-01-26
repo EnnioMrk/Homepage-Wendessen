@@ -272,7 +272,7 @@ export default function AdminEventsCalendar({
     const [showEventModal, setShowEventModal] = useState(false);
     const [eventForm, setEventForm] = useState<EventFormData>(defaultEventForm);
     const [isEditing, setIsEditing] = useState(false);
-    const [view, setView] = useState<View>('month');
+    const [view, setView] = useState<View>('agenda');
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);
