@@ -109,7 +109,7 @@ export default function WasStehAnPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [selectedVerein, setSelectedVerein] = useState<string>('all');
-    const [view, setView] = useState<View>('month');
+    const [view, setView] = useState<View>('agenda');
     const [date, setDate] = useState(new Date());
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
