@@ -1,7 +1,16 @@
 import { redirect } from 'next/navigation';
 import { isAuthenticated, getSessionData } from '@/lib/auth';
+import { Suspense } from 'react';
 
-export default async function AdminPage() {
+export default function AdminPage() {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <AdminPageContent />
+        </Suspense>
+    );
+}
+
+async function AdminPageContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {
@@ -15,4 +24,5 @@ export default async function AdminPage() {
     }
 
     redirect('/admin/dashboard');
+    return null;
 }

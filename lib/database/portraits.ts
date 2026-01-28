@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 
 export interface DatabasePortrait {
@@ -58,42 +58,36 @@ function convertToPortraitSubmission(
     };
 }
 
-export const getPortraitSubmissions = unstable_cache(
-    async (): Promise<PortraitSubmission[]> => {
-        try {
-            const result = await sql`
+export async function getPortraitSubmissions(): Promise<PortraitSubmission[]> {
+    'use cache';
+    cacheTag('portraits');
+    try {
+        const result = await sql`
                 SELECT * FROM portraits 
                 ORDER BY submitted_at DESC
             `;
-            return result.map(convertToPortraitSubmission);
-        } catch (error) {
-            console.error('Error fetching portrait submissions:', error);
-            throw new Error(
-                'Failed to fetch portrait submissions from database'
-            );
-        }
-    },
-    ['portraits-all'],
-    { tags: ['portraits'], revalidate: 3600 }
-);
+        return result.map(convertToPortraitSubmission);
+    } catch (error) {
+        console.error('Error fetching portrait submissions:', error);
+        throw new Error('Failed to fetch portrait submissions from database');
+    }
+}
 
-export const getApprovedPortraits = unstable_cache(
-    async (): Promise<PortraitSubmission[]> => {
-        try {
-            const result = await sql`
+export async function getApprovedPortraits(): Promise<PortraitSubmission[]> {
+    'use cache';
+    cacheTag('portraits', 'portraits-approved');
+    try {
+        const result = await sql`
                 SELECT * FROM portraits 
                 WHERE status = 'approved'
                 ORDER BY submitted_at DESC
             `;
-            return result.map(convertToPortraitSubmission);
-        } catch (error) {
-            console.error('Error fetching approved portraits:', error);
-            throw new Error('Failed to fetch approved portraits from database');
-        }
-    },
-    ['portraits-approved'],
-    { tags: ['portraits'], revalidate: 3600 }
-);
+        return result.map(convertToPortraitSubmission);
+    } catch (error) {
+        console.error('Error fetching approved portraits:', error);
+        throw new Error('Failed to fetch approved portraits from database');
+    }
+}
 
 export async function createPortraitSubmission(
     name: string,

@@ -3,8 +3,17 @@ import { hasPermission } from '../../../lib/permissions';
 import { redirect } from 'next/navigation';
 import AdminGallery from './AdminGallery';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Suspense } from 'react';
 
-export default async function GalleryPage() {
+export default function GalleryPage() {
+    return (
+        <Suspense fallback={<div>Galerie lädt...</div>}>
+            <GalleryContent />
+        </Suspense>
+    );
+}
+
+async function GalleryContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

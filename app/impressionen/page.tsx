@@ -10,8 +10,6 @@ export const metadata = {
         'Fotos und Eindrücke aus Wendessen - von Wendessenern für Wendessener',
 };
 
-export const revalidate = 300; // Revalidate every 5 minutes
-
 export default async function ImpessionenPage() {
     let approvedGroups: Awaited<
         ReturnType<typeof getApprovedSharedGalleryGroups>

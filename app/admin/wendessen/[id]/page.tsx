@@ -2,8 +2,21 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import EditLayoutClient from '../EditLayoutClient';
+import { Suspense } from 'react';
 
-export default async function EditWendessenLayoutPage({
+export default function EditWendessenLayoutPage({
+    params
+}: {
+    params: Promise<{ id: string }>
+}) {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <EditWendessenLayoutContent params={params} />
+        </Suspense>
+    );
+}
+
+async function EditWendessenLayoutContent({
     params
 }: {
     params: Promise<{ id: string }>

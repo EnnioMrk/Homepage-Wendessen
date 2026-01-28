@@ -2,8 +2,21 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import EditContactClient from '../EditContactClient';
+import { Suspense } from 'react';
 
-export default async function EditContactPage({
+export default function EditContactPage({
+    params
+}: {
+    params: Promise<{ id: string }>
+}) {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <EditContactContent params={params} />
+        </Suspense>
+    );
+}
+
+async function EditContactContent({
     params
 }: {
     params: Promise<{ id: string }>

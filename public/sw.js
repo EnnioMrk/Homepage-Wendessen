@@ -11,6 +11,12 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
+// A fetch handler is required for PWA installation criteria.
+self.addEventListener('fetch', (event) => {
+    // Network-only strategy: we just let the request pass through.
+    // This is enough to satisfy the PWA requirements.
+});
+
 self.addEventListener('push', (event) => {
     console.log('Push notification received');
 

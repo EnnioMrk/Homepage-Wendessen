@@ -4,8 +4,17 @@ import { redirect } from 'next/navigation';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import AdminContactsClient from './AdminContactsClient';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default async function AdminContactsPage() {
+export default function AdminContactsPage() {
+    return (
+        <Suspense fallback={<div>Kontakte laden...</div>}>
+            <ContactsContent />
+        </Suspense>
+    );
+}
+
+async function ContactsContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

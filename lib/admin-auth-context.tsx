@@ -173,7 +173,15 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const isInitialLoad = initialLoadRef.current;
-        refresh(isInitialLoad ? undefined : { silent: true });
+        
+        // Use an async function to avoid synchronous setState in the effect body
+        const initAuth = async () => {
+            await Promise.resolve();
+            await refresh(isInitialLoad ? undefined : { silent: true });
+        };
+        
+        initAuth();
+        
         if (isInitialLoad) {
             initialLoadRef.current = false;
         }

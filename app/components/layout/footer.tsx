@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getSiteSettings } from '@/lib/database';
+import { InstallPWA } from '@/app/components/layout/InstallPWA';
 
 export async function Footer() {
     const settings = await getSiteSettings();
@@ -63,6 +64,9 @@ export async function Footer() {
                         >
                             Kontakt
                         </Link>
+                        
+                        <div className="w-px h-4 bg-gray-300 mx-1 hidden sm:block"></div>
+                        <InstallPWA />
                     </div>
                 </div>
             </div>

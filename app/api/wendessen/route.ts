@@ -1,8 +1,6 @@
 import { sql } from '@/lib/sql';
 import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
     try {
         const layout = await sql`

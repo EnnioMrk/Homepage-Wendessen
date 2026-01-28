@@ -3,8 +3,17 @@ import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import AdminSettings from './AdminSettings';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Suspense } from 'react';
 
-export default async function SettingsPage() {
+export default function SettingsPage() {
+    return (
+        <Suspense fallback={<div>Einstellungen laden...</div>}>
+            <SettingsContent />
+        </Suspense>
+    );
+}
+
+async function SettingsContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

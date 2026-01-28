@@ -6,12 +6,12 @@ This is a Next.js 15 community website for the village of Wendessen, Germany. It
 
 ## Tech Stack & Architecture
 
--   **Framework**: Next.js 15 with App Router, React 19
+-   **Framework**: Next.js 16 with App Router, React 19
 -   **Runtime**: Bun (preferred for all commands: `bun dev`, `bun run build`)
     **Database**: PostgreSQL via `pg` (node-postgres) and a shared helper `lib/sql.ts`
--   **Styling**: Tailwind CSS with custom component patterns
--   **Authentication**: Custom session-based auth (see `lib/auth.ts`)
--   **Caching**: Next.js `unstable_cache` with tags for data revalidation
+-   **Styling**: Tailwind CSS with custom component patterns and Phosphor Icons
+-   **Authentication**: Custom session-based auth with HMAC-SHA256 signing (see `lib/auth.ts`, `lib/session-utils.ts`)
+-   **Caching**: Next.js 16 `'use cache'` directive with `cacheTag` for data revalidation
 
 ### Database Layer Patterns
 
@@ -22,32 +22,23 @@ This is a Next.js 15 community website for the village of Wendessen, Germany. It
 -   **Gallery**: Image management system
 -   **Contacts**: Community contact directory with importance scoring
 
-### Database Connection Pattern
-
-```typescript
-import { sql } from '@/lib/sql';
-// use tagged-template sql`SELECT ...` throughout the codebase
-```
-
 ### Data Transformation Convention
 
 All database functions follow a consistent pattern:
 
 1. Raw database query returns `Record<string, unknown>`
 2. Convert to strongly-typed interfaces via converter functions (e.g., `convertToCalendarEvent`)
-3. Use `unstable_cache` with tags for performance and revalidation
+3. Use the `'use cache'` directive and `cacheTag()` for performance and revalidation
 
 Example:
 
 ```typescript
-export const getEvents = unstable_cache(
-    async (): Promise<CalendarEvent[]> => {
-        const events = await sql`SELECT * FROM events ORDER BY start_date ASC`;
-        return events.map(convertToCalendarEvent);
-    },
-    ['all-events'],
-    { tags: ['events'], revalidate: 3600 }
-);
+export async function getEvents(): Promise<CalendarEvent[]> {
+    'use cache';
+    cacheTag('events');
+    const events = await sql`SELECT * FROM events ORDER BY start_date ASC`;
+    return events.map(convertToCalendarEvent);
+}
 ```
 
 ## Component Patterns
@@ -57,13 +48,6 @@ export const getEvents = unstable_cache(
 -   Components are in `app/components/` directory
 -   Use TypeScript with strict typing
 -   Props interfaces are defined inline with components
-
-### UI Component Structure
-
-1. **Card Components**: Use consistent shadow, hover, and transform patterns
-2. **Gradient Backgrounds**: Extensive use of Tailwind gradient utilities
-3. **Responsive Design**: Mobile-first with `sm:`, `md:`, `lg:` breakpoints
-4. **Icon Integration**: Lucide React icons throughout
 
 ### Modal Pattern
 
@@ -83,17 +67,6 @@ Modals follow this structure:
 -   Middleware protects `/admin/*` routes except `/admin/login`
 -   No database storage - tokens are self-contained with timestamps
 
-### Admin Route Structure
-
-```
-/admin/
-  /login - Authentication page
-  /dashboard - Overview with quick actions
-  /events - Event management with calendar
-  /news - News article management
-  /gallery - Image upload and management
-```
-
 ### Data Mutations
 
 -   All admin actions require authentication check via `isAuthenticated()`
@@ -101,12 +74,6 @@ Modals follow this structure:
 -   API routes follow REST conventions in `app/api/admin/`
 
 ## Database Scripts & Migrations
-
-### Setup Commands
-
--   `bun run setup-gallery` - Creates gallery table
--   `bun run setup-contacts` - Initializes contact data
--   Direct script execution: `bun run scripts/setup-database.ts`
 
 ### Migration Pattern
 

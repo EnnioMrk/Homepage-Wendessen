@@ -18,6 +18,61 @@ interface ContactInfoCardProps {
     isClickable?: boolean;
 }
 
+interface CardContentProps {
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+    gradient: string;
+    isClickable: boolean;
+}
+
+const CardContent = ({ icon, label, value, gradient, isClickable }: CardContentProps) => (
+    <div
+        className={`group relative overflow-hidden rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 bg-white ${
+            isClickable
+                ? 'transform hover:-translate-y-2 cursor-pointer'
+                : ''
+        }`}
+    >
+        <div className="flex items-start space-x-4">
+            <div
+                className={`w-12 h-12 bg-gradient-to-r ${gradient} rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
+            >
+                {icon}
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                    {label}
+                </p>
+                <p
+                    className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 break-words overflow-hidden"
+                    style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        wordBreak: 'break-all',
+                        fontSize:
+                            value.length > 25
+                                ? value.length > 35
+                                    ? '0.875rem'
+                                    : '1rem'
+                                : '1.125rem',
+                    }}
+                >
+                    {value}
+                </p>
+            </div>
+            {isClickable && (
+                <div className="opacity-50 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
+                    <ArrowSquareOut className="w-5 h-5 text-primary" />
+                </div>
+            )}
+        </div>
+        {/* Hover effect overlay */}
+        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+    </div>
+);
+
 export function ContactInfoCard({
     icon,
     label,
@@ -26,62 +81,29 @@ export function ContactInfoCard({
     gradient,
     isClickable = false,
 }: ContactInfoCardProps) {
-    const CardContent = () => (
-        <div
-            className={`group relative overflow-hidden rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 bg-white ${
-                isClickable
-                    ? 'transform hover:-translate-y-2 cursor-pointer'
-                    : ''
-            }`}
-        >
-            <div className="flex items-start space-x-4">
-                <div
-                    className={`w-12 h-12 bg-gradient-to-r ${gradient} rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}
-                >
-                    {icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-                        {label}
-                    </p>
-                    <p
-                        className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 break-words overflow-hidden"
-                        style={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            wordBreak: 'break-all',
-                            fontSize:
-                                value.length > 25
-                                    ? value.length > 35
-                                        ? '0.875rem'
-                                        : '1rem'
-                                    : '1.125rem',
-                        }}
-                    >
-                        {value}
-                    </p>
-                </div>
-                {isClickable && (
-                    <div className="opacity-50 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
-                        <ArrowSquareOut className="w-5 h-5 text-primary" />
-                    </div>
-                )}
-            </div>
-            {/* Hover effect overlay */}
-            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-        </div>
-    );
-
     if (href && isClickable) {
         return (
             <a href={href} className="block">
-                <CardContent />
+                <CardContent
+                    icon={icon}
+                    label={label}
+                    value={value}
+                    gradient={gradient}
+                    isClickable={isClickable}
+                />
             </a>
         );
     }
 
-    return <CardContent />;
+    return (
+        <CardContent
+            icon={icon}
+            label={label}
+            value={value}
+            gradient={gradient}
+            isClickable={isClickable}
+        />
+    );
 }
 
 interface ContactPersonCardProps {

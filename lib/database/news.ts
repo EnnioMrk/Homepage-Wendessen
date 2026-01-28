@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 
 export interface DatabaseNews {
@@ -43,11 +43,13 @@ function convertToNewsItem(dbNews: Record<string, unknown>): NewsItem {
 }
 
 export async function getNews(): Promise<NewsItem[]> {
+    'use cache';
+    cacheTag('news');
     try {
         const news = await sql`
-      SELECT * FROM news 
-      ORDER BY published_date DESC
-    `;
+                SELECT * FROM news 
+                ORDER BY published_date DESC
+            `;
 
         return news.map(convertToNewsItem);
     } catch (error) {
@@ -56,52 +58,52 @@ export async function getNews(): Promise<NewsItem[]> {
     }
 }
 
-export const getRecentNews = unstable_cache(
-    async (limit: number = 4): Promise<NewsItem[]> => {
-        try {
-            const pinnedNews = await sql`
+export async function getRecentNews(limit: number = 4): Promise<NewsItem[]> {
+    'use cache';
+    cacheTag('news', `recent-limit-${limit}`);
+    try {
+        const pinnedNews = await sql`
                 SELECT * FROM news 
                 WHERE is_pinned = TRUE
                 ORDER BY pinned_order ASC, pinned_at DESC
                 LIMIT 3
             `;
 
-            const pinnedCount = pinnedNews.length;
-            const remainingSlots = limit - pinnedCount;
+        const pinnedCount = pinnedNews.length;
+        const remainingSlots = limit - pinnedCount;
 
-            let regularNews: Record<string, unknown>[] = [];
-            if (remainingSlots > 0) {
-                const pinnedIds = pinnedNews.map(
-                    (n: Record<string, unknown>) => n.id
-                );
-                if (pinnedIds.length > 0) {
-                    regularNews = await sql`
+        let regularNews: Record<string, unknown>[] = [];
+        if (remainingSlots > 0) {
+            const pinnedIds = pinnedNews.map(
+                (n: Record<string, unknown>) => n.id
+            );
+            if (pinnedIds.length > 0) {
+                regularNews = await sql`
                         SELECT * FROM news 
                         WHERE id != ALL(${pinnedIds})
                         ORDER BY published_date DESC
                         LIMIT ${remainingSlots}
                     `;
-                } else {
-                    regularNews = await sql`
+            } else {
+                regularNews = await sql`
                         SELECT * FROM news 
                         ORDER BY published_date DESC
                         LIMIT ${remainingSlots}
                     `;
-                }
             }
-
-            const allNews = [...pinnedNews, ...regularNews];
-            return allNews.map(convertToNewsItem);
-        } catch (error) {
-            console.error('Error fetching recent news:', error);
-            throw new Error('Failed to fetch recent news from database');
         }
-    },
-    ['recent-news'],
-    { tags: ['news'], revalidate: 3600 }
-);
+
+        const allNews = [...pinnedNews, ...regularNews];
+        return allNews.map(convertToNewsItem);
+    } catch (error) {
+        console.error('Error fetching recent news:', error);
+        throw new Error('Failed to fetch recent news from database');
+    }
+}
 
 export async function getNewsByCategory(category: string): Promise<NewsItem[]> {
+    'use cache';
+    cacheTag('news', `category-${category}`);
     try {
         const news = await sql`
       SELECT * FROM news 
@@ -116,23 +118,21 @@ export async function getNewsByCategory(category: string): Promise<NewsItem[]> {
     }
 }
 
-export const getArchivedNews = unstable_cache(
-    async (): Promise<NewsItem[]> => {
-        try {
-            const news = await sql`
+export async function getArchivedNews(): Promise<NewsItem[]> {
+    'use cache';
+    cacheTag('news');
+    try {
+        const news = await sql`
           SELECT * FROM news 
           ORDER BY published_date DESC
           OFFSET 4
         `;
-            return news.map(convertToNewsItem);
-        } catch (error) {
-            console.error('Error fetching archived news:', error);
-            throw new Error('Failed to fetch archived news from database');
-        }
-    },
-    ['archived-news'],
-    { tags: ['news'], revalidate: 3600 }
-);
+        return news.map(convertToNewsItem);
+    } catch (error) {
+        console.error('Error fetching archived news:', error);
+        throw new Error('Failed to fetch archived news from database');
+    }
+}
 
 export async function createNews(
     news: Omit<NewsItem, 'id' | 'publishedDate'>
@@ -152,6 +152,8 @@ export async function createNews(
 }
 
 export async function getNewsById(id: string): Promise<NewsItem | null> {
+    'use cache';
+    cacheTag('news', `news-id-${id}`);
     try {
         const result = await sql`
       SELECT * FROM news 
@@ -302,30 +304,27 @@ function convertToArchiveItem(row: Record<string, unknown>): ArchiveItem {
 }
 
 // Get all archive items
-export const getArchiveItems = unstable_cache(
-    async (): Promise<ArchiveItem[]> => {
-        try {
-            const items = await sql`
+export async function getArchiveItems(): Promise<ArchiveItem[]> {
+    'use cache';
+    cacheTag('archive');
+    try {
+        const items = await sql`
                 SELECT * FROM archive 
                 ORDER BY created_date DESC NULLS LAST, created_at DESC
             `;
-            return items.map(convertToArchiveItem);
-        } catch (error) {
-            console.error('Error fetching archive items:', error);
-            return [];
-        }
-    },
-    ['archive-items'],
-    {
-        tags: ['archive'],
-        revalidate: 3600,
+        return items.map(convertToArchiveItem);
+    } catch (error) {
+        console.error('Error fetching archive items:', error);
+        return [];
     }
-);
+}
 
 // Get archive item by ID
 export async function getArchiveItemById(
     id: string
 ): Promise<ArchiveItem | null> {
+    'use cache';
+    cacheTag('archive', `archive-id-${id}`);
     try {
         const result = await sql`
             SELECT * FROM archive WHERE id = ${id}

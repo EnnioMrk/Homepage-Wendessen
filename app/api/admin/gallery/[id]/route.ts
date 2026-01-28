@@ -5,8 +5,6 @@ import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
-export const runtime = 'nodejs';
-
 // using shared `sql` helper imported above
 
 // PUT - Update image (rename)

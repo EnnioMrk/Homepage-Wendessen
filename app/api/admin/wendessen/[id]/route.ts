@@ -4,8 +4,6 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import revalidate from '@/lib/revalidate';
 
-export const dynamic = 'force-dynamic';
-
 export async function PUT(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }

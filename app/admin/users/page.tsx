@@ -3,8 +3,17 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import AdminUsersClient from './AdminUsersClient';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Suspense } from 'react';
 
-export default async function AdminUsersPage() {
+export default function AdminUsersPage() {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <AdminUsersContent />
+        </Suspense>
+    );
+}
+
+async function AdminUsersContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

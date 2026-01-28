@@ -3,8 +3,17 @@ import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import AdminSharedGallery from './AdminSharedGalleryNew';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Suspense } from 'react';
 
-export default async function AdminSharedGalleryPage() {
+export default function AdminSharedGalleryPage() {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <AdminSharedGalleryAuthWrapper />
+        </Suspense>
+    );
+}
+
+async function AdminSharedGalleryAuthWrapper() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {
