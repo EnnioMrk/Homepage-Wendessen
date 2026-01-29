@@ -40,10 +40,6 @@ export const DORFLEBEN_NAV: NavItem[] = [
             {
                 title: 'Feuerwehr',
                 href: '/dorfleben/vereine/feuerwehr',
-                items: [
-                    { title: 'Freiwillige Feuerwehr', href: '/dorfleben/vereine/feuerwehr/einsatzabteilung' },
-                    { title: 'Jugendfeuerwehr', href: '/dorfleben/vereine/jugendfeuerwehr' },
-                ],
             },
             { title: 'Initiative Spritzenhaus', href: '/dorfleben/vereine/spritzenhaus' },
             { title: 'Kirchbauverein', href: '/dorfleben/vereine/kirchbauverein' },
