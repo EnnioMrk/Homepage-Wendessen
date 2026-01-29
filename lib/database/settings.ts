@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 
 export interface SiteSetting {
@@ -6,22 +6,20 @@ export interface SiteSetting {
     value: string;
 }
 
-export const getSiteSettings = unstable_cache(
-    async (): Promise<Record<string, string>> => {
-        const result = await sql`
+export async function getSiteSettings(): Promise<Record<string, string>> {
+    'use cache';
+    cacheTag('settings');
+    const result = await sql`
             SELECT key, value
             FROM site_settings
         `;
 
-        const settings: Record<string, string> = {};
-        for (const row of result) {
-            settings[row.key as string] = (row.value as string) || '';
-        }
-        return settings;
-    },
-    ['site-settings'],
-    { revalidate: 300, tags: ['settings'] }
-);
+    const settings: Record<string, string> = {};
+    for (const row of result) {
+        settings[row.key as string] = (row.value as string) || '';
+    }
+    return settings;
+}
 
 export async function getSiteSetting(key: string): Promise<string | null> {
     const settings = await getSiteSettings();

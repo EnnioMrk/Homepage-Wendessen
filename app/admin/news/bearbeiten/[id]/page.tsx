@@ -3,12 +3,21 @@ import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import EditNewsForm from './EditNewsForm';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Suspense } from 'react';
 
 interface PageProps {
     params: Promise<{ id: string }>;
 }
 
-export default async function EditNewsPage({ params }: PageProps) {
+export default function EditNewsPage({ params }: PageProps) {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <EditNewsContent params={params} />
+        </Suspense>
+    );
+}
+
+async function EditNewsContent({ params }: PageProps) {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

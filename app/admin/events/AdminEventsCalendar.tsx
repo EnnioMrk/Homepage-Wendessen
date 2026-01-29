@@ -4,7 +4,7 @@ import { Calendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/de';
 import '../../was-steht-an/calendar.css'; // Import calendar styles
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { CalendarEvent } from '@/lib/database';
 import { getCategoryBackgroundColor } from '@/lib/utils/event-utils';
 
@@ -167,13 +167,14 @@ export default function AdminEventsCalendar({
 }: AdminEventsCalendarProps) {
     const { hasPermission, user } = usePermissions();
 
-    // State for events that updates when initialEvents changes
-    const [events, setEvents] = useState<CalendarEvent[]>(() =>
+    // Memoized events that updates when initialEvents changes
+    const events = useMemo(() =>
         initialEvents.map((event) => ({
             ...event,
             start: new Date(event.start),
             end: new Date(event.end),
-        }))
+        })),
+        [initialEvents]
     );
 
     // Check if user can edit/cancel this specific event
@@ -252,27 +253,13 @@ export default function AdminEventsCalendar({
         return false;
     };
 
-    // Update events when initialEvents changes
-    useEffect(() => {
-        console.log(
-            'initialEvents changed, updating events. Count:',
-            initialEvents.length
-        );
-        const processedEvents = initialEvents.map((event) => ({
-            ...event,
-            start: new Date(event.start),
-            end: new Date(event.end),
-        }));
-        setEvents(processedEvents);
-        console.log('Events updated. New count:', processedEvents.length);
-    }, [initialEvents]);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null
     );
     const [showEventModal, setShowEventModal] = useState(false);
     const [eventForm, setEventForm] = useState<EventFormData>(defaultEventForm);
     const [isEditing, setIsEditing] = useState(false);
-    const [view, setView] = useState<View>('month');
+    const [view, setView] = useState<View>('agenda');
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);

@@ -4,8 +4,6 @@ import PageHeader from '@/app/components/layout/PageHeader';
 import { getArchivedNews, getArchiveItems } from '@/lib/database';
 import ArchiveClient from './ArchiveClient';
 
-export const revalidate = 3600;
-
 export default async function ArchivPage() {
     const [archiveItems, archivedNews] = await Promise.all([
         getArchiveItems(),

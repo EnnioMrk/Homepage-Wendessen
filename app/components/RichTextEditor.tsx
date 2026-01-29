@@ -40,6 +40,21 @@ declare module 'slate' {
     }
 }
 
+const ToolbarButton = ({ active, onMouseDown, children, title }: { active: boolean; onMouseDown: () => void; children: React.ReactNode; title: string }) => (
+    <button
+        type="button"
+        onMouseDown={(e) => {
+            e.preventDefault();
+            onMouseDown();
+        }}
+        className={`p-2 rounded hover:bg-gray-200 transition-colors ${active ? 'bg-gray-300 text-primary' : 'text-gray-700'
+            }`}
+        title={title}
+    >
+        {children}
+    </button>
+);
+
 interface RichTextEditorProps {
     value: Descendant[];
     onChange: (value: Descendant[]) => void;
@@ -181,22 +196,6 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Artikel
 
         return !!match;
     };
-
-    const ToolbarButton = ({ active, onMouseDown, children, title }: { active: boolean; onMouseDown: () => void; children: React.ReactNode; title: string }) => (
-        <button
-            type="button"
-            onMouseDown={(e) => {
-                e.preventDefault();
-                onMouseDown();
-            }}
-            className={`p-2 rounded hover:bg-gray-200 transition-colors ${
-                active ? 'bg-gray-300 text-primary' : 'text-gray-700'
-            }`}
-            title={title}
-        >
-            {children}
-        </button>
-    );
 
     return (
         <div className="border border-gray-300 overflow-hidden h-full flex flex-col">

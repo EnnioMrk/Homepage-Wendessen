@@ -1,8 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-// lib/sql provides the database helper
-const SESSION_COOKIE_NAME = 'admin-session';
+import { signSession, verifySession, SessionData, SESSION_COOKIE_NAME } from './session-utils';
 
 export interface AdminUser {
     id: number;
@@ -17,29 +16,9 @@ export interface AdminUser {
     vereinId?: string;
 }
 
-export interface SessionData {
-    userId: number;
-    username: string;
-    mustChangePassword: boolean;
-    roleId?: number;
-    roleName?: string;
-    vereinId?: string;
-    timestamp: number;
-}
+// SessionData interface removed as it is now imported from session-utils
 
-// Simple session token generation with user data
-function generateSessionToken(sessionData: SessionData): string {
-    return Buffer.from(JSON.stringify(sessionData)).toString('base64');
-}
-
-function decodeSessionToken(token: string): SessionData | null {
-    try {
-        const decoded = Buffer.from(token, 'base64').toString();
-        return JSON.parse(decoded) as SessionData;
-    } catch {
-        return null;
-    }
-}
+// Token generation and decoding removed as they are now in session-utils
 
 // Get admin user by username
 export async function getAdminUserByUsername(
@@ -159,7 +138,7 @@ export async function createSession(user: AdminUser): Promise<string> {
         timestamp: Date.now(),
     };
 
-    const token = generateSessionToken(sessionData);
+    const token = await signSession(sessionData);
     const cookieStore = await cookies();
 
     // Only set Secure if in production and HTTPS.
@@ -176,7 +155,7 @@ export async function createSession(user: AdminUser): Promise<string> {
     cookieStore.set(SESSION_COOKIE_NAME, token, {
         httpOnly: true,
         secure: Boolean(isProd && isHttps),
-        sameSite: 'lax',
+        sameSite: 'strict',
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
     });
@@ -193,7 +172,7 @@ export async function getSessionData(): Promise<SessionData | null> {
         return null;
     }
 
-    const sessionData = decodeSessionToken(sessionToken.value);
+    const sessionData = await verifySession(sessionToken.value);
 
     if (!sessionData) {
         return null;
@@ -255,14 +234,14 @@ export async function clearSession(): Promise<void> {
 }
 
 // Middleware helper for protecting admin routes
-export function requireAuth(request: NextRequest): NextResponse | null {
+export async function requireAuth(request: NextRequest): Promise<NextResponse | null> {
     const sessionToken = request.cookies.get(SESSION_COOKIE_NAME);
 
     if (!sessionToken?.value) {
         return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
-    const sessionData = decodeSessionToken(sessionToken.value);
+    const sessionData = await verifySession(sessionToken.value);
 
     if (!sessionData) {
         return NextResponse.redirect(new URL('/admin/login', request.url));

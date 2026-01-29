@@ -4,8 +4,17 @@ import { redirect } from 'next/navigation';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
 import AdminWendessenClient from './AdminWendessenClient';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default async function AdminWendessenPage() {
+export default function AdminWendessenPage() {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <AdminWendessenContent />
+        </Suspense>
+    );
+}
+
+async function AdminWendessenContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

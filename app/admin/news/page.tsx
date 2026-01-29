@@ -3,8 +3,17 @@ import { hasPermission } from '../../../lib/permissions';
 import { redirect } from 'next/navigation';
 import AdminNews from './AdminNews';
 import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { Suspense } from 'react';
 
-export default async function NewsPage() {
+export default function NewsPage() {
+    return (
+        <Suspense fallback={<div>Neuigkeiten laden...</div>}>
+            <NewsContent />
+        </Suspense>
+    );
+}
+
+async function NewsContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

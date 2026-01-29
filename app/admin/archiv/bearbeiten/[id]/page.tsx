@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Eye, Check, X } from '@phosphor-icons/react';
 import Link from 'next/link';
@@ -19,12 +19,13 @@ const initialEditorValue: Descendant[] = [
 // ArchiveItem interface was unused here; keep the shape in the fetch handling instead.
 
 export default function EditArchivePage({ params }: { params: Promise<{ id: string }> }) {
+    const p = use(params);
+    const id = p.id;
     const router = useRouter();
     const [step, setStep] = useState<'editing' | 'preview'>('editing');
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [archiveId, setArchiveId] = useState<string>('');
 
     // Form data
     const [title, setTitle] = useState('');
@@ -38,10 +39,6 @@ export default function EditArchivePage({ params }: { params: Promise<{ id: stri
 
         (async () => {
             try {
-                const p = await params;
-                const id = p.id;
-                setArchiveId(id);
-
                 if (mounted) setIsLoading(true);
                 if (mounted) setError(null);
 
@@ -83,14 +80,14 @@ export default function EditArchivePage({ params }: { params: Promise<{ id: stri
         return () => {
             mounted = false;
         };
-    }, [params]);
+    }, [id]);
 
     const handleUpdate = async () => {
         setIsSaving(true);
         setError(null);
 
         try {
-            const response = await fetch(`/api/archive/${archiveId}`, {
+            const response = await fetch(`/api/archive/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

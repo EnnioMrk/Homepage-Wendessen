@@ -14,6 +14,7 @@ import {
     NewsItem,
 } from '@/lib/database';
 import AdminDashboard from './AdminDashboard';
+import { Suspense } from 'react';
 
 async function getPortraitsCount(): Promise<number> {
     try {
@@ -25,7 +26,15 @@ async function getPortraitsCount(): Promise<number> {
     }
 }
 
-export default async function AdminDashboardPage() {
+export default function AdminDashboardPage() {
+    return (
+        <Suspense fallback={<div>Dashboard lädt...</div>}>
+            <AdminDashboardContent />
+        </Suspense>
+    );
+}
+
+async function AdminDashboardContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

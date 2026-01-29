@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 
 export interface ContactRecord {
@@ -35,38 +35,38 @@ function convertToContactItem(row: Record<string, unknown>): ContactListItem {
     };
 }
 
-export const getContacts = unstable_cache(
-    async (): Promise<ContactListItem[]> => {
-        try {
-            const result = await sql`SELECT * FROM contacts ORDER BY name ASC;`;
-            return result.map(convertToContactItem);
-        } catch (error) {
-            console.error('Error fetching contacts:', error);
-            throw new Error('Failed to fetch contacts from database');
-        }
-    },
-    ['contacts-all'],
-    { tags: ['contacts'], revalidate: 3600 }
-);
+export async function getContacts(): Promise<ContactListItem[]> {
+    'use cache';
+    cacheTag('contacts');
+    try {
+        const result = await sql`SELECT * FROM contacts ORDER BY name ASC;`;
+        return result.map(convertToContactItem);
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
+        throw new Error('Failed to fetch contacts from database');
+    }
+}
 
-export const getContactByName = unstable_cache(
-    async (name: string): Promise<ContactListItem | null> => {
-        try {
-            const result = await sql`SELECT * FROM contacts WHERE LOWER(name) = ${name.toLowerCase()}`;
-            if (result.length === 0) return null;
-            return convertToContactItem(result[0]);
-        } catch (error) {
-            console.error(`Error fetching contact by name ${name}:`, error);
-            throw new Error('Failed to fetch contact');
-        }
-    },
-    ['contact-by-name'],
-    { tags: ['contacts'], revalidate: 3600 }
-);
+export async function getContactByName(
+    name: string
+): Promise<ContactListItem | null> {
+    'use cache';
+    cacheTag('contacts', `contact-name-${name.toLowerCase()}`);
+    try {
+        const result = await sql`SELECT * FROM contacts WHERE LOWER(name) = ${name.toLowerCase()}`;
+        if (result.length === 0) return null;
+        return convertToContactItem(result[0]);
+    } catch (error) {
+        console.error(`Error fetching contact by name ${name}:`, error);
+        throw new Error('Failed to fetch contact');
+    }
+}
 
 export async function searchContacts(
     query: string
 ): Promise<ContactListItem[]> {
+    'use cache';
+    cacheTag('contacts', `search-${query.toLowerCase()}`);
     const q = `%${query.toLowerCase()}%`;
     try {
         const result = await sql`
@@ -93,7 +93,11 @@ export async function searchContacts(
     }
 }
 
-export async function getContactById(id: number): Promise<ContactListItem | null> {
+export async function getContactById(
+    id: number
+): Promise<ContactListItem | null> {
+    'use cache';
+    cacheTag('contacts', `contact-id-${id}`);
     try {
         const result = await sql`SELECT * FROM contacts WHERE id = ${id}`;
         if (result.length === 0) return null;

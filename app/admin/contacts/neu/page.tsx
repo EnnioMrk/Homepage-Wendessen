@@ -2,8 +2,17 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import EditContactClient from '../EditContactClient';
+import { Suspense } from 'react';
 
-export default async function NewContactPage() {
+export default function NewContactPage() {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <NewContactContent />
+        </Suspense>
+    );
+}
+
+async function NewContactContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

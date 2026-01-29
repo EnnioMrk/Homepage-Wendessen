@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql, pool } from '../sql';
 
 // Shared Gallery (Impressionen) types and functions
@@ -121,6 +121,8 @@ export async function getSharedGallerySubmissionGroups(
     limit?: number,
     offset?: number
 ): Promise<{ groups: SharedGallerySubmissionGroup[]; total: number }> {
+    'use cache';
+    cacheTag('shared-gallery', `status-${status || 'all'}`);
     try {
         const limitValue = limit ?? 25;
         const offsetValue = offset ?? 0;
@@ -263,14 +265,15 @@ export async function getSharedGallerySubmissionGroups(
     }
 }
 
-export const getSharedGallerySubmissions = unstable_cache(
-    async (
-        status?: 'pending' | 'approved' | 'rejected'
-    ): Promise<SharedGallerySubmission[]> => {
-        try {
-            // Legacy image_data payloads are excluded; URL is enough for rendering
-            const result = status
-                ? await sql`
+export async function getSharedGallerySubmissions(
+    status?: 'pending' | 'approved' | 'rejected'
+): Promise<SharedGallerySubmission[]> {
+    'use cache';
+    cacheTag('shared-gallery', `submissions-status-${status || 'all'}`);
+    try {
+        // Legacy image_data payloads are excluded; URL is enough for rendering
+        const result = status
+            ? await sql`
                     SELECT id, submission_group_id, title, description, submitter_name, 
                           submitter_email, image_url, image_storage_path, image_mime_type, image_filename, date_taken, 
                            location, status, submitted_at, reviewed_at, reviewed_by, rejection_reason
@@ -278,102 +281,94 @@ export const getSharedGallerySubmissions = unstable_cache(
                     WHERE status = ${status}
                     ORDER BY submitted_at DESC
                   `
-                : await sql`
+            : await sql`
                     SELECT id, submission_group_id, title, description, submitter_name, 
                           submitter_email, image_url, image_storage_path, image_mime_type, image_filename, date_taken, 
                            location, status, submitted_at, reviewed_at, reviewed_by, rejection_reason
                     FROM shared_gallery_submissions 
                     ORDER BY submitted_at DESC
                   `;
-            return result.map(convertToSharedGallerySubmission);
-        } catch (error) {
-            console.error('Error fetching shared gallery submissions:', error);
-            throw new Error('Failed to fetch shared gallery submissions');
-        }
-    },
-    ['shared-gallery-submissions'],
-    { tags: ['shared-gallery'], revalidate: 300 }
-);
+        return result.map(convertToSharedGallerySubmission);
+    } catch (error) {
+        console.error('Error fetching shared gallery submissions:', error);
+        throw new Error('Failed to fetch shared gallery submissions');
+    }
+}
 
-export const getApprovedSharedGalleryGroups = unstable_cache(
-    async (): Promise<SharedGallerySubmissionGroup[]> => {
-        try {
-            // Get all approved submissions
-            const result = await sql`
+export async function getApprovedSharedGalleryGroups(): Promise<
+    SharedGallerySubmissionGroup[]
+> {
+    'use cache';
+    cacheTag('shared-gallery', 'approved-groups');
+    try {
+        // Get all approved submissions
+        const result = await sql`
                 SELECT * FROM shared_gallery_submissions 
                 WHERE status = 'approved'
                 ORDER BY submitted_at DESC
             `;
 
-            const submissions = result.map(convertToSharedGallerySubmission);
+        const submissions = result.map(convertToSharedGallerySubmission);
 
-            // Group by submission_group_id
-            const groups = new Map<string, SharedGallerySubmissionGroup>();
+        // Group by submission_group_id
+        const groups = new Map<string, SharedGallerySubmissionGroup>();
 
-            for (const submission of submissions) {
-                if (!groups.has(submission.submissionGroupId)) {
-                    groups.set(submission.submissionGroupId, {
-                        submissionGroupId: submission.submissionGroupId,
-                        title: submission.title,
-                        description: submission.description,
-                        submitterNames: [],
-                        submitterEmail: submission.submitterEmail,
-                        images: [],
-                        submittedAt: submission.submittedAt,
-                        totalCount: 0,
-                        pendingCount: 0,
-                        approvedCount: 0,
-                        rejectedCount: 0,
-                    });
-                }
-
-                const group = groups.get(submission.submissionGroupId)!;
-                group.images.push(submission);
-                group.totalCount++;
-                group.approvedCount++;
-
-                // Collect unique submitter names
-                if (
-                    submission.submitterName &&
-                    !group.submitterNames.includes(submission.submitterName)
-                ) {
-                    group.submitterNames.push(submission.submitterName);
-                }
+        for (const submission of submissions) {
+            if (!groups.has(submission.submissionGroupId)) {
+                groups.set(submission.submissionGroupId, {
+                    submissionGroupId: submission.submissionGroupId,
+                    title: submission.title,
+                    description: submission.description,
+                    submitterNames: [],
+                    submitterEmail: submission.submitterEmail,
+                    images: [],
+                    submittedAt: submission.submittedAt,
+                    totalCount: 0,
+                    pendingCount: 0,
+                    approvedCount: 0,
+                    rejectedCount: 0,
+                });
             }
 
-            const final = Array.from(groups.values());
+            const group = groups.get(submission.submissionGroupId)!;
+            group.images.push(submission);
+            group.totalCount++;
+            group.approvedCount++;
 
-            // Legacy: gallery mapping table removed — skip merging external gallery metadata.
-
-            return final;
-        } catch (error) {
-            console.error(
-                'Error fetching approved shared gallery groups:',
-                error
-            );
-            throw new Error('Failed to fetch approved shared gallery groups');
+            // Collect unique submitter names
+            if (
+                submission.submitterName &&
+                !group.submitterNames.includes(submission.submitterName)
+            ) {
+                group.submitterNames.push(submission.submitterName);
+            }
         }
-    },
-    ['approved-shared-gallery-groups'],
-    { tags: ['shared-gallery'], revalidate: 300 }
-);
 
-export const getSharedGalleryImageCount = unstable_cache(
-    async (): Promise<number> => {
-        try {
-            const result = await sql`
+        const final = Array.from(groups.values());
+
+        // Legacy: gallery mapping table removed — skip merging external gallery metadata.
+
+        return final;
+    } catch (error) {
+        console.error('Error fetching approved shared gallery groups:', error);
+        throw new Error('Failed to fetch approved shared gallery groups');
+    }
+}
+
+export async function getSharedGalleryImageCount(): Promise<number> {
+    'use cache';
+    cacheTag('shared-gallery', 'image-count');
+    try {
+        const result = await sql`
                 SELECT COUNT(*) as count FROM shared_gallery_submissions 
                 WHERE status = 'approved'
             `;
-            return Number(result[0].count) || 0;
-        } catch (error) {
-            console.error('Error fetching shared gallery image count:', error);
-            throw new Error('Failed to fetch shared gallery image count');
-        }
-    },
-    ['shared-gallery-image-count'],
-    { tags: ['shared-gallery'], revalidate: 300 }
-);
+        return Number(result[0].count) || 0;
+    } catch (error) {
+        console.error('Error fetching shared gallery image count:', error);
+        throw new Error('Failed to fetch shared gallery image count');
+    }
+}
 
 export async function getSharedGallerySubmissionById(
     id: string
@@ -655,35 +650,33 @@ export async function createGalleryReport(
     }
 }
 
-export const getGalleryReports = unstable_cache(
-    async (
-        status?: 'pending' | 'reviewed' | 'dismissed'
-    ): Promise<GalleryReport[]> => {
-        try {
-            // Image data stays out of this query; admins fetch the URL lazily when needed
-            const result = status
-                ? await sql`
+export async function getGalleryReports(
+    status?: 'pending' | 'reviewed' | 'dismissed'
+): Promise<GalleryReport[]> {
+    'use cache';
+    cacheTag('gallery-reports', `status-${status || 'all'}`);
+    try {
+        // Image data stays out of this query; admins fetch the URL lazily when needed
+        const result = status
+            ? await sql`
                                                                                 SELECT r.*, s.title, s.submitter_name, s.image_url, s.image_storage_path
                                         FROM shared_gallery_reports r
                                         JOIN shared_gallery_submissions s ON r.submission_id = s.id
                                         WHERE r.status = ${status}
                                         ORDER BY r.created_at DESC
                                     `
-                : await sql`
+            : await sql`
                                                                                 SELECT r.*, s.title, s.submitter_name, s.image_url, s.image_storage_path
                                         FROM shared_gallery_reports r
                                         JOIN shared_gallery_submissions s ON r.submission_id = s.id
                                         ORDER BY r.created_at DESC
                                     `;
-            return result.map(convertToGalleryReport);
-        } catch (error) {
-            console.error('Error fetching gallery reports:', error);
-            throw new Error('Failed to fetch gallery reports');
-        }
-    },
-    ['gallery-reports'],
-    { tags: ['gallery-reports'], revalidate: 60 }
-);
+        return result.map(convertToGalleryReport);
+    } catch (error) {
+        console.error('Error fetching gallery reports:', error);
+        throw new Error('Failed to fetch gallery reports');
+    }
+}
 
 export async function updateGalleryReportStatus(
     id: string,

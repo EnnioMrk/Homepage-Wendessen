@@ -11,8 +11,6 @@ import Link from 'next/link';
 import { Descendant } from 'slate';
 import { getArchiveItemById } from '@/lib/database';
 
-export const revalidate = 3600;
-
 export default async function ArchiveItemPage({
     params,
 }: {
@@ -107,23 +105,26 @@ export default async function ArchiveItemPage({
                     <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl">
                         <div className="prose prose-lg max-w-none">
                             {(() => {
+                                let parsedContent: Descendant[] | null = null;
                                 try {
-                                    const parsedContent = JSON.parse(
-                                        item.content
-                                    ) as Descendant[];
+                                    parsedContent = JSON.parse(item.content);
+                                } catch {
+                                    // Not JSON
+                                }
+
+                                if (parsedContent) {
                                     return (
                                         <ArticleRenderer
                                             content={parsedContent}
                                         />
                                     );
-                                } catch {
-                                    // Fallback for plain text content
-                                    return (
-                                        <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-                                            {item.content}
-                                        </div>
-                                    );
                                 }
+
+                                return (
+                                    <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                                        {item.content}
+                                    </div>
+                                );
                             })()}
                         </div>
 

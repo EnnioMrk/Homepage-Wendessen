@@ -2,8 +2,17 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
 import EditLayoutClient from '../EditLayoutClient';
+import { Suspense } from 'react';
 
-export default async function CreateWendessenLayoutPage() {
+export default function CreateWendessenLayoutPage() {
+    return (
+        <Suspense fallback={<div>Laden...</div>}>
+            <CreateWendessenLayoutContent />
+        </Suspense>
+    );
+}
+
+async function CreateWendessenLayoutContent() {
     const authenticated = await isAuthenticated();
 
     if (!authenticated) {

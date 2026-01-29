@@ -1,5 +1,5 @@
-import { unstable_cache } from 'next/cache';
 import { sql } from '../sql';
+import { cacheTag } from 'next/cache';
 
 export interface DatabaseEvent {
     id: number;
@@ -74,31 +74,28 @@ function convertToCalendarEvent(
     };
 }
 
-export const getEvents = unstable_cache(
-    async (): Promise<CalendarEvent[]> => {
-        try {
-            const events = await sql`
+export async function getEvents(): Promise<CalendarEvent[]> {
+    'use cache';
+    cacheTag('events');
+    try {
+        const events = await sql`
           SELECT * FROM events 
           ORDER BY start_date ASC
         `;
 
-            return events.map(convertToCalendarEvent);
-        } catch (error) {
-            console.error('Error fetching events:', error);
-            throw new Error('Failed to fetch events from database');
-        }
-    },
-    ['all-events'],
-    {
-        tags: ['events'],
-        revalidate: 3600,
+        return events.map(convertToCalendarEvent);
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        throw new Error('Failed to fetch events from database');
     }
-);
+}
 
 export async function getEventsByDateRange(
     startDate: Date,
     endDate: Date
 ): Promise<CalendarEvent[]> {
+    'use cache';
+    cacheTag('events');
     try {
         const events = await sql`
       SELECT * FROM events 
@@ -114,34 +111,33 @@ export async function getEventsByDateRange(
     }
 }
 
-export const getUpcomingEvents = unstable_cache(
-    async (limit: number = 10): Promise<CalendarEvent[]> => {
-        try {
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-            const events = await sql`
+export async function getUpcomingEvents(
+    limit: number = 10
+): Promise<CalendarEvent[]> {
+    'use cache';
+    cacheTag('events', `limit-${limit}`);
+    try {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const events = await sql`
           SELECT * FROM events 
           WHERE start_date >= ${now.toISOString()}
           ORDER BY start_date ASC
           LIMIT ${limit}
         `;
 
-            return events.map(convertToCalendarEvent);
-        } catch (error) {
-            console.error('Error fetching upcoming events:', error);
-            throw new Error('Failed to fetch upcoming events from database');
-        }
-    },
-    ['upcoming-events'],
-    {
-        tags: ['events'],
-        revalidate: 3600,
+        return events.map(convertToCalendarEvent);
+    } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+        throw new Error('Failed to fetch upcoming events from database');
     }
-);
+}
 
 export async function getEventsByCategory(
     category: string
 ): Promise<CalendarEvent[]> {
+    'use cache';
+    cacheTag('events', `category-${category}`);
     try {
         const events = await sql`
       SELECT * FROM events 

@@ -186,7 +186,10 @@ export function SharedGalleryImageProvider({ children }: { children: ReactNode }
 export function useSharedGalleryImage(imageId: string, onLoad?: (imageUrl: string) => void) {
     const context = useContext(SharedGalleryImageContext);
     const onLoadRef = useRef(onLoad);
-    onLoadRef.current = onLoad;
+
+    useEffect(() => {
+        onLoadRef.current = onLoad;
+    }, [onLoad]);
 
     // Fallback for when context is not available (backwards compatibility)
     const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
@@ -199,26 +202,32 @@ export function useSharedGalleryImage(imageId: string, onLoad?: (imageUrl: strin
         } else {
             // Fallback to individual fetch
             let mounted = true;
-            setFallbackLoading(true);
 
-            fetch(`/api/admin/shared-gallery/image/${imageId}`)
-                .then(res => {
+            // Use an async wrapper to avoid synchronous setState during render
+            const startFetch = async () => {
+                // Ensure this runs in the next tick to avoid React 19 warnings
+                await Promise.resolve();
+                if (!mounted) return;
+                
+                setFallbackLoading(true);
+                try {
+                    const res = await fetch(`/api/admin/shared-gallery/image/${imageId}`);
                     if (!res.ok) throw new Error('Failed to fetch');
-                    return res.json();
-                })
-                .then(data => {
+                    const data = await res.json();
                     if (mounted) {
                         setFallbackUrl(data.imageUrl);
                         setFallbackLoading(false);
                         if (onLoadRef.current) onLoadRef.current(data.imageUrl);
                     }
-                })
-                .catch(() => {
+                } catch {
                     if (mounted) {
                         setFallbackError(true);
                         setFallbackLoading(false);
                     }
-                });
+                }
+            };
+
+            startFetch();
 
             return () => {
                 mounted = false;

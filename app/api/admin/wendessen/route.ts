@@ -4,8 +4,6 @@ import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import revalidate from '@/lib/revalidate';
 import { hasPermission } from '@/lib/permissions';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
     // Auth check
     const authenticated = await isAuthenticated();

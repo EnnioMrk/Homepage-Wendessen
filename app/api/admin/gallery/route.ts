@@ -17,8 +17,6 @@ interface GalleryImageRow {
     uploadedAt: Date;
 }
 
-export const runtime = 'nodejs';
-
 // const sql is provided by the shared helper import above
 
 // GET - List all images
