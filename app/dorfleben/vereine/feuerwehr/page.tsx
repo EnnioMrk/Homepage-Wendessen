@@ -37,8 +37,8 @@ export default function FeuerwehrOverviewPage() {
                                 className="object-cover"
                                 priority
                             />
-                            {/* Radial/oval vignette darkening - dark around edges, lighter in center */}
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_20%,rgba(0,0,0,0.4)_40%,rgba(0,0,0,0.8)_70%,black_100%)]"></div>
+                            {/* Inverted radial vignette - dark center, lighter edges */}
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,black_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0.4)_60%,transparent_80%,transparent_100%)]"></div>
                             
                             {/* Text Content - Centered with group hover on container */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
@@ -68,8 +68,8 @@ export default function FeuerwehrOverviewPage() {
                                 className="object-cover"
                                 priority
                             />
-                            {/* Radial/oval vignette darkening - dark around edges, lighter in center */}
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_20%,rgba(0,0,0,0.4)_40%,rgba(0,0,0,0.8)_70%,black_100%)]"></div>
+                            {/* Inverted radial vignette - dark center, lighter edges */}
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,black_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0.4)_60%,transparent_80%,transparent_100%)]"></div>
                             
                             {/* Text Content - Centered with group hover on container */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
