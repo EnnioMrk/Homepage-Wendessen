@@ -45,6 +45,7 @@ export default function FeuerwehrOverviewPage() {
                         <Link
                             href="/dorfleben/vereine/feuerwehr/einsatzabteilung"
                             className="group"
+                            aria-label="Zur Freiwilligen Feuerwehr Einsatzabteilung"
                         >
                             <div className="h-full bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2 border-transparent hover:border-red-500">
                                 <div className="bg-gradient-to-br from-red-500 to-orange-600 p-6 sm:p-8">
@@ -90,6 +91,7 @@ export default function FeuerwehrOverviewPage() {
                         <Link
                             href="/dorfleben/vereine/jugendfeuerwehr"
                             className="group"
+                            aria-label="Zur Jugendfeuerwehr"
                         >
                             <div className="h-full bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2 border-transparent hover:border-orange-500">
                                 <div className="bg-gradient-to-br from-orange-500 to-pink-600 p-6 sm:p-8">
@@ -135,6 +137,7 @@ export default function FeuerwehrOverviewPage() {
                         <Link
                             href="/wohnen-bauen/feuerwehrgeraetehaus"
                             className="group"
+                            aria-label="Zum Feuerwehrgerätehaus Neubau-Projekt"
                         >
                             <div className="h-full bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2 border-transparent hover:border-blue-500">
                                 <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 sm:p-8">

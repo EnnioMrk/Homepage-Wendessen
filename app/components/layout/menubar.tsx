@@ -200,21 +200,22 @@ function MenubarDemo() {
                                             {subItem.items && (
                                                 <>
                                                     {subItem.items.map((thirdItem) => (
-                                                        thirdItem.href ? (
-                                                            <Link
-                                                                key={thirdItem.title}
-                                                                href={thirdItem.href}
-                                                                passHref
-                                                            >
-                                                                <MenubarItem className="pl-8 cursor-pointer hover:bg-primary/20 hover:text-primary-dark text-sm">
+                                                        <React.Fragment key={thirdItem.title}>
+                                                            {thirdItem.href ? (
+                                                                <Link
+                                                                    href={thirdItem.href}
+                                                                    passHref
+                                                                >
+                                                                    <MenubarItem className="pl-8 cursor-pointer hover:bg-primary/20 hover:text-primary-dark text-sm">
+                                                                        {thirdItem.title}
+                                                                    </MenubarItem>
+                                                                </Link>
+                                                            ) : (
+                                                                <div className="pl-10 py-1 select-none text-xs text-gray-600">
                                                                     {thirdItem.title}
-                                                                </MenubarItem>
-                                                            </Link>
-                                                        ) : (
-                                                            <div key={thirdItem.title} className="pl-10 py-1 select-none text-xs text-gray-600">
-                                                                {thirdItem.title}
-                                                            </div>
-                                                        )
+                                                                </div>
+                                                            )}
+                                                        </React.Fragment>
                                                     ))}
                                                 </>
                                             )}
