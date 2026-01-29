@@ -182,21 +182,43 @@ function MenubarDemo() {
                             {item.items && (
                                 <>
                                     {item.items.map((subItem) => (
-                                        subItem.href ? (
-                                            <Link
-                                                key={subItem.title}
-                                                href={subItem.href}
-                                                passHref
-                                            >
-                                                <MenubarItem className="pl-4 cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
+                                        <React.Fragment key={subItem.title}>
+                                            {subItem.href ? (
+                                                <Link
+                                                    href={subItem.href}
+                                                    passHref
+                                                >
+                                                    <MenubarItem className="pl-4 cursor-pointer hover:bg-primary/20 hover:text-primary-dark">
+                                                        {subItem.title}
+                                                    </MenubarItem>
+                                                </Link>
+                                            ) : (
+                                                <div className="pl-6 py-1 select-none text-sm font-semibold text-primary">
                                                     {subItem.title}
-                                                </MenubarItem>
-                                            </Link>
-                                        ) : (
-                                            <div key={subItem.title} className="pl-6 py-1 select-none text-sm font-semibold text-primary">
-                                                {subItem.title}
-                                            </div>
-                                        )
+                                                </div>
+                                            )}
+                                            {subItem.items && (
+                                                <>
+                                                    {subItem.items.map((thirdItem) => (
+                                                        thirdItem.href ? (
+                                                            <Link
+                                                                key={thirdItem.title}
+                                                                href={thirdItem.href}
+                                                                passHref
+                                                            >
+                                                                <MenubarItem className="pl-8 cursor-pointer hover:bg-primary/20 hover:text-primary-dark text-sm">
+                                                                    {thirdItem.title}
+                                                                </MenubarItem>
+                                                            </Link>
+                                                        ) : (
+                                                            <div key={thirdItem.title} className="pl-10 py-1 select-none text-xs text-gray-600">
+                                                                {thirdItem.title}
+                                                            </div>
+                                                        )
+                                                    ))}
+                                                </>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                     <MenubarSeparator />
                                 </>
