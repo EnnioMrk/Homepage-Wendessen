@@ -23,7 +23,7 @@ export default function FeuerwehrOverviewPage() {
             {/* Image Selection Grid */}
             <div className="flex-1 px-4 sm:px-6 lg:px-8">
                 <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-0">
-                    {/* Freiwillige Feuerwehr / Einsatzabteilung */}
+                    {/* Freiwillige Feuerwehr / Einsatzabteilung - LEFT IMAGE */}
                     <Link
                         href="/dorfleben/vereine/feuerwehr/einsatzabteilung"
                         className="group relative overflow-hidden transition-all duration-300"
@@ -37,11 +37,10 @@ export default function FeuerwehrOverviewPage() {
                                 className="object-cover"
                                 priority
                             />
-                            {/* Very aggressive vignette overlay - full black from edges */}
+                            {/* Aggressive vignette - left to right darkening */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40"></div>
                             <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-transparent"></div>
-                            <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black"></div>
-                            <div className="absolute inset-0 bg-gradient-to-l from-black via-transparent to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent"></div>
                             
                             {/* Text Content - Centered */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
@@ -55,7 +54,7 @@ export default function FeuerwehrOverviewPage() {
                         </div>
                     </Link>
 
-                    {/* Jugendfeuerwehr */}
+                    {/* Jugendfeuerwehr - RIGHT IMAGE */}
                     <Link
                         href="/dorfleben/vereine/jugendfeuerwehr"
                         className="group relative overflow-hidden transition-all duration-300"
@@ -69,11 +68,10 @@ export default function FeuerwehrOverviewPage() {
                                 className="object-cover"
                                 priority
                             />
-                            {/* Very aggressive vignette overlay - full black from edges */}
+                            {/* Aggressive vignette - right to left darkening */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40"></div>
                             <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-transparent"></div>
-                            <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black"></div>
-                            <div className="absolute inset-0 bg-gradient-to-l from-black via-transparent to-transparent"></div>
+                            <div className="absolute inset-0 bg-gradient-to-l from-black via-black/50 to-transparent"></div>
                             
                             {/* Text Content - Centered */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
