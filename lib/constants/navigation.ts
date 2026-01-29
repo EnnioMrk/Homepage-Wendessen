@@ -11,18 +11,10 @@ export const DORFLEBEN_NAV: NavItem[] = [
             {
                 title: 'Die Mitglieder',
                 href: '/dorfleben/ortsrat/mitglieder',
-                items: [
-                    { title: 'Aktuelle Mitglieder', href: '/dorfleben/ortsrat/mitglieder/aktuell' },
-                    { title: 'Mitglied werden', href: '/dorfleben/ortsrat/mitglieder/werden' },
-                ],
             },
             {
                 title: 'Der Ortsbürgermeister berichtet',
                 href: '/dorfleben/ortsrat/bericht',
-                items: [
-                    { title: 'Aktuelle Berichte', href: '/dorfleben/ortsrat/bericht/aktuell' },
-                    { title: 'Archiv', href: '/dorfleben/ortsrat/bericht/archiv' },
-                ],
             },
         ],
     },
@@ -32,10 +24,6 @@ export const DORFLEBEN_NAV: NavItem[] = [
             {
                 title: 'IDW',
                 href: '/dorfleben/vereine/idw',
-                items: [
-                    { title: 'Über uns', href: '/dorfleben/vereine/idw/ueber-uns' },
-                    { title: 'Veranstaltungen', href: '/dorfleben/vereine/idw/veranstaltungen' },
-                ],
             },
             {
                 title: 'Feuerwehr',
