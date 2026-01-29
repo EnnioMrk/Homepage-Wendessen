@@ -89,23 +89,48 @@ export default function MobileNavbar() {
                                         {item.items && (
                                             <ul className="pl-4">
                                                 {item.items.map((subItem) => (
-                                                    <li key={subItem.title}>
-                                                        {subItem.href ? (
-                                                            <Link
-                                                                href={subItem.href}
-                                                                className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                                onClick={() =>
-                                                                    setOpen(false)
-                                                                }
-                                                            >
-                                                                {subItem.title}
-                                                            </Link>
-                                                        ) : (
-                                                            <span className="block py-1 px-2 text-foreground font-medium">
-                                                                {subItem.title}
-                                                            </span>
+                                                    <React.Fragment key={subItem.title}>
+                                                        <li>
+                                                            {subItem.href ? (
+                                                                <Link
+                                                                    href={subItem.href}
+                                                                    className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                                                    onClick={() =>
+                                                                        setOpen(false)
+                                                                    }
+                                                                >
+                                                                    {subItem.title}
+                                                                </Link>
+                                                            ) : (
+                                                                <span className="block py-1 px-2 text-foreground font-medium">
+                                                                    {subItem.title}
+                                                                </span>
+                                                            )}
+                                                        </li>
+                                                        {subItem.items && (
+                                                            <ul className="pl-4">
+                                                                {subItem.items.map((thirdItem) => (
+                                                                    <li key={thirdItem.title}>
+                                                                        {thirdItem.href ? (
+                                                                            <Link
+                                                                                href={thirdItem.href}
+                                                                                className="block py-1 px-2 rounded text-sm text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                                                                onClick={() =>
+                                                                                    setOpen(false)
+                                                                                }
+                                                                            >
+                                                                                {thirdItem.title}
+                                                                            </Link>
+                                                                        ) : (
+                                                                            <span className="block py-1 px-2 text-sm text-foreground">
+                                                                                {thirdItem.title}
+                                                                            </span>
+                                                                        )}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
                                                         )}
-                                                    </li>
+                                                    </React.Fragment>
                                                 ))}
                                             </ul>
                                         )}

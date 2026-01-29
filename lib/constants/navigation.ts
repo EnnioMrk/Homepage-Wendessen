@@ -11,18 +11,10 @@ export const DORFLEBEN_NAV: NavItem[] = [
             {
                 title: 'Die Mitglieder',
                 href: '/dorfleben/ortsrat/mitglieder',
-                items: [
-                    { title: 'Aktuelle Mitglieder', href: '/dorfleben/ortsrat/mitglieder/aktuell' },
-                    { title: 'Mitglied werden', href: '/dorfleben/ortsrat/mitglieder/werden' },
-                ],
             },
             {
                 title: 'Der Ortsbürgermeister berichtet',
                 href: '/dorfleben/ortsrat/bericht',
-                items: [
-                    { title: 'Aktuelle Berichte', href: '/dorfleben/ortsrat/bericht/aktuell' },
-                    { title: 'Archiv', href: '/dorfleben/ortsrat/bericht/archiv' },
-                ],
             },
         ],
     },
@@ -32,21 +24,12 @@ export const DORFLEBEN_NAV: NavItem[] = [
             {
                 title: 'IDW',
                 href: '/dorfleben/vereine/idw',
-                items: [
-                    { title: 'Über uns', href: '/dorfleben/vereine/idw/ueber-uns' },
-                    { title: 'Veranstaltungen', href: '/dorfleben/vereine/idw/veranstaltungen' },
-                ],
             },
             {
-                title: 'Freiwillige Feuerwehr',
+                title: 'Feuerwehr',
                 href: '/dorfleben/vereine/feuerwehr',
-                items: [
-                    { title: 'Über uns', href: '/dorfleben/vereine/feuerwehr/ueber-uns' },
-                    { title: 'Einsätze', href: '/dorfleben/vereine/feuerwehr/einsaetze' },
-                ],
             },
             { title: 'Initiative Spritzenhaus', href: '/dorfleben/vereine/spritzenhaus' },
-            { title: 'Jugendfeuerwehr', href: '/dorfleben/vereine/jugendfeuerwehr' },
             { title: 'Kirchbauverein', href: '/dorfleben/vereine/kirchbauverein' },
             { title: 'Kleingärtnerverein', href: '/dorfleben/vereine/kleingaertner' },
             { title: 'Schützenverein', href: '/dorfleben/vereine/schuetzenverein' },
