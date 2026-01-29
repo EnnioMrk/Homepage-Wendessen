@@ -37,19 +37,19 @@ export default function FeuerwehrOverviewPage() {
                                 className="object-cover"
                                 priority
                             />
-                            {/* Aggressive vignette - left to right darkening */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40"></div>
-                            <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-transparent"></div>
-                            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent"></div>
+                            {/* Radial/oval vignette darkening - dark around edges, lighter in center */}
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_20%,rgba(0,0,0,0.4)_40%,rgba(0,0,0,0.8)_70%,black_100%)]"></div>
                             
-                            {/* Text Content - Centered */}
+                            {/* Text Content - Centered with group hover on container */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
-                                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 drop-shadow-lg transition-all duration-300 group-hover:scale-110">
-                                    Freiwillige Feuerwehr
-                                </h2>
-                                <p className="text-xl sm:text-2xl md:text-3xl text-white/90 drop-shadow-lg transition-all duration-300 group-hover:scale-110">
-                                    Einsatzabteilung
-                                </p>
+                                <div className="transition-all duration-300 group-hover:scale-110">
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 drop-shadow-lg">
+                                        Freiwillige Feuerwehr
+                                    </h2>
+                                    <p className="text-xl sm:text-2xl md:text-3xl text-white/90 drop-shadow-lg">
+                                        Einsatzabteilung
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </Link>
@@ -68,19 +68,19 @@ export default function FeuerwehrOverviewPage() {
                                 className="object-cover"
                                 priority
                             />
-                            {/* Aggressive vignette - right to left darkening */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40"></div>
-                            <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-transparent"></div>
-                            <div className="absolute inset-0 bg-gradient-to-l from-black via-black/50 to-transparent"></div>
+                            {/* Radial/oval vignette darkening - dark around edges, lighter in center */}
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_20%,rgba(0,0,0,0.4)_40%,rgba(0,0,0,0.8)_70%,black_100%)]"></div>
                             
-                            {/* Text Content - Centered */}
+                            {/* Text Content - Centered with group hover on container */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
-                                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 drop-shadow-lg transition-all duration-300 group-hover:scale-110">
-                                    Jugendfeuerwehr
-                                </h2>
-                                <p className="text-xl sm:text-2xl md:text-3xl text-white/90 drop-shadow-lg transition-all duration-300 group-hover:scale-110">
-                                    Für Kinder & Jugendliche
-                                </p>
+                                <div className="transition-all duration-300 group-hover:scale-110">
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 drop-shadow-lg">
+                                        Jugendfeuerwehr
+                                    </h2>
+                                    <p className="text-xl sm:text-2xl md:text-3xl text-white/90 drop-shadow-lg">
+                                        Für Kinder & Jugendliche
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </Link>
