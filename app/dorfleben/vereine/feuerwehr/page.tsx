@@ -1,7 +1,6 @@
 import {
     Fire,
     Users,
-    Buildings,
     ArrowRight,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
@@ -10,7 +9,7 @@ import Link from 'next/link';
 export const metadata = {
     title: 'Feuerwehr Wendessen - Übersicht',
     description:
-        'Übersicht über die Feuerwehr in Wendessen: Freiwillige Feuerwehr, Jugendfeuerwehr und Feuerwehrgerätehaus',
+        'Übersicht über die Feuerwehr in Wendessen: Freiwillige Feuerwehr und Jugendfeuerwehr',
 };
 
 export default function FeuerwehrOverviewPage() {
@@ -34,13 +33,13 @@ export default function FeuerwehrOverviewPage() {
                         </h2>
                         <div className="w-20 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 mx-auto mb-4 sm:mb-6"></div>
                         <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-                            Erfahren Sie mehr über unsere Einsatzabteilung, die
-                            Jugendfeuerwehr oder das neue Feuerwehrgerätehaus
+                            Erfahren Sie mehr über unsere Einsatzabteilung und die
+                            Jugendfeuerwehr
                         </p>
                     </div>
 
                     {/* Selection Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
                         {/* Freiwillige Feuerwehr / Einsatzabteilung */}
                         <Link
                             href="/dorfleben/vereine/feuerwehr/einsatzabteilung"
@@ -126,52 +125,6 @@ export default function FeuerwehrOverviewPage() {
                                         </li>
                                     </ul>
                                     <div className="flex items-center text-orange-600 font-semibold group-hover:text-orange-700 text-sm sm:text-base">
-                                        <span>Mehr erfahren</span>
-                                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* Feuerwehrgerätehaus */}
-                        <Link
-                            href="/wohnen-bauen/feuerwehrgeraetehaus"
-                            className="group"
-                            aria-label="Zum Feuerwehrgerätehaus Neubau-Projekt"
-                        >
-                            <div className="h-full bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden border-2 border-transparent hover:border-blue-500">
-                                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 sm:p-8">
-                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4">
-                                        <Buildings className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                                    </div>
-                                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">
-                                        Feuerwehrgerätehaus
-                                    </h3>
-                                    <p className="text-blue-50 text-sm sm:text-base">
-                                        Neubau-Projekt
-                                    </p>
-                                </div>
-                                <div className="p-6 sm:p-8">
-                                    <p className="text-gray-700 mb-6 text-sm sm:text-base leading-relaxed">
-                                        Informationen zum Neubau des
-                                        Feuerwehrgerätehauses am Eckgrundstück
-                                        Leipziger Allee.
-                                    </p>
-                                    <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-600 mb-6">
-                                        <li className="flex items-center">
-                                            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
-                                            <span>Neue Heimat für die Feuerwehr</span>
-                                        </li>
-                                        <li className="flex items-center">
-                                            <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
-                                            <span>Moderne Ausstattung</span>
-                                        </li>
-                                        <li className="flex items-center">
-                                            <span className="w-2 h-2 bg-blue-600 rounded-full mr-2 sm:mr-3 flex-shrink-0"></span>
-                                            <span>Planungsstand & Zeitplan</span>
-                                        </li>
-                                    </ul>
-                                    <div className="flex items-center text-blue-600 font-semibold group-hover:text-blue-700 text-sm sm:text-base">
                                         <span>Mehr erfahren</span>
                                         <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
                                     </div>
