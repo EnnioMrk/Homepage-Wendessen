@@ -6,7 +6,6 @@ import { Suspense } from 'react';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
 export default async function WasStehAnPage() {
-    // This function now uses 'use cache' internally in lib/database/events.ts
     const initialEvents = await getEvents();
 
     return (
