@@ -1,7 +1,12 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { signSession, verifySession, SessionData, SESSION_COOKIE_NAME } from './session-utils';
+import {
+    signSession,
+    verifySession,
+    SessionData,
+    SESSION_COOKIE_NAME,
+} from './session-utils';
 
 export interface AdminUser {
     id: number;
@@ -22,7 +27,7 @@ export interface AdminUser {
 
 // Get admin user by username
 export async function getAdminUserByUsername(
-    username: string
+    username: string,
 ): Promise<AdminUser | null> {
     try {
         const { sql } = await import('./sql');
@@ -71,7 +76,7 @@ export async function getAdminUserByUsername(
 // Verify username and password
 export async function verifyCredentials(
     username: string,
-    password: string
+    password: string,
 ): Promise<AdminUser | null> {
     try {
         const { sql } = await import('./sql');
@@ -234,7 +239,9 @@ export async function clearSession(): Promise<void> {
 }
 
 // Middleware helper for protecting admin routes
-export async function requireAuth(request: NextRequest): Promise<NextResponse | null> {
+export async function requireAuth(
+    request: NextRequest,
+): Promise<NextResponse | null> {
     const sessionToken = request.cookies.get(SESSION_COOKIE_NAME);
 
     if (!sessionToken?.value) {
@@ -259,7 +266,7 @@ export async function requireAuth(request: NextRequest): Promise<NextResponse | 
         !request.nextUrl.pathname.startsWith('/admin/change-password')
     ) {
         return NextResponse.redirect(
-            new URL('/admin/change-password', request.url)
+            new URL('/admin/change-password', request.url),
         );
     }
 
@@ -305,7 +312,7 @@ export function validatePasswordStrength(password: string): {
 // Change password
 export async function changePassword(
     userId: number,
-    newPassword: string
+    newPassword: string,
 ): Promise<boolean> {
     try {
         const hashedPassword = await bcrypt.hash(newPassword, 10);

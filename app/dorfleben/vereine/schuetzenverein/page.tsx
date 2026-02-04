@@ -13,7 +13,7 @@ import {
     CalendarCheck,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Schützenverein Wendessen e.V. - Dorfleben',
@@ -244,9 +244,8 @@ export default async function SchuetzenvereinsPage() {
                              <p className="text-slate-600">Unser Vorstand steht Ihnen gerne zur Verfügung.</p>
                         </div>
                         <div className="w-full md:w-auto min-w-[300px]">
-                             <ContactCardFetcher
-                                name="Lothar Lange"
-                                fallbackRole="Schriftführer"
+                            <OrganizationContacts
+                                organization="Schützenverein Wendessen e.V."
                                 colorClassName="text-red-600"
                             />
                         </div>

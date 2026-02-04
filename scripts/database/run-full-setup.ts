@@ -94,6 +94,10 @@ async function main() {
             cmd: 'bun scripts/database/setup/wendessen-section.ts',
         },
         {
+            name: 'Organizations table',
+            cmd: 'bun scripts/database/setup/organizations.ts',
+        },
+        {
             name: 'Contact permissions',
             cmd: 'bun scripts/database/setup/add-contact-permissions.ts',
         },
@@ -111,6 +115,18 @@ async function main() {
             );
             process.exit(1);
         }
+    }
+
+    console.log('\n=== Running: Final Verification ===');
+    try {
+        run('bun scripts/database/verify/run-verify-all.ts');
+        console.log('✅ Final Verification completed');
+    } catch (err) {
+        console.error(
+            '❌ Final Verification failed:',
+            err instanceof Error ? err.message : err
+        );
+        process.exit(1);
     }
 
     console.log('\n🎉 Full setup finished successfully!');

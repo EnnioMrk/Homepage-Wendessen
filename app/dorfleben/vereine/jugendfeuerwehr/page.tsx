@@ -8,7 +8,7 @@ import {
     MapPin,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Jugendfeuerwehr Wendessen - Vereine',
@@ -273,22 +273,14 @@ export default async function JugendfeuerwehrPage() {
                             </h2>
                             <div className="w-20 h-1 bg-orange-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zur Jugendfeuerwehr oder möchten Sie uns kennenlernen?
-                                Unsere Jugendwarte sind gerne für Sie da.
+                                Haben Sie Fragen zur Jugendfeuerwehr oder
+                                möchten Sie uns kennenlernen? Unsere Jugendwarte
+                                sind gerne für Sie da.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Christoph Ruprecht"
-                                fallbackRole="Jugendfeuerwehrwart"
-                                colorClassName="text-orange-600"
-                            />
-                            <ContactCardFetcher
-                                name="Frederick Witte"
-                                fallbackRole="stellv. Jugendfeuerwehrwart"
-                                colorClassName="text-red-600"
-                            />
+                            <OrganizationContacts organization="Jugendfeuerwehr Wendessen" />
                         </div>
                     </div>
 

@@ -12,7 +12,7 @@ import {
     Heart,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Evang. Seniorenkreis Atzum-Wendessen - Dorfleben',
@@ -227,14 +227,14 @@ export default async function SeniorenkreisPage() {
                             </h2>
                             <div className="w-20 h-1 bg-emerald-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Näheres zu unseren Aktivitäten erfahren Sie bei unserer Vorsitzenden.
+                                Näheres zu unseren Aktivitäten erfahren Sie bei
+                                unserer Vorsitzenden.
                             </p>
                         </div>
 
                         <div className="max-w-md mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Ursula Hanke"
-                                fallbackRole="Vorsitzende"
+                            <OrganizationContacts
+                                organization="Seniorenkreis Wendessen"
                                 colorClassName="text-emerald-600"
                             />
                         </div>

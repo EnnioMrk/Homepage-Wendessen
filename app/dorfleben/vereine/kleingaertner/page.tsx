@@ -12,7 +12,7 @@ import {
     Heart,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Kleingärtner Wendessen - Dorfleben',
@@ -236,15 +236,14 @@ export default async function KleingaertnerPage() {
                             </h2>
                             <div className="w-20 h-1 bg-green-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Interesse an einem Kleingarten oder Fragen zum Verein?
-                                Unser Vorstand ist gerne für Sie da.
+                                Interesse an einem Kleingarten oder Fragen zum
+                                Verein? Unser Vorstand ist gerne für Sie da.
                             </p>
                         </div>
 
                         <div className="max-w-xl mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Felix Siebert"
-                                fallbackRole="1. Vorsitzender"
+                            <OrganizationContacts
+                                organization="Kleingärtnerverein Wendessen"
                                 colorClassName="text-green-600"
                             />
                         </div>
