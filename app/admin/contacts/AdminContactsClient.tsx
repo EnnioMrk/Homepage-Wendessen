@@ -112,15 +112,24 @@ export default function AdminContactsClient({
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-gray-900">Kontaktverzeichnis</h2>
-                {effectiveCanCreate && (
+                <div className="flex space-x-3">
                     <button
-                        onClick={() => router.push('/admin/contacts/neu')}
-                        className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
+                        onClick={() => router.push('/admin/organizations')}
+                        className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm font-medium"
                     >
-                        <Plus size={16} className="mr-2" />
-                        Neuer Kontakt
+                        <Buildings size={16} className="mr-2" />
+                        Organisationen verwalten
                     </button>
-                )}
+                    {effectiveCanCreate && (
+                        <button
+                            onClick={() => router.push('/admin/contacts/neu')}
+                            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
+                        >
+                            <Plus size={16} className="mr-2" />
+                            Neuer Kontakt
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="relative">

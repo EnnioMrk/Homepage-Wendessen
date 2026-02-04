@@ -12,7 +12,7 @@ import {
     HandHeart,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Evang. Frauenhilfe Wendessen - Dorfleben',
@@ -260,9 +260,8 @@ export default function FrauenhilfePage() {
                         </div>
 
                         <div className="max-w-md mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Sigrid Haasner"
-                                fallbackRole="1. Vorsitzende"
+                            <OrganizationContacts
+                                organization="Frauenhilfe"
                                 colorClassName="text-pink-600"
                             />
                         </div>

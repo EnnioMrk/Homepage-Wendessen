@@ -9,7 +9,7 @@ import {
     Heart,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Initiative Wendesser Spritzenhaus e.V. - Vereine',
@@ -231,25 +231,9 @@ export default async function SpritzenhausPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Ines Lange"
-                                fallbackRole="1. Vorsitzende"
+                            <OrganizationContacts
+                                organization="Initiative Wendesser Spritzenhaus e.V."
                                 colorClassName="text-amber-600"
-                            />
-                            <ContactCardFetcher
-                                name="Ursula Hanke"
-                                fallbackRole="2. Vorsitzende"
-                                colorClassName="text-yellow-600"
-                            />
-                            <ContactCardFetcher
-                                name="Klaus-Martin Jungkurth"
-                                fallbackRole="Kassenführer"
-                                colorClassName="text-green-600"
-                            />
-                            <ContactCardFetcher
-                                name="Peter Dorn"
-                                fallbackRole="Schriftführer"
-                                colorClassName="text-blue-600"
                             />
                         </div>
                     </div>

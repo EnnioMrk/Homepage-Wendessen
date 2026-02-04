@@ -14,6 +14,7 @@ const SCRIPTS = [
     'verify-site_settings.ts',
     'verify-archive.ts',
     'verify-admin_logs.ts',
+    'verify-organizations.ts',
 ];
 
 /**
@@ -80,6 +81,7 @@ export async function runVerifyAll(): Promise<void> {
         'verify-site_settings.ts': '../setup/settings.ts',
         'verify-archive.ts': '../setup/archive-table.ts',
         'verify-admin_logs.ts': '../setup/admin-logs.ts',
+        'verify-organizations.ts': '../setup/organizations.ts',
     };
 
     for (const s of SCRIPTS) {
@@ -144,6 +146,13 @@ export async function runVerifyAll(): Promise<void> {
     }
 
     console.log('run-verify-all: all verifications passed');
+}
+
+if (import.meta.main) {
+    runVerifyAll().catch((err) => {
+        console.error(err);
+        process.exit(1);
+    });
 }
 
 export default runVerifyAll;

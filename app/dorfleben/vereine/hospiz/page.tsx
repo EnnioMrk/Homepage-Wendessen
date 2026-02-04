@@ -7,7 +7,7 @@ import {
     ShieldCheck,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Hospizverein Wolfenbüttel e. V. - Vereine',
@@ -149,10 +149,8 @@ export default async function HospizPage() {
                         </div>
 
                         <div className="max-w-md mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Hospizverein Wolfenbüttel e.V."
-                                fallbackRole="HospizZentrum"
-                                manualEmail="info@hospizverein-wf.de"
+                            <OrganizationContacts
+                                organization="Hospizverein Wolfenbüttel"
                                 colorClassName="text-green-600"
                             />
                         </div>

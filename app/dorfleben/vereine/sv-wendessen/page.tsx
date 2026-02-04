@@ -12,7 +12,7 @@ import {
     Baby,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'SV Wendessen - Dorfleben',
@@ -346,58 +346,9 @@ export default async function SVWendessenPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Lennart Meinberg"
-                                fallbackRole="Fußballobmann"
-                                manualEmail="fussball@sv-wendessen.de"
-                                colorClassName="text-green-600"
-                            />
-                            <ContactCardFetcher
-                                name="Stefan Landsperger"
-                                fallbackRole="Jugendfußball"
-                                manualEmail="fussball-ju@sv-wendessen.de"
+                            <OrganizationContacts
+                                organization="SV Wendessen"
                                 colorClassName="text-blue-600"
-                            />
-                            <ContactCardFetcher
-                                name="Karlheinz Bock"
-                                fallbackRole="Gymnastikabteilung"
-                                colorClassName="text-pink-600"
-                                manualEmail="gymnastik@sv-wendessen.de"
-                            />
-                            <ContactCardFetcher
-                                name="Hanna Simon"
-                                fallbackRole="Kinderturnen"
-                                manualEmail="kinderturnen@sv-wendessen.de"
-                                colorClassName="text-orange-600"
-                            />
-                            <ContactCardFetcher
-                                name="Manfred Rasche"
-                                fallbackRole="Tanzsport"
-                                manualEmail="tanzsport@sv-wendessen.de"
-                                colorClassName="text-purple-600"
-                            />
-                            <ContactCardFetcher
-                                name="Johannes Grieger"
-                                fallbackRole="Tennis"
-                                manualEmail="tennis@sv-wendessen.de"
-                                colorClassName="text-indigo-600"
-                            />
-                            <ContactCardFetcher
-                                name="Achim Schmeida"
-                                fallbackRole="Tischtennis"
-                                manualEmail="tischtennis@sv-wendessen.de"
-                                colorClassName="text-teal-600"
-                            />
-                            <ContactCardFetcher
-                                name="Thomas Rettberg"
-                                fallbackRole={'Fußballförderkreis "Pool 99"'}
-                                manualEmail="pool99@sv-wendessen.de"
-                                colorClassName="text-yellow-600"
-                            />
-                            <ContactCardFetcher
-                                name="Maruan Nissan"
-                                fallbackRole="Vereinswirt"
-                                colorClassName="text-red-600"
                             />
                         </div>
                     </div>

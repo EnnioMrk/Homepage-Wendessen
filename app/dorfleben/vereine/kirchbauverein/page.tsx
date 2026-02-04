@@ -15,7 +15,7 @@ import {
     Globe,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Kirchbauverein St. Georg Wendessen - Dorfleben',
@@ -440,10 +440,8 @@ export default async function KirchbauvereinsPage() {
                     </div>
 
                     <div className="max-w-md mx-auto px-4">
-                        <ContactCardFetcher
-                            name="Kirchbauverein St. Georg"
-                            fallbackRole="Kulturerhalt & Gemeinschaft"
-                            manualEmail="kirchbauverein.wendessen@gmail.com"
+                        <OrganizationContacts
+                            organization="Kirchbauverein"
                             colorClassName="text-blue-600"
                         />
                     </div>
