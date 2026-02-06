@@ -89,6 +89,7 @@ export default function VereineCarousel() {
                                     buttonText={verein.buttonText}
                                     buttonHref={verein.buttonHref}
                                     buttonColor={verein.buttonColor}
+                                    isTextOnly={!verein.imageSrc}
                                     className="h-80 sm:h-96 transition-transform duration-300 group-hover:scale-105"
                                 />
                             </div>

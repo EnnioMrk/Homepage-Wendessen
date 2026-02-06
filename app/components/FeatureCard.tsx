@@ -49,28 +49,30 @@ export default function FeatureCard({
     const effectiveHighlightColor = highlightColor && TEXT_HIGHLIGHT_CLASSES[highlightColor] ? highlightColor : effectiveButtonColor;
     const effectiveBackgroundColor = backgroundColor && BG_GRADIENT_CLASSES[backgroundColor] ? backgroundColor : effectiveButtonColor;
 
+    const isHero = variant === 'hero';
+
     if (isTextOnly) {
         return (
             <div
                 className={`group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 ${BG_GRADIENT_CLASSES[effectiveBackgroundColor]} border ${BORDER_CLASSES[effectiveBackgroundColor]} flex flex-col ${className}`}
             >
-                <div className={`flex-1 flex flex-col justify-center ${compact ? 'p-6' : 'p-6 md:p-8 lg:p-10'}`}>
-                    <h3 className={`font-bold text-gray-900 text-center ${compact ? 'text-xl mb-3' : 'text-xl md:text-2xl lg:text-3xl mb-3 md:mb-4'}`}>
+                <div className={`flex-1 flex flex-col justify-end ${compact ? 'p-6' : 'p-6 md:p-8 lg:p-10'}`}>
+                    <h3 className={`font-bold text-gray-900 ${isHero ? 'text-left' : 'text-center'} ${compact ? 'text-xl mb-3' : 'text-xl md:text-2xl lg:text-3xl mb-3 md:mb-4'}`}>
                         {title}
                     </h3>
                     {subtitle && (
-                        <p className={`${subtitleClassName || TEXT_HIGHLIGHT_CLASSES[effectiveHighlightColor]} font-semibold text-center ${compact ? 'text-sm mb-3' : 'text-sm md:text-base lg:text-lg mb-3 md:mb-4'}`}>
+                        <p className={`${subtitleClassName || TEXT_HIGHLIGHT_CLASSES[effectiveHighlightColor]} font-semibold ${isHero ? 'text-left' : 'text-center'} ${compact ? 'text-sm mb-3' : 'text-sm md:text-base lg:text-lg mb-3 md:mb-4'}`}>
                             {subtitle}
                         </p>
                     )}
-                    <div className={`text-gray-700 leading-relaxed text-center ${compact ? 'text-sm mb-6' : 'text-sm md:text-base mb-6 md:mb-8'}`}>
+                    <div className={`text-gray-700 leading-relaxed ${isHero ? 'text-left' : 'text-center'} ${compact ? 'text-sm mb-6' : 'text-sm md:text-base mb-6 md:mb-8'}`}>
                         {description.split('\n').map((line, i) => (
                             <span key={i} className="block mb-1 last:mb-0">
                                 {line}
                             </span>
                         ))}
                     </div>
-                    <div className="text-center">
+                    <div className={isHero ? '' : 'text-center'}>
                         <a
                             href={buttonHref}
                             className={`inline-flex items-center justify-center ${BUTTON_COLOR_CLASSES[effectiveButtonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn ${compact ? 'px-4 py-2' : 'px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-4'}`}
@@ -83,8 +85,6 @@ export default function FeatureCard({
             </div>
         );
     }
-
-    const isHero = variant === 'hero';
 
     return (
         <div

@@ -2,8 +2,8 @@ export interface Verein {
     id: string;
     title: string;
     description: string;
-    imageSrc: string;
-    imageAlt: string;
+    imageSrc?: string;
+    imageAlt?: string;
     buttonText: string;
     buttonHref: string;
     buttonColor:
@@ -36,8 +36,6 @@ export const ASSOCIATIONS: Verein[] = [
         id: 'idw',
         title: 'IDW',
         description: 'Interessengemeinschaft Dorfleben Wendessen',
-        imageSrc: '/images/Placeholder/idw.webp',
-        imageAlt: 'IDW Wendessen',
         buttonText: 'Mehr erfahren',
         buttonHref: '/idw',
         buttonColor: 'cyan',
