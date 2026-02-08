@@ -173,15 +173,21 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const isInitialLoad = initialLoadRef.current;
-        
+        const isAdminPath = pathname.startsWith('/admin');
+
         // Use an async function to avoid synchronous setState in the effect body
         const initAuth = async () => {
             await Promise.resolve();
             await refresh(isInitialLoad ? undefined : { silent: true });
         };
-        
-        initAuth();
-        
+
+        // Only refresh on mount OR when navigating to/within admin routes.
+        // This avoids unnecessary API calls on every public page navigation
+        // while ensuring admin session data is fresh when performing admin tasks.
+        if (isInitialLoad || isAdminPath) {
+            initAuth();
+        }
+
         if (isInitialLoad) {
             initialLoadRef.current = false;
         }

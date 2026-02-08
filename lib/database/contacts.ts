@@ -62,27 +62,25 @@ export async function getContactByName(
     }
 }
 
-export const getContactsByOrganization = unstable_cache(
-    async (organization: string): Promise<ContactListItem[]> => {
-        const orgPattern = `%${organization.toLowerCase()}%`;
-        try {
-            const result = await sql`
-                SELECT * FROM contacts
-                WHERE EXISTS (
-                    SELECT 1 FROM jsonb_array_elements(affiliations) a
-                    WHERE LOWER(a->>'org') LIKE ${orgPattern}
-                )
-                ORDER BY importance DESC, name ASC;
-            `;
-            return result.map(convertToContactItem);
-        } catch (error) {
-            console.error(`Error fetching contacts for organization ${organization}:`, error);
-            throw new Error('Failed to fetch contacts by organization');
-        }
-    },
-    ['contacts-by-org'],
-    { tags: ['contacts'], revalidate: 3600 }
-);
+export async function getContactsByOrganization(organization: string): Promise<ContactListItem[]> {
+    'use cache';
+    cacheTag('contacts');
+    const orgPattern = `%${organization.toLowerCase()}%`;
+    try {
+        const result = await sql`
+            SELECT * FROM contacts
+            WHERE EXISTS (
+                SELECT 1 FROM jsonb_array_elements(affiliations) a
+                WHERE LOWER(a->>'org') LIKE ${orgPattern}
+            )
+            ORDER BY importance DESC, name ASC;
+        `;
+        return result.map(convertToContactItem);
+    } catch (error) {
+        console.error(`Error fetching contacts for organization ${organization}:`, error);
+        throw new Error('Failed to fetch contacts by organization');
+    }
+}
 
 export async function searchContacts(
     query: string

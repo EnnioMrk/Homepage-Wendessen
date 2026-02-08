@@ -7,6 +7,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
 import ContentImage from '@/app/components/ContentImage';
+import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
     title: 'Hospiz im Gutspark - Institutionen',
@@ -131,8 +132,26 @@ export default function HospizInstitutionPage() {
                         <div className="max-w-2xl">
                             <UsersThree className="w-8 h-8 text-gray-400 mx-auto mb-3" />
                             <p className="text-lg text-gray-600 font-medium">
-                                Mit über 30 Mitarbeitenden in Pflege, Hauswirtschaft und Verwaltung ist das Hospiz der größte Arbeitgeber von Wendessen.
+                                Mit over 30 Mitarbeitenden in Pflege, Hauswirtschaft und Verwaltung ist das Hospiz der größte Arbeitgeber von Wendessen.
                             </p>
+                        </div>
+                    </div>
+
+                    {/* Contact Section */}
+                    <div className="mt-16 sm:mt-24 md:mt-32">
+                        <div className="text-center mb-12 md:mb-20">
+                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                                Ihre Ansprechpartner
+                            </h2>
+                            <div className="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
+                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                Haben Sie Fragen zum Hospiz im Gutspark oder möchten Sie uns kennenlernen? 
+                                Unsere Ansprechpartner sind gerne für Sie da.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
+                            <OrganizationContacts organization="hospiz-institution-wolfenbuettel" colorClassName="text-red-600" />
                         </div>
                     </div>
                 </div>

@@ -226,7 +226,7 @@ export default async function WirSindWendessenSection() {
                         subtitleClassName={card3SubtitleClass}
                         imageSrc={card3.image_url}
                         isTextOnly={!card3.image_url}
-                        className="mb-8"
+                        className="h-96 mb-8"
                     />
                 </div>
 

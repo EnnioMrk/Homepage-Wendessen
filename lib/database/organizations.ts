@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 
 export interface Organization {
@@ -24,19 +24,17 @@ function convertToOrganization(row: Record<string, unknown>): Organization {
     };
 }
 
-export const getOrganizations = unstable_cache(
-    async (): Promise<Organization[]> => {
-        try {
-            const result = await sql`SELECT * FROM organizations ORDER BY title ASC;`;
-            return result.map(convertToOrganization);
-        } catch (error) {
-            console.error('Error fetching organizations:', error);
-            throw new Error('Failed to fetch organizations');
-        }
-    },
-    ['organizations-all'],
-    { tags: ['organizations'], revalidate: 3600 }
-);
+export async function getOrganizations(): Promise<Organization[]> {
+    'use cache';
+    cacheTag('organizations');
+    try {
+        const result = await sql`SELECT * FROM organizations ORDER BY title ASC;`;
+        return result.map(convertToOrganization);
+    } catch (error) {
+        console.error('Error fetching organizations:', error);
+        throw new Error('Failed to fetch organizations');
+    }
+}
 
 export async function createOrganization(org: OrganizationInput): Promise<Organization> {
     try {

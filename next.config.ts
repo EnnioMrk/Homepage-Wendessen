@@ -20,14 +20,14 @@ const minioHostname =
 
 const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
 
+const minioPorts = ['80', '9000'];
+
 // Build remotePatterns as URL instances when MinIO is configured. Using
 // `URL` here matches Next.js typings `(URL | RemotePattern)[]` and keeps the
 // allowed external image sources strict (blocks all others).
 const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
-    ? (() => {
-        const portSegment = process.env.MINIO_PORT
-            ? `:${process.env.MINIO_PORT}`
-            : '';
+    ? minioPorts.flatMap((port) => {
+        const portSegment = port ? `:${port}` : '';
         const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
         try {
             return [new URL(url)];
@@ -37,20 +37,19 @@ const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
                 {
                     protocol: minioProtocol,
                     hostname: minioHostname,
-                    ...(process.env.MINIO_PORT
-                        ? { port: process.env.MINIO_PORT }
-                        : {}),
+                    ...(port ? { port } : {}),
                     pathname: '/:path*',
                 },
             ];
         }
-    })()
+    })
     : [];
 
 console.log(
     `Next.js image remotePatterns configured for MinIO: ${minioHostname
-        ? `${minioProtocol}://${minioHostname}${process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''
-        }`
+        ? minioPorts
+            .map((port) => `${minioProtocol}://${minioHostname}${port ? `:${port}` : ''}`)
+            .join(', ')
         : 'none'
     }`
 );
