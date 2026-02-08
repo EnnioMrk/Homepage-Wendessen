@@ -4,14 +4,15 @@ const { Pool } = Pg;
 
 const OLD_ENDPOINT = 'http://api.minio.wendessen.duckdns.org:80/';
 const NEW_ENDPOINT = 'http://146.59.235.98:9000/';
+const DB_URL = process.env.DATABASE_URL;
 
-if (!process.env.PROD_DATABASE_URL) {
-    console.error('PROD_DATABASE_URL environment variable is not set in .env');
+if (!DB_URL) {
+    console.error('DB_URL variable is not set.');
     process.exit(1);
 }
 
 const pool = new Pool({
-    connectionString: process.env.PROD_DATABASE_URL,
+    connectionString: DB_URL,
     connectionTimeoutMillis: 5000,
 });
 
