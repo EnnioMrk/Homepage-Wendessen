@@ -12,20 +12,6 @@ import { revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
-// Helper function to notify WebSocket server
-async function notifyClients() {
-    try {
-        // Non-blocking call
-        fetch('http://localhost:8081/broadcast', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'refresh' }),
-        }).catch(err => console.error('WS notify error:', err));
-    } catch (error) {
-        console.error('Error notifying WebSocket server:', error);
-    }
-}
-
 // GET - Load all submissions
 export async function GET() {
     try {
@@ -177,7 +163,7 @@ export async function PATCH(request: NextRequest) {
         });
 
         // Notify clients about the change
-        notifyClients();
+        // notifyClients(); removed as invalid
 
         return NextResponse.json({
             message: `Einreichung erfolgreich ${messageText}`,
@@ -260,7 +246,7 @@ export async function DELETE(request: NextRequest) {
         });
 
         // Notify clients about the change
-        notifyClients();
+        // notifyClients(); removed as invalid
 
         return NextResponse.json({
             message: 'Einreichung erfolgreich gelöscht',

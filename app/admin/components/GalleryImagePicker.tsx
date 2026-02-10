@@ -10,7 +10,7 @@ interface GalleryImage {
 }
 
 interface GalleryImagePickerProps {
-    onSelect: (image: { id: string; url: string }) => void;
+    onSelect: (image: { id: string; url: string; displayName: string }) => void;
     onClose: () => void;
     canUpload?: boolean;
 }
@@ -142,7 +142,7 @@ export default function GalleryImagePicker({ onSelect, onClose, canUpload = fals
                             {filteredImages.map((img) => (
                                 <button
                                     key={img.id}
-                                    onClick={() => onSelect({ id: img.id, url: img.url })}
+                                    onClick={() => onSelect({ id: img.id, url: img.url, displayName: img.displayName })}
                                     className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-blue-500 focus:outline-none focus:border-blue-500 group"
                                 >
                                     <Image

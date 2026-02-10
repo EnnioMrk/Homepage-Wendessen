@@ -103,6 +103,7 @@ export async function PUT(
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
@@ -178,6 +179,7 @@ export async function DELETE(
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action

@@ -104,6 +104,7 @@ export async function POST(request: NextRequest) {
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
