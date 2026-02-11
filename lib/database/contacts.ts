@@ -1,4 +1,4 @@
-import { cacheTag, unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 
 export interface ContactRecord {

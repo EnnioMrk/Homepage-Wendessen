@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash, PencilSimple, Envelope, Phone, Buildings, MagnifyingGlass, Funnel, X, CaretDown, Star } from '@phosphor-icons/react/dist/ssr';
+import { Plus, Trash, PencilSimple, Envelope, Phone, Buildings, MagnifyingGlass, Funnel, X, CaretDown } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 

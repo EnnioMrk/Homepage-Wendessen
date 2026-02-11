@@ -36,6 +36,7 @@ const ROLE_IMPORTANCE: Record<string, number> = {
     '2. Vorsitzende': 350,
     'Kassenführer': 300,
     'Kassiererin': 300,
+    'Kassenwart': 300,
     'Schriftführer': 250,
     'Schriftführerin': 250,
 

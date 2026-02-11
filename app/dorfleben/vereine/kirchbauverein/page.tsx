@@ -439,7 +439,7 @@ export default async function KirchbauvereinsPage() {
                         </p>
                     </div>
 
-                    <div className="max-w-md mx-auto px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto px-4">
                         <OrganizationContacts
                             organization="Kirchbauverein"
                             colorClassName="text-blue-600"
