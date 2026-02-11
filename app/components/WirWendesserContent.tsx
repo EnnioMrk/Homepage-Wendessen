@@ -1,14 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-    Users,
-    BookOpen,
-    UserPlus,
-} from '@phosphor-icons/react/dist/ssr';
+import { Users, BookOpen, UserPlus, X } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import PortraitSubmissionModal from '@/app/components/PortraitSubmissionModal';
 import PageHeader from '@/app/components/layout/PageHeader';
+import Modal from '@/app/components/ui/Modal';
 
 interface ApprovedPortrait {
     id: number;
@@ -20,6 +17,8 @@ interface ApprovedPortrait {
 
 export default function WirWendesserContent() {
     const [showPortraitModal, setShowPortraitModal] = useState(false);
+    const [selectedPortrait, setSelectedPortrait] =
+        useState<ApprovedPortrait | null>(null);
     const [approvedPortraits, setApprovedPortraits] = useState<
         ApprovedPortrait[]
     >([]);
@@ -89,14 +88,19 @@ export default function WirWendesserContent() {
                         {isLoading ? (
                             <div className="bg-white p-12 rounded-3xl shadow-lg text-center">
                                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-                                <p className="text-gray-600">Lade Portraits...</p>
+                                <p className="text-gray-600">
+                                    Lade Portraits...
+                                </p>
                             </div>
                         ) : approvedPortraits.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
                                 {approvedPortraits.map((portrait) => (
                                     <div
                                         key={portrait.id}
-                                        className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-slate-100 group"
+                                        onClick={() =>
+                                            setSelectedPortrait(portrait)
+                                        }
+                                        className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-slate-100 group cursor-pointer"
                                     >
                                         <div className="aspect-[4/5] relative overflow-hidden">
                                             <Image
@@ -110,7 +114,7 @@ export default function WirWendesserContent() {
                                             <h5 className="text-xl font-bold text-gray-900 mb-3 break-words">
                                                 {portrait.name}
                                             </h5>
-                                            <p className="text-gray-700 leading-relaxed break-words text-sm">
+                                            <p className="text-gray-700 leading-relaxed break-words text-sm line-clamp-5">
                                                 {portrait.description}
                                             </p>
                                         </div>
@@ -157,6 +161,47 @@ export default function WirWendesserContent() {
                     </div>
                 </div>
             </div>
+
+            {/* Portrait Details Modal */}
+            <Modal
+                isOpen={!!selectedPortrait}
+                onClose={() => setSelectedPortrait(null)}
+                className="max-w-3xl w-full"
+            >
+                {selectedPortrait && (
+                    <div className="bg-white px-6 pt-6 pb-6">
+                        {/* Header */}
+                        <div className="flex items-start justify-between mb-4">
+                            <h3 className="text-xl font-bold text-gray-900 mb-1">
+                                {selectedPortrait.name}
+                            </h3>
+                            <button
+                                onClick={() => setSelectedPortrait(null)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Image */}
+                        <div className="relative h-[25rem] aspect-square bg-gray-100 rounded-lg overflow-hidden mb-6 mx-auto border-[16px] border-white ring-2 ring-gray-100 shadow-lg">
+                            <Image
+                                src={selectedPortrait.imageUrl}
+                                alt={`Portrait von ${selectedPortrait.name}`}
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                {selectedPortrait.description}
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </Modal>
 
             {/* Portrait Submission Modal */}
             <PortraitSubmissionModal

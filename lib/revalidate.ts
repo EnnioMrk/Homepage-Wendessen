@@ -1,6 +1,12 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 
-export const revalidatePathSafe = revalidatePath;
+export function revalidatePathSafe(path: string, type?: 'page' | 'layout') {
+    try {
+        revalidatePath(path, type);
+    } catch (e) {
+        console.warn('revalidatePathSafe failed for', path, e);
+    }
+}
 
 export function revalidateTagSafe(tag: string) {
     try {

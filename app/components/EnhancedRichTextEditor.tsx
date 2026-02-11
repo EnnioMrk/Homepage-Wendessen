@@ -33,6 +33,7 @@ import {
     PencilSimple,
     Trash,
 } from '@phosphor-icons/react';
+import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 
 type GalleryImage = {
     id: number;
@@ -93,6 +94,7 @@ export default function EnhancedRichTextEditor({
     useEffect(() => {
         // ensure editor has initial children when value is empty
         if (!editor.children || editor.children.length === 0)
+            // eslint-disable-next-line react-hooks/immutability
             editor.children =
                 value && value.length > 0
                     ? value
@@ -102,9 +104,6 @@ export default function EnhancedRichTextEditor({
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [linkUrl, setLinkUrl] = useState('');
     const [showGalleryModal, setShowGalleryModal] = useState(false);
-    const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
-    const [loadingGallery, setLoadingGallery] = useState(false);
-    const [gallerySearch, setGallerySearch] = useState('');
     const [selectedGalleryImage, setSelectedGalleryImage] =
         useState<GalleryImage | null>(null);
     const [imageSize, setImageSize] = useState<ImageSize>('medium');
@@ -115,31 +114,6 @@ export default function EnhancedRichTextEditor({
     );
     const [editingImageElement, setEditingImageElement] =
         useState<ImageElement | null>(null);
-
-    const fetchGalleryImages = useCallback(async () => {
-        setLoadingGallery(true);
-        try {
-            const res = await fetch('/api/admin/gallery');
-            if (res.ok) {
-                const data = await res.json();
-                setGalleryImages(data.images || []);
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoadingGallery(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (showGalleryModal) fetchGalleryImages();
-    }, [showGalleryModal, fetchGalleryImages]);
-
-    const filteredImages = galleryImages.filter(
-        (i) =>
-            i.displayName.toLowerCase().includes(gallerySearch.toLowerCase()) ||
-            i.originalName.toLowerCase().includes(gallerySearch.toLowerCase())
-    );
 
     const renderElement = useCallback(
         (props: RenderElementProps) => {
@@ -477,7 +451,6 @@ export default function EnhancedRichTextEditor({
         } as CustomElement;
         Transforms.insertNodes(editor, para as unknown as SlateElement);
         setShowGalleryModal(false);
-        setGallerySearch('');
         setSelectedGalleryImage(null);
         setImageSize('medium');
         setImagePosition('center');
@@ -636,19 +609,35 @@ export default function EnhancedRichTextEditor({
                 </Slate>
             </div>
 
-            {showGalleryModal && (
+            {showGalleryModal && !selectedGalleryImage && (
+                <GalleryImagePicker
+                    onSelect={(img) => {
+                        setSelectedGalleryImage({
+                            id: parseInt(img.id) || 0,
+                            url: img.url,
+                            displayName: img.displayName || 'Bild',
+                            filename: '',
+                            originalName: '',
+                            size: 0,
+                            mimeType: '',
+                            uploadedAt: '',
+                        });
+                    }}
+                    onClose={() => setShowGalleryModal(false)}
+                    canUpload={true}
+                />
+            )}
+
+            {showGalleryModal && selectedGalleryImage && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
                     <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-2xl font-bold text-gray-900">
-                                {selectedGalleryImage
-                                    ? 'Bildoptionen'
-                                    : 'Bild aus Galerie wählen'}
+                                Bildoptionen
                             </h2>
                             <button
                                 onClick={() => {
                                     setShowGalleryModal(false);
-                                    setGallerySearch('');
                                     setSelectedGalleryImage(null);
                                     setImageSize('medium');
                                     setImagePosition('center');
@@ -659,8 +648,7 @@ export default function EnhancedRichTextEditor({
                             </button>
                         </div>
 
-                        {selectedGalleryImage ? (
-                            /* Image Options View */
+                        {/* Image Options View */}
                             <div className="space-y-6">
                                 {/* Back button */}
                                 <button
@@ -888,64 +876,7 @@ export default function EnhancedRichTextEditor({
                                     </button>
                                 </div>
                             </div>
-                        ) : (
-                            /* Gallery Grid View */
-                            <>
-                                <div className="mb-4">
-                                    <input
-                                        type="text"
-                                        value={gallerySearch}
-                                        onChange={(e) =>
-                                            setGallerySearch(e.target.value)
-                                        }
-                                        placeholder="Bilder durchsuchen..."
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
-                                    />
-                                </div>
 
-                                {loadingGallery ? (
-                                    <div className="flex items-center justify-center py-12">
-                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-                                    </div>
-                                ) : filteredImages.length === 0 ? (
-                                    <div className="text-center py-12">
-                                        <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                        <p className="text-gray-600">
-                                            {gallerySearch
-                                                ? 'Keine Bilder gefunden'
-                                                : 'Keine Bilder in der Galerie'}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                                        {filteredImages.map((image) => (
-                                            <button
-                                                key={image.id}
-                                                type="button"
-                                                onClick={() =>
-                                                    setSelectedGalleryImage(
-                                                        image
-                                                    )
-                                                }
-                                                className="group relative aspect-square overflow-hidden rounded-lg border-2 border-gray-200 hover:border-primary transition-colors"
-                                            >
-                                                <Image
-                                                    src={image.url}
-                                                    alt={image.displayName}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity flex items-center justify-center">
-                                                    <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium px-2 text-center">
-                                                        {image.displayName}
-                                                    </span>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </>
-                        )}
                     </div>
                 </div>
             )}

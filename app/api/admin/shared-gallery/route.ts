@@ -18,20 +18,6 @@ import { revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
-// Helper function to notify WebSocket server
-async function notifyClients() {
-    try {
-        // Non-blocking call
-        fetch('http://localhost:8081/broadcast', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'refresh' }),
-        }).catch((err) => console.error('WS notify error:', err));
-    } catch (error) {
-        console.error('Error notifying WebSocket server:', error);
-    }
-}
-
 export async function GET(request: NextRequest) {
     const authenticated = await isAuthenticated();
     if (!authenticated) {
@@ -56,18 +42,18 @@ export async function GET(request: NextRequest) {
             await getSharedGallerySubmissionGroups(
                 status || undefined,
                 limit,
-                offset
+                offset,
             );
 
         return NextResponse.json({ submissionGroups, total });
     } catch (error) {
         console.error(
             'Error fetching shared gallery submission groups:',
-            error
+            error,
         );
         return NextResponse.json(
             { error: 'Failed to fetch submission groups' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
@@ -85,7 +71,7 @@ export async function POST(request: NextRequest) {
         if (!action) {
             return NextResponse.json(
                 { error: 'Action is required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -96,15 +82,15 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Freigeben' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             const count = await approveAllInGroup(
                 submissionGroupId,
-                currentUser?.username || 'Admin'
+                currentUser?.username || 'Admin',
             );
             revalidateTagSafe('shared-gallery');
-            notifyClients();
+            // notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -124,16 +110,16 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Ablehnen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             const count = await rejectAllInGroup(
                 submissionGroupId,
                 currentUser?.username || 'Admin',
-                reason
+                reason,
             );
             revalidateTagSafe('shared-gallery');
-            notifyClients();
+            // notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -153,12 +139,12 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Zurücksetzen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             const count = await resetAllInGroupToPending(submissionGroupId);
             revalidateTagSafe('shared-gallery');
-            notifyClients();
+            // notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -182,17 +168,17 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Freigeben' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             for (const imageId of imageIds) {
                 await approveSharedGallerySubmission(
                     imageId,
-                    currentUser?.username || 'Admin'
+                    currentUser?.username || 'Admin',
                 );
             }
             revalidateTagSafe('shared-gallery');
-            notifyClients();
+            // notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -214,18 +200,18 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Ablehnen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             for (const imageId of imageIds) {
                 await rejectSharedGallerySubmission(
                     imageId,
                     currentUser?.username || 'Admin',
-                    reason
+                    reason,
                 );
             }
             revalidateTagSafe('shared-gallery');
-            notifyClients();
+            // notifyClients();
 
             logAdminAction({
                 userId: currentUser?.id,
@@ -251,7 +237,7 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Zurücksetzen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             for (const imageId of imageIds) {
@@ -275,12 +261,12 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Freigeben' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             const submission = await approveSharedGallerySubmission(
                 id,
-                currentUser?.username || 'Admin'
+                currentUser?.username || 'Admin',
             );
             revalidateTagSafe('shared-gallery');
 
@@ -299,13 +285,13 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.edit')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Ablehnen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
             const submission = await rejectSharedGallerySubmission(
                 id,
                 currentUser?.username || 'Admin',
-                reason
+                reason,
             );
             revalidateTagSafe('shared-gallery');
 
@@ -324,7 +310,7 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.delete')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Löschen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
 
@@ -341,7 +327,7 @@ export async function POST(request: NextRequest) {
             } catch (blobError) {
                 console.warn(
                     'Failed to delete shared gallery image blob:',
-                    blobError
+                    blobError,
                 );
             }
             await deleteSharedGallerySubmission(id);
@@ -362,15 +348,14 @@ export async function POST(request: NextRequest) {
             if (!hasPermission(currentUser, 'shared_gallery.delete')) {
                 return NextResponse.json(
                     { error: 'Keine Berechtigung zum Löschen' },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
 
             // Get all submissions in the group to delete blobs
             try {
-                const submissions = await getSubmissionsInGroup(
-                    submissionGroupId
-                );
+                const submissions =
+                    await getSubmissionsInGroup(submissionGroupId);
                 for (const sub of submissions) {
                     const objectPath = sub.imageStoragePath || sub.imageUrl;
                     if (objectPath) {
@@ -380,7 +365,7 @@ export async function POST(request: NextRequest) {
             } catch (blobError) {
                 console.warn(
                     'Failed to delete shared gallery group blobs:',
-                    blobError
+                    blobError,
                 );
             }
 
@@ -401,14 +386,14 @@ export async function POST(request: NextRequest) {
         } else {
             return NextResponse.json(
                 { error: 'Invalid action or missing parameters' },
-                { status: 400 }
+                { status: 400 },
             );
         }
     } catch (error) {
         console.error('Error updating shared gallery submission:', error);
         return NextResponse.json(
             { error: 'Failed to update submission' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

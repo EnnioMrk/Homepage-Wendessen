@@ -26,32 +26,37 @@ const minioPorts = ['80', '9000'];
 // `URL` here matches Next.js typings `(URL | RemotePattern)[]` and keeps the
 // allowed external image sources strict (blocks all others).
 const imageRemotePatterns: (URL | Record<string, unknown>)[] = minioHostname
-    ? minioPorts.flatMap((port) => {
-        const portSegment = port ? `:${port}` : '';
-        const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
-        try {
-            return [new URL(url)];
-        } catch {
-            // fallback to object pattern if URL constructor fails for any reason
-            return [
-                {
-                    protocol: minioProtocol,
-                    hostname: minioHostname,
-                    ...(port ? { port } : {}),
-                    pathname: '/:path*',
-                },
-            ];
-        }
-    })
+    ? (() => {
+          const portSegment = process.env.MINIO_PORT
+              ? `:${process.env.MINIO_PORT}`
+              : '';
+          const url = `${minioProtocol}://${minioHostname}${portSegment}/**`;
+          try {
+              return [new URL(url)];
+          } catch {
+              // fallback to object pattern if URL constructor fails for any reason
+              return [
+                  {
+                      protocol: minioProtocol,
+                      hostname: minioHostname,
+                      ...(process.env.MINIO_PORT
+                          ? { port: process.env.MINIO_PORT }
+                          : {}),
+                      pathname: '/:path*',
+                  },
+              ];
+          }
+      })()
     : [];
 
 console.log(
-    `Next.js image remotePatterns configured for MinIO: ${minioHostname
-        ? minioPorts
-            .map((port) => `${minioProtocol}://${minioHostname}${port ? `:${port}` : ''}`)
-            .join(', ')
-        : 'none'
-    }`
+    `Next.js image remotePatterns configured for MinIO: ${
+        minioHostname
+            ? `${minioProtocol}://${minioHostname}${
+                  process.env.MINIO_PORT ? `:${process.env.MINIO_PORT}` : ''
+              }`
+            : 'none'
+    }`,
 );
 
 const nextConfig: NextConfig = {
@@ -60,7 +65,8 @@ const nextConfig: NextConfig = {
         // and only enable them when a MinIO hostname is configured via env.
         // Type assertion is required so TS accepts the plain-object patterns
         // as the expected `(URL | RemotePattern)[]` union.
-        remotePatterns: imageRemotePatterns as unknown as import('next/dist/shared/lib/image-config').RemotePattern[],
+        remotePatterns:
+            imageRemotePatterns as unknown as import('next/dist/shared/lib/image-config').RemotePattern[],
         // Aggressive caching for optimized images (1 year)
         minimumCacheTTL: 31536000,
     },
@@ -188,6 +194,13 @@ const nextConfig: NextConfig = {
     cacheComponents: true,
     experimental: {
         useCache: true,
+        cacheLife: {
+            page: {
+                stale: 3600, // 1 hour
+                revalidate: 3600, // 1 hour
+                expire: 86400, // 1 day
+            },
+        },
     },
 };
 

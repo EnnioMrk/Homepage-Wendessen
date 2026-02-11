@@ -17,6 +17,7 @@ import {
 import Image from 'next/image';
 import { usePermissions } from '@/lib/usePermissions';
 import PromptDialog from '@/app/components/ui/PromptDialog';
+import Modal from '@/app/components/ui/Modal';
 
 interface PortraitSubmission {
     id: number;
@@ -86,7 +87,7 @@ export default function AdminPortraits({
             } else {
                 const error = await response.json();
                 showError(
-                    error.message || 'Fehler beim Freigeben der Einreichung'
+                    error.message || 'Fehler beim Freigeben der Einreichung',
                 );
             }
         } catch (error) {
@@ -112,7 +113,7 @@ export default function AdminPortraits({
             } else {
                 const error = await response.json();
                 showError(
-                    error.message || 'Fehler beim Ablehnen der Einreichung'
+                    error.message || 'Fehler beim Ablehnen der Einreichung',
                 );
             }
         } catch (error) {
@@ -138,7 +139,7 @@ export default function AdminPortraits({
             } else {
                 const error = await response.json();
                 showError(
-                    error.message || 'Fehler beim Zurücksetzen der Einreichung'
+                    error.message || 'Fehler beim Zurücksetzen der Einreichung',
                 );
             }
         } catch (error) {
@@ -164,7 +165,7 @@ export default function AdminPortraits({
             } else {
                 const error = await response.json();
                 showError(
-                    error.message || 'Fehler beim Löschen der Einreichung'
+                    error.message || 'Fehler beim Löschen der Einreichung',
                 );
             }
         } catch (error) {
@@ -232,21 +233,21 @@ export default function AdminPortraits({
                                 key: 'pending',
                                 label: 'Wartend',
                                 count: submissions.filter(
-                                    (s) => s.status === 'pending'
+                                    (s) => s.status === 'pending',
                                 ).length,
                             },
                             {
                                 key: 'approved',
                                 label: 'Freigegeben',
                                 count: submissions.filter(
-                                    (s) => s.status === 'approved'
+                                    (s) => s.status === 'approved',
                                 ).length,
                             },
                             {
                                 key: 'rejected',
                                 label: 'Abgelehnt',
                                 count: submissions.filter(
-                                    (s) => s.status === 'rejected'
+                                    (s) => s.status === 'rejected',
                                 ).length,
                             },
                         ].map((tab) => (
@@ -258,7 +259,7 @@ export default function AdminPortraits({
                                             | 'all'
                                             | 'pending'
                                             | 'approved'
-                                            | 'rejected'
+                                            | 'rejected',
                                     )
                                 }
                                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
@@ -290,7 +291,7 @@ export default function AdminPortraits({
                         {filterStatus === 'all'
                             ? 'Es wurden noch keine Portrait-Einreichungen eingereicht.'
                             : `Keine Einreichungen mit Status "${getStatusText(
-                                  filterStatus
+                                  filterStatus,
                               )}".`}
                     </p>
                 </div>
@@ -299,7 +300,8 @@ export default function AdminPortraits({
                     {filteredSubmissions.map((submission) => (
                         <div
                             key={submission.id}
-                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                            onClick={() => setSelectedSubmission(submission)}
                         >
                             {/* Image */}
                             <div className="relative h-48 bg-gray-100">
@@ -322,7 +324,7 @@ export default function AdminPortraits({
                                     </h3>
                                     <span
                                         className={getStatusBadge(
-                                            submission.status
+                                            submission.status,
                                         )}
                                     >
                                         {getStatusText(submission.status)}
@@ -336,7 +338,7 @@ export default function AdminPortraits({
                                 <div className="flex items-center text-xs text-gray-500 mb-4">
                                     <Calendar className="w-3 h-3 mr-1" />
                                     {new Date(
-                                        submission.submittedAt
+                                        submission.submittedAt,
                                     ).toLocaleDateString('de-DE', {
                                         day: '2-digit',
                                         month: '2-digit',
@@ -355,7 +357,10 @@ export default function AdminPortraits({
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex space-x-2">
+                                <div
+                                    className="flex space-x-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
                                     <button
                                         onClick={() =>
                                             setSelectedSubmission(submission)
@@ -372,7 +377,7 @@ export default function AdminPortraits({
                                                 <button
                                                     onClick={() =>
                                                         handleApprove(
-                                                            submission.id
+                                                            submission.id,
                                                         )
                                                     }
                                                     disabled={
@@ -386,7 +391,7 @@ export default function AdminPortraits({
                                                 <button
                                                     onClick={() =>
                                                         handleReject(
-                                                            submission.id
+                                                            submission.id,
                                                         )
                                                     }
                                                     disabled={
@@ -406,7 +411,7 @@ export default function AdminPortraits({
                                                 <button
                                                     onClick={() =>
                                                         handleReset(
-                                                            submission.id
+                                                            submission.id,
                                                         )
                                                     }
                                                     disabled={
@@ -421,7 +426,7 @@ export default function AdminPortraits({
                                                 <button
                                                     onClick={() =>
                                                         handleReject(
-                                                            submission.id
+                                                            submission.id,
                                                         )
                                                     }
                                                     disabled={
@@ -442,7 +447,7 @@ export default function AdminPortraits({
                                                 <button
                                                     onClick={() =>
                                                         handleReset(
-                                                            submission.id
+                                                            submission.id,
                                                         )
                                                     }
                                                     disabled={
@@ -457,7 +462,7 @@ export default function AdminPortraits({
                                                 <button
                                                     onClick={() =>
                                                         handleApprove(
-                                                            submission.id
+                                                            submission.id,
                                                         )
                                                     }
                                                     disabled={
@@ -476,7 +481,7 @@ export default function AdminPortraits({
                                         <button
                                             onClick={() =>
                                                 setDeleteConfirmId(
-                                                    submission.id
+                                                    submission.id,
                                                 )
                                             }
                                             disabled={
@@ -496,220 +501,215 @@ export default function AdminPortraits({
             )}
 
             {/* Detail Modal */}
-            {selectedSubmission && (
-                <div className="fixed inset-0 z-50 overflow-y-auto">
-                    <div className="flex items-center justify-center min-h-screen px-4 text-center">
-                        <div
-                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                            onClick={() => setSelectedSubmission(null)}
-                        ></div>
-
-                        <div className="relative inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-2xl w-full mx-4">
-                            <div className="bg-white px-6 pt-6 pb-4">
-                                {/* Header */}
-                                <div className="flex items-start justify-between mb-4">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-1">
-                                            {selectedSubmission.name}
-                                        </h3>
-                                        <div className="flex items-center space-x-3">
-                                            <span
-                                                className={getStatusBadge(
-                                                    selectedSubmission.status
-                                                )}
-                                            >
-                                                {getStatusText(
-                                                    selectedSubmission.status
-                                                )}
-                                            </span>
-                                            <span className="text-sm text-gray-500">
-                                                {new Date(
-                                                    selectedSubmission.submittedAt
-                                                ).toLocaleDateString('de-DE', {
-                                                    day: '2-digit',
-                                                    month: '2-digit',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() =>
-                                            setSelectedSubmission(null)
-                                        }
-                                        className="text-gray-400 hover:text-gray-600"
-                                    >
-                                        <X className="w-6 h-6" />
-                                    </button>
-                                </div>
-
-                                {/* Image */}
-                                <div className="relative h-64 bg-gray-100 rounded-lg overflow-hidden mb-4">
-                                    <Image
-                                        src={getImageUrl(selectedSubmission)}
-                                        alt={`Portrait von ${selectedSubmission.name}`}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-
-                                {/* Description */}
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                                        Beschreibung:
-                                    </h4>
-                                    <p className="text-gray-700 whitespace-pre-wrap">
-                                        {selectedSubmission.description}
-                                    </p>
-                                </div>
-
-                                {/* Email */}
-                                {selectedSubmission.email && (
-                                    <div className="mb-6">
-                                        <h4 className="text-sm font-medium text-gray-900 mb-1">
-                                            E-Mail:
-                                        </h4>
-                                        <a
-                                            href={`mailto:${selectedSubmission.email}`}
-                                            className="text-blue-600 hover:text-blue-800"
+            <Modal
+                isOpen={!!selectedSubmission}
+                onClose={() => setSelectedSubmission(null)}
+                className="max-w-3xl w-full"
+            >
+                {selectedSubmission && (
+                    <>
+                        <div className="bg-white px-6 pt-6 pb-4">
+                            {/* Header */}
+                            <div className="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-1">
+                                        {selectedSubmission.name}
+                                    </h3>
+                                    <div className="flex items-center space-x-3">
+                                        <span
+                                            className={getStatusBadge(
+                                                selectedSubmission.status,
+                                            )}
                                         >
-                                            {selectedSubmission.email}
-                                        </a>
+                                            {getStatusText(
+                                                selectedSubmission.status,
+                                            )}
+                                        </span>
+                                        <span className="text-sm text-gray-500">
+                                            {new Date(
+                                                selectedSubmission.submittedAt,
+                                            ).toLocaleDateString('de-DE', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </span>
                                     </div>
-                                )}
+                                </div>
+                                <button
+                                    onClick={() => setSelectedSubmission(null)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
                             </div>
 
-                            {/* Actions */}
-                            <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                                {selectedSubmission.status === 'pending' &&
-                                    canEdit && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleApprove(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    selectedSubmission.id
-                                                }
-                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                            >
-                                                <Check className="w-4 h-4 mr-2" />
-                                                Freigeben
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleReject(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    selectedSubmission.id
-                                                }
-                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                            >
-                                                <X className="w-4 h-4 mr-2" />
-                                                Ablehnen
-                                            </button>
-                                        </>
-                                    )}
-                                {selectedSubmission.status === 'approved' &&
-                                    canEdit && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleReset(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    selectedSubmission.id
-                                                }
-                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                            >
-                                                <ArrowCounterClockwise className="w-4 h-4 mr-2" />
-                                                Zurücksetzen
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleReject(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    selectedSubmission.id
-                                                }
-                                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                            >
-                                                <X className="w-4 h-4 mr-2" />
-                                                Ablehnen
-                                            </button>
-                                        </>
-                                    )}
-                                {selectedSubmission.status === 'rejected' &&
-                                    canEdit && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleReset(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    selectedSubmission.id
-                                                }
-                                                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                            >
-                                                <ArrowCounterClockwise className="w-4 h-4 mr-2" />
-                                                Zurücksetzen
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleApprove(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    isActionLoading ===
-                                                    selectedSubmission.id
-                                                }
-                                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                            >
-                                                <Check className="w-4 h-4 mr-2" />
-                                                Freigeben
-                                            </button>
-                                        </>
-                                    )}
-                                {canDelete && (
-                                    <button
-                                        onClick={() =>
-                                            setDeleteConfirmId(
-                                                selectedSubmission.id
-                                            )
-                                        }
-                                        disabled={
-                                            isActionLoading ===
-                                            selectedSubmission.id
-                                        }
-                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                    >
-                                        <Trash className="w-4 h-4 mr-2" />
-                                        Löschen
-                                    </button>
-                                )}
+                            {/* Image */}
+                            <div className="relative h-[25rem] aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4 mx-auto border-[16px] border-white ring-2 ring-gray-100 shadow-lg">
+                                <Image
+                                    src={getImageUrl(selectedSubmission)}
+                                    alt={`Portrait von ${selectedSubmission.name}`}
+                                    fill
+                                    className="object-cover rounded-md"
+                                />
                             </div>
+
+                            {/* Description */}
+                            <div className="mb-4">
+                                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                                    Beschreibung:
+                                </h4>
+                                <p className="text-gray-700 whitespace-pre-wrap">
+                                    {selectedSubmission.description}
+                                </p>
+                            </div>
+
+                            {/* Email */}
+                            {selectedSubmission.email && (
+                                <div className="mb-6">
+                                    <h4 className="text-sm font-medium text-gray-900 mb-1">
+                                        E-Mail:
+                                    </h4>
+                                    <a
+                                        href={`mailto:${selectedSubmission.email}`}
+                                        className="text-blue-600 hover:text-blue-800"
+                                    >
+                                        {selectedSubmission.email}
+                                    </a>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                </div>
-            )}
+
+                        {/* Actions */}
+                        <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                            {selectedSubmission.status === 'pending' &&
+                                canEdit && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                handleApprove(
+                                                    selectedSubmission.id,
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <Check className="w-4 h-4 mr-2" />
+                                            Freigeben
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleReject(
+                                                    selectedSubmission.id,
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <X className="w-4 h-4 mr-2" />
+                                            Ablehnen
+                                        </button>
+                                    </>
+                                )}
+                            {selectedSubmission.status === 'approved' &&
+                                canEdit && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                handleReset(
+                                                    selectedSubmission.id,
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                                            Zurücksetzen
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleReject(
+                                                    selectedSubmission.id,
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <X className="w-4 h-4 mr-2" />
+                                            Ablehnen
+                                        </button>
+                                    </>
+                                )}
+                            {selectedSubmission.status === 'rejected' &&
+                                canEdit && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                handleReset(
+                                                    selectedSubmission.id,
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                                            Zurücksetzen
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleApprove(
+                                                    selectedSubmission.id,
+                                                )
+                                            }
+                                            disabled={
+                                                isActionLoading ===
+                                                selectedSubmission.id
+                                            }
+                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                        >
+                                            <Check className="w-4 h-4 mr-2" />
+                                            Freigeben
+                                        </button>
+                                    </>
+                                )}
+                            {canDelete && (
+                                <button
+                                    onClick={() =>
+                                        setDeleteConfirmId(
+                                            selectedSubmission.id,
+                                        )
+                                    }
+                                    disabled={
+                                        isActionLoading ===
+                                        selectedSubmission.id
+                                    }
+                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
+                                >
+                                    <Trash className="w-4 h-4 mr-2" />
+                                    Löschen
+                                </button>
+                            )}
+                        </div>
+                    </>
+                )}
+            </Modal>
 
             {/* Delete Confirmation Dialog */}
             <PromptDialog
