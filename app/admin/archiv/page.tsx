@@ -19,6 +19,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import { Descendant } from 'slate';
+import Modal from '@/app/components/ui/Modal';
 
 interface ArchiveItem {
     id: number;
@@ -247,9 +248,15 @@ export default function AdminArchivePage() {
             )}
 
             {/* Preview Modal */}
-            {previewItem && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-start justify-center px-4 pb-4 pt-[66px] md:pt-[68px] lg:pt-[70px] z-50 overflow-y-auto scroll-auto">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-auto">
+            <Modal
+                isOpen={previewItem !== null}
+                onClose={() => setPreviewItem(null)}
+                maxWidth="4xl"
+                backdropBlur={true}
+                centered={false}
+            >
+                {previewItem && (
+                    <div className="text-left">
                         {/* Modal Header */}
                         <div className="bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl flex items-center justify-between">
                             <div className="flex items-center space-x-3">
@@ -358,8 +365,8 @@ export default function AdminArchivePage() {
                             )}
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </Modal>
 
             <PromptDialog
                 isOpen={itemToDelete !== null}

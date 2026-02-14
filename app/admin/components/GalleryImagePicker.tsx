@@ -6,6 +6,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import Modal from '@/app/components/ui/Modal';
 
 interface GalleryImage {
     id: string;
@@ -95,9 +96,14 @@ export default function GalleryImagePicker({
     );
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] p-4">
-            <div className="bg-white rounded-lg w-full max-w-4xl max-h-[80vh] flex flex-col">
-                <div className="p-4 border-b flex justify-between items-center">
+        <Modal
+            isOpen={true}
+            onClose={onClose}
+            maxWidth="4xl"
+            backdropBlur={true}
+        >
+            <div className="max-h-[80vh] flex flex-col">
+                <div className="p-4 border-b flex justify-between items-center text-left">
                     <h3 className="text-lg font-medium text-gray-900">
                         Bild aus Galerie wählen
                     </h3>
@@ -136,7 +142,7 @@ export default function GalleryImagePicker({
                         )}
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
                         >
                             <X size={24} />
                         </button>
@@ -159,7 +165,7 @@ export default function GalleryImagePicker({
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4">
+                <div className="flex-1 overflow-y-auto p-4 text-left">
                     {loading ? (
                         <LoadingSpinner centered />
                     ) : filteredImages.length === 0 ? (
@@ -186,7 +192,7 @@ export default function GalleryImagePicker({
                                         fill
                                         className="object-cover"
                                     />
-                                    <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate group-hover:bg-opacity-70">
+                                    <div className="absolute inset-x-0 bottom-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate group-hover:bg-opacity-70 text-left">
                                         {img.displayName}
                                     </div>
                                 </button>
@@ -195,6 +201,6 @@ export default function GalleryImagePicker({
                     )}
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 }

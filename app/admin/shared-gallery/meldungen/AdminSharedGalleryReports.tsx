@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
+import Modal from '@/app/components/ui/Modal';
 import LazySharedGalleryImage from '@/app/components/LazySharedGalleryImage';
 import { SharedGalleryImageProvider } from '@/app/components/SharedGalleryImageContext';
 import { ArrowLeft, Check, X, Warning, Trash, ArrowsCounterClockwise } from '@phosphor-icons/react';
@@ -539,151 +540,209 @@ export default function AdminSharedGalleryReports() {
                 </div>
 
                 {/* Image View Modal */}
-                {viewingImage && (
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
-                        onClick={() => setViewingImage(null)}
-                    >
-                        <div
-                            className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-                                <h3 className="text-xl font-bold text-gray-900">
+                <Modal
+                    isOpen={Boolean(viewingImage)}
+                    onClose={() => setViewingImage(null)}
+                    maxWidth="4xl"
+                    backdropBlur
+                >
+                    <div className="p-6 md:p-8">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900">
                                     Gemeldetes Foto
                                 </h3>
-                                <button
-                                    onClick={() => setViewingImage(null)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
-                                    <X size={24} />
-                                </button>
+                                {viewingImage && (
+                                    <div className="mt-1">
+                                        {getStatusBadge(viewingImage.status)}
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="p-6">
-                                {/* Image Preview */}
-                                <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 mb-6">
-                                    {viewingImage.imageUrl ? (
-                                        <Image
-                                            src={viewingImage.imageUrl}
-                                            alt="Gemeldetes Foto"
-                                            fill
-                                            className="object-contain"
-                                            unoptimized
-                                        />
-                                    ) : (
-                                        <LazySharedGalleryImage
-                                            imageId={viewingImage.submissionId}
-                                            alt="Gemeldetes Foto"
-                                            fill
-                                            className="object-contain"
-                                            onLoad={(imageUrl) => {
-                                                viewingImage.imageUrl = imageUrl;
-                                            }}
-                                        />
+                            {canDelete && viewingImage && (
+                                <button
+                                    onClick={() =>
+                                        setImageToDelete({
+                                            submissionId: viewingImage.submissionId,
+                                            reportId: viewingImage.id
+                                        })
+                                    }
+                                    className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors text-sm font-medium border border-red-100"
+                                    title="Foto & Meldung löschen"
+                                >
+                                    <Trash size={18} />
+                                    Beides löschen
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Image Preview */}
+                        <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-gray-100 mb-8 shadow-inner border border-gray-100">
+                            {viewingImage?.imageUrl ? (
+                                <Image
+                                    src={viewingImage.imageUrl}
+                                    alt="Gemeldetes Foto"
+                                    fill
+                                    className="object-contain"
+                                    unoptimized
+                                />
+                            ) : viewingImage ? (
+                                <LazySharedGalleryImage
+                                    imageId={viewingImage.submissionId}
+                                    alt="Gemeldetes Foto"
+                                    fill
+                                    className="object-contain"
+                                    onLoad={(imageUrl) => {
+                                        viewingImage.imageUrl = imageUrl;
+                                    }}
+                                />
+                            ) : null}
+                        </div>
+
+                        {/* Report Details & Metadata */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                            <div className="space-y-6">
+                                <div className="bg-red-50 border border-red-100 p-5 rounded-2xl">
+                                    <h4 className="text-xs font-bold text-red-900 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <Warning size={16} />
+                                        Grund der Meldung
+                                    </h4>
+                                    <p className="text-gray-900 font-medium bg-white/50 p-3 rounded-lg border border-red-50 italic">
+                                        &quot;{viewingImage?.reason}&quot;
+                                    </p>
+                                    {viewingImage?.reporterInfo && (
+                                        <div className="mt-4 pt-4 border-t border-red-100">
+                                            <h4 className="text-xs font-bold text-red-900 uppercase tracking-wider mb-1">
+                                                Zusatzinfo vom Melder:
+                                            </h4>
+                                            <p className="text-sm text-red-800 italic">
+                                                &quot;{viewingImage.reporterInfo}&quot;
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
+                            </div>
 
-                                {/* Report Details */}
-                                <div className="space-y-4 mb-6">
+                            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
+                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
+                                    Foto-Metadaten
+                                </h4>
+
+                                <div className="grid grid-cols-1 gap-4">
                                     <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-0.5">
                                             Titel
-                                        </h4>
-                                        <p className="text-gray-900">
-                                            {viewingImage.title ||
+                                        </span>
+                                        <span className="text-gray-900 font-medium">
+                                            {viewingImage?.title ||
                                                 'Unbekannter Titel'}
-                                        </p>
+                                        </span>
                                     </div>
 
-                                    {viewingImage.submitterName && (
+                                    {viewingImage?.submitterName && (
                                         <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-0.5">
                                                 Eingereicht von
-                                            </h4>
-                                            <p className="text-gray-900">
+                                            </span>
+                                            <span className="text-gray-900 font-medium">
                                                 {viewingImage.submitterName}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div className="bg-red-50 border-l-4 border-red-500 p-3">
-                                        <h4 className="text-sm font-semibold text-red-900 mb-1">
-                                            Grund der Meldung
-                                        </h4>
-                                        <p className="text-sm text-red-800">
-                                            {viewingImage.reason}
-                                        </p>
-                                    </div>
-
-                                    {viewingImage.reporterInfo && (
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-gray-700 mb-1">
-                                                Melder-Info
-                                            </h4>
-                                            <p className="text-gray-900 text-sm">
-                                                {viewingImage.reporterInfo}
-                                            </p>
+                                            </span>
                                         </div>
                                     )}
 
                                     <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-0.5">
                                             Gemeldet am
-                                        </h4>
-                                        <p className="text-gray-900">
-                                            {new Date(
-                                                viewingImage.createdAt
-                                            ).toLocaleDateString('de-DE', {
-                                                day: '2-digit',
-                                                month: 'long',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </p>
+                                        </span>
+                                        <span className="text-gray-900 font-medium">
+                                            {viewingImage &&
+                                                new Date(
+                                                    viewingImage.createdAt
+                                                ).toLocaleDateString('de-DE', {
+                                                    day: '2-digit',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                })}
+                                        </span>
                                     </div>
-                                </div>
-
-                                {/* Action Button */}
-                                <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                                    <button
-                                        onClick={() => setViewingImage(null)}
-                                        className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors"
-                                    >
-                                        Schließen
-                                    </button>
-                                    {canEdit && (
-                                        <button
-                                            onClick={() =>
-                                                setImageToDisapprove(
-                                                    viewingImage.submissionId
-                                                )
-                                            }
-                                            disabled={disapproving}
-                                            className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:bg-gray-400 flex items-center gap-2"
-                                        >
-                                            {disapproving ? (
-                                                <>
-                                                    <LoadingSpinner
-                                                        size="sm"
-                                                        color="white"
-                                                    />
-                                                    Wird abgelehnt...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <X size={18} />
-                                                    Foto ablehnen
-                                                </>
-                                            )}
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-100">
+                            <button
+                                onClick={() => setViewingImage(null)}
+                                className="flex-1 min-w-[140px] px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                            >
+                                <X size={20} weight="bold" />
+                                Schließen
+                            </button>
+
+                            {canEdit && viewingImage && viewingImage.status === 'pending' && (
+                                <button
+                                    onClick={() =>
+                                        handleUpdateStatus(
+                                            viewingImage.id,
+                                            'reviewed'
+                                        )
+                                    }
+                                    disabled={
+                                        processing === viewingImage.id
+                                    }
+                                    className="flex-1 min-w-[200px] px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400 flex items-center justify-center gap-2"
+                                >
+                                    {processing === viewingImage.id ? (
+                                        <LoadingSpinner
+                                            size="sm"
+                                            color="white"
+                                        />
+                                    ) : (
+                                        <>
+                                            <Check
+                                                size={20}
+                                                weight="bold"
+                                            />
+                                            Als geprüft markieren
+                                        </>
+                                    )}
+                                </button>
+                            )}
+
+                            {canEdit && viewingImage && (
+                                <button
+                                    onClick={() =>
+                                        setImageToDisapprove(
+                                            viewingImage.submissionId
+                                        )
+                                    }
+                                    disabled={disapproving}
+                                    className="flex-1 min-w-[200px] px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400 flex items-center justify-center gap-2"
+                                >
+                                    {disapproving ? (
+                                        <>
+                                            <LoadingSpinner
+                                                size="sm"
+                                                color="white"
+                                            />
+                                            Wird abgelehnt...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Trash
+                                                size={20}
+                                                weight="bold"
+                                            />
+                                            Foto ablehnen
+                                        </>
+                                    )}
+                                </button>
+                            )}
+                        </div>
                     </div>
-                )}
+                </Modal>
 
                 <PromptDialog
                     isOpen={imageToDisapprove !== null}

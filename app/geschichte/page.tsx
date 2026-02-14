@@ -1,4 +1,5 @@
 import { BookOpen } from '@phosphor-icons/react/dist/ssr';
+import Image from 'next/image';
 import PageHeader from '@/app/components/layout/PageHeader';
 
 export const metadata = {
@@ -202,7 +203,7 @@ export default function GeschichtePage() {
                                                 </p>
                                                 <p>
                                                     <strong>Heute:</strong>{' '}
-                                                    Eigentum Stadt Wolfenbüttel
+                                                    Hospizzentrum Wendessen
                                                 </p>
                                             </div>
                                         </div>
@@ -253,13 +254,12 @@ export default function GeschichtePage() {
                                             der Zuckerfabrik (betrieben bis
                                             1957)
                                         </p>
+                                        <p>
+                                            <strong>1957:</strong> Ende der Zuckerfabrik
+                                        </p>
                                         <div className="bg-blue-100 p-3 rounded-lg">
                                             <p className="text-blue-800">
-                                                <strong>Zukunft:</strong> Für
-                                                voraussichtlich 2008 ist die
-                                                Einrichtung eines neuen
-                                                Haltepunktes im Zuge der
-                                                geplanten Regio-Bahn vorgesehen
+                                                <strong>Heute:</strong> Bebauung des Geländes mitEin- und Mehrfamilienhäusern geplant, Wiederinbetriebnahme des Bahnhaltepunktes vorgesehen.
                                             </p>
                                         </div>
                                     </div>
@@ -351,28 +351,10 @@ export default function GeschichtePage() {
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center border-4 border-teal-400">
                                     <div className="text-3xl font-bold text-teal-700 mb-2">
-                                        940
+                                        1100
                                     </div>
                                     <div className="text-lg font-semibold text-gray-800">
-                                        Juni 2009
-                                    </div>
-                                    <div className="text-xs text-teal-600 mt-1 font-medium">
-                                        aktuell
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-8 text-center">
-                                <div className="bg-white p-6 rounded-2xl shadow-lg inline-block">
-                                    <h4 className="text-xl font-bold text-teal-800 mb-2">
-                                        Wachstum über die Jahrhunderte
-                                    </h4>
-                                    <p className="text-gray-700">
-                                        Von 75 Einwohnern im Jahr 1663 auf 940
-                                        Einwohner im Jahr 2009
-                                    </p>
-                                    <div className="text-2xl font-bold text-teal-600 mt-2">
-                                        +1153% Wachstum
+                                        2026
                                     </div>
                                 </div>
                             </div>
@@ -383,10 +365,10 @@ export default function GeschichtePage() {
                     <div className="text-center bg-gradient-to-r from-amber-50 to-orange-50 rounded-4xl p-12 shadow-2xl">
                         <div className="max-w-4xl mx-auto">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-800 leading-tight mb-6">
-                                850 Jahre lebendige Geschichte
+                                Über 850 Jahre lebendige Geschichte
                             </h1>
                             <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-8">
-                                Von Winedissen zu Wendessen - unser Dorf hat
+                                Von Winedissen zu Wendessen - unser Dorf hat Kriesen und
                                 Kriege überstanden, sich gewandelt und ist
                                 gewachsen. Heute blicken wir stolz auf über 850
                                 Jahre Geschichte zurück und schauen optimistisch
@@ -400,6 +382,28 @@ export default function GeschichtePage() {
                                     </span>
                                 </div>
                             </div>
+
+                            <div className="flex justify-center mb-10">
+                                <div className="relative w-32 h-40 sm:w-40 sm:h-48">
+                                    <Image
+                                        src="/images/Wappen.png"
+                                        alt="Wappen von Wendessen"
+                                        fill
+                                        className="object-contain drop-shadow-2xl"
+                                        priority
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="max-w-3xl mx-auto text-center mb-12 space-y-4">
+                                <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic">
+                                    Der Name Wendessen bedeutet „Heim im Weidezaun“. Er wird im Wappen durch den grünen Flechtzaun, der zudem auf die Landwirtschaft als wichtigen Wirtschaftszweig verweist, versinnbildlicht.
+                                </p>
+                                <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic">
+                                    Die Wehrkirche von Wendessen ist St. Georg geweiht. Als Sinnbild der Kirche erscheint das heraldische Attribut des Schutzpatrons, das rote Kreuz auf silbernem Grund.
+                                </p>
+                            </div>
+                            
                             <div className="bg-white p-6 rounded-2xl shadow-lg mt-8">
                                 <p className="text-base sm:text-lg text-gray-600">
                                     <strong className="text-amber-700">

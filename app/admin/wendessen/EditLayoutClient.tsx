@@ -15,6 +15,7 @@ import { usePermissions } from '@/lib/usePermissions';
 import FeatureCard from '@/app/components/FeatureCard';
 import TailwindColorPicker from '@/app/admin/components/TailwindColorPicker';
 import PageSelector from '@/app/admin/components/PageSelector';
+import Modal from '@/app/components/ui/Modal';
 
 
 // ... (existing imports)
@@ -624,104 +625,102 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                 />
             )}
 
-            {/* Theme customization modal (inline, no external dependency) */}
-            {editingThemeFor && (
-                <div className="relative z-50">
-                    <div className="fixed inset-0 bg-black/30" aria-hidden />
-                    <div className="fixed inset-0 flex items-center justify-center p-2">
-                        <div className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[28rem] lg:max-w-[28rem] xl:max-w-[28rem] bg-white rounded-lg p-3 shadow-md">
-                            <div className="flex items-start justify-between gap-4">
-                                <h3 className="text-base font-semibold text-gray-900">
-                                    Theme anpassen
-                                </h3>
+            {/* Theme customization modal */}
+            <Modal
+                isOpen={!!editingThemeFor}
+                onClose={() => setEditingThemeFor(null)}
+                maxWidth="md"
+                showCloseButton
+                className="p-3"
+            >
+                <div>
+                    <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-base font-semibold text-gray-900">
+                            Theme anpassen
+                        </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                            <div className="w-28 text-right">
+                                <span className="text-sm text-gray-600">
+                                    Primär
+                                </span>
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">
-                                            Primär
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <TailwindColorPicker
-                                            value={tempTheme.highlight}
-                                            onChange={(c) =>
-                                                setTempTheme((t) => ({
-                                                    ...t,
-                                                    highlight: c,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">
-                                            Hintergrund
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <TailwindColorPicker
-                                            value={tempTheme.background}
-                                            onChange={(c) =>
-                                                setTempTheme((t) => ({
-                                                    ...t,
-                                                    background: c,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">
-                                            Button
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <TailwindColorPicker
-                                            value={tempTheme.button}
-                                            onChange={(c) =>
-                                                setTempTheme((t) => ({
-                                                    ...t,
-                                                    button: c,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
+                            <div>
+                                <TailwindColorPicker
+                                    value={tempTheme.highlight}
+                                    onChange={(c) =>
+                                        setTempTheme((t) => ({
+                                            ...t,
+                                            highlight: c,
+                                        }))
+                                    }
+                                />
                             </div>
+                        </div>
 
-                            <div className="mt-4 flex flex-col gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setEditingThemeFor(null)}
-                                    className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
-                                >
-                                    Abbrechen
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (editingThemeFor)
-                                            updateCardTheme(
-                                                editingThemeFor,
-                                                tempTheme
-                                            );
-                                        setEditingThemeFor(null);
-                                    }}
-                                    className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
-                                >
-                                    Speichern
-                                </button>
+                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                            <div className="w-28 text-right">
+                                <span className="text-sm text-gray-600">
+                                    Hintergrund
+                                </span>
+                            </div>
+                            <div>
+                                <TailwindColorPicker
+                                    value={tempTheme.background}
+                                    onChange={(c) =>
+                                        setTempTheme((t) => ({
+                                            ...t,
+                                            background: c,
+                                        }))
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                            <div className="w-28 text-right">
+                                <span className="text-sm text-gray-600">
+                                    Button
+                                </span>
+                            </div>
+                            <div>
+                                <TailwindColorPicker
+                                    value={tempTheme.button}
+                                    onChange={(c) =>
+                                        setTempTheme((t) => ({
+                                            ...t,
+                                            button: c,
+                                        }))
+                                    }
+                                />
                             </div>
                         </div>
                     </div>
+
+                    <div className="mt-4 flex flex-col gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setEditingThemeFor(null)}
+                            className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
+                        >
+                            Abbrechen
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (editingThemeFor)
+                                    updateCardTheme(editingThemeFor, tempTheme);
+                                setEditingThemeFor(null);
+                            }}
+                            className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
+                        >
+                            Speichern
+                        </button>
+                    </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 }

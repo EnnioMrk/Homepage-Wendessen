@@ -9,6 +9,10 @@ interface ModalProps {
     children: ReactNode;
     className?: string;
     showCloseButton?: boolean;
+    maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'full' | string;
+    backdropBlur?: boolean;
+    centered?: boolean;
+    variant?: 'default' | 'none';
 }
 
 export default function Modal({
@@ -16,6 +20,10 @@ export default function Modal({
     onClose,
     children,
     className = '',
+    maxWidth = '2xl',
+    backdropBlur = false,
+    centered = false,
+    variant = 'default',
 }: ModalProps) {
     const [mounted, setMounted] = useState(false);
 
@@ -40,20 +48,30 @@ export default function Modal({
 
     if (!mounted || !isOpen) return null;
 
+    // Map maxWidth to Tailwind class
+    const maxWidthClass = maxWidth.startsWith('max-w-') 
+        ? maxWidth 
+        : `max-w-${maxWidth}`;
+
+    const isNoneVariant = variant === 'none';
+
     // Use z-[100] to be on top, but adjust top/padding so navbar is visible if desired
     return createPortal(
-        <div className="fixed inset-x-0 bottom-0 top-[60px] z-[100] overflow-y-auto">
-            <div className="flex items-start justify-center min-h-full p-4 text-center">
+        <div className="fixed inset-0 z-[100] overflow-y-auto">
+            <div className={`flex min-h-full ${isNoneVariant ? '' : 'p-4'} text-center ${centered ? 'items-center' : 'items-start pt-[80px]'} justify-center`}>
                 {/* Backdrop */}
                 <div
-                    className="fixed inset-x-0 bottom-0 top-[60px] transition-opacity bg-gray-500 bg-opacity-75"
+                    className={`fixed inset-0 transition-opacity bg-gray-500/75 ${backdropBlur ? 'backdrop-blur-sm' : ''}`}
                     aria-hidden="true"
                     onClick={onClose}
                 ></div>
 
                 {/* Modal panel with animations */}
                 <div
-                    className={`relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full mb-8 ${className}`}
+                    className={isNoneVariant 
+                        ? `relative w-full ${className}`
+                        : `relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all w-full mb-8 ${maxWidthClass} ${className}`
+                    }
                     onClick={(e) => e.stopPropagation()}
                 >
                     {children}
