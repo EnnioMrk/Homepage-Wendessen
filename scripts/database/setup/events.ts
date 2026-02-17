@@ -16,6 +16,7 @@ async function setupEvents() {
                 category VARCHAR(50) DEFAULT 'sonstiges',
                 organizer VARCHAR(255),
                 image_url TEXT,
+                image_crop_data JSONB,
                 verein_id VARCHAR(50),
                 is_cancelled BOOLEAN DEFAULT FALSE,
                 cancelled_at TIMESTAMP WITH TIME ZONE,

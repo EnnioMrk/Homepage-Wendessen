@@ -40,7 +40,10 @@ export async function POST(request: NextRequest) {
     }
 
     const currentUser = await getCurrentAdminUser();
-    if (!hasPermission(currentUser, 'wendessen.manage')) {
+    if (
+        !hasPermission(currentUser, 'wendessen.create') &&
+        !hasPermission(currentUser, 'wendessen.manage')
+    ) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

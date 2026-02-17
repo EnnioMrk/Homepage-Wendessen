@@ -29,6 +29,7 @@ import {
     ArrowsClockwise,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
+import CroppedImage from '@/app/components/ui/CroppedImage';
 import { ASSOCIATIONS } from '@/lib/constants/associations';
 import Modal from '@/app/components/ui/Modal';
 
@@ -125,7 +126,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [selectedVerein, setSelectedVerein] = useState<string>('all');
-    const [view, setView] = useState<View>('month');
+    const [view, setView] = useState<View>('agenda');
     const [date, setDate] = useState(new Date());
 
     const categories = [
@@ -380,14 +381,18 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
 
                                     {event.imageUrl && (
                                         <div className="mb-4 -mx-6 -mt-6">
-                                            <div className="relative h-32 w-full">
-                                                <Image
+                                            <div className="relative w-full aspect-[3/1]">
+                                                <CroppedImage
                                                     src={event.imageUrl}
+                                                    cropData={
+                                                        event.imageCropData
+                                                    }
+                                                    viewId="card"
                                                     alt={event.title}
                                                     fill
                                                     className="object-cover"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
                                             </div>
                                         </div>
                                     )}
@@ -437,14 +442,17 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                     <div className="w-full">
                         {/* Event Image Header */}
                         {selectedEvent.imageUrl && (
-                            <div className="relative h-48 w-full">
-                                <Image
+                            <div className="relative w-full aspect-[16/9]">
+                                <CroppedImage
                                     src={selectedEvent.imageUrl}
+                                    cropData={selectedEvent.imageCropData}
+                                    viewId="popup"
                                     alt={selectedEvent.title}
                                     fill
-                                    className="object-cover rounded-t-2xl"
+                                    containerClassName="rounded-t-2xl"
+                                    className="object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-2xl"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-2xl pointer-events-none"></div>
                                 <button
                                     onClick={() => setSelectedEvent(null)}
                                     className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full transition-colors"

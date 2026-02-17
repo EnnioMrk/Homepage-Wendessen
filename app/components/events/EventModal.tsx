@@ -1,10 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, ImageSquare as ImageIcon } from '@phosphor-icons/react/dist/ssr';
+import {
+    X,
+    ImageSquare as ImageIcon,
+    Crop,
+} from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 import { usePermissions } from '@/lib/usePermissions';
+import ImageCropper from '@/app/components/ui/ImageCropper';
+import { ImageCropConfig } from '@/lib/database/events';
 
 interface EventModalProps {
     isOpen: boolean;
@@ -28,7 +34,7 @@ import { VEREINE_OPTIONS as GLOBAL_VEREINE_OPTIONS } from '@/lib/constants/assoc
 // Vereine data for dropdown
 const VEREINE_OPTIONS = [
     { id: '', label: 'Kein Verein' },
-    ...GLOBAL_VEREINE_OPTIONS
+    ...GLOBAL_VEREINE_OPTIONS,
 ];
 
 export default function EventModal({
@@ -45,7 +51,11 @@ export default function EventModal({
     } = usePermissions();
     const [isLoading, setIsLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);
+    const [showCropper, setShowCropper] = useState(false);
     const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl || '');
+    const [imageCropData, setImageCropData] = useState<
+        ImageCropConfig | undefined
+    >(undefined);
     const [selectedVereinId, setSelectedVereinId] = useState('');
 
     // Determine permissions
@@ -117,6 +127,7 @@ export default function EventModal({
             category: formData.get('category'),
             organizer: formData.get('organizer'),
             imageUrl: imageUrl,
+            imageCropData: imageCropData,
             vereinId: formData.get('vereinId') || null,
         };
 
@@ -135,6 +146,7 @@ export default function EventModal({
                 // Reset form and image
                 (e.target as HTMLFormElement).reset();
                 setImageUrl('');
+                setImageCropData(undefined);
             } else {
                 console.error('Failed to create event');
             }
@@ -193,7 +205,7 @@ export default function EventModal({
                                             defaultValue={
                                                 initialValues?.start
                                                     ? initialValues.start.split(
-                                                          'T'
+                                                          'T',
                                                       )[0]
                                                     : ''
                                             }
@@ -209,7 +221,7 @@ export default function EventModal({
                                             defaultValue={
                                                 initialValues?.start
                                                     ? initialValues.start.includes(
-                                                          'T'
+                                                          'T',
                                                       )
                                                         ? initialValues.start
                                                               .split('T')[1]
@@ -232,7 +244,7 @@ export default function EventModal({
                                             defaultValue={
                                                 initialValues?.end
                                                     ? initialValues.end.split(
-                                                          'T'
+                                                          'T',
                                                       )[0]
                                                     : ''
                                             }
@@ -248,7 +260,7 @@ export default function EventModal({
                                             defaultValue={
                                                 initialValues?.end
                                                     ? initialValues.end.includes(
-                                                          'T'
+                                                          'T',
                                                       )
                                                         ? initialValues.end
                                                               .split('T')[1]
@@ -286,7 +298,7 @@ export default function EventModal({
                                             value={selectedVereinId}
                                             onChange={(e) =>
                                                 setSelectedVereinId(
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
@@ -309,7 +321,7 @@ export default function EventModal({
                                                 erstellen.
                                             </p>
                                         )}
-                                    </div>
+                                </div>
                                 <select
                                     name="category"
                                     disabled={isLoading}
@@ -355,17 +367,34 @@ export default function EventModal({
                                                     <p className="text-sm font-medium text-gray-900">
                                                         Bild ausgewählt
                                                     </p>
-                                                    <p className="text-xs text-gray-700">
-                                                        Wird in der
-                                                        Terminübersicht
-                                                        angezeigt
-                                                    </p>
+                                                    <div className="flex items-center mt-1 space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setShowCropper(
+                                                                    true,
+                                                                )
+                                                            }
+                                                            className="text-xs flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
+                                                        >
+                                                            <Crop className="w-3 h-3 mr-1" />
+                                                            Zuschneiden
+                                                        </button>
+                                                        <p className="text-xs text-gray-700">
+                                                            Wird in der
+                                                            Terminübersicht
+                                                            angezeigt
+                                                        </p>
+                                                    </div>
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    onClick={() =>
-                                                        setImageUrl('')
-                                                    }
+                                                    onClick={() => {
+                                                        setImageUrl('');
+                                                        setImageCropData(
+                                                            undefined,
+                                                        );
+                                                    }}
                                                     disabled={isLoading}
                                                     className="text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed"
                                                 >
@@ -422,6 +451,19 @@ export default function EventModal({
                     }}
                     onClose={() => setShowImagePicker(false)}
                     canUpload={true}
+                />
+            )}
+
+            {/* Image Cropper Modal */}
+            {showCropper && imageUrl && (
+                <ImageCropper
+                    imageUrl={imageUrl}
+                    initialCrops={imageCropData || {}} // Use existing or empty
+                    onSave={(crops) => {
+                        setImageCropData(crops);
+                        setShowCropper(false);
+                    }}
+                    onCancel={() => setShowCropper(false)}
                 />
             )}
         </div>

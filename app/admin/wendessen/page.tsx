@@ -24,6 +24,7 @@ async function AdminWendessenContent() {
     // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canView = hasPermission(currentUser, 'wendessen.view');
+    const canCreate = hasPermission(currentUser, 'wendessen.create');
     const canManage = hasPermission(currentUser, 'wendessen.manage');
 
     if (!canView) {
@@ -77,7 +78,10 @@ async function AdminWendessenContent() {
             </header>
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <AdminWendessenClient canManage={canManage} />
+                <AdminWendessenClient
+                    canManage={canManage}
+                    canCreate={canCreate || canManage}
+                />
             </main>
         </div>
     );

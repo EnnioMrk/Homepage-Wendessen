@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Check, Trash, PencilSimple } from '@phosphor-icons/react/dist/ssr';
+import { Plus, Check, Trash, PencilSimple, Copy } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 
@@ -11,13 +11,20 @@ interface Layout {
     name: string;
     is_active: boolean;
     created_at: string;
+    card_1?: unknown;
+    card_2?: unknown;
+    card_3?: unknown;
 }
 
 interface AdminWendessenClientProps {
     canManage?: boolean;
+    canCreate?: boolean;
 }
 
-export default function AdminWendessenClient({ canManage = false }: AdminWendessenClientProps) {
+export default function AdminWendessenClient({
+    canManage = false,
+    canCreate = false,
+}: AdminWendessenClientProps) {
     const router = useRouter();
     const [layouts, setLayouts] = useState<Layout[]>([]);
     const [loading, setLoading] = useState(true);
@@ -25,6 +32,7 @@ export default function AdminWendessenClient({ canManage = false }: AdminWendess
     const [layoutToDelete, setLayoutToDelete] = useState<Layout | null>(null);
     const [, setIsDeleting] = useState(false);
     const [isActivating, setIsActivating] = useState<number | null>(null);
+    const [duplicatingLayoutId, setDuplicatingLayoutId] = useState<number | null>(null);
 
     useEffect(() => {
         fetchLayouts();
@@ -91,6 +99,41 @@ export default function AdminWendessenClient({ canManage = false }: AdminWendess
         }
     };
 
+    const handleDuplicate = async (layout: Layout) => {
+        if (!canCreate) {
+            return;
+        }
+
+        setDuplicatingLayoutId(layout.id);
+
+        try {
+            const response = await fetch('/api/admin/wendessen', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: layout.name?.trim()
+                        ? `${layout.name} (Kopie)`
+                        : 'Layout Kopie',
+                    card_1: layout.card_1,
+                    card_2: layout.card_2,
+                    card_3: layout.card_3,
+                }),
+            });
+
+            if (response.ok) {
+                fetchLayouts();
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Fehler beim Duplizieren');
+            }
+        } catch (error) {
+            console.error('Error duplicating layout:', error);
+            alert('Fehler beim Duplizieren');
+        } finally {
+            setDuplicatingLayoutId(null);
+        }
+    };
+
     if (loading) return <LoadingSpinner centered />;
 
     return (
@@ -139,6 +182,20 @@ export default function AdminWendessenClient({ canManage = false }: AdminWendess
                                     </p>
                                 </div>
                                 <div className="flex items-center space-x-2">
+                                    {canCreate && (
+                                        <button
+                                            onClick={() => handleDuplicate(layout)}
+                                            disabled={duplicatingLayoutId === layout.id}
+                                            className="text-gray-400 hover:text-gray-700 p-2"
+                                            title="Duplizieren"
+                                        >
+                                            {duplicatingLayoutId === layout.id ? (
+                                                <LoadingSpinner size="sm" />
+                                            ) : (
+                                                <Copy size={20} />
+                                            )}
+                                        </button>
+                                    )}
                                     {!layout.is_active && canManage && (
                                         <button
                                             onClick={() => handleSetActive(layout.id)}

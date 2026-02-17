@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
+import {
+    getEvents,
+    getEventsFresh,
+    createEvent,
+    CalendarEvent,
+} from '@/lib/database';
 import { hasPermission } from '@/lib/permissions';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        const events = await getEvents();
+        const fresh =
+            request.nextUrl.searchParams.get('fresh') === '1' ||
+            request.nextUrl.searchParams.has('t');
+        const events = fresh ? await getEventsFresh() : await getEvents();
+
         return NextResponse.json(events, {
             headers: {
                 'Cache-Control':
@@ -104,6 +113,7 @@ export async function POST(request: NextRequest) {
             category: eventData.category || 'sonstiges',
             organizer: eventData.organizer || '',
             imageUrl: eventData.imageUrl || '',
+            imageCropData: eventData.imageCropData,
             vereinId: vereinId,
         };
 

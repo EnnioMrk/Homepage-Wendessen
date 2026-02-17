@@ -7,7 +7,7 @@ export default async function EventsSection() {
         events = await getUpcomingEvents(3); // Get next 3 upcoming events
     } catch (error) {
         console.error('Error fetching events:', error);
-        
+
         // Fallback to hardcoded events if database fails
         events = [
             {
@@ -18,7 +18,7 @@ export default async function EventsSection() {
                 end: new Date('2025-10-15T21:00:00Z'),
                 imageUrl: '/images/Events/Ortsratssitzung.jpg',
                 isCancelled: false,
-                category: 'sitzung'
+                category: 'sitzung',
             },
             {
                 id: 'fallback-2',
@@ -28,7 +28,7 @@ export default async function EventsSection() {
                 end: new Date('2025-10-25T18:00:00Z'),
                 imageUrl: '/images/Events/Herbstfest.jpg',
                 isCancelled: false,
-                category: 'veranstaltung'
+                category: 'veranstaltung',
             },
             {
                 id: 'fallback-3',
@@ -38,7 +38,7 @@ export default async function EventsSection() {
                 end: new Date('2025-10-30T16:30:00Z'),
                 imageUrl: '/images/Events/Bücherbus.jpeg',
                 isCancelled: false,
-                category: 'kultur'
+                category: 'kultur',
             },
         ] as CalendarEvent[];
     }
@@ -47,22 +47,33 @@ export default async function EventsSection() {
         <div className="mb-32 mt-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {events.map((event: CalendarEvent) => {
-                    const startDate = event.start ? new Date(event.start) : null;
+                    const startDate = event.start
+                        ? new Date(event.start)
+                        : null;
                     return (
                         <EventCard
                             key={event.id}
                             title={event.title}
                             location={event.location || 'Wendessen'}
-                            time={startDate ? startDate.toLocaleTimeString('de-DE', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            }) : ''}
-                            date={startDate ? startDate.toLocaleDateString('de-DE', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                            }) : ''}
+                            time={
+                                startDate
+                                    ? startDate.toLocaleTimeString('de-DE', {
+                                          hour: '2-digit',
+                                          minute: '2-digit',
+                                      })
+                                    : ''
+                            }
+                            date={
+                                startDate
+                                    ? startDate.toLocaleDateString('de-DE', {
+                                          day: '2-digit',
+                                          month: '2-digit',
+                                          year: 'numeric',
+                                      })
+                                    : ''
+                            }
                             imageSrc={event.imageUrl}
+                            imageCropData={event.imageCropData}
                             imageAlt={event.title}
                             hasImage={!!event.imageUrl}
                             isCancelled={event.isCancelled}

@@ -17,7 +17,6 @@ import TailwindColorPicker from '@/app/admin/components/TailwindColorPicker';
 import PageSelector from '@/app/admin/components/PageSelector';
 import Modal from '@/app/components/ui/Modal';
 
-
 // ... (existing imports)
 
 interface CardTheme {
@@ -94,7 +93,6 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showImagePicker, setShowImagePicker] = useState<
-
         'card_1' | 'card_2' | 'card_3' | null
     >(null);
     const [editingThemeFor, setEditingThemeFor] = useState<
@@ -109,7 +107,6 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         card_2: { ...EMPTY_CARD, title: 'Karte 2' },
         card_3: { ...EMPTY_CARD, title: 'Karte 3' },
     });
-
 
     useEffect(() => {
         if (layoutId) {
@@ -135,7 +132,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                     layouts: Array<LayoutData & { id: number }>;
                 };
                 const found = data.layouts.find(
-                    (l) => l.id != null && l.id.toString() === id
+                    (l) => l.id != null && l.id.toString() === id,
                 );
                 if (found) {
                     setFormData(found);
@@ -193,7 +190,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const updateCard = <K extends keyof CardData>(
         cardKey: 'card_1' | 'card_2' | 'card_3',
         field: K,
-        value: CardData[K]
+        value: CardData[K],
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -206,7 +203,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
     const updateCardTheme = (
         cardKey: 'card_1' | 'card_2' | 'card_3',
-        theme: CardTheme
+        theme: CardTheme,
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -247,22 +244,24 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                         {layoutId ? 'Layout bearbeiten' : 'Neues Layout'}
                     </h1>
                 </div>
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center disabled:opacity-50"
-                >
-                    {saving ? (
-                        <LoadingSpinner
-                            size="sm"
-                            color="white"
-                            className="mr-2"
-                        />
-                    ) : (
-                        <FloppyDisk size={20} className="mr-2" />
-                    )}
-                    Speichern
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center disabled:opacity-50"
+                    >
+                        {saving ? (
+                            <LoadingSpinner
+                                size="sm"
+                                color="white"
+                                className="mr-2"
+                            />
+                        ) : (
+                            <FloppyDisk size={20} className="mr-2" />
+                        )}
+                        Speichern
+                    </button>
+                </div>
             </div>
 
             {error && (
@@ -308,8 +307,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         {index === 0
                                             ? 'Karte 1'
                                             : index === 1
-                                            ? 'Karte 2'
-                                            : 'Karte 3'}
+                                              ? 'Karte 2'
+                                              : 'Karte 3'}
                                     </h3>
                                     <p className="text-sm text-gray-500">
                                         {index === 0
@@ -343,7 +342,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     onClick={() =>
                                                         updateCardTheme(
                                                             cardKey,
-                                                            theme
+                                                            theme,
                                                         )
                                                     }
                                                     className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
@@ -368,7 +367,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         ] || name}
                                                     </span>
                                                 </button>
-                                            )
+                                            ),
                                         )}
 
                                         {/* Anpassen included as a grid item so total tiles (presets + Anpassen) = 6 */}
@@ -376,7 +375,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             type="button"
                                             onClick={() => {
                                                 setTempTheme(
-                                                    formData[cardKey].theme
+                                                    formData[cardKey].theme,
                                                 );
                                                 setEditingThemeFor(cardKey);
                                             }}
@@ -413,7 +412,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     updateCard(
                                                         cardKey,
                                                         'title',
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 border rounded-md mt-2"
@@ -432,7 +431,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     updateCard(
                                                         cardKey,
                                                         'subtitle',
-                                                        e.target.value
+                                                        e.target.value,
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 border rounded-md mt-1"
@@ -442,25 +441,36 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             <label className="block text-sm font-medium text-gray-700">
                                                 Beschreibung
                                             </label>
-                                            <textarea
-                                                value={
-                                                    formData[cardKey]
-                                                        .description
-                                                }
-                                                onChange={(e) =>
-                                                    updateCard(
-                                                        cardKey,
-                                                        'description',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                rows={5}
-                                                className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5"
-                                            />
+                                            <div className="relative">
+                                                <textarea
+                                                    value={
+                                                        formData[cardKey]
+                                                            .description
+                                                    }
+                                                    onChange={(e) =>
+                                                        updateCard(
+                                                            cardKey,
+                                                            'description',
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    maxLength={350}
+                                                    rows={5}
+                                                    className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                />
+                                                <div className="text-right text-xs text-gray-500">
+                                                    {formData[cardKey]
+                                                        .description?.length ||
+                                                        0}{' '}
+                                                    / 350 Zeichen
+                                                </div>
+                                            </div>
                                         </div>
                                         {/* Button Configuration */}
                                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                            <h5 className="text-sm font-medium text-gray-900 mb-3">Button Einstellungen</h5>
+                                            <h5 className="text-sm font-medium text-gray-900 mb-3">
+                                                Button Einstellungen
+                                            </h5>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                                 {/* Button Text */}
                                                 <div>
@@ -469,27 +479,43 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        value={formData[cardKey].button_text}
+                                                        value={
+                                                            formData[cardKey]
+                                                                .button_text
+                                                        }
                                                         onChange={(e) =>
-                                                            updateCard(cardKey, 'button_text', e.target.value)
+                                                            updateCard(
+                                                                cardKey,
+                                                                'button_text',
+                                                                e.target.value,
+                                                            )
                                                         }
                                                         placeholder="Mehr erfahren"
                                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                     />
                                                 </div>
-                                                
+
                                                 {/* Page Selector */}
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-600 mb-1">
                                                         Seite verlinken
                                                     </label>
                                                     <PageSelector
-                                                        value={formData[cardKey].button_href}
-                                                        onChange={(href) => updateCard(cardKey, 'button_href', href)}
+                                                        value={
+                                                            formData[cardKey]
+                                                                .button_href
+                                                        }
+                                                        onChange={(href) =>
+                                                            updateCard(
+                                                                cardKey,
+                                                                'button_href',
+                                                                href,
+                                                            )
+                                                        }
                                                         placeholder="Seite wählen..."
                                                     />
                                                 </div>
-                                                
+
                                                 {/* Custom Link */}
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -497,9 +523,16 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        value={formData[cardKey].button_href}
+                                                        value={
+                                                            formData[cardKey]
+                                                                .button_href
+                                                        }
                                                         onChange={(e) =>
-                                                            updateCard(cardKey, 'button_href', e.target.value)
+                                                            updateCard(
+                                                                cardKey,
+                                                                'button_href',
+                                                                e.target.value,
+                                                            )
                                                         }
                                                         placeholder="/pfad/zur/seite"
                                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -507,7 +540,6 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
 
@@ -572,7 +604,6 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             />
                                         </div>
 
-
                                         {/* Image Controls */}
                                         <div className="flex gap-2 mt-4">
                                             <button
@@ -599,7 +630,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         updateCard(
                                                             cardKey,
                                                             'image_url',
-                                                            ''
+                                                            '',
                                                         )
                                                     }
                                                     className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
@@ -613,7 +644,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 </div>
                             </div>
                         </div>
-                    )
+                    ),
                 )}
             </div>
 

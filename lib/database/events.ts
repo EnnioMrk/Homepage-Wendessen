@@ -1,6 +1,18 @@
 import { sql } from '../sql';
 import { cacheTag } from 'next/cache';
 
+export interface ImageCrop {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    scale: number;
+}
+
+export interface ImageCropConfig {
+    [viewId: string]: ImageCrop;
+}
+
 export interface DatabaseEvent {
     id: number;
     title: string;
@@ -17,11 +29,13 @@ export interface DatabaseEvent {
         | 'sonstiges';
     organizer?: string;
     image_url?: string;
+    image_crop_data?: ImageCropConfig;
     is_cancelled?: boolean;
     cancelled_at?: string;
     cancelled_by?: string;
     created_at: string;
     updated_at: string;
+    verein_id?: number | null;
 }
 
 export interface CalendarEvent {
@@ -40,6 +54,7 @@ export interface CalendarEvent {
         | 'sonstiges';
     organizer?: string;
     imageUrl?: string;
+    imageCropData?: ImageCropConfig;
     isCancelled?: boolean;
     cancelledAt?: Date;
     cancelledBy?: string;
@@ -47,8 +62,22 @@ export interface CalendarEvent {
 }
 
 function convertToCalendarEvent(
-    dbEvent: Record<string, unknown>
+    dbEvent: Record<string, unknown>,
 ): CalendarEvent {
+    let imageCropData: ImageCropConfig | undefined = undefined;
+    if (dbEvent.image_crop_data) {
+        if (typeof dbEvent.image_crop_data === 'string') {
+            try {
+                imageCropData = JSON.parse(dbEvent.image_crop_data);
+            } catch (e) {
+                console.error('Error parsing image_crop_data:', e);
+                imageCropData = undefined;
+            }
+        } else {
+            imageCropData = dbEvent.image_crop_data as ImageCropConfig;
+        }
+    }
+
     return {
         id: String(dbEvent.id),
         title: String(dbEvent.title),
@@ -61,6 +90,7 @@ function convertToCalendarEvent(
         category: String(dbEvent.category) as CalendarEvent['category'],
         organizer: dbEvent.organizer ? String(dbEvent.organizer) : undefined,
         imageUrl: dbEvent.image_url ? String(dbEvent.image_url) : undefined,
+        imageCropData,
         isCancelled: dbEvent.is_cancelled
             ? Boolean(dbEvent.is_cancelled)
             : undefined,
@@ -90,9 +120,23 @@ export async function getEvents(): Promise<CalendarEvent[]> {
     }
 }
 
+export async function getEventsFresh(): Promise<CalendarEvent[]> {
+    try {
+        const events = await sql`
+          SELECT * FROM events
+          ORDER BY start_date ASC
+        `;
+
+        return events.map(convertToCalendarEvent);
+    } catch (error) {
+        console.error('Error fetching fresh events:', error);
+        throw new Error('Failed to fetch fresh events from database');
+    }
+}
+
 export async function getEventsByDateRange(
     startDate: Date,
-    endDate: Date
+    endDate: Date,
 ): Promise<CalendarEvent[]> {
     'use cache';
     cacheTag('events');
@@ -112,7 +156,7 @@ export async function getEventsByDateRange(
 }
 
 export async function getUpcomingEvents(
-    limit: number = 10
+    limit: number = 10,
 ): Promise<CalendarEvent[]> {
     'use cache';
     cacheTag('events', `limit-${limit}`);
@@ -134,7 +178,7 @@ export async function getUpcomingEvents(
 }
 
 export async function getEventsByCategory(
-    category: string
+    category: string,
 ): Promise<CalendarEvent[]> {
     'use cache';
     cacheTag('events', `category-${category}`);
@@ -153,11 +197,11 @@ export async function getEventsByCategory(
 }
 
 export async function createEvent(
-    event: Omit<CalendarEvent, 'id'>
+    event: Omit<CalendarEvent, 'id'>,
 ): Promise<CalendarEvent> {
     try {
         const result = await sql`
-      INSERT INTO events (title, description, start_date, end_date, location, category, organizer, image_url, verein_id)
+      INSERT INTO events (title, description, start_date, end_date, location, category, organizer, image_url, image_crop_data, verein_id)
       VALUES (
         ${event.title}, 
         ${event.description || null}, 
@@ -167,6 +211,7 @@ export async function createEvent(
         ${event.category}, 
         ${event.organizer || null},
         ${event.imageUrl || null},
+        ${event.imageCropData ? JSON.stringify(event.imageCropData) : null},
         ${event.vereinId || null}
       )
       RETURNING *
@@ -181,7 +226,7 @@ export async function createEvent(
 
 export async function updateEvent(
     id: string,
-    event: Partial<Omit<CalendarEvent, 'id'>>
+    event: Partial<Omit<CalendarEvent, 'id'>>,
 ): Promise<CalendarEvent> {
     try {
         const existing = await sql`SELECT * FROM events WHERE id = ${id}`;
@@ -221,6 +266,12 @@ export async function updateEvent(
             event.imageUrl !== undefined
                 ? event.imageUrl || null
                 : existingEvent.image_url;
+        const imageCropData =
+            event.imageCropData !== undefined
+                ? event.imageCropData
+                    ? JSON.stringify(event.imageCropData)
+                    : null
+                : existingEvent.image_crop_data;
         const vereinId =
             event.vereinId !== undefined
                 ? event.vereinId || null
@@ -237,6 +288,7 @@ export async function updateEvent(
                 category = ${category},
                 organizer = ${organizer},
                 image_url = ${imageUrl},
+                image_crop_data = ${imageCropData},
                 verein_id = ${vereinId},
                 updated_at = ${new Date().toISOString()}
             WHERE id = ${id}
@@ -270,7 +322,7 @@ export async function deleteEvent(id: string): Promise<boolean> {
 
 export async function cancelEvent(
     id: string,
-    cancelledBy: string
+    cancelledBy: string,
 ): Promise<CalendarEvent> {
     try {
         const now = new Date().toISOString();

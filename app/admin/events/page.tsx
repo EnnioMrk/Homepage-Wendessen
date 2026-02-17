@@ -19,12 +19,15 @@ export default function AdminEventsPage() {
                 setLoading(true);
             }
             // Add cache busting to ensure fresh data
-            const eventsResponse = await fetch(`/api/events?t=${Date.now()}`, {
+            const eventsResponse = await fetch(
+                `/api/events?fresh=1&t=${Date.now()}`,
+                {
                 cache: 'no-store',
                 headers: {
                     'Cache-Control': 'no-cache',
                 },
-            });
+                },
+            );
             if (!eventsResponse.ok) {
                 throw new Error('Failed to load events');
             }

@@ -29,12 +29,19 @@ import {
 import Image from 'next/image';
 import EventModal from '@/app/components/events/EventModal';
 import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
+import ImageCropper from '@/app/components/ui/ImageCropper';
+import CroppedImage from '@/app/components/ui/CroppedImage';
+import { ImageCropConfig } from '@/lib/database/events';
+import { Crop } from '@phosphor-icons/react/dist/ssr';
 
 // Set German locale and configure moment properly
 moment.locale('de');
 
 import { ASSOCIATIONS_MAP } from '@/lib/constants/associations';
-import { EVENT_CATEGORIES, EVENT_CATEGORY_MAP } from '@/lib/constants/categories';
+import {
+    EVENT_CATEGORIES,
+    EVENT_CATEGORY_MAP,
+} from '@/lib/constants/categories';
 
 // Vereine map for display
 const VEREINE_MAP: Record<string, string> = ASSOCIATIONS_MAP;
@@ -57,14 +64,15 @@ interface EventFormData {
     end: string;
     location: string;
     category:
-    | 'sitzung'
-    | 'veranstaltung'
-    | 'sport'
-    | 'kultur'
-    | 'notfall'
-    | 'sonstiges';
+        | 'sitzung'
+        | 'veranstaltung'
+        | 'sport'
+        | 'kultur'
+        | 'notfall'
+        | 'sonstiges';
     organizer: string;
     imageUrl: string;
+    imageCropData?: ImageCropConfig;
 }
 
 const defaultEventForm: EventFormData = {
@@ -76,6 +84,7 @@ const defaultEventForm: EventFormData = {
     category: 'sonstiges',
     organizer: '',
     imageUrl: '',
+    imageCropData: undefined,
 };
 
 // Custom event component
@@ -84,10 +93,11 @@ const EventComponent = ({ event }: { event: CalendarEvent }) => {
 
     return (
         <div
-            className={`${isCancelled
-                ? 'bg-gray-400 line-through opacity-70'
-                : getCategoryBackgroundColor(event.category || 'sonstiges')
-                } text-white p-1 rounded text-xs font-medium overflow-hidden`}
+            className={`${
+                isCancelled
+                    ? 'bg-gray-400 line-through opacity-70'
+                    : getCategoryBackgroundColor(event.category || 'sonstiges')
+            } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
             <div className="truncate">
                 {isCancelled && '🚫 '}
@@ -103,23 +113,26 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
 
     return (
         <div
-            className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''
-                }`}
+            className={`flex items-center space-x-3 ${
+                isCancelled ? 'opacity-60' : ''
+            }`}
         >
             <div
-                className={`w-3 h-3 rounded-full ${isCancelled
-                    ? 'bg-gray-400'
-                    : getCategoryBackgroundColor(
-                        event.category || 'sonstiges'
-                    )
-                    }`}
+                className={`w-3 h-3 rounded-full ${
+                    isCancelled
+                        ? 'bg-gray-400'
+                        : getCategoryBackgroundColor(
+                              event.category || 'sonstiges',
+                          )
+                }`}
             ></div>
             <div className="flex-1">
                 <div
-                    className={`font-medium ${isCancelled
-                        ? 'text-gray-500 line-through'
-                        : 'text-gray-900'
-                        }`}
+                    className={`font-medium ${
+                        isCancelled
+                            ? 'text-gray-500 line-through'
+                            : 'text-gray-900'
+                    }`}
                 >
                     {isCancelled && '🚫 '}
                     {event.title}
@@ -150,9 +163,10 @@ const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
                             : `${EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.bgLight || 'bg-gray-100'} ${EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.textDark || 'text-gray-800'}`
                     }`}
                 >
-                    {isCancelled 
-                        ? 'Abgesagt' 
-                        : EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.label || 'Sonstiges'}
+                    {isCancelled
+                        ? 'Abgesagt'
+                        : EVENT_CATEGORY_MAP[event.category || 'sonstiges']
+                              ?.label || 'Sonstiges'}
                 </span>
             </div>
         </div>
@@ -168,13 +182,14 @@ export default function AdminEventsCalendar({
     const { hasPermission, user } = usePermissions();
 
     // Memoized events that updates when initialEvents changes
-    const events = useMemo(() =>
-        initialEvents.map((event) => ({
-            ...event,
-            start: new Date(event.start),
-            end: new Date(event.end),
-        })),
-        [initialEvents]
+    const events = useMemo(
+        () =>
+            initialEvents.map((event) => ({
+                ...event,
+                start: new Date(event.start),
+                end: new Date(event.end),
+            })),
+        [initialEvents],
     );
 
     // Check if user can edit/cancel this specific event
@@ -254,7 +269,7 @@ export default function AdminEventsCalendar({
     };
 
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-        null
+        null,
     );
     const [showEventModal, setShowEventModal] = useState(false);
     const [eventForm, setEventForm] = useState<EventFormData>(defaultEventForm);
@@ -263,6 +278,7 @@ export default function AdminEventsCalendar({
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [showImagePicker, setShowImagePicker] = useState(false);
+    const [showCropper, setShowCropper] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalInitialValues, setModalInitialValues] = useState<{
         start?: string;
@@ -371,7 +387,7 @@ export default function AdminEventsCalendar({
 
         if (
             !confirm(
-                'Möchten Sie diesen Termin wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.'
+                'Möchten Sie diesen Termin wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
             )
         )
             return;
@@ -392,7 +408,7 @@ export default function AdminEventsCalendar({
                 console.error('Delete failed with status:', response.status);
                 alert(
                     errorData.error ||
-                    'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.'
+                        'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.',
                 );
             }
         } catch (error) {
@@ -407,7 +423,7 @@ export default function AdminEventsCalendar({
 
         if (
             !confirm(
-                'Möchten Sie diesen Termin absagen? Der Termin bleibt sichtbar, wird aber als abgesagt markiert.'
+                'Möchten Sie diesen Termin absagen? Der Termin bleibt sichtbar, wird aber als abgesagt markiert.',
             )
         )
             return;
@@ -418,7 +434,7 @@ export default function AdminEventsCalendar({
                 `/api/events/${selectedEvent.id}/cancel`,
                 {
                     method: 'POST',
-                }
+                },
             );
 
             if (response.ok) {
@@ -449,7 +465,7 @@ export default function AdminEventsCalendar({
                 `/api/events/${selectedEvent.id}/cancel`,
                 {
                     method: 'DELETE',
-                }
+                },
             );
 
             if (response.ok) {
@@ -462,7 +478,7 @@ export default function AdminEventsCalendar({
                 console.error('Restore failed with status:', response.status);
                 alert(
                     errorData.error ||
-                    'Fehler beim Wiederherstellen des Termins'
+                        'Fehler beim Wiederherstellen des Termins',
                 );
             }
         } catch (error) {
@@ -484,11 +500,15 @@ export default function AdminEventsCalendar({
             category: selectedEvent.category,
             organizer: selectedEvent.organizer || '',
             imageUrl: selectedEvent.imageUrl || '',
+            imageCropData: selectedEvent.imageCropData,
         });
         setIsEditing(true);
     };
 
-    const categoryOptions = EVENT_CATEGORIES.map(c => ({ value: c.id, label: c.label }));
+    const categoryOptions = EVENT_CATEGORIES.map((c) => ({
+        value: c.id,
+        label: c.label,
+    }));
 
     return (
         <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
@@ -756,11 +776,25 @@ export default function AdminEventsCalendar({
                                                     <p className="text-sm font-medium text-gray-900">
                                                         Bild ausgewählt
                                                     </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        Wird in der
-                                                        Terminübersicht
-                                                        angezeigt
-                                                    </p>
+                                                    <div className="flex items-center mt-1 space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setShowCropper(
+                                                                    true,
+                                                                )
+                                                            }
+                                                            className="text-xs flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
+                                                        >
+                                                            <Crop className="w-3 h-3 mr-1" />
+                                                            Zuschneiden
+                                                        </button>
+                                                        <p className="text-xs text-gray-500">
+                                                            Wird in der
+                                                            Terminübersicht
+                                                            angezeigt
+                                                        </p>
+                                                    </div>
                                                 </div>
                                                 <button
                                                     type="button"
@@ -768,6 +802,8 @@ export default function AdminEventsCalendar({
                                                         setEventForm({
                                                             ...eventForm,
                                                             imageUrl: '',
+                                                            imageCropData:
+                                                                undefined,
                                                         })
                                                     }
                                                     className="text-gray-400 hover:text-gray-600"
@@ -831,9 +867,9 @@ export default function AdminEventsCalendar({
                                                     <p className="text-xs text-red-700">
                                                         Am:{' '}
                                                         {moment(
-                                                            selectedEvent.cancelledAt
+                                                            selectedEvent.cancelledAt,
                                                         ).format(
-                                                            'DD.MM.YYYY, HH:mm'
+                                                            'DD.MM.YYYY, HH:mm',
                                                         )}{' '}
                                                         Uhr
                                                     </p>
@@ -845,30 +881,31 @@ export default function AdminEventsCalendar({
 
                                 <div className="flex items-center space-x-3">
                                     <div
-                                        className={`p-2 rounded-lg ${selectedEvent.category === 'sitzung'
-                                            ? 'bg-blue-100 text-blue-600'
-                                            : selectedEvent.category ===
-                                                'veranstaltung'
-                                                ? 'bg-green-100 text-green-600'
+                                        className={`p-2 rounded-lg ${
+                                            selectedEvent.category === 'sitzung'
+                                                ? 'bg-blue-100 text-blue-600'
                                                 : selectedEvent.category ===
-                                                    'sport'
+                                                    'veranstaltung'
+                                                  ? 'bg-green-100 text-green-600'
+                                                  : selectedEvent.category ===
+                                                      'sport'
                                                     ? 'bg-orange-100 text-orange-600'
                                                     : selectedEvent.category ===
                                                         'kultur'
-                                                        ? 'bg-purple-100 text-purple-600'
-                                                        : 'bg-gray-100 text-gray-600'
-                                            }`}
+                                                      ? 'bg-purple-100 text-purple-600'
+                                                      : 'bg-gray-100 text-gray-600'
+                                        }`}
                                     >
                                         {getCategoryIcon(
                                             selectedEvent.category ||
-                                            'sonstiges'
+                                                'sonstiges',
                                         )}
                                     </div>
                                     <span className="font-medium text-gray-700">
                                         {categoryOptions.find(
                                             (opt) =>
                                                 opt.value ===
-                                                selectedEvent.category
+                                                selectedEvent.category,
                                         )?.label || 'Sonstiges'}
                                     </span>
                                 </div>
@@ -877,11 +914,11 @@ export default function AdminEventsCalendar({
                                     <Clock className="w-5 h-5 text-gray-500" />
                                     <span className="text-gray-700">
                                         {moment(selectedEvent.start).format(
-                                            'dddd, DD. MMMM YYYY, HH:mm'
+                                            'dddd, DD. MMMM YYYY, HH:mm',
                                         )}{' '}
                                         -{' '}
                                         {moment(selectedEvent.end).format(
-                                            'HH:mm'
+                                            'HH:mm',
                                         )}{' '}
                                         Uhr
                                     </span>
@@ -906,7 +943,7 @@ export default function AdminEventsCalendar({
                                 )}
                                 {selectedEvent.vereinId &&
                                     typeof selectedEvent.vereinId ===
-                                    'string' && (
+                                        'string' && (
                                         <div className="flex items-center space-x-3">
                                             <Buildings className="w-5 h-5 text-gray-500" />
                                             <span className="text-gray-700">
@@ -919,8 +956,12 @@ export default function AdminEventsCalendar({
 
                                 {selectedEvent.imageUrl && (
                                     <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 relative aspect-video">
-                                        <Image
+                                        <CroppedImage
                                             src={selectedEvent.imageUrl}
+                                            cropData={
+                                                selectedEvent.imageCropData
+                                            }
+                                            viewId="popup"
                                             alt={selectedEvent.title}
                                             fill
                                             className="object-cover"
@@ -971,21 +1012,35 @@ export default function AdminEventsCalendar({
             />
 
             {/* Image Picker Modal */}
-            {
-                showImagePicker && (
-                    <GalleryImagePicker
-                        onSelect={(image) => {
-                            setEventForm({
-                                ...eventForm,
-                                imageUrl: image.url || '',
-                            });
-                            setShowImagePicker(false);
-                        }}
-                        onClose={() => setShowImagePicker(false)}
-                        canUpload={hasPermission('gallery.upload')}
-                    />
-                )
-            }
+            {showImagePicker && (
+                <GalleryImagePicker
+                    onSelect={(image) => {
+                        setEventForm((prev) => ({
+                            ...prev,
+                            imageUrl: image.url || '',
+                        }));
+                        setShowImagePicker(false);
+                    }}
+                    onClose={() => setShowImagePicker(false)}
+                    canUpload={hasPermission('gallery.upload')}
+                />
+            )}
+
+            {/* Image Cropper Modal */}
+            {showCropper && eventForm.imageUrl && (
+                <ImageCropper
+                    imageUrl={eventForm.imageUrl}
+                    initialCrops={eventForm.imageCropData}
+                    onSave={(crops) => {
+                        setEventForm((prev) => ({
+                            ...prev,
+                            imageCropData: crops,
+                        }));
+                        setShowCropper(false);
+                    }}
+                    onCancel={() => setShowCropper(false)}
+                />
+            )}
 
             <style jsx global>{`
                 .calendar-container .rbc-calendar {
@@ -1080,6 +1135,6 @@ export default function AdminEventsCalendar({
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                 }
             `}</style>
-        </div >
+        </div>
     );
 }

@@ -9,7 +9,19 @@ interface ModalProps {
     children: ReactNode;
     className?: string;
     showCloseButton?: boolean;
-    maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | '7xl' | 'full' | string;
+    maxWidth?:
+        | 'sm'
+        | 'md'
+        | 'lg'
+        | 'xl'
+        | '2xl'
+        | '3xl'
+        | '4xl'
+        | '5xl'
+        | '6xl'
+        | '7xl'
+        | 'full'
+        | string;
     backdropBlur?: boolean;
     centered?: boolean;
     variant?: 'default' | 'none';
@@ -62,8 +74,8 @@ export default function Modal({
     if (!mounted || !isOpen) return null;
 
     // Map maxWidth to Tailwind class
-    const maxWidthClass = maxWidth.startsWith('max-w-') 
-        ? maxWidth 
+    const maxWidthClass = maxWidth.startsWith('max-w-')
+        ? maxWidth
         : `max-w-${maxWidth}`;
 
     const isNoneVariant = variant === 'none';
@@ -71,7 +83,9 @@ export default function Modal({
     // Use z-[100] to be on top, but adjust top/padding so navbar is visible if desired
     return createPortal(
         <div className="fixed inset-0 z-[100] overflow-y-auto print:static print:overflow-visible print:h-auto print:block">
-            <div className={`flex min-h-full ${isNoneVariant ? '' : 'p-4'} text-center ${centered ? 'items-center' : 'items-start pt-[80px]'} justify-center print:block print:p-0`}>
+            <div
+                className={`flex min-h-full ${isNoneVariant ? '' : 'p-4'} text-center ${centered ? 'items-center' : 'items-start pt-[80px]'} justify-center print:block print:p-0`}
+            >
                 {/* Backdrop */}
                 <div
                     className={`fixed inset-0 transition-opacity bg-gray-500/75 ${backdropBlur ? 'backdrop-blur-sm' : ''} print:hidden`}
@@ -81,9 +95,10 @@ export default function Modal({
 
                 {/* Modal panel with animations */}
                 <div
-                    className={isNoneVariant 
-                        ? `relative w-full ${className}`
-                        : `relative inline-block align-bottom bg-white ${roundedClasses[rounded]} text-left overflow-hidden shadow-2xl transform transition-all w-full mb-8 ${maxWidthClass} print:shadow-none print:w-full print:mb-0 ${className}`
+                    className={
+                        isNoneVariant
+                            ? `relative w-full ${className}`
+                            : `relative inline-block align-bottom bg-white ${roundedClasses[rounded]} text-left overflow-hidden shadow-2xl transform transition-all w-full mb-8 ${maxWidthClass} print:shadow-none print:w-full print:mb-0 ${className}`
                     }
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -94,4 +109,3 @@ export default function Modal({
         document.body,
     );
 }
-

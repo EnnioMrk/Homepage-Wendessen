@@ -97,6 +97,8 @@ export async function PUT(
             updateData.organizer = eventData.organizer;
         if (eventData.imageUrl !== undefined)
             updateData.imageUrl = eventData.imageUrl;
+        if (eventData.imageCropData !== undefined)
+            updateData.imageCropData = eventData.imageCropData;
         // vereinId is explicitly excluded to prevent accidental changes
 
         const updatedEvent = await updateEvent(id, updateData);
