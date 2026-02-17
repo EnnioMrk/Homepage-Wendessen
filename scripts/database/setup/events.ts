@@ -30,6 +30,19 @@ async function setupEvents() {
         await sql`CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);`;
         console.log('✓ events indexes ensured');
 
+        // Ensure missing columns exist
+        const columnCheck = await sql`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'events' AND column_name = 'image_crop_data'
+        `;
+
+        if (columnCheck.length === 0) {
+            console.log('Adding missing column image_crop_data...');
+            await sql`ALTER TABLE events ADD COLUMN image_crop_data JSONB;`;
+            console.log('✓ image_crop_data column added');
+        }
+
         console.log('✅ Events setup complete');
     } catch (err) {
         console.error('Error setting up events:', err);
