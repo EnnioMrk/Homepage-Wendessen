@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { parseWeatherReport } from '@/lib/utils/weather-utils';
 
-const WEATHER_REPORT_URL = 'https://www.wetterstation.ws/cms/iframes/Wetter_aktuell/Text/ws_report.txt';
+const WEATHER_REPORT_URL =
+    'https://www.wetterstation.ws/cms/iframes/Wetter_aktuell/Text/ws_report.txt';
 
 export async function GET() {
     try {
@@ -52,7 +53,7 @@ export async function GET() {
         console.error('Error fetching weather data:', error);
         return NextResponse.json(
             { error: 'Failed to fetch weather data' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

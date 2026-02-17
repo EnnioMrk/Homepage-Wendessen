@@ -12,7 +12,7 @@ export async function GET() {
         console.error('Error fetching admin users:', error);
         return NextResponse.json(
             { error: 'Failed to fetch admin users' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

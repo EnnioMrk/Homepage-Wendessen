@@ -8,6 +8,7 @@ import {
     Editor,
     Transforms,
     Element as SlateElement,
+    Text as SlateText,
 } from 'slate';
 import {
     Slate,
@@ -17,7 +18,7 @@ import {
     RenderLeafProps,
     ReactEditor,
 } from 'slate-react';
-import { withHistory } from 'slate-history';
+import { withHistory, HistoryEditor } from 'slate-history';
 import Image from 'next/image';
 import {
     TextB,
@@ -88,17 +89,48 @@ export default function EnhancedRichTextEditor({
 }: Props) {
     const editor = useMemo<Editor>(
         () => withHistory(withReact(createEditor() as unknown as Editor)),
-        []
+        [],
     );
 
     useEffect(() => {
-        // ensure editor has initial children when value is empty
-        if (!editor.children || editor.children.length === 0)
+        // ensure editor has initial children when value is empty or needs to be reset without full remount
+        const isEditorEmpty = !editor.children || editor.children.length === 0;
+        const isValueProvided = value && value.length > 0;
+
+        // Check if value is "initial state" (single empty paragraph) but editor has content
+        // This handles the "reset" case where parent passes initial state to clear the editor
+        // We consider it "initial state" if it matches [{ type: 'paragraph', children: [{ text: '' }] }]
+        const isInitialState = (nodes: Descendant[]) => {
+            if (!nodes || nodes.length !== 1) return false;
+            const node = nodes[0];
+            if (!SlateElement.isElement(node) || node.type !== 'paragraph')
+                return false;
+            if (!node.children || node.children.length !== 1) return false;
+            const child = node.children[0];
+            return SlateText.isText(child) && child.text === '';
+        };
+
+        const isValueInitial = isValueProvided && isInitialState(value);
+        const isEditorInitial =
+            editor.children && isInitialState(editor.children);
+
+        if (isEditorEmpty) {
             // eslint-disable-next-line react-hooks/immutability
-            editor.children =
-                value && value.length > 0
-                    ? value
-                    : [{ type: 'paragraph', children: [{ text: '' }] }];
+            editor.children = isValueProvided
+                ? value
+                : [{ type: 'paragraph', children: [{ text: '' }] }];
+        } else if (isValueInitial && !isEditorInitial) {
+            // Force reset editor content if upstream value is reset to initial
+            editor.children = value;
+            (editor as unknown as HistoryEditor).history = {
+                undos: [],
+                redos: [],
+            };
+            Transforms.select(editor, {
+                anchor: { path: [0, 0], offset: 0 },
+                focus: { path: [0, 0], offset: 0 },
+            });
+        }
     }, [value, editor]);
 
     const [showLinkInput, setShowLinkInput] = useState(false);
@@ -110,7 +142,7 @@ export default function EnhancedRichTextEditor({
     const [imagePosition, setImagePosition] = useState<ImagePosition>('center');
     const [imageTextFlow, setImageTextFlow] = useState<boolean>(false);
     const [editingImagePath, setEditingImagePath] = useState<number[] | null>(
-        null
+        null,
     );
     const [editingImageElement, setEditingImageElement] =
         useState<ImageElement | null>(null);
@@ -206,7 +238,7 @@ export default function EnhancedRichTextEditor({
                         e.stopPropagation();
                         const path = ReactEditor.findPath(
                             editor,
-                            props.element
+                            props.element,
                         );
                         setEditingImagePath(path);
                         setEditingImageElement(img);
@@ -220,7 +252,7 @@ export default function EnhancedRichTextEditor({
                         e.stopPropagation();
                         const path = ReactEditor.findPath(
                             editor,
-                            props.element
+                            props.element,
                         );
                         Transforms.removeNodes(editor, { at: path });
                     };
@@ -231,14 +263,29 @@ export default function EnhancedRichTextEditor({
                             <div
                                 {...props.attributes}
                                 contentEditable={false}
-                                className={`group relative ${sizeClasses[size]
-                                    } ${getFloatClasses(pos)}`}
+                                className={`group relative ${
+                                    sizeClasses[size]
+                                } ${getFloatClasses(pos)}`}
                             >
                                 <Image
                                     src={img.url}
                                     alt={img.alt || 'Bild'}
-                                    width={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
-                                    height={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
+                                    width={
+                                        parseInt(
+                                            sizeClasses[size].replace(
+                                                /max-w-\[|px\]/g,
+                                                '',
+                                            ),
+                                        ) || 400
+                                    }
+                                    height={
+                                        parseInt(
+                                            sizeClasses[size].replace(
+                                                /max-w-\[|px\]/g,
+                                                '',
+                                            ),
+                                        ) || 400
+                                    }
                                     className="rounded-lg shadow-md w-full h-auto"
                                     unoptimized
                                 />
@@ -272,7 +319,7 @@ export default function EnhancedRichTextEditor({
                             {...props.attributes}
                             contentEditable={false}
                             className={`my-4 clear-both ${getAlignmentClass(
-                                pos
+                                pos,
                             )}`}
                         >
                             <div
@@ -281,8 +328,22 @@ export default function EnhancedRichTextEditor({
                                 <Image
                                     src={img.url}
                                     alt={img.alt || 'Bild'}
-                                    width={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
-                                    height={parseInt(sizeClasses[size].replace(/max-w-\[|px\]/g, '')) || 400}
+                                    width={
+                                        parseInt(
+                                            sizeClasses[size].replace(
+                                                /max-w-\[|px\]/g,
+                                                '',
+                                            ),
+                                        ) || 400
+                                    }
+                                    height={
+                                        parseInt(
+                                            sizeClasses[size].replace(
+                                                /max-w-\[|px\]/g,
+                                                '',
+                                            ),
+                                        ) || 400
+                                    }
                                     className="rounded-lg shadow-md w-full h-auto"
                                     unoptimized
                                 />
@@ -323,7 +384,7 @@ export default function EnhancedRichTextEditor({
                     );
             }
         },
-        [editor]
+        [editor],
     );
 
     const renderLeaf = useCallback((props: RenderLeafProps) => {
@@ -354,7 +415,7 @@ export default function EnhancedRichTextEditor({
                     !Editor.isEditor(n) &&
                     SlateElement.isElement(n) &&
                     (n as SlateElement).type === format,
-            })
+            }),
         );
         return !!match;
     };
@@ -383,14 +444,14 @@ export default function EnhancedRichTextEditor({
         const chosen = isActive
             ? 'paragraph'
             : isList
-                ? 'list-item'
-                : possible.includes(formatStr)
-                    ? formatStr
-                    : 'paragraph';
+              ? 'list-item'
+              : possible.includes(formatStr)
+                ? formatStr
+                : 'paragraph';
         const newProps = { type: chosen as CustomElement['type'] };
         Transforms.setNodes(
             editor,
-            newProps as unknown as Partial<SlateElement>
+            newProps as unknown as Partial<SlateElement>,
         );
         if (!isActive && isList) {
             const block: CustomElement = {
@@ -433,7 +494,7 @@ export default function EnhancedRichTextEditor({
         alt?: string,
         size: ImageSize = 'medium',
         position: ImagePosition = 'center',
-        textFlow: boolean = false
+        textFlow: boolean = false,
     ) => {
         const image: ImageElement = {
             type: 'image',
@@ -461,12 +522,12 @@ export default function EnhancedRichTextEditor({
         path: number[],
         size: ImageSize,
         position: ImagePosition,
-        textFlow: boolean
+        textFlow: boolean,
     ) => {
         Transforms.setNodes(
             editor,
             { imageSize: size, position, textFlow } as Partial<SlateElement>,
-            { at: path }
+            { at: path },
         );
         setEditingImagePath(null);
         setEditingImageElement(null);
@@ -596,7 +657,7 @@ export default function EnhancedRichTextEditor({
                                 if (
                                     isHotkey(
                                         hotkey,
-                                        event as unknown as KeyboardEvent
+                                        event as unknown as KeyboardEvent,
                                     )
                                 ) {
                                     event.preventDefault();
@@ -649,234 +710,246 @@ export default function EnhancedRichTextEditor({
                         </div>
 
                         {/* Image Options View */}
-                            <div className="space-y-6">
-                                {/* Back button */}
+                        <div className="space-y-6">
+                            {/* Back button */}
+                            <button
+                                type="button"
+                                onClick={() => setSelectedGalleryImage(null)}
+                                className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                            >
+                                ← Zurück zur Galerie
+                            </button>
+
+                            {/* Preview */}
+                            <div className="bg-gray-100 rounded-lg p-4">
+                                <p className="text-sm text-gray-600 mb-3 font-medium">
+                                    Vorschau:
+                                </p>
+                                <div
+                                    className={`${
+                                        imagePosition === 'left'
+                                            ? 'text-left'
+                                            : imagePosition === 'right'
+                                              ? 'text-right'
+                                              : 'text-center'
+                                    }`}
+                                >
+                                    <div
+                                        className={`inline-block ${
+                                            imageSize === 'small'
+                                                ? 'max-w-[150px]'
+                                                : imageSize === 'medium'
+                                                  ? 'max-w-[250px]'
+                                                  : imageSize === 'large'
+                                                    ? 'max-w-[350px]'
+                                                    : 'max-w-full'
+                                        }`}
+                                    >
+                                        <Image
+                                            src={selectedGalleryImage.url}
+                                            alt={
+                                                selectedGalleryImage.displayName
+                                            }
+                                            width={
+                                                imageSize === 'small'
+                                                    ? 150
+                                                    : imageSize === 'medium'
+                                                      ? 250
+                                                      : imageSize === 'large'
+                                                        ? 350
+                                                        : 600
+                                            }
+                                            height={
+                                                imageSize === 'small'
+                                                    ? 150
+                                                    : imageSize === 'medium'
+                                                      ? 250
+                                                      : imageSize === 'large'
+                                                        ? 350
+                                                        : 600
+                                            }
+                                            className="rounded-lg shadow-md w-full h-auto"
+                                            unoptimized
+                                        />
+                                    </div>
+                                </div>
+                                {imagePosition !== 'center' && (
+                                    <p className="text-xs text-gray-500 mt-2 italic">
+                                        Bei Links/Rechts-Ausrichtung kann Text
+                                        neben dem Bild fließen.
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Size Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Bildgröße
+                                </label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {[
+                                        {
+                                            value: 'small',
+                                            label: 'Klein',
+                                            desc: '200px',
+                                        },
+                                        {
+                                            value: 'medium',
+                                            label: 'Mittel',
+                                            desc: '400px',
+                                        },
+                                        {
+                                            value: 'large',
+                                            label: 'Groß',
+                                            desc: '600px',
+                                        },
+                                        {
+                                            value: 'full',
+                                            label: 'Volle Breite',
+                                            desc: '100%',
+                                        },
+                                    ].map((option) => (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() =>
+                                                setImageSize(
+                                                    option.value as ImageSize,
+                                                )
+                                            }
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imageSize === option.value
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            <div>{option.label}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {option.desc}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Position Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Position
+                                </label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        {
+                                            value: 'left',
+                                            label: 'Links',
+                                            desc: 'Linksbündig',
+                                        },
+                                        {
+                                            value: 'center',
+                                            label: 'Zentriert',
+                                            desc: 'Mittig',
+                                        },
+                                        {
+                                            value: 'right',
+                                            label: 'Rechts',
+                                            desc: 'Rechtsbündig',
+                                        },
+                                    ].map((option) => (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() =>
+                                                setImagePosition(
+                                                    option.value as ImagePosition,
+                                                )
+                                            }
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imagePosition === option.value
+                                                    ? 'border-primary bg-primary/10 text-primary'
+                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            <div>{option.label}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {option.desc}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Text Flow Toggle */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Textumfluss
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setImageTextFlow(false)}
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                            !imageTextFlow
+                                                ? 'border-primary bg-primary/10 text-primary'
+                                                : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                        }`}
+                                    >
+                                        <div>Eigene Zeile</div>
+                                        <div className="text-xs text-gray-500">
+                                            Text beginnt darunter
+                                        </div>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setImageTextFlow(true)}
+                                        disabled={imagePosition === 'center'}
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                            imageTextFlow &&
+                                            imagePosition !== 'center'
+                                                ? 'border-primary bg-primary/10 text-primary'
+                                                : imagePosition === 'center'
+                                                  ? 'border-gray-100 text-gray-400 cursor-not-allowed'
+                                                  : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                        }`}
+                                    >
+                                        <div>Text daneben</div>
+                                        <div className="text-xs text-gray-500">
+                                            {imagePosition === 'center'
+                                                ? 'Nur bei Links/Rechts'
+                                                : 'Text fließt um das Bild'}
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Insert Button */}
+                            <div className="flex justify-end gap-3 pt-4 border-t">
                                 <button
                                     type="button"
                                     onClick={() =>
                                         setSelectedGalleryImage(null)
                                     }
-                                    className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                                    className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
                                 >
-                                    ← Zurück zur Galerie
+                                    Abbrechen
                                 </button>
-
-                                {/* Preview */}
-                                <div className="bg-gray-100 rounded-lg p-4">
-                                    <p className="text-sm text-gray-600 mb-3 font-medium">
-                                        Vorschau:
-                                    </p>
-                                    <div
-                                        className={`${imagePosition === 'left'
-                                                ? 'text-left'
-                                                : imagePosition === 'right'
-                                                    ? 'text-right'
-                                                    : 'text-center'
-                                            }`}
-                                    >
-                                        <div
-                                            className={`inline-block ${imageSize === 'small'
-                                                    ? 'max-w-[150px]'
-                                                    : imageSize === 'medium'
-                                                        ? 'max-w-[250px]'
-                                                        : imageSize === 'large'
-                                                            ? 'max-w-[350px]'
-                                                            : 'max-w-full'
-                                                }`}
-                                        >
-                                            <Image
-                                                src={selectedGalleryImage.url}
-                                                alt={
-                                                    selectedGalleryImage.displayName
-                                                }
-                                                width={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
-                                                height={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
-                                                className="rounded-lg shadow-md w-full h-auto"
-                                                unoptimized
-                                            />
-                                        </div>
-                                    </div>
-                                    {imagePosition !== 'center' && (
-                                        <p className="text-xs text-gray-500 mt-2 italic">
-                                            Bei Links/Rechts-Ausrichtung kann
-                                            Text neben dem Bild fließen.
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Size Selection */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Bildgröße
-                                    </label>
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {[
-                                            {
-                                                value: 'small',
-                                                label: 'Klein',
-                                                desc: '200px',
-                                            },
-                                            {
-                                                value: 'medium',
-                                                label: 'Mittel',
-                                                desc: '400px',
-                                            },
-                                            {
-                                                value: 'large',
-                                                label: 'Groß',
-                                                desc: '600px',
-                                            },
-                                            {
-                                                value: 'full',
-                                                label: 'Volle Breite',
-                                                desc: '100%',
-                                            },
-                                        ].map((option) => (
-                                            <button
-                                                key={option.value}
-                                                type="button"
-                                                onClick={() =>
-                                                    setImageSize(
-                                                        option.value as ImageSize
-                                                    )
-                                                }
-                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageSize === option.value
-                                                        ? 'border-primary bg-primary/10 text-primary'
-                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                    }`}
-                                            >
-                                                <div>{option.label}</div>
-                                                <div className="text-xs text-gray-500">
-                                                    {option.desc}
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Position Selection */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Position
-                                    </label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {[
-                                            {
-                                                value: 'left',
-                                                label: 'Links',
-                                                desc: 'Linksbündig',
-                                            },
-                                            {
-                                                value: 'center',
-                                                label: 'Zentriert',
-                                                desc: 'Mittig',
-                                            },
-                                            {
-                                                value: 'right',
-                                                label: 'Rechts',
-                                                desc: 'Rechtsbündig',
-                                            },
-                                        ].map((option) => (
-                                            <button
-                                                key={option.value}
-                                                type="button"
-                                                onClick={() =>
-                                                    setImagePosition(
-                                                        option.value as ImagePosition
-                                                    )
-                                                }
-                                                className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imagePosition ===
-                                                        option.value
-                                                        ? 'border-primary bg-primary/10 text-primary'
-                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                    }`}
-                                            >
-                                                <div>{option.label}</div>
-                                                <div className="text-xs text-gray-500">
-                                                    {option.desc}
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Text Flow Toggle */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Textumfluss
-                                    </label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setImageTextFlow(false)
-                                            }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${!imageTextFlow
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <div>Eigene Zeile</div>
-                                            <div className="text-xs text-gray-500">
-                                                Text beginnt darunter
-                                            </div>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setImageTextFlow(true)
-                                            }
-                                            disabled={
-                                                imagePosition === 'center'
-                                            }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageTextFlow &&
-                                                    imagePosition !== 'center'
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : imagePosition === 'center'
-                                                        ? 'border-gray-100 text-gray-400 cursor-not-allowed'
-                                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <div>Text daneben</div>
-                                            <div className="text-xs text-gray-500">
-                                                {imagePosition === 'center'
-                                                    ? 'Nur bei Links/Rechts'
-                                                    : 'Text fließt um das Bild'}
-                                            </div>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Insert Button */}
-                                <div className="flex justify-end gap-3 pt-4 border-t">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setSelectedGalleryImage(null)
-                                        }
-                                        className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
-                                    >
-                                        Abbrechen
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            insertImage(
-                                                selectedGalleryImage.url,
-                                                selectedGalleryImage.displayName,
-                                                imageSize,
-                                                imagePosition,
-                                                imageTextFlow &&
-                                                imagePosition !== 'center'
-                                            )
-                                        }
-                                        className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
-                                    >
-                                        Bild einfügen
-                                    </button>
-                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        insertImage(
+                                            selectedGalleryImage.url,
+                                            selectedGalleryImage.displayName,
+                                            imageSize,
+                                            imagePosition,
+                                            imageTextFlow &&
+                                                imagePosition !== 'center',
+                                        )
+                                    }
+                                    className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
+                                >
+                                    Bild einfügen
+                                </button>
                             </div>
-
+                        </div>
                     </div>
                 </div>
             )}
@@ -910,22 +983,24 @@ export default function EnhancedRichTextEditor({
                                     Vorschau:
                                 </p>
                                 <div
-                                    className={`${imagePosition === 'left'
+                                    className={`${
+                                        imagePosition === 'left'
                                             ? 'text-left'
                                             : imagePosition === 'right'
-                                                ? 'text-right'
-                                                : 'text-center'
-                                        }`}
+                                              ? 'text-right'
+                                              : 'text-center'
+                                    }`}
                                 >
                                     <div
-                                        className={`inline-block ${imageSize === 'small'
+                                        className={`inline-block ${
+                                            imageSize === 'small'
                                                 ? 'max-w-[150px]'
                                                 : imageSize === 'medium'
-                                                    ? 'max-w-[250px]'
-                                                    : imageSize === 'large'
-                                                        ? 'max-w-[350px]'
-                                                        : 'max-w-full'
-                                            }`}
+                                                  ? 'max-w-[250px]'
+                                                  : imageSize === 'large'
+                                                    ? 'max-w-[350px]'
+                                                    : 'max-w-full'
+                                        }`}
                                     >
                                         <Image
                                             src={editingImageElement.url}
@@ -933,8 +1008,24 @@ export default function EnhancedRichTextEditor({
                                                 editingImageElement.alt ||
                                                 'Bild'
                                             }
-                                            width={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
-                                            height={imageSize === 'small' ? 150 : imageSize === 'medium' ? 250 : imageSize === 'large' ? 350 : 600}
+                                            width={
+                                                imageSize === 'small'
+                                                    ? 150
+                                                    : imageSize === 'medium'
+                                                      ? 250
+                                                      : imageSize === 'large'
+                                                        ? 350
+                                                        : 600
+                                            }
+                                            height={
+                                                imageSize === 'small'
+                                                    ? 150
+                                                    : imageSize === 'medium'
+                                                      ? 250
+                                                      : imageSize === 'large'
+                                                        ? 350
+                                                        : 600
+                                            }
                                             className="rounded-lg shadow-md w-full h-auto"
                                             unoptimized
                                         />
@@ -975,13 +1066,14 @@ export default function EnhancedRichTextEditor({
                                             type="button"
                                             onClick={() =>
                                                 setImageSize(
-                                                    option.value as ImageSize
+                                                    option.value as ImageSize,
                                                 )
                                             }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageSize === option.value
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imageSize === option.value
                                                     ? 'border-primary bg-primary/10 text-primary'
                                                     : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
+                                            }`}
                                         >
                                             <div>{option.label}</div>
                                             <div className="text-xs text-gray-500">
@@ -1020,13 +1112,14 @@ export default function EnhancedRichTextEditor({
                                             type="button"
                                             onClick={() =>
                                                 setImagePosition(
-                                                    option.value as ImagePosition
+                                                    option.value as ImagePosition,
                                                 )
                                             }
-                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imagePosition === option.value
+                                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                                imagePosition === option.value
                                                     ? 'border-primary bg-primary/10 text-primary'
                                                     : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
+                                            }`}
                                         >
                                             <div>{option.label}</div>
                                             <div className="text-xs text-gray-500">
@@ -1046,10 +1139,11 @@ export default function EnhancedRichTextEditor({
                                     <button
                                         type="button"
                                         onClick={() => setImageTextFlow(false)}
-                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${!imageTextFlow
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                            !imageTextFlow
                                                 ? 'border-primary bg-primary/10 text-primary'
                                                 : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                            }`}
+                                        }`}
                                     >
                                         <div>Eigene Zeile</div>
                                         <div className="text-xs text-gray-500">
@@ -1060,13 +1154,14 @@ export default function EnhancedRichTextEditor({
                                         type="button"
                                         onClick={() => setImageTextFlow(true)}
                                         disabled={imagePosition === 'center'}
-                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${imageTextFlow &&
-                                                imagePosition !== 'center'
+                                        className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                                            imageTextFlow &&
+                                            imagePosition !== 'center'
                                                 ? 'border-primary bg-primary/10 text-primary'
                                                 : imagePosition === 'center'
-                                                    ? 'border-gray-100 text-gray-400 cursor-not-allowed'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                            }`}
+                                                  ? 'border-gray-100 text-gray-400 cursor-not-allowed'
+                                                  : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                        }`}
                                     >
                                         <div>Text daneben</div>
                                         <div className="text-xs text-gray-500">
@@ -1101,7 +1196,7 @@ export default function EnhancedRichTextEditor({
                                             imageSize,
                                             imagePosition,
                                             imageTextFlow &&
-                                            imagePosition !== 'center'
+                                                imagePosition !== 'center',
                                         )
                                     }
                                     className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark"
@@ -1135,8 +1230,9 @@ function ToolbarButton({
                 e.preventDefault();
                 onMouseDown();
             }}
-            className={`p-2 rounded hover:bg-gray-200 transition-colors ${active ? 'bg-gray-300 text-primary' : 'text-gray-700'
-                }`}
+            className={`p-2 rounded hover:bg-gray-200 transition-colors ${
+                active ? 'bg-gray-300 text-primary' : 'text-gray-700'
+            }`}
             title={title}
         >
             {children}

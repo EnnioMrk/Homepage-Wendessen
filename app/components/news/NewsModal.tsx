@@ -11,7 +11,7 @@ interface NewsModalProps {
     title?: string;
 }
 
-const initialEditorValue: Descendant[] = [
+const getInitialEditorValue = (): Descendant[] => [
     {
         type: 'paragraph',
         children: [{ text: '' }],
@@ -25,7 +25,7 @@ export default function NewsModal({
     title = 'Neue Nachricht hinzufügen',
 }: NewsModalProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const [articleContent, setArticleContent] = useState<Descendant[]>(initialEditorValue);
+    const [articleContent, setArticleContent] = useState<Descendant[]>(getInitialEditorValue());
     const [newsTitle, setNewsTitle] = useState('');
 
     if (!isOpen) return null;
@@ -57,7 +57,7 @@ export default function NewsModal({
                 // Reset form
                 (e.target as HTMLFormElement).reset();
                 setNewsTitle('');
-                setArticleContent(initialEditorValue);
+                setArticleContent(getInitialEditorValue());
             } else {
                 console.error('Failed to create news');
             }

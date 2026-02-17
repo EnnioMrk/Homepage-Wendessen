@@ -31,7 +31,7 @@ export async function GET(request: Request) {
         console.error('Error fetching my groups:', error);
         return NextResponse.json(
             { error: 'Failed to fetch groups' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

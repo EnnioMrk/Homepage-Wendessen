@@ -9,7 +9,7 @@ import EnhancedRichTextEditor from '@/app/components/EnhancedRichTextEditor';
 import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
-const initialEditorValue: Descendant[] = [
+const getInitialEditorValue = (): Descendant[] => [
     {
         type: 'paragraph',
         children: [{ text: '' }],
@@ -27,7 +27,7 @@ export default function CreateArchivePage() {
     const [author, setAuthor] = useState('');
     const [category, setCategory] = useState('');
     const [createdDate, setCreatedDate] = useState('');
-    const [content, setContent] = useState<Descendant[]>(initialEditorValue);
+    const [content, setContent] = useState<Descendant[]>(getInitialEditorValue());
 
     const handleInitialSubmit = (e: React.FormEvent) => {
         e.preventDefault();

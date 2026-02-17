@@ -7,18 +7,18 @@ export interface Verein {
     buttonText: string;
     buttonHref: string;
     buttonColor:
-    | 'green'
-    | 'red'
-    | 'blue'
-    | 'orange'
-    | 'lime'
-    | 'pink'
-    | 'indigo'
-    | 'emerald'
-    | 'violet'
-    | 'teal'
-    | 'cyan'
-    | 'yellow';
+        | 'green'
+        | 'red'
+        | 'blue'
+        | 'orange'
+        | 'lime'
+        | 'pink'
+        | 'indigo'
+        | 'emerald'
+        | 'violet'
+        | 'teal'
+        | 'cyan'
+        | 'yellow';
 }
 
 export const ASSOCIATIONS: Verein[] = [
@@ -53,7 +53,8 @@ export const ASSOCIATIONS: Verein[] = [
     {
         id: 'jugendfeuerwehr',
         title: 'Jugendfeuerwehr',
-        description: 'Spaß, Action und feuerwehrtechnisches Wissen für Kinder und Jugendliche.',
+        description:
+            'Spaß, Action und feuerwehrtechnisches Wissen für Kinder und Jugendliche.',
         imageSrc: '/images/Vereinsleben/Jugendfeuerwehr.jpeg',
         imageAlt: 'Jugendfeuerwehr Wendessen in Aktion',
         buttonText: 'Mehr erfahren',
@@ -73,7 +74,8 @@ export const ASSOCIATIONS: Verein[] = [
     {
         id: 'kirchbauverein',
         title: 'Kirchbauverein',
-        description: 'Gemeinsam für unser Gotteshaus!',
+        description:
+            'Konzerte und Lesungen - Verein für den Erhalt der Wendesser Kirche',
         imageSrc: '/images/Vereinsleben/Kirche.webp',
         imageAlt: 'Kirchbauverein Wendessen',
         buttonText: 'Mehr erfahren',
@@ -113,7 +115,8 @@ export const ASSOCIATIONS: Verein[] = [
     {
         id: 'frauenhilfe',
         title: 'Evang. Frauenhilfe',
-        description: 'Frauen auf dem Boden christlichen Glaubens zusammenführen.',
+        description:
+            'Frauen auf dem Boden christlichen Glaubens zusammenführen.',
         imageSrc: '/images/Vereinsleben/frauenhilfe.jpg',
         imageAlt: 'Evangelische Frauenhilfe Wendessen',
         buttonText: 'Mehr erfahren',
@@ -123,7 +126,8 @@ export const ASSOCIATIONS: Verein[] = [
     {
         id: 'hospiz-verein',
         title: 'Hospizverein Wolfenbüttel',
-        description: 'Begleitung schwerstkranker und sterbender Menschen sowie deren Angehörige.',
+        description:
+            'Begleitung schwerstkranker und sterbender Menschen sowie deren Angehörige.',
         imageSrc: '/images/Hospiz.jpg',
         imageAlt: 'Hospizverein Wolfenbüttel',
         buttonText: 'Mehr erfahren',
@@ -133,7 +137,7 @@ export const ASSOCIATIONS: Verein[] = [
 ];
 
 export const ASSOCIATIONS_MAP: Record<string, string> = Object.fromEntries(
-    ASSOCIATIONS.map((assoc) => [assoc.id, assoc.title])
+    ASSOCIATIONS.map((assoc) => [assoc.id, assoc.title]),
 );
 
 export const VEREINE_OPTIONS = ASSOCIATIONS.map((assoc) => ({

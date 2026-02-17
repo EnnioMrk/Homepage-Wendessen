@@ -5,7 +5,6 @@ import {
     Clock,
     CheckCircle,
     Wrench,
-    Hammer,
     MusicNotesSimple,
     MapPin,
     EnvelopeSimple,
@@ -27,7 +26,7 @@ export default async function KirchbauvereinsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
-                title="Kirchbauverein"
+                title="Kirchbauverein St. Georg Wendessen e.V."
                 icon={<Church />}
                 backgroundImage="/images/Vereinsleben/Kirche.webp"
                 color="blue"
@@ -176,29 +175,6 @@ export default async function KirchbauvereinsPage() {
                                     </li>
                                 </ul>
                             </div>
-
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
-                                <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <Hammer className="w-8 h-8 mr-3" />
-                                    Aktuelles Projekt 2022
-                                </h3>
-                                <div className="bg-white p-6 rounded-xl border border-blue-200">
-                                    <h4 className="font-semibold text-blue-800 text-xl mb-3">
-                                        Zwei neue Glocken für St. Georg
-                                        Wendessen!
-                                    </h4>
-                                    <p className="text-gray-700">
-                                        Das aktuelle Projekt soll noch im Jahr
-                                        2022 abgeschlossen sein.
-                                    </p>
-                                </div>
-                                <div className="mt-6 bg-gradient-to-r from-blue-100 to-indigo-100 p-4 rounded-xl">
-                                    <p className="text-blue-800 font-medium text-center">
-                                        Ein wichtiger Meilenstein für unsere
-                                        Kirchengemeinde
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -330,7 +306,7 @@ export default async function KirchbauvereinsPage() {
 
                             <div className="mt-6">
                                 <a
-                                    href="https://www.kirchbauverein-wendessen.de/beitreten/"
+                                    href="https://www.kirchbauverein-wendessen.de/wp-content/uploads/2021/09/Beitrittserklaerung.pdf"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
@@ -434,8 +410,9 @@ export default async function KirchbauvereinsPage() {
                         </h2>
                         <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
                         <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                            Möchten Sie unsere Arbeit unterstützen oder haben Sie Fragen zu unseren Veranstaltungen?
-                            Wir freuen uns über Ihre Nachricht.
+                            Möchten Sie unsere Arbeit unterstützen oder haben
+                            Sie Fragen zu unseren Veranstaltungen? Wir freuen
+                            uns über Ihre Nachricht.
                         </p>
                     </div>
 

@@ -21,7 +21,7 @@ export async function GET() {
         if (!authenticated) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -83,7 +83,7 @@ export async function GET() {
         console.error('Error fetching pending tasks:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

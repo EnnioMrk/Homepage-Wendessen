@@ -8,7 +8,7 @@ export async function GET() {
         if (!user) {
             return NextResponse.json(
                 { error: 'Not authenticated' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -26,7 +26,7 @@ export async function GET() {
         console.error('Error fetching current user:', error);
         return NextResponse.json(
             { error: 'Failed to fetch user information' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

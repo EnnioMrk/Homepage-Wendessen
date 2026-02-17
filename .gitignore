@@ -44,3 +44,5 @@ next-env.d.ts
 
 # Prevent all env-like files
 *.env*.*
+
+.playwright-mcp

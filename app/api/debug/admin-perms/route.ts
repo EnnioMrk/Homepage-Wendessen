@@ -6,7 +6,10 @@ export async function GET() {
         const user = await getCurrentAdminUser();
 
         if (!user) {
-            return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+            return NextResponse.json(
+                { error: 'Not authenticated' },
+                { status: 401 },
+            );
         }
 
         // Return a small, safe snapshot of the admin user for debugging
@@ -21,6 +24,9 @@ export async function GET() {
         });
     } catch (error) {
         console.error('Error in debug admin-perms route:', error);
-        return NextResponse.json({ error: 'Failed to fetch user information' }, { status: 500 });
+        return NextResponse.json(
+            { error: 'Failed to fetch user information' },
+            { status: 500 },
+        );
     }
 }

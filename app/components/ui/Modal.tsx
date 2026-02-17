@@ -13,7 +13,19 @@ interface ModalProps {
     backdropBlur?: boolean;
     centered?: boolean;
     variant?: 'default' | 'none';
+    rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
 }
+
+const roundedClasses = {
+    none: 'rounded-none',
+    sm: 'rounded-sm',
+    md: 'rounded-md',
+    lg: 'rounded-lg',
+    xl: 'rounded-xl',
+    '2xl': 'rounded-2xl',
+    '3xl': 'rounded-3xl',
+    full: 'rounded-full',
+};
 
 export default function Modal({
     isOpen,
@@ -24,6 +36,7 @@ export default function Modal({
     backdropBlur = false,
     centered = false,
     variant = 'default',
+    rounded = '2xl',
 }: ModalProps) {
     const [mounted, setMounted] = useState(false);
 
@@ -57,11 +70,11 @@ export default function Modal({
 
     // Use z-[100] to be on top, but adjust top/padding so navbar is visible if desired
     return createPortal(
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
-            <div className={`flex min-h-full ${isNoneVariant ? '' : 'p-4'} text-center ${centered ? 'items-center' : 'items-start pt-[80px]'} justify-center`}>
+        <div className="fixed inset-0 z-[100] overflow-y-auto print:static print:overflow-visible print:h-auto print:block">
+            <div className={`flex min-h-full ${isNoneVariant ? '' : 'p-4'} text-center ${centered ? 'items-center' : 'items-start pt-[80px]'} justify-center print:block print:p-0`}>
                 {/* Backdrop */}
                 <div
-                    className={`fixed inset-0 transition-opacity bg-gray-500/75 ${backdropBlur ? 'backdrop-blur-sm' : ''}`}
+                    className={`fixed inset-0 transition-opacity bg-gray-500/75 ${backdropBlur ? 'backdrop-blur-sm' : ''} print:hidden`}
                     aria-hidden="true"
                     onClick={onClose}
                 ></div>
@@ -70,7 +83,7 @@ export default function Modal({
                 <div
                     className={isNoneVariant 
                         ? `relative w-full ${className}`
-                        : `relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all w-full mb-8 ${maxWidthClass} ${className}`
+                        : `relative inline-block align-bottom bg-white ${roundedClasses[rounded]} text-left overflow-hidden shadow-2xl transform transition-all w-full mb-8 ${maxWidthClass} print:shadow-none print:w-full print:mb-0 ${className}`
                     }
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -81,3 +94,4 @@ export default function Modal({
         document.body
     );
 }
+

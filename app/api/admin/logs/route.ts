@@ -9,7 +9,7 @@ export async function GET(request: Request) {
         if (!authenticated) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
         console.error('Error fetching admin logs:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

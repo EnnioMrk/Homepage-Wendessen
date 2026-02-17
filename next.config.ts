@@ -20,8 +20,6 @@ const minioHostname =
 
 const minioProtocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
 
-const minioPorts = ['80', '9000'];
-
 // Build remotePatterns as URL instances when MinIO is configured. Using
 // `URL` here matches Next.js typings `(URL | RemotePattern)[]` and keeps the
 // allowed external image sources strict (blocks all others).
@@ -192,15 +190,15 @@ const nextConfig: NextConfig = {
         ignoreBuildErrors: false,
     },
     cacheComponents: true,
+    cacheLife: {
+        page: {
+            stale: 3600, // 1 hour
+            revalidate: 3600, // 1 hour
+            expire: 86400, // 1 day
+        },
+    },
     experimental: {
         useCache: true,
-        cacheLife: {
-            page: {
-                stale: 3600, // 1 hour
-                revalidate: 3600, // 1 hour
-                expire: 86400, // 1 day
-            },
-        },
     },
 };
 

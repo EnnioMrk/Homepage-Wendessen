@@ -21,9 +21,11 @@ import {
     X,
     User,
     WarningCircle,
+    ArrowsClockwise,
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import { ASSOCIATIONS } from '@/lib/constants/associations';
+import Modal from '@/app/components/ui/Modal';
 
 // Set German locale
 moment.locale('de');
@@ -105,6 +107,8 @@ interface CalendarClientProps {
 }
 
 export default function CalendarClient({ initialEvents }: CalendarClientProps) {
+    const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null
     );
@@ -124,7 +128,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     ];
 
     // Filter events based on search, category and verein
-    const filteredEvents = initialEvents.filter((event) => {
+    const filteredEvents = events.filter((event) => {
         const matchesSearch =
             searchQuery === '' ||
             event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -156,6 +160,31 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
         setView(newView);
     };
 
+    const handleRefresh = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/events');
+            if (!response.ok) throw new Error('Failed to fetch events');
+            
+            const data = await response.json();
+            
+            // Parse dates from strings to Date objects
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const parsedEvents = data.map((event: any) => ({
+                ...event,
+                start: new Date(event.start),
+                end: new Date(event.end),
+                cancelledAt: event.cancelledAt ? new Date(event.cancelledAt) : undefined
+            }));
+            
+            setEvents(parsedEvents);
+        } catch (error) {
+            console.error('Error refreshing events:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const getCategoryIcon = (category: string) => {
         switch (category) {
             case 'sitzung':
@@ -179,33 +208,45 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
             <div className="bg-white rounded-3xl p-6 shadow-xl mb-8">
                 <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
                     {/* Search */}
-                    <div className="w-full md:w-1/3 relative">
-                        <input
-                            type="text"
-                            placeholder="Termine suchen..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-gray-900"
-                        />
-                        <div className="absolute left-3 top-2.5 text-gray-400">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
+                    <div className="w-full md:w-1/3 relative flex gap-2">
+                        <div className="relative flex-grow">
+                            <input
+                                type="text"
+                                placeholder="Termine suchen..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-gray-900"
+                            />
+                            <div className="absolute left-3 top-2.5 text-gray-400">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                    />
+                                </svg>
+                            </div>
                         </div>
+                        <button
+                            onClick={handleRefresh}
+                            disabled={isLoading}
+                            className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors disabled:opacity-50 flex-shrink-0"
+                            title="Termine aktualisieren"
+                        >
+                            <ArrowsClockwise
+                                className={`w-6 h-6 ${
+                                    isLoading ? 'animate-spin' : ''
+                                }`}
+                            />
+                        </button>
                     </div>
-
-                    {/* Organizer Filter */}
                     <div className="w-full md:w-1/4">
                         <select
                             value={selectedVerein}
@@ -369,9 +410,14 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
             )}
 
             {/* Event Details Modal */}
-            {selectedEvent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <Modal
+                isOpen={!!selectedEvent}
+                onClose={() => setSelectedEvent(null)}
+                className="max-w-2xl w-full"
+                rounded="2xl"
+            >
+                {selectedEvent && (
+                    <div className="w-full">
                         {/* Event Image Header */}
                         {selectedEvent.imageUrl && (
                             <div className="relative h-48 w-full">
@@ -379,9 +425,9 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                     src={selectedEvent.imageUrl}
                                     alt={selectedEvent.title}
                                     fill
-                                    className="object-cover rounded-t-3xl"
+                                    className="object-cover rounded-t-2xl"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-3xl"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-2xl"></div>
                                 <button
                                     onClick={() => setSelectedEvent(null)}
                                     className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full transition-colors"
@@ -489,7 +535,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                         <h3 className="font-bold text-gray-800 mb-2">
                                             Beschreibung
                                         </h3>
-                                        <p className="text-gray-700 leading-relaxed">
+                                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                                             {selectedEvent.description}
                                         </p>
                                     </div>
@@ -497,8 +543,8 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </Modal>
 
             <style jsx global>{`
                 .calendar-container .rbc-calendar {
