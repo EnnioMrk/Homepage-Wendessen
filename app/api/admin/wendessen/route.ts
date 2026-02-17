@@ -27,7 +27,7 @@ export async function GET() {
         console.error('Error fetching wendessen layouts:', error);
         return NextResponse.json(
             { error: 'Fehler beim Laden der Layouts' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         if (!name || !card_1 || !card_2 || !card_3) {
             return NextResponse.json(
                 { error: 'Fehlende Daten' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         console.error('Error creating wendessen layout:', error);
         return NextResponse.json(
             { error: 'Fehler beim Erstellen des Layouts' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

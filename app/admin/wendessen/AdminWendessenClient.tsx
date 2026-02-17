@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Check, Trash, PencilSimple, Copy } from '@phosphor-icons/react/dist/ssr';
+import {
+    Plus,
+    Check,
+    Trash,
+    PencilSimple,
+    Copy,
+} from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 
@@ -32,7 +38,9 @@ export default function AdminWendessenClient({
     const [layoutToDelete, setLayoutToDelete] = useState<Layout | null>(null);
     const [, setIsDeleting] = useState(false);
     const [isActivating, setIsActivating] = useState<number | null>(null);
-    const [duplicatingLayoutId, setDuplicatingLayoutId] = useState<number | null>(null);
+    const [duplicatingLayoutId, setDuplicatingLayoutId] = useState<
+        number | null
+    >(null);
 
     useEffect(() => {
         fetchLayouts();
@@ -85,7 +93,7 @@ export default function AdminWendessenClient({
             });
 
             if (response.ok) {
-                setLayouts(prev => prev.filter(l => l.id !== id));
+                setLayouts((prev) => prev.filter((l) => l.id !== id));
                 setLayoutToDelete(null);
             } else {
                 const data = await response.json();
@@ -139,7 +147,9 @@ export default function AdminWendessenClient({
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">Verfügbare Layouts</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                    Verfügbare Layouts
+                </h2>
                 {canManage && (
                     <button
                         onClick={() => router.push('/admin/wendessen/neu')}
@@ -165,7 +175,10 @@ export default function AdminWendessenClient({
                         </li>
                     ) : (
                         layouts.map((layout) => (
-                            <li key={layout.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between">
+                            <li
+                                key={layout.id}
+                                className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between"
+                            >
                                 <div>
                                     <div className="flex items-center">
                                         <h3 className="text-lg font-medium text-gray-900 mr-3">
@@ -178,18 +191,27 @@ export default function AdminWendessenClient({
                                         )}
                                     </div>
                                     <p className="text-sm text-gray-500">
-                                        Erstellt am {new Date(layout.created_at).toLocaleDateString('de-DE')}
+                                        Erstellt am{' '}
+                                        {new Date(
+                                            layout.created_at,
+                                        ).toLocaleDateString('de-DE')}
                                     </p>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     {canCreate && (
                                         <button
-                                            onClick={() => handleDuplicate(layout)}
-                                            disabled={duplicatingLayoutId === layout.id}
+                                            onClick={() =>
+                                                handleDuplicate(layout)
+                                            }
+                                            disabled={
+                                                duplicatingLayoutId ===
+                                                layout.id
+                                            }
                                             className="text-gray-400 hover:text-gray-700 p-2"
                                             title="Duplizieren"
                                         >
-                                            {duplicatingLayoutId === layout.id ? (
+                                            {duplicatingLayoutId ===
+                                            layout.id ? (
                                                 <LoadingSpinner size="sm" />
                                             ) : (
                                                 <Copy size={20} />
@@ -198,8 +220,12 @@ export default function AdminWendessenClient({
                                     )}
                                     {!layout.is_active && canManage && (
                                         <button
-                                            onClick={() => handleSetActive(layout.id)}
-                                            disabled={isActivating === layout.id}
+                                            onClick={() =>
+                                                handleSetActive(layout.id)
+                                            }
+                                            disabled={
+                                                isActivating === layout.id
+                                            }
                                             className="text-gray-400 hover:text-green-600 p-2"
                                             title="Aktivieren"
                                         >
@@ -213,20 +239,31 @@ export default function AdminWendessenClient({
                                     {canManage && (
                                         <>
                                             <button
-                                                onClick={() => router.push(`/admin/wendessen/${layout.id}`)}
+                                                onClick={() =>
+                                                    router.push(
+                                                        `/admin/wendessen/${layout.id}`,
+                                                    )
+                                                }
                                                 className="text-gray-400 hover:text-blue-600 p-2"
                                                 title="Bearbeiten"
                                             >
                                                 <PencilSimple size={20} />
                                             </button>
                                             <button
-                                                onClick={() => setLayoutToDelete(layout)}
+                                                onClick={() =>
+                                                    setLayoutToDelete(layout)
+                                                }
                                                 disabled={layout.is_active} // Cannot delete active
-                                                className={`p-2 transition-colors ${layout.is_active
-                                                    ? 'text-gray-200 cursor-not-allowed'
-                                                    : 'text-gray-400 hover:text-red-600'
-                                                    }`}
-                                                title={layout.is_active ? "Aktives Layout kann nicht gelöscht werden" : "Löschen"}
+                                                className={`p-2 transition-colors ${
+                                                    layout.is_active
+                                                        ? 'text-gray-200 cursor-not-allowed'
+                                                        : 'text-gray-400 hover:text-red-600'
+                                                }`}
+                                                title={
+                                                    layout.is_active
+                                                        ? 'Aktives Layout kann nicht gelöscht werden'
+                                                        : 'Löschen'
+                                                }
                                             >
                                                 <Trash size={20} />
                                             </button>
@@ -245,7 +282,9 @@ export default function AdminWendessenClient({
                 description={`Möchten Sie das Layout "${layoutToDelete?.name}" wirklich löschen?`}
                 confirmText="Löschen"
                 cancelText="Abbrechen"
-                onConfirm={() => layoutToDelete && handleDelete(layoutToDelete.id)}
+                onConfirm={() =>
+                    layoutToDelete && handleDelete(layoutToDelete.id)
+                }
                 onCancel={() => setLayoutToDelete(null)}
                 accentColor="red"
             />

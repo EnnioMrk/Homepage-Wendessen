@@ -22,10 +22,10 @@ export default function AdminEventsPage() {
             const eventsResponse = await fetch(
                 `/api/events?fresh=1&t=${Date.now()}`,
                 {
-                cache: 'no-store',
-                headers: {
-                    'Cache-Control': 'no-cache',
-                },
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                    },
                 },
             );
             if (!eventsResponse.ok) {

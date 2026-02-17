@@ -38,7 +38,8 @@ async function AdminWendessenContent() {
                         Keine Berechtigung
                     </h2>
                     <p className="text-gray-600 mb-6">
-                        Sie haben keine Berechtigung, diesen Bereich zu verwalten.
+                        Sie haben keine Berechtigung, diesen Bereich zu
+                        verwalten.
                     </p>
                     <Link
                         href="/admin/dashboard"

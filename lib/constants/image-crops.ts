@@ -24,7 +24,8 @@ export const IMAGE_CROP_CONFIGS: CropConfig[] = [
         id: 'home-card',
         label: 'Startseite (Karte)',
         aspectRatio: 2 / 3,
-        description: 'Wird auf der Startseite angezeigt (Mitte bleibt im Fokus)',
+        description:
+            'Wird auf der Startseite angezeigt (Mitte bleibt im Fokus)',
     },
 ];
 
