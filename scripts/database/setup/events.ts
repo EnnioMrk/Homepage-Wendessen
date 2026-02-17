@@ -27,21 +27,18 @@ async function setupEvents() {
         `;
         console.log('✓ events table ensured');
 
-        await sql`CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);`;
-        console.log('✓ events indexes ensured');
-
-        // Ensure missing columns exist
-        const columnCheck = await sql`
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'events' AND column_name = 'image_crop_data'
+        // Ensure all columns exist (for existing tables)
+        await sql`
+            ALTER TABLE events 
+            ADD COLUMN IF NOT EXISTS image_crop_data JSONB,
+            ADD COLUMN IF NOT EXISTS verein_id VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS is_cancelled BOOLEAN DEFAULT FALSE,
+            ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP WITH TIME ZONE,
+            ADD COLUMN IF NOT EXISTS cancelled_by VARCHAR(255);
         `;
+        console.log('✓ events columns ensured');
 
-        if (columnCheck.length === 0) {
-            console.log('Adding missing column image_crop_data...');
-            await sql`ALTER TABLE events ADD COLUMN image_crop_data JSONB;`;
-            console.log('✓ image_crop_data column added');
-        }
+        await sql`CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);`;
 
         console.log('✅ Events setup complete');
     } catch (err) {
