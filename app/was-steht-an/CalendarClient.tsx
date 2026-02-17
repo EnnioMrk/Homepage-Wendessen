@@ -1,6 +1,11 @@
 ﻿'use client';
 
-import { Calendar, momentLocalizer, View, EventProps } from 'react-big-calendar';
+import {
+    Calendar,
+    momentLocalizer,
+    View,
+    EventProps,
+} from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/de';
 import { useState } from 'react';
@@ -37,10 +42,11 @@ const EventComponent: React.FC<EventProps<CalendarEvent>> = ({ event }) => {
 
     return (
         <div
-            className={`${isCancelled
-                ? 'bg-gray-400 line-through opacity-70'
-                : getCategoryBackgroundColor(event.category || 'sonstiges')
-                } text-white p-1 rounded text-xs font-medium overflow-hidden`}
+            className={`${
+                isCancelled
+                    ? 'bg-gray-400 line-through opacity-70'
+                    : getCategoryBackgroundColor(event.category || 'sonstiges')
+            } text-white p-1 rounded text-xs font-medium overflow-hidden`}
         >
             <div className="truncate">
                 {isCancelled && '🚫 '}
@@ -58,23 +64,26 @@ const AgendaEventComponent: React.FC<EventProps<CalendarEvent>> = ({
 
     return (
         <div
-            className={`flex items-center space-x-3 ${isCancelled ? 'opacity-60' : ''
-                }`}
+            className={`flex items-center space-x-3 ${
+                isCancelled ? 'opacity-60' : ''
+            }`}
         >
             <div
-                className={`w-3 h-3 rounded-full ${isCancelled
-                    ? 'bg-gray-400'
-                    : getCategoryBackgroundColor(
-                        event.category || 'sonstiges'
-                    )
-                    }`}
+                className={`w-3 h-3 rounded-full ${
+                    isCancelled
+                        ? 'bg-gray-400'
+                        : getCategoryBackgroundColor(
+                              event.category || 'sonstiges',
+                          )
+                }`}
             ></div>
             <div className="flex-1">
                 <div
-                    className={`font-medium ${isCancelled
-                        ? 'text-gray-500 line-through'
-                        : 'text-gray-900'
-                        }`}
+                    className={`font-medium ${
+                        isCancelled
+                            ? 'text-gray-500 line-through'
+                            : 'text-gray-900'
+                    }`}
                 >
                     {isCancelled && '🚫 '}
                     {event.title}
@@ -89,10 +98,11 @@ const AgendaEventComponent: React.FC<EventProps<CalendarEvent>> = ({
                 )}
             </div>
             <span
-                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isCancelled
-                    ? 'bg-gray-100 text-gray-600'
-                    : getCategoryBadgeClasses(event.category || 'sonstiges')
-                    }`}
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    isCancelled
+                        ? 'bg-gray-100 text-gray-600'
+                        : getCategoryBadgeClasses(event.category || 'sonstiges')
+                }`}
             >
                 {isCancelled
                     ? 'Abgesagt'
@@ -110,7 +120,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-        null
+        null,
     );
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -121,7 +131,11 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     const categories = [
         { id: 'all', label: 'Alle', color: 'bg-gray-800' },
         { id: 'sitzung', label: 'Sitzungen', color: 'bg-blue-500' },
-        { id: 'veranstaltung', label: 'Veranstaltungen', color: 'bg-green-500' },
+        {
+            id: 'veranstaltung',
+            label: 'Veranstaltungen',
+            color: 'bg-green-500',
+        },
         { id: 'sport', label: 'Sport', color: 'bg-orange-500' },
         { id: 'kultur', label: 'Kultur', color: 'bg-purple-500' },
         { id: 'sonstiges', label: 'Sonstiges', color: 'bg-gray-500' },
@@ -133,11 +147,17 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
             searchQuery === '' ||
             event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (event.description &&
-                event.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                event.description
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())) ||
             (event.location &&
-                event.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                event.location
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())) ||
             (event.organizer &&
-                event.organizer.toLowerCase().includes(searchQuery.toLowerCase()));
+                event.organizer
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()));
 
         const matchesCategory =
             selectedCategory === 'all' || event.category === selectedCategory;
@@ -165,18 +185,20 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
         try {
             const response = await fetch('/api/events');
             if (!response.ok) throw new Error('Failed to fetch events');
-            
+
             const data = await response.json();
-            
+
             // Parse dates from strings to Date objects
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const parsedEvents = data.map((event: any) => ({
                 ...event,
                 start: new Date(event.start),
                 end: new Date(event.end),
-                cancelledAt: event.cancelledAt ? new Date(event.cancelledAt) : undefined
+                cancelledAt: event.cancelledAt
+                    ? new Date(event.cancelledAt)
+                    : undefined,
             }));
-            
+
             setEvents(parsedEvents);
         } catch (error) {
             console.error('Error refreshing events:', error);
@@ -272,7 +294,9 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                     <div className="w-full md:w-1/4">
                         <select
                             value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            onChange={(e) =>
+                                setSelectedCategory(e.target.value)
+                            }
                             className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none bg-white text-gray-900"
                             style={{
                                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
@@ -323,8 +347,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                         time: 'Zeit',
                         event: 'Ereignis',
                         noEventsInRange: 'Keine Termine gefunden',
-                        showMore: (total: number) =>
-                            `+ ${total} weitere`,
+                        showMore: (total: number) => `+ ${total} weitere`,
                     }}
                     culture="de"
                 />
@@ -334,28 +357,24 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
             {filteredEvents.length > 0 && (
                 <div className="bg-white rounded-3xl p-8 shadow-xl mt-8">
                     <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                        {searchQuery || selectedCategory !== 'all' || selectedVerein !== 'all'
+                        {searchQuery ||
+                        selectedCategory !== 'all' ||
+                        selectedVerein !== 'all'
                             ? 'Gefundene Termine'
                             : 'Nächste Termine'}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredEvents
-                            .filter(
-                                (event) => event.start >= new Date()
-                            )
+                            .filter((event) => event.start >= new Date())
                             .sort(
-                                (a, b) =>
-                                    a.start.getTime() -
-                                    b.start.getTime()
+                                (a, b) => a.start.getTime() - b.start.getTime(),
                             )
                             .slice(0, 6)
                             .map((event) => (
                                 <div
                                     key={event.id}
                                     className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
-                                    onClick={() =>
-                                        setSelectedEvent(event)
-                                    }
+                                    onClick={() => setSelectedEvent(event)}
                                 >
                                     {/* Event Image */}
 
@@ -376,13 +395,11 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                     <div className="flex items-start space-x-3 mb-3">
                                         <div
                                             className={`p-2 rounded-lg ${getCategoryBadgeClasses(
-                                                event.category ||
-                                                'sonstiges'
+                                                event.category || 'sonstiges',
                                             )}`}
                                         >
                                             {getCategoryIcon(
-                                                event.category ||
-                                                'sonstiges'
+                                                event.category || 'sonstiges',
                                             )}
                                         </div>
                                         <div className="flex-1">
@@ -391,7 +408,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                             </h4>
                                             <p className="text-sm text-gray-600 mb-2">
                                                 {moment(event.start).format(
-                                                    'DD.MM.YYYY, HH:mm'
+                                                    'DD.MM.YYYY, HH:mm',
                                                 )}{' '}
                                                 Uhr
                                             </p>
@@ -482,18 +499,18 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                     <div
                                         className={`p-2 rounded-lg ${getCategoryBadgeClasses(
                                             selectedEvent.category ||
-                                            'sonstiges'
+                                                'sonstiges',
                                         )}`}
                                     >
                                         {getCategoryIcon(
                                             selectedEvent.category ||
-                                            'sonstiges'
+                                                'sonstiges',
                                         )}
                                     </div>
                                     <span className="font-medium text-gray-700">
                                         {getCategoryDisplayName(
                                             selectedEvent.category ||
-                                            'sonstiges'
+                                                'sonstiges',
                                         )}
                                     </span>
                                 </div>
@@ -502,11 +519,11 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                     <Clock className="w-5 h-5 text-gray-500" />
                                     <span className="text-gray-700">
                                         {moment(selectedEvent.start).format(
-                                            'dddd, DD. MMMM YYYY, HH:mm'
+                                            'dddd, DD. MMMM YYYY, HH:mm',
                                         )}{' '}
                                         -{' '}
                                         {moment(selectedEvent.end).format(
-                                            'HH:mm'
+                                            'HH:mm',
                                         )}{' '}
                                         Uhr
                                     </span>

@@ -18,7 +18,9 @@ const getInitialEditorValue = (): Descendant[] => [
 
 export default function CreateArchivePage() {
     const router = useRouter();
-    const [step, setStep] = useState<'initial' | 'editing' | 'preview'>('initial');
+    const [step, setStep] = useState<'initial' | 'editing' | 'preview'>(
+        'initial',
+    );
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +29,9 @@ export default function CreateArchivePage() {
     const [author, setAuthor] = useState('');
     const [category, setCategory] = useState('');
     const [createdDate, setCreatedDate] = useState('');
-    const [content, setContent] = useState<Descendant[]>(getInitialEditorValue());
+    const [content, setContent] = useState<Descendant[]>(
+        getInitialEditorValue(),
+    );
 
     const handleInitialSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,7 +79,9 @@ export default function CreateArchivePage() {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8">
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-2xl font-bold text-gray-900">Neuer Archiveintrag erstellen</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                            Neuer Archiveintrag erstellen
+                        </h1>
                         <Link
                             href="/admin/archiv"
                             className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -86,7 +92,10 @@ export default function CreateArchivePage() {
 
                     <form onSubmit={handleInitialSubmit} className="space-y-6">
                         <div>
-                            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="title"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Titel *
                             </label>
                             <input
@@ -103,7 +112,10 @@ export default function CreateArchivePage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="author"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
                                     Autor (optional)
                                 </label>
                                 <input
@@ -117,14 +129,19 @@ export default function CreateArchivePage() {
                             </div>
 
                             <div>
-                                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="category"
+                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                >
                                     Kategorie (optional)
                                 </label>
                                 <input
                                     type="text"
                                     id="category"
                                     value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
+                                    onChange={(e) =>
+                                        setCategory(e.target.value)
+                                    }
                                     placeholder="z.B. Chronik, Brief, Bericht"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
                                 />
@@ -132,7 +149,10 @@ export default function CreateArchivePage() {
                         </div>
 
                         <div>
-                            <label htmlFor="created_date" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="created_date"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Erstellungsdatum (optional)
                             </label>
                             <input
@@ -143,7 +163,8 @@ export default function CreateArchivePage() {
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
                             />
                             <p className="text-xs text-gray-500 mt-1">
-                                Das ursprüngliche Datum des Dokuments (falls bekannt)
+                                Das ursprüngliche Datum des Dokuments (falls
+                                bekannt)
                             </p>
                         </div>
 
@@ -183,7 +204,9 @@ export default function CreateArchivePage() {
                                     <ArrowLeft className="w-6 h-6" />
                                 </Link>
                                 <div className="min-w-0 flex-1">
-                                    <h1 className="text-xl font-bold text-gray-900 truncate">{title}</h1>
+                                    <h1 className="text-xl font-bold text-gray-900 truncate">
+                                        {title}
+                                    </h1>
                                     <div className="flex items-center gap-3 mt-1">
                                         {category && (
                                             <span className="inline-block px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded">
@@ -191,11 +214,15 @@ export default function CreateArchivePage() {
                                             </span>
                                         )}
                                         {author && (
-                                            <p className="text-sm text-gray-600">von {author}</p>
+                                            <p className="text-sm text-gray-600">
+                                                von {author}
+                                            </p>
                                         )}
                                         {createdDate && (
                                             <p className="text-sm text-gray-600">
-                                                {new Date(createdDate).toLocaleDateString('de-DE')}
+                                                {new Date(
+                                                    createdDate,
+                                                ).toLocaleDateString('de-DE')}
                                             </p>
                                         )}
                                     </div>
@@ -240,8 +267,13 @@ export default function CreateArchivePage() {
                                     <ArrowLeft className="w-6 h-6" />
                                 </button>
                                 <div>
-                                    <h1 className="text-xl font-bold text-gray-900">Vorschau</h1>
-                                    <p className="text-sm text-gray-600">Überprüfen Sie den Archiveintrag vor der Veröffentlichung</p>
+                                    <h1 className="text-xl font-bold text-gray-900">
+                                        Vorschau
+                                    </h1>
+                                    <p className="text-sm text-gray-600">
+                                        Überprüfen Sie den Archiveintrag vor der
+                                        Veröffentlichung
+                                    </p>
                                 </div>
                             </div>
                             <button
@@ -251,7 +283,10 @@ export default function CreateArchivePage() {
                             >
                                 {isLoading ? (
                                     <>
-                                        <LoadingSpinner size="sm" color="white" />
+                                        <LoadingSpinner
+                                            size="sm"
+                                            color="white"
+                                        />
                                         Wird veröffentlicht...
                                     </>
                                 ) : (
@@ -289,7 +324,9 @@ export default function CreateArchivePage() {
                                     )}
                                     {createdDate && (
                                         <span className="text-white/80 text-sm">
-                                            {new Date(createdDate).toLocaleDateString('de-DE', {
+                                            {new Date(
+                                                createdDate,
+                                            ).toLocaleDateString('de-DE', {
                                                 day: '2-digit',
                                                 month: 'long',
                                                 year: 'numeric',

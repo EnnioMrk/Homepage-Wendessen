@@ -25,7 +25,9 @@ export default function NewsModal({
     title = 'Neue Nachricht hinzufügen',
 }: NewsModalProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const [articleContent, setArticleContent] = useState<Descendant[]>(getInitialEditorValue());
+    const [articleContent, setArticleContent] = useState<Descendant[]>(
+        getInitialEditorValue(),
+    );
     const [newsTitle, setNewsTitle] = useState('');
 
     if (!isOpen) return null;
@@ -92,7 +94,9 @@ export default function NewsModal({
                                         required
                                         disabled={isLoading}
                                         value={newsTitle}
-                                        onChange={(e) => setNewsTitle(e.target.value)}
+                                        onChange={(e) =>
+                                            setNewsTitle(e.target.value)
+                                        }
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
                                     />
                                 </div>
@@ -115,14 +119,22 @@ export default function NewsModal({
                                         disabled={isLoading}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
                                     >
-                                        <option value="">Kategorie wählen</option>
+                                        <option value="">
+                                            Kategorie wählen
+                                        </option>
                                         <option value="Bildung">Bildung</option>
-                                        <option value="Gemeinschaft">Gemeinschaft</option>
-                                        <option value="Feuerwehr">Feuerwehr</option>
+                                        <option value="Gemeinschaft">
+                                            Gemeinschaft
+                                        </option>
+                                        <option value="Feuerwehr">
+                                            Feuerwehr
+                                        </option>
                                         <option value="Digital">Digital</option>
                                         <option value="Sport">Sport</option>
                                         <option value="Kultur">Kultur</option>
-                                        <option value="Verwaltung">Verwaltung</option>
+                                        <option value="Verwaltung">
+                                            Verwaltung
+                                        </option>
                                     </select>
                                 </div>
 
