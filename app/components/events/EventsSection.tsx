@@ -53,6 +53,7 @@ export default async function EventsSection() {
                     return (
                         <EventCard
                             key={event.id}
+                            id={event.id}
                             title={event.title}
                             location={event.location || 'Wendessen'}
                             time={

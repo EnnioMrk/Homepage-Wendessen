@@ -195,7 +195,7 @@ export default async function JugendfeuerwehrPage() {
                             <p className="text-lg mb-6">
                                 Gemeinsam mit unserem{' '}
                                 <strong>
-                                    Jugendfeuerwehrwart Cornelius Witte
+                                    Jugendfeuerwehrwart Christoph Schmegner
                                 </strong>
                                 , seinem{' '}
                                 <strong>Stellvertreter Frederick Witte</strong>{' '}

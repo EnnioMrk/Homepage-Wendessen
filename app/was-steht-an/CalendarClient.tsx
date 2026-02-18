@@ -8,7 +8,8 @@ import {
 } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/de';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import './calendar.css';
 import { CalendarEvent } from '@/lib/database';
 import {
@@ -28,10 +29,10 @@ import {
     WarningCircle,
     ArrowsClockwise,
 } from '@phosphor-icons/react/dist/ssr';
-import Image from 'next/image';
 import CroppedImage from '@/app/components/ui/CroppedImage';
 import { ASSOCIATIONS } from '@/lib/constants/associations';
 import Modal from '@/app/components/ui/Modal';
+import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
 // Set German locale
 moment.locale('de');
@@ -123,6 +124,29 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null,
     );
+    const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+    const searchParams = useSearchParams();
+
+    // Handle event selection from URL parameter
+    useEffect(() => {
+        const eventId = searchParams.get('event');
+        if (eventId && events.length > 0) {
+            setIsAutoSelecting(true);
+            const event = events.find((e) => e.id === eventId);
+            if (event) {
+                // Short delay to allow the page to settle and show the loading state if needed
+                const timer = setTimeout(() => {
+                    setSelectedEvent(event);
+                    setDate(event.start);
+                    setIsAutoSelecting(false);
+                }, 500);
+                return () => clearTimeout(timer);
+            } else {
+                setIsAutoSelecting(false);
+            }
+        }
+    }, [searchParams, events]);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [selectedVerein, setSelectedVerein] = useState<string>('all');
@@ -227,6 +251,19 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
 
     return (
         <div className="max-w-7xl mx-auto">
+            {/* Loading Overlay for Auto-selection */}
+            {isAutoSelecting && (
+                <div className="fixed inset-0 z-[100] bg-white/60 backdrop-blur-sm flex items-center justify-center transition-all duration-300">
+                    <div className="bg-white p-8 rounded-3xl shadow-2xl border border-indigo-100 flex flex-col items-center">
+                        <LoadingSpinner
+                            size="xl"
+                            color="indigo"
+                            text="Veranstaltung wird geladen..."
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Filters & Search */}
             <div className="bg-white rounded-3xl p-6 shadow-xl mb-8">
                 <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
@@ -350,6 +387,10 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                         noEventsInRange: 'Keine Termine gefunden',
                         showMore: (total: number) => `+ ${total} weitere`,
                     }}
+                    formats={{
+                        weekdayFormat: 'dddd',
+                        agendaDateFormat: 'dddd DD.MM',
+                    }}
                     culture="de"
                 />
             </div>
@@ -455,9 +496,11 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-2xl pointer-events-none"></div>
                                 <button
                                     onClick={() => setSelectedEvent(null)}
-                                    className="absolute top-4 right-4 p-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-full transition-colors"
+                                    aria-label="Termin schließen"
+                                    title="Schließen"
+                                    className="absolute top-4 right-4 p-2.5 bg-black/70 text-white border border-white/40 backdrop-blur-sm hover:bg-black/85 rounded-full shadow-lg transition-colors"
                                 >
-                                    <X className="w-6 h-6 text-white" />
+                                    <X className="w-7 h-7" weight="bold" />
                                 </button>
                                 <div className="absolute bottom-4 left-4 right-4">
                                     <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
@@ -476,9 +519,11 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                     </h2>
                                     <button
                                         onClick={() => setSelectedEvent(null)}
-                                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                        aria-label="Termin schließen"
+                                        title="Schließen"
+                                        className="p-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-full shadow-sm transition-colors"
                                     >
-                                        <X className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+                                        <X className="w-6 h-6" weight="bold" />
                                     </button>
                                 </div>
                             )}

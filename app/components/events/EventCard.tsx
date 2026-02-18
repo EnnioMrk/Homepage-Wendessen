@@ -1,8 +1,10 @@
 import CroppedImage from '../ui/CroppedImage';
 import { Calendar } from '@phosphor-icons/react/dist/ssr';
 import { ImageCropConfig } from '@/lib/database/events';
+import Link from 'next/link';
 
 interface EventCardProps {
+    id: string;
     title: string;
     location: string;
     time: string;
@@ -15,6 +17,7 @@ interface EventCardProps {
 }
 
 export default function EventCard({
+    id,
     title,
     location,
     time,
@@ -26,8 +29,9 @@ export default function EventCard({
     isCancelled = false,
 }: EventCardProps) {
     return (
-        <div
-            className={`group relative aspect-[16/9] md:aspect-[4/5] lg:aspect-square overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border ${
+        <Link
+            href={`/was-steht-an?event=${id}`}
+            className={`group relative aspect-[16/9] md:aspect-[4/5] lg:aspect-square overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border block ${
                 isCancelled ? 'border-red-300 opacity-75' : 'border-gray-200'
             }`}
         >
@@ -109,6 +113,6 @@ export default function EventCard({
                     </div>
                 </>
             )}
-        </div>
+        </Link>
     );
 }

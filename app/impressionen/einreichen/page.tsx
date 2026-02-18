@@ -41,8 +41,9 @@ export default function ImpessionenEinreichenPage() {
                                         2
                                     </span>
                                     <span>
-                                        Geben Sie für jedes Foto einen Titel und
-                                        optional eine Beschreibung ein
+                                        Geben Sie einen Titel sowie optional
+                                        das Aufnahmedatum (oder einen Zeitraum)
+                                        für die gesamte Sammlung ein
                                     </span>
                                 </p>
                                 <p className="flex items-start">
