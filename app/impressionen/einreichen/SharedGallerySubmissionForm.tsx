@@ -75,7 +75,7 @@ export default function SharedGallerySubmissionForm() {
                 let location: string | undefined;
                 if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
                     location = `${exifData.GPSLatitude.toFixed(
-                        6
+                        6,
                     )}, ${exifData.GPSLongitude.toFixed(6)}`;
                 }
 
@@ -143,7 +143,7 @@ export default function SharedGallerySubmissionForm() {
         if (hasDateRange) {
             if (!collectionDateStart || !collectionDateEnd) {
                 setError(
-                    'Bitte geben Sie für den Zeitraum ein Start- und Enddatum an'
+                    'Bitte geben Sie für den Zeitraum ein Start- und Enddatum an',
                 );
                 return;
             }
@@ -200,7 +200,7 @@ export default function SharedGallerySubmissionForm() {
                     const errorData = await response.json();
                     setError(
                         errorData.error ||
-                            `Fehler beim Hochladen von Foto ${i + 1}`
+                            `Fehler beim Hochladen von Foto ${i + 1}`,
                     );
                     setLoading(false);
                     return;
@@ -326,8 +326,8 @@ export default function SharedGallerySubmissionForm() {
                     {photos.length === 0
                         ? 'Ihre'
                         : photos.length === 1
-                        ? 'Ihr'
-                        : `alle ${photos.length}`}{' '}
+                          ? 'Ihr'
+                          : `alle ${photos.length}`}{' '}
                     Foto{photos.length !== 1 ? 's' : ''}
                 </p>
             </div>
@@ -395,7 +395,9 @@ export default function SharedGallerySubmissionForm() {
                             type="date"
                             id="collectionDateEnd"
                             value={collectionDateEnd}
-                            onChange={(e) => setCollectionDateEnd(e.target.value)}
+                            onChange={(e) =>
+                                setCollectionDateEnd(e.target.value)
+                            }
                             min={collectionDateStart || undefined}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                         />
@@ -492,8 +494,8 @@ export default function SharedGallerySubmissionForm() {
                                         onClick={() => {
                                             setPhotos(
                                                 photos.filter(
-                                                    (_, i) => i !== index
-                                                )
+                                                    (_, i) => i !== index,
+                                                ),
                                             );
                                         }}
                                         className="p-2 h-fit bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -508,7 +510,7 @@ export default function SharedGallerySubmissionForm() {
                             onClick={() =>
                                 document
                                     .querySelector<HTMLInputElement>(
-                                        'input[type="file"]'
+                                        'input[type="file"]',
                                     )
                                     ?.click()
                             }

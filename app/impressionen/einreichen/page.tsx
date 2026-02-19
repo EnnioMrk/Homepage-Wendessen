@@ -41,9 +41,9 @@ export default function ImpessionenEinreichenPage() {
                                         2
                                     </span>
                                     <span>
-                                        Geben Sie einen Titel sowie optional
-                                        das Aufnahmedatum (oder einen Zeitraum)
-                                        für die gesamte Sammlung ein
+                                        Geben Sie einen Titel sowie optional das
+                                        Aufnahmedatum (oder einen Zeitraum) für
+                                        die gesamte Sammlung ein
                                     </span>
                                 </p>
                                 <p className="flex items-start">
