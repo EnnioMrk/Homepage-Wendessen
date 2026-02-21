@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import {
     Check,
     ArrowCounterClockwise,
@@ -50,6 +50,25 @@ export default function ImageCropper({
         IMAGE_CROP_CONFIGS[0].id,
     );
     const [crops, setCrops] = useState<ImageCropConfig>(initialCrops || {});
+
+    const cropperImageUrl = useMemo(() => {
+        if (!imageUrl) {
+            return imageUrl;
+        }
+
+        if (typeof window === 'undefined') {
+            return imageUrl;
+        }
+
+        const pageIsHttps = window.location.protocol === 'https:';
+        const imageIsHttp = imageUrl.startsWith('http://');
+
+        if (pageIsHttps && imageIsHttp) {
+            return `/api/admin/gallery/proxy?url=${encodeURIComponent(imageUrl)}`;
+        }
+
+        return imageUrl;
+    }, [imageUrl]);
 
     const isCenterLockedHorizontalCrop = (viewId: string) =>
         viewId === 'home-card';
@@ -439,7 +458,7 @@ export default function ImageCropper({
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 ref={imageRef}
-                                src={imageUrl}
+                                src={cropperImageUrl}
                                 alt="Crop target"
                                 className="max-w-full max-h-[70vh] object-contain pointer-events-none"
                                 onLoad={handleImageLoad}
