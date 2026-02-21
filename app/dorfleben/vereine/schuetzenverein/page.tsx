@@ -8,9 +8,9 @@ import {
     Trophy,
     Warning,
     UsersThree,
+    Lightbulb,
     Egg,
     BowlFood,
-    CalendarCheck,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
 import OrganizationContacts from '@/app/components/OrganizationContacts';
@@ -23,235 +23,351 @@ export const metadata = {
 
 export default async function SchuetzenvereinsPage() {
     return (
-        <div className="min-h-screen bg-slate-50 pb-24">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader title="Schützenverein" icon={<Target />} color="red" />
 
-            {/* Main Content Container */}
-            <div className="container mx-auto px-4 max-w-6xl mt-8 relative z-10">
-                
-                {/* Intro / Hero Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12 mb-8">
-                    <div className="grid md:grid-cols-3 gap-12 items-start">
-                        <div className="md:col-span-2 space-y-6">
-                            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-red-50 text-red-700 text-sm font-medium rounded-full">
-                                <UsersThree className="w-4 h-4" />
-                                <span>Über 50 Mitglieder</span>
-                            </div>
-                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                                Sportliche Heimat für Jung und Alt
+            {/* Main Content */}
+            <div className="container mx-auto px-4 py-16">
+                <div className="max-w-5xl mx-auto">
+                    {/* Introduction */}
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                            Willkommen beim Schützenverein
+                        </h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 mx-auto mb-6"></div>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Sportliche Heimat für über 50 Mitglieder
+                        </p>
+                    </div>
+
+                    {/* Website Notice */}
+                    <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-500 p-6 rounded-r-2xl mb-16">
+                        <div className="flex items-center mb-3">
+                            <Info className="w-6 h-6 mr-2 text-orange-600" />
+                            <h3 className="text-xl font-semibold text-orange-800">
+                                Website im Umbau
+                            </h3>
+                        </div>
+                        <p className="text-orange-800">
+                            Unsere WebSite befindet sich derzeit gerade im
+                            Umbau. Auf diesen Seiten finden Sie Informationen
+                            über unseren Verein und unsere Aktivitäten.
+                        </p>
+                    </div>
+
+                    {/* About Section */}
+                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
+                        <div className="space-y-6 text-gray-700 leading-relaxed">
+                            <p className="text-lg">
+                                Unser{' '}
+                                <strong>Schützenverein Wendessen e.V.</strong>{' '}
+                                ist mehr als nur ein Name. Er ist die sportliche
+                                Heimat von über <strong>50 Mitgliedern</strong>.
+                                Bei uns können{' '}
+                                <strong>
+                                    Kinder, Jugendliche, Frauen und Männer
+                                </strong>{' '}
+                                den Schießsport ausüben - allein, zu zweit oder
+                                mit der ganzen Familie.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Facilities Section */}
+                    <div className="mb-16">
+                        <div className="text-center mb-12">
+                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                                Unsere Ausstattung
                             </h2>
-                            <p className="text-lg text-slate-600 leading-relaxed">
-                                Unser <strong>Schützenverein Wendessen e.V.</strong> ist mehr als nur ein Name. 
-                                Bei uns können Kinder, Jugendliche, Frauen und Männer den Schießsport ausüben 
-                                – allein, zu zweit oder mit der ganzen Familie.
+                            <div className="w-24 h-1 bg-gradient-to-r from-orange-600 to-red-600 mx-auto mb-6"></div>
+                            <p className="text-lg text-gray-600">
+                                Als moderner Schützenverein verfügen wir über
+                                ein breitgefächertes Programm
                             </p>
-                            
-                            {/* Construction Notice - Integrated */}
-                            <div className="bg-orange-50 border-l-2 border-orange-500 p-4 mt-6 rounded-r-lg">
-                                <div className="flex items-start">
-                                    <Info className="w-5 h-5 text-orange-600 mt-0.5 mr-3 flex-shrink-0" />
-                                    <div>
-                                        <h3 className="font-semibold text-orange-900 text-sm mb-1">
-                                            Website im Umbau
-                                        </h3>
-                                        <p className="text-orange-800 text-sm">
-                                            Unsere Website wird derzeit überarbeitet. Alle wichtigen Informationen 
-                                            finden Sie dennoch hier auf dieser Seite.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
-                        {/* Quick Facts / Side Panel */}
-                        <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 h-full">
-                            <h4 className="font-bold text-slate-900 mb-4 flex items-center">
-                                <Clock className="w-5 h-5 mr-2 text-slate-500" />
-                                Schießabende
-                            </h4>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center pb-3 border-b border-slate-200 last:border-0 last:pb-0">
-                                    <span className="font-medium text-slate-700">Mittwochs</span>
-                                    <span className="text-slate-600 font-mono">18:00 - 21:00</span>
-                                </div>
-                                <div className="flex justify-between items-center pb-3 border-b border-slate-200 last:border-0 last:pb-0">
-                                    <span className="font-medium text-slate-700">Freitags</span>
-                                    <span className="text-slate-600 font-mono">18:00 - 21:00</span>
-                                </div>
-                            </div>
-                            
-                            <div className="mt-8 pt-6 border-t border-slate-200">
-                                <p className="text-sm text-slate-500 mb-2">Wir freuen uns auf Sie!</p>
-                                <p className="text-sm font-medium text-slate-900">
-                                    Interessierte Bürger sind jederzeit herzlich willkommen.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Facilities Section */}
-                <div className="mb-12">
-                    <div className="flex items-center mb-8">
-                         <h3 className="text-2xl font-bold text-slate-900 mr-4">Unsere Ausstattung</h3>
-                         <div className="h-px bg-slate-200 flex-grow"></div>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {/* KK & SpoPi */}
-                        <div className="group bg-white p-8 rounded-xl border border-slate-200 hover:border-red-200 transition-colors shadow-sm hover:shadow-md">
-                            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors">
-                                <ChartBar className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-xl font-bold text-slate-900 mb-2">Elektronische Auswertung</h4>
-                            <div className="flex flex-col space-y-2 text-slate-600 mb-4">
-                                <span className="font-medium text-slate-900">KK und SpoPi</span>
-                                <span>2 Stände auf 50/25 m Distanz</span>
-                            </div>
-                        </div>
-
-                        {/* Luftgewehr */}
-                        <div className="group bg-white p-8 rounded-xl border border-slate-200 hover:border-blue-200 transition-colors shadow-sm hover:shadow-md">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <Lightning className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-xl font-bold text-slate-900 mb-2">Infrarotauswertung</h4>
-                            <div className="flex flex-col space-y-2 text-slate-600 mb-4">
-                                <span className="font-medium text-slate-900">Luftgewehr</span>
-                                <span>2 Stände mit moderner Technik</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Content Grid: Youth & Events */}
-                <div className="grid lg:grid-cols-12 gap-8 mb-16">
-                    
-                    {/* Left Col: Youth (4 cols) */}
-                    <div className="lg:col-span-4 space-y-6">
-                         <div className="bg-slate-900 text-white rounded-xl p-8 h-full flex flex-col relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-8 opacity-10">
-                                <Target className="w-32 h-32" />
-                            </div>
-                            
-                            <h3 className="text-2xl font-bold mb-4 relative z-10">Jugendabteilung</h3>
-                            <p className="text-slate-300 mb-8 relative z-10 leading-relaxed">
-                                Ein wichtiger Bestandteil unseres Vereins. Für Jugendliche von 9-17 Jahren bieten wir 
-                                neben Luftgewehr und Luftpistole auch viele Freizeitaktivitäten.
-                            </p>
-
-                            <div className="mt-auto relative z-10 space-y-6">
-                                <div className="bg-slate-800/50 p-4 rounded-lg backdrop-blur-sm border border-slate-700">
-                                    <div className="flex items-center text-red-400 font-bold mb-1">
-                                        <Lightning className="w-4 h-4 mr-2" />
-                                        <span>Neu: Infrarotanlage</span>
-                                    </div>
-                                    <p className="text-sm text-slate-400">
-                                        Schon ab 6 Jahren möglich, da völlig ohne Munition.
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* KK and SpoPi */}
+                            <div className="bg-gradient-to-br from-red-50 to-orange-50 p-8 rounded-3xl shadow-lg">
+                                <h3 className="text-2xl font-bold text-red-700 mb-6 flex items-center">
+                                    <ChartBar className="w-8 h-8 mr-3" />
+                                    Elektronische Auswertung
+                                </h3>
+                                <div className="bg-white p-6 rounded-xl border border-red-200">
+                                    <h4 className="font-semibold text-red-800 mb-3">
+                                        2 Stände
+                                    </h4>
+                                    <p className="text-gray-700 mb-2">
+                                        <strong>KK und SpoPi</strong>
+                                    </p>
+                                    <p className="text-red-600 font-medium">
+                                        50/25 m Distanz
                                     </p>
                                 </div>
+                            </div>
 
-                                <div className="bg-red-900/30 border border-red-900/50 p-4 rounded-lg">
-                                    <div className="flex items-start text-red-200">
-                                        <Warning className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-                                        <span className="text-sm">
-                                            Derzeit kann leider kein Training für Jugendliche angeboten werden.
-                                        </span>
-                                    </div>
+                            {/* Air Rifle */}
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
+                                <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
+                                    <Lightning className="w-8 h-8 mr-3" />
+                                    Infrarotauswertung
+                                </h3>
+                                <div className="bg-white p-6 rounded-xl border border-blue-200">
+                                    <h4 className="font-semibold text-blue-800 mb-3">
+                                        2 Stände
+                                    </h4>
+                                    <p className="text-gray-700 mb-2">
+                                        <strong>Luftgewehr</strong>
+                                    </p>
+                                    <p className="text-blue-600 font-medium">
+                                        Mit Infrarotauswertung
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Col: Events (8 cols) */}
-                    <div className="lg:col-span-8">
-                        <div className="flex items-center mb-6">
-                            <CalendarCheck className="w-6 h-6 text-slate-400 mr-3" />
-                            <h3 className="text-2xl font-bold text-slate-900">Veranstaltungen</h3>
+                    {/* Training Times */}
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 md:p-12 shadow-xl mb-16">
+                        <div className="text-center mb-8">
+                            <h3 className="text-3xl font-bold text-foreground mb-4">
+                                Schießabende
+                            </h3>
+                            <div className="w-20 h-1 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto mb-4"></div>
+                            <p className="text-gray-600">
+                                Wir würden uns freuen, interessierte Bürger
+                                begrüßen zu können
+                            </p>
                         </div>
 
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            {/* Card 1 */}
-                            <div className="bg-white p-6 rounded-xl border border-slate-200 hover:border-slate-300 transition-all">
-                                <div className="flex items-start justify-between mb-4">
-                                     <h4 className="font-bold text-slate-900">Ostereierschießen</h4>
-                                     <Egg className="w-5 h-5 text-yellow-500" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
+                                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Clock className="w-8 h-8 text-white" />
                                 </div>
-                                <p className="text-sm text-slate-500">
-                                    Traditionelles Frühjahrs-Event für die ganze Familie.
-                                </p>
-                            </div>
-
-                            {/* Card 2 */}
-                            <div className="bg-white p-6 rounded-xl border border-slate-200 hover:border-slate-300 transition-all">
-                                <div className="flex items-start justify-between mb-4">
-                                     <h4 className="font-bold text-slate-900">Königsschießen</h4>
-                                     <Crown className="w-5 h-5 text-purple-600" />
-                                </div>
-                                <p className="text-sm text-slate-500">
-                                    Das Highlight des Jahres mit großer Königsproklamation.
-                                </p>
-                            </div>
-
-                            {/* Card 3 */}
-                            <div className="bg-white p-6 rounded-xl border border-slate-200 hover:border-slate-300 transition-all">
-                                <div className="flex items-start justify-between mb-4">
-                                     <h4 className="font-bold text-slate-900">Pokal- und Mannschaft</h4>
-                                     <Trophy className="w-5 h-5 text-blue-600" />
-                                </div>
-                                <p className="text-sm text-slate-500">
-                                    Wettkampf und Teamgeist stehen hier im Vordergrund.
-                                </p>
-                            </div>
-
-                            {/* Card 4 */}
-                            <div className="bg-white p-6 rounded-xl border border-slate-200 hover:border-slate-300 transition-all">
-                                <div className="flex items-start justify-between mb-4">
-                                     <h4 className="font-bold text-slate-900">Schweineschießen</h4>
-                                     <BowlFood className="w-5 h-5 text-green-600" />
-                                </div>
-                                <p className="text-sm text-slate-500">
-                                    Geselliges Schießen mit kulinarischem Höhepunkt.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Public Info */}
-                        <div className="mt-6 bg-red-50 rounded-xl p-6 border border-red-100 flex flex-col md:flex-row md:items-center gap-6">
-                            <div className="flex-1">
-                                <h4 className="font-bold text-red-900 flex items-center mb-2">
-                                    <UsersThree className="w-5 h-5 mr-2" />
-                                    Für alle Dorfbürger
+                                <h4 className="text-xl font-bold text-green-700 mb-2">
+                                    Mittwochs
                                 </h4>
-                                <p className="text-sm text-red-800/80 mb-3">
-                                    An diesen Veranstaltungen können alle Bürger unseres Dorfes teilnehmen.
-                                    Highlight: Der Volkskönig und die Volkskönigin sind für ein Jahr kostenfreie Mitglieder.
+                                <p className="text-green-600 text-lg font-semibold">
+                                    18:00 - 21:00 Uhr
                                 </p>
-                                <div className="inline-flex items-center text-xs font-medium text-amber-700 bg-amber-50 px-3 py-1.5 rounded-md border border-amber-200/50">
-                                    <Info className="w-3.5 h-3.5 mr-1.5" />
-                                    Königinnen und Königen entstehen keine Kosten.
+                            </div>
+
+                            <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
+                                <div className="w-16 h-16 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Clock className="w-8 h-8 text-white" />
                                 </div>
+                                <h4 className="text-xl font-bold text-emerald-700 mb-2">
+                                    Freitags
+                                </h4>
+                                <p className="text-emerald-600 text-lg font-semibold">
+                                    18:00 - 21:00 Uhr
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Events Section */}
+                    <div className="mb-16">
+                        <div className="text-center mb-12">
+                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                                Unsere Veranstaltungen
+                            </h2>
+                            <div className="w-24 h-1 bg-gradient-to-r from-yellow-600 to-orange-600 mx-auto mb-6"></div>
+                            <p className="text-lg text-gray-600">
+                                Nicht nur aktives Schießen gehört zum
+                                Vereinsleben
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Easter Shooting */}
+                            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-3xl shadow-lg">
+                                <h3 className="text-xl font-bold text-yellow-700 mb-4 flex items-center">
+                                    <Egg className="w-6 h-6 mr-2" />
+                                    Ostereierschießen
+                                </h3>
+                                <p className="text-gray-700">
+                                    Traditionelles Frühjahrs-Event für die ganze
+                                    Familie
+                                </p>
+                            </div>
+
+                            {/* King's Shooting */}
+                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-3xl shadow-lg">
+                                <h3 className="text-xl font-bold text-purple-700 mb-4 flex items-center">
+                                    <Crown className="w-6 h-6 mr-2" />
+                                    Königsschießen
+                                </h3>
+                                <p className="text-gray-700">
+                                    Mit großer Königsproklamation - das
+                                    Highlight des Jahres
+                                </p>
+                            </div>
+
+                            {/* Cup and Team Shooting */}
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-3xl shadow-lg">
+                                <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center">
+                                    <Trophy className="w-6 h-6 mr-2" />
+                                    Pokal- und Mannschaftsschießen
+                                </h3>
+                                <p className="text-gray-700">
+                                    Wettkampf und Teamgeist stehen im
+                                    Vordergrund
+                                </p>
+                            </div>
+
+                            {/* Pig Shooting */}
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-3xl shadow-lg">
+                                <h3 className="text-xl font-bold text-green-700 mb-4 flex items-center">
+                                    <BowlFood className="w-6 h-6 mr-2" />
+                                    Schweineschießen
+                                </h3>
+                                <p className="text-gray-700">
+                                    Geselliges Schießen mit kulinarischem
+                                    Höhepunkt
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Participation Info */}
+                        <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-500 p-8 rounded-2xl mt-8">
+                            <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center">
+                                <UsersThree className="w-8 h-8 mr-3" />
+                                Für alle Dorfbürger!
+                            </h3>
+                            <p className="text-red-800 text-lg mb-4">
+                                An diesen Veranstaltungen können{' '}
+                                <strong>alle Bürger unseres Dorfes</strong>{' '}
+                                teilnehmen (Informationen kommen frühzeitig).
+                            </p>
+                            <div className="bg-white p-6 rounded-xl border border-red-200">
+                                <h4 className="font-semibold text-red-800 mb-3">
+                                    Das Highlight:
+                                </h4>
+                                <p className="text-red-800">
+                                    Der{' '}
+                                    <strong>
+                                        Volkskönig und die Volkskönigin
+                                    </strong>{' '}
+                                    sind für ein Jahr{' '}
+                                    <strong>kostenfreie Mitglieder</strong> des
+                                    Schützenvereines.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Cost Notice */}
+                        <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 p-6 rounded-r-2xl mt-6">
+                            <h4 className="font-semibold text-yellow-800 mb-2 flex items-center">
+                                <Info className="w-5 h-5 mr-2" />
+                                Hinweis:
+                            </h4>
+                            <p className="text-yellow-800">
+                                Den Königinnen und Königen entstehen{' '}
+                                <strong>keine Kosten</strong>. Lediglich zum
+                                Königsball würden wir uns über eine
+                                Getränkespende freuen!
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Youth Section */}
+                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-8 md:p-12 shadow-xl mb-16">
+                        <div className="text-center mb-8">
+                            <h3 className="text-3xl font-bold text-foreground mb-4">
+                                Jugendabteilung
+                            </h3>
+                            <div className="w-20 h-1 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto mb-4"></div>
+                            <p className="text-gray-600">
+                                Ein wichtiger Bestandteil des Schützenvereines
+                            </p>
+                        </div>
+
+                        <div className="space-y-6 text-gray-700">
+                            <p className="text-lg">
+                                Mit unseren{' '}
+                                <strong>
+                                    Jugendlichen im Alter von 9-17 Jahren
+                                </strong>{' '}
+                                wird neben dem Schießsport{' '}
+                                <strong>Luftgewehr und Luftpistole</strong> auch
+                                einiges an Freizeitaktivitäten geboten (z.B.
+                                gemeinsame Ausflüge usw.).
+                            </p>
+
+                            <div className="bg-white p-6 rounded-2xl border-2 border-purple-200">
+                                <h4 className="text-xl font-bold text-purple-700 mb-3 flex items-center">
+                                    <Lightning className="w-6 h-6 mr-2" />
+                                    Neu: Infrarotanlage
+                                </h4>
+                                <p className="text-purple-800 mb-3">
+                                    Hier darf schon <strong>ab 6 Jahren</strong>{' '}
+                                    geschossen werden, da keine Munition
+                                    verwendet wird. Unsere Schützenjugend ist
+                                    begeistert.
+                                </p>
+                                <p className="text-purple-700 font-medium">
+                                    Alle interessierten Kids sind herzlich zum
+                                    Probeschießen eingeladen!
+                                </p>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-red-100 to-orange-100 border-l-4 border-red-500 p-6 rounded-r-2xl">
+                                <h4 className="font-semibold text-red-800 mb-2 flex items-center">
+                                    <Warning className="w-5 h-5 mr-2" />
+                                    Aktueller Hinweis:
+                                </h4>
+                                <p className="text-red-800">
+                                    Leider kann derzeit{' '}
+                                    <strong>
+                                        kein Training für Jugendliche
+                                    </strong>{' '}
+                                    angeboten werden.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Section */}
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                            Ansprechpartner
+                        </h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-orange-600 mx-auto mb-6"></div>
+                        <p className="text-lg text-gray-600">
+                            Ihr Kontakt für alle Fragen rund um den
+                            Schützenverein
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <OrganizationContacts
+                            organization="Schützenverein"
+                            colorClassName="text-red-600"
+                        />
+                    </div>
+
+                    {/* Closing Statement */}
+                    <div className="text-center mt-16 bg-gradient-to-r from-red-50 to-orange-50 rounded-3xl p-8 shadow-lg">
+                        <h3 className="text-3xl font-bold text-red-700 mb-6">
+                            Wir freuen uns auf Sie!
+                        </h3>
+                        <p className="text-xl text-gray-700 font-medium mb-4">
+                            Wir freuen uns schon heute darauf, Sie an einer der
+                            aufgeführten Veranstaltungen begrüßen zu dürfen.
+                        </p>
+                        <div className="flex justify-center">
+                            <div className="flex items-center space-x-2 text-red-600">
+                                <Lightbulb className="w-6 h-6" />
+                                <span className="font-semibold">
+                                    Schützenverein Wendessen e.V.
+                                </span>
+                                <Crown className="w-6 h-6" />
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Contact Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12 text-center md:text-left">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div>
-                             <h2 className="text-2xl font-bold text-slate-900 mb-2">Fragen zum Verein?</h2>
-                             <p className="text-slate-600">Unser Vorstand steht Ihnen gerne zur Verfügung.</p>
-                        </div>
-                        <div className="w-full md:w-auto min-w-[300px]">
-                            <OrganizationContacts
-                                organization="Schützenverein Wendessen e.V."
-                                colorClassName="text-red-600"
-                            />
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     );

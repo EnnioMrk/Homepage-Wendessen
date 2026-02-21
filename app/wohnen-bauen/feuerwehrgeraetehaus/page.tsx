@@ -9,6 +9,7 @@ import {
     Calendar,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ZoomableImage from '@/app/components/ZoomableImage';
 
 export const metadata = {
     title: 'Feuerwehrgerätehaus - Wohnen & Bauen in Wendessen',
@@ -113,6 +114,19 @@ export default function FeuerwehrgeraetehausPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            <ZoomableImage
+                                src="/images/Feuerwehrhaus Wendessen Eingangsansicht.jpg"
+                                alt="3D-Visualisierung der Eingangsansicht des geplanten Feuerwehrgerätehauses in Wendessen"
+                                caption="3D-Visualisierung: Eingangsansicht des geplanten Feuerwehrgerätehauses in Wendessen"
+                                className="mb-2"
+                            />
+                            <ZoomableImage
+                                src="/images/Lageplan Feuerwehrgerätehaus.jpg"
+                                alt="Lageplan des geplanten Feuerwehrgerätehauses in Wendessen"
+                                caption="Bebauungsplan Feuerwehrgerätehaus"
+                                className="mb-2"
+                            />
                         </div>
                     </div>
 

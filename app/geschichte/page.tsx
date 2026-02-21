@@ -1,6 +1,6 @@
 import { BookOpen } from '@phosphor-icons/react/dist/ssr';
-import Image from 'next/image';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ZoomableImage from '@/app/components/ZoomableImage';
 
 export const metadata = {
     title: 'Geschichte - Wendessen',
@@ -384,15 +384,13 @@ export default function GeschichtePage() {
                             </div>
 
                             <div className="flex justify-center mb-10">
-                                <div className="relative w-32 h-40 sm:w-40 sm:h-48">
-                                    <Image
-                                        src="/images/Wappen.png"
-                                        alt="Wappen von Wendessen"
-                                        fill
-                                        className="object-contain drop-shadow-2xl"
-                                        priority
-                                    />
-                                </div>
+                                <ZoomableImage
+                                    src="/images/Wappen.png"
+                                    alt="Wappen von Wendessen"
+                                    className="mb-0 w-32 sm:w-40"
+                                    imageClassName="object-contain"
+                                    framed={false}
+                                />
                             </div>
 
                             <div className="max-w-3xl mx-auto text-center mb-12 space-y-4">

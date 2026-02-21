@@ -26,10 +26,8 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
     const maxZoom = 8;
     const zoomStep = 0.15;
 
-    const handleWheel = useCallback((e: WheelEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+    const applyZoomDelta = useCallback((deltaY: number) => {
+        const delta = deltaY > 0 ? -zoomStep : zoomStep;
         setZoom((prev) => {
             const newZoom = Math.min(maxZoom, Math.max(minZoom, prev + delta));
             // Reset position when zooming out to 1 or less
@@ -39,6 +37,21 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
             return newZoom;
         });
     }, []);
+
+    const handleWheel = useCallback((e: WheelEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        applyZoomDelta(e.deltaY);
+    }, [applyZoomDelta]);
+
+    const handleWheelReact = useCallback(
+        (e: React.WheelEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            applyZoomDelta(e.deltaY);
+        },
+        [applyZoomDelta]
+    );
 
     const handleMouseDown = useCallback(
         (e: React.MouseEvent) => {
@@ -126,12 +139,8 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
         // Prevent default touch move to stop parent scrolling
         const preventTouchScroll = (e: TouchEvent) => e.preventDefault();
 
-        // Add wheel listener with passive: false to enable preventDefault
         const container = containerRef.current;
         if (container) {
-            container.addEventListener('wheel', handleWheel, {
-                passive: false,
-            });
             container.addEventListener('touchmove', preventTouchScroll, {
                 passive: false,
             });
@@ -143,7 +152,6 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             if (container) {
-                container.removeEventListener('wheel', handleWheel);
                 container.removeEventListener('touchmove', preventTouchScroll);
             }
             // Restore original overflow value
@@ -158,19 +166,23 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
             onClose={onClose}
             variant="none"
             maxWidth="full"
-            className="h-full w-full !mb-0"
+            className="h-screen w-screen !mb-0 overflow-hidden"
+            centered
             backdropBlur
         >
             <div
                 ref={containerRef}
-                className="w-full h-screen flex items-center justify-center bg-black/80 overflow-hidden"
+                className="w-full h-screen flex items-center justify-center bg-black/80 overflow-hidden overscroll-none"
                 onClick={handleBackdropClick}
+                onWheel={handleWheelReact}
+                onWheelCapture={handleWheelReact}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 style={{
                     cursor:
                         zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-out',
+                    touchAction: 'none',
                 }}
             >
                 {/* Close hint - positioned at top, outside image area */}

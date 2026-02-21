@@ -35,18 +35,39 @@ export default async function OrganizationContacts({
         <>
             {displayContacts.map((contact) => {
                 // Find the specific role for this organization
-                const affiliation = contact.affiliations.find(a => 
+                const affiliation = contact.affiliations.find((a) =>
                     a.org.toLowerCase().includes(organization.toLowerCase())
                 );
-                
-                // If the user is affiliated with multiple similar org names, 
+
+                // If the user is affiliated with multiple similar org names,
                 // we take the first match or default to 'Mitglied'
                 const role = affiliation ? affiliation.role : 'Mitglied';
-                
+
                 // Get the first phone/email
                 // Logic mimics ContactCardFetcher's behavior
-                const phone = contact.phones.length > 0 ? contact.phones[0].value : undefined;
-                const email = contact.emails.length > 0 ? contact.emails[0] : undefined;
+                const phone =
+                    contact.phones.length > 0 ? contact.phones[0].value : undefined;
+                const email =
+                    contact.emails.length > 0 ? contact.emails[0] : undefined;
+
+                if (displayContacts.length === 1) {
+                    return (
+                        <div
+                            key={contact.id}
+                            className="md:col-span-2 flex justify-center"
+                        >
+                            <div className="w-full max-w-md">
+                                <ContactCard
+                                    name={contact.name}
+                                    role={role}
+                                    phone={phone}
+                                    email={email}
+                                    colorClassName={colorClassName}
+                                />
+                            </div>
+                        </div>
+                    );
+                }
 
                 return (
                     <ContactCard

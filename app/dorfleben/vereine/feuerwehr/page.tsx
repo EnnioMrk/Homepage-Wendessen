@@ -22,7 +22,11 @@ export default function FeuerwehrOverviewPage() {
 
             {/* Image Selection Grid */}
             <div className="flex-1 px-4 sm:px-6 lg:px-8">
-                <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-0">
+                <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-0 relative">
+                    {/* Red Bar (Vertical on Large screens, Horizontal on Mobile) */}
+                    <div className="absolute left-1/2 top-0 bottom-0 w-3 bg-white -translate-x-1/2 z-20 hidden lg:block shadow-lg"></div>
+                    <div className="absolute top-1/2 left-0 right-0 h-3 bg-white -translate-y-1/2 z-20 block lg:hidden shadow-lg"></div>
+
                     {/* Freiwillige Feuerwehr / Einsatzabteilung - LEFT IMAGE */}
                     <Link
                         href="/dorfleben/vereine/feuerwehr/einsatzabteilung"

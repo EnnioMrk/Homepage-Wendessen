@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import {
     Buildings,
     MapPin,
@@ -8,11 +7,11 @@ import {
     Shield,
     Phone,
     EnvelopeSimple,
-    DownloadSimple,
     FileText,
     Calendar,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
+import ZoomableImage from '@/app/components/ZoomableImage';
 
 export const metadata = {
     title: 'Neubaugebiet Leipziger Allee - Wohnen & Bauen in Wendessen',
@@ -79,7 +78,7 @@ export default function NeubaugebietPage() {
                                     laufend durch die Stadt Wolfenbüttel
                                     <br />
                                     <strong>Baubeginn:</strong> Frühestens Ende
-                                    2023
+                                    2026
                                     <br />
                                     <strong>Status:</strong> Planungsrechtliche
                                     Schritte in Bearbeitung
@@ -102,21 +101,19 @@ export default function NeubaugebietPage() {
                         </div>
 
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="relative w-full mb-8">
-                                <Image
-                                    src="/images/Bebauungsplan_PB_4_Leipziger-Allee.webp"
-                                    alt="Bebauungsplan PB 4 Leipziger Allee - Neubaugebiet Wendessen"
-                                    width={1200}
-                                    height={800}
-                                    className="w-full h-auto rounded-2xl shadow-lg"
-                                    priority
-                                />
-                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        Bebauungsplan PB 4
-                                    </span>
-                                </div>
-                            </div>
+                            <ZoomableImage
+                                src="/images/Bebauungsvorschlag_Leiziger_Allee.jpg"
+                                alt="Bebauungsvorschlag Leipziger Allee - Neubaugebiet Wendessen"
+                                caption="Bebauungsvorschlag Leipziger Allee"
+                                className="mb-8"
+                            />
+
+                            <ZoomableImage
+                                src="/images/Baugebiet Leiziger Allee Wendessen Mai 2024.jpg"
+                                alt="Baugebiet Leipziger Allee in Wendessen (Mai 2024) - Fläche für den geplanten Hausbau"
+                                caption="Baugebiet Leipziger Allee (Mai 2024): Hier entstehen die geplanten Häuser"
+                                className="mb-8"
+                            />
 
                             <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-6 rounded-r-2xl">
                                 <div className="flex items-start space-x-3">
@@ -139,17 +136,6 @@ export default function NeubaugebietPage() {
                                 </div>
                             </div>
 
-                            <div className="mt-8 text-center">
-                                <a
-                                    href="/pdfs/Bebauungsplan_PB_4_Leipziger-Allee.pdf"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-full hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                >
-                                    <DownloadSimple className="w-5 h-5 mr-2" />
-                                    Bebauungsplan PDF herunterladen
-                                </a>
-                            </div>
                         </div>
                     </div>
 

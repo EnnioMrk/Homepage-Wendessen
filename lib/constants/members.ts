@@ -148,16 +148,37 @@ export const REDAKTIONSTEAM_KERNTEAM: TeamMember[] = [
 ];
 
 export const REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE: TeamMember[] = [
-    { name: 'Ulrike Jürgens', role: 'Verantwortliche', area: 'Hospiz' },
+    { name: 'Achim Cirkensa', role: 'Verantwortlicher', area: 'Kirchbauverein' },
     {
-        name: 'Ulrike Jungkurth',
+        name: 'Andrea Brackmann',
         role: 'Verantwortliche',
-        area: 'Kirchbauverein',
+        area: 'Schützenverein',
     },
+    { name: 'Lothar Lange', role: 'Verantwortlicher', area: 'Schützenverein' },
+    {
+        name: 'Christoph Schmegner',
+        role: 'Verantwortlicher',
+        area: 'Jugendfeuerwehr',
+    },
+    {
+        name: 'Jessice Schulz',
+        role: 'Verantwortliche',
+        area: 'Freiwillige Feuerwehr',
+    },
+    {
+        name: 'Kai Brackmann',
+        role: 'Verantwortlicher',
+        area: 'Freiwillige Feuerwehr',
+    },
+    {
+        name: 'Peter Dorn',
+        role: 'Verantwortlicher',
+        area: 'Initiative Spritzenhaus',
+    },
+    { name: 'Ulrike Jürgens', role: 'Verantwortliche', area: 'Hospizverein' },
+    { name: 'Marc Both', role: 'Verantwortliche/r', area: 'IDW' },
     { name: 'N.N.', role: 'Verantwortliche/r', area: 'SV Wendessen' },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'Feuerwehr' },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'Kirche' },
-    { name: 'N.N.', role: 'Verantwortliche/r', area: 'IDW' },
+    
 ];
 
 export function getMemberBySlug(slug: string): TeamMember | undefined {

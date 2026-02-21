@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/permissions';
 import { getAllAdminUsers } from '@/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         await requirePermission('users.view');

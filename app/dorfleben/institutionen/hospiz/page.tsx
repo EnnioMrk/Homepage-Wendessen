@@ -6,7 +6,7 @@ import {
     UsersThree,
 } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import ContentImage from '@/app/components/ContentImage';
+import ZoomableImage from '@/app/components/ZoomableImage';
 import OrganizationContacts from '@/app/components/OrganizationContacts';
 
 export const metadata = {
@@ -44,7 +44,7 @@ export default function HospizInstitutionPage() {
                             <p>
                                 Der weiße Außenputz und das rote Ziegeldach heben sich deutlich vom Grau der Mauer ab. Einzig die Gebäudeform und das große grüne Tor an der Westfront erinnern an die Geschichte des Hauses.
                             </p>
-                            <ContentImage
+                            <ZoomableImage
                                 src="/images/Hospiz.jpg"
                                 alt="Hospiz im Gutspark"
                                 caption="Das Hospiz im Gutspark in Wendessen"
