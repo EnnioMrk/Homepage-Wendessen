@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { getCurrentAdminUser } from '@/lib/auth';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
+    await connection();
     try {
         const user = await getCurrentAdminUser();
         return NextResponse.json({

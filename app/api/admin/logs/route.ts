@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { getAdminLogs } from '@/lib/admin-log';
 
 export async function GET(request: Request) {
+    await connection();
     try {
         const authenticated = await isAuthenticated();
         if (!authenticated) {

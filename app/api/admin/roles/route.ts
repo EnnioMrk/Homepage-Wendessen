@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { requirePermission } from '@/lib/permissions';
 import { getAllRoles } from '@/lib/database';
 
 export async function GET() {
+    await connection();
     try {
         await requirePermission('users.view');
 

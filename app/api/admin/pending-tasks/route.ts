@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { sql } from '@/lib/sql';
@@ -16,6 +17,7 @@ export interface PendingTasksResponse {
 }
 
 export async function GET() {
+    await connection();
     try {
         const authenticated = await isAuthenticated();
         if (!authenticated) {

@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { parseWeatherReport } from '@/lib/utils/weather-utils';
-
-export const dynamic = 'force-dynamic';
 
 const WEATHER_REPORT_URL =
     'https://www.wetterstation.ws/cms/iframes/Wetter_aktuell/Text/ws_report.txt';
 
 export async function GET() {
+    await connection();
     try {
         const response = await fetch(WEATHER_REPORT_URL, {
             cache: 'no-store',

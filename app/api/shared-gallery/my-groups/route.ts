@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { getSharedGallerySubmissionGroups } from '@/lib/database';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(request: Request) {
+    await connection();
     try {
         const { searchParams } = new URL(request.url);
         const email = searchParams.get('email');
