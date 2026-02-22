@@ -48,6 +48,7 @@ export const DORFLEBEN_NAV: NavItem[] = [
     },
     { title: 'Wir Wendesser', href: '/dorfleben/wir-wendesser' },
     { title: 'Wetter', href: '/dorfleben/wetter' },
+    { title: 'Karte', href: '/dorfleben/karte' },
     { title: 'Archiv', href: '/dorfleben/archiv' },
 ];
 

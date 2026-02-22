@@ -132,7 +132,7 @@ export default function HospizInstitutionPage() {
                         <div className="max-w-2xl">
                             <UsersThree className="w-8 h-8 text-gray-400 mx-auto mb-3" />
                             <p className="text-lg text-gray-600 font-medium">
-                                Mit over 30 Mitarbeitenden in Pflege, Hauswirtschaft und Verwaltung ist das Hospiz der größte Arbeitgeber von Wendessen.
+                                Mit über 30 Mitarbeitenden in Pflege, Hauswirtschaft und Verwaltung ist das Hospiz der größte Arbeitgeber von Wendessen.
                             </p>
                         </div>
                     </div>
