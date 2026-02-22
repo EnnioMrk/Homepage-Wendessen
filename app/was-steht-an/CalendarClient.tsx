@@ -64,24 +64,34 @@ const AgendaEventComponent: React.FC<EventProps<CalendarEvent>> = ({
 }) => {
     const isCancelled = event.isCancelled;
 
+    const getAgendaCategoryClass = (category: string) => {
+        switch (category) {
+            case 'sitzung':
+                return 'agenda-category-sitzung';
+            case 'veranstaltung':
+                return 'agenda-category-veranstaltung';
+            case 'sport':
+                return 'agenda-category-sport';
+            case 'kultur':
+                return 'agenda-category-kultur';
+            case 'notfall':
+                return 'agenda-category-notfall';
+            default:
+                return 'agenda-category-sonstiges';
+        }
+    };
+
     return (
         <div
-            className={`flex items-center space-x-3 ${
-                isCancelled ? 'opacity-60' : ''
+            className={`flex items-start ${
+                isCancelled
+                    ? 'agenda-category-cancelled opacity-60'
+                    : getAgendaCategoryClass(event.category || 'sonstiges')
             }`}
         >
-            <div
-                className={`w-3 h-3 rounded-full ${
-                    isCancelled
-                        ? 'bg-gray-400'
-                        : getCategoryBackgroundColor(
-                              event.category || 'sonstiges',
-                          )
-                }`}
-            ></div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
                 <div
-                    className={`font-medium ${
+                    className={`font-medium break-words px-2 py-1 ${
                         isCancelled
                             ? 'text-gray-500 line-through'
                             : 'text-gray-900'
@@ -90,26 +100,22 @@ const AgendaEventComponent: React.FC<EventProps<CalendarEvent>> = ({
                     {isCancelled && '🚫 '}
                     {event.title}
                 </div>
-                {event.location && (
-                    <div className="text-sm text-gray-500">
-                        {event.location}
-                    </div>
-                )}
+                <div className="flex items-start justify-between gap-3 px-2">
+                    {event.location ? (
+                        <div className="text-sm text-gray-500 break-words flex-1 min-w-0">
+                            {event.location}
+                        </div>
+                    ) : (
+                        <div className="flex-1" />
+                    )}
+                    <span className="text-xs font-medium text-gray-600 whitespace-nowrap text-right">
+                        {getCategoryDisplayName(event.category || 'sonstiges')}
+                    </span>
+                </div>
                 {isCancelled && event.cancelledAt && (
                     <div className="text-xs text-red-600 mt-1">Abgesagt</div>
                 )}
             </div>
-            <span
-                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    isCancelled
-                        ? 'bg-gray-100 text-gray-600'
-                        : getCategoryBadgeClasses(event.category || 'sonstiges')
-                }`}
-            >
-                {isCancelled
-                    ? 'Abgesagt'
-                    : getCategoryDisplayName(event.category || 'sonstiges')}
-            </span>
         </div>
     );
 };
@@ -152,6 +158,20 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     const [selectedVerein, setSelectedVerein] = useState<string>('all');
     const [view, setView] = useState<View>('agenda');
     const [date, setDate] = useState(new Date());
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const updateIsMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        updateIsMobile();
+        window.addEventListener('resize', updateIsMobile);
+
+        return () => {
+            window.removeEventListener('resize', updateIsMobile);
+        };
+    }, []);
 
     const categories = [
         { id: 'all', label: 'Alle', color: 'bg-gray-800' },
@@ -247,6 +267,33 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
             default:
                 return <CalendarBlank className="w-5 h-5" />;
         }
+    };
+
+    const MonthEventComponent: React.FC<EventProps<CalendarEvent>> = ({
+        event,
+    }) => {
+        const isCancelled = event.isCancelled;
+
+        return (
+            <div
+                className={`${
+                    isCancelled
+                        ? 'bg-gray-400 line-through opacity-70'
+                        : getCategoryBackgroundColor(event.category || 'sonstiges')
+                } text-white px-1.5 py-1 rounded-sm text-[11px] font-medium leading-4 overflow-hidden whitespace-nowrap`}
+                title={event.title}
+                style={{
+                    textOverflow: 'clip',
+                    WebkitMaskImage:
+                        'linear-gradient(90deg, #000 0%, #000 82%, transparent 100%)',
+                    maskImage:
+                        'linear-gradient(90deg, #000 0%, #000 82%, transparent 100%)',
+                }}
+            >
+                {isCancelled && '🚫 '}
+                {event.title}
+            </div>
+        );
     };
 
     return (
@@ -360,6 +407,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                     events={filteredEvents}
                     startAccessor="start"
                     endAccessor="end"
+                    dayLayoutAlgorithm="no-overlap"
                     style={{ height: 600 }}
                     onSelectEvent={handleSelectEvent}
                     onNavigate={handleNavigate}
@@ -369,6 +417,9 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                     length={365}
                     components={{
                         event: EventComponent,
+                        month: {
+                            event: MonthEventComponent,
+                        },
                         agenda: {
                             event: AgendaEventComponent,
                         },
@@ -388,7 +439,14 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                         showMore: (total: number) => `+ ${total} weitere`,
                     }}
                     formats={{
-                        weekdayFormat: 'dddd',
+                        weekdayFormat: (currentDate) =>
+                            isMobile
+                                ? moment(currentDate).format('dd')
+                                : moment(currentDate).format('dddd'),
+                        dayFormat: (currentDate) =>
+                            isMobile
+                                ? moment(currentDate).format('dd')
+                                : moment(currentDate).format('ddd DD.MM'),
                         agendaDateFormat: 'dddd DD.MM',
                     }}
                     culture="de"
@@ -498,12 +556,12 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                                     onClick={() => setSelectedEvent(null)}
                                     aria-label="Termin schließen"
                                     title="Schließen"
-                                    className="absolute top-4 right-4 p-2.5 bg-black/70 text-white border border-white/40 backdrop-blur-sm hover:bg-black/85 rounded-full shadow-lg transition-colors"
+                                    className="absolute top-4 right-4 z-20 p-2.5 bg-black/70 text-white border border-white/40 backdrop-blur-sm hover:bg-black/85 rounded-full shadow-lg transition-colors cursor-pointer"
                                 >
                                     <X className="w-7 h-7" weight="bold" />
                                 </button>
-                                <div className="absolute bottom-4 left-4 right-4">
-                                    <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                                <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
+                                    <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg pr-16 break-normal hyphens-auto">
                                         {selectedEvent.title}
                                     </h2>
                                 </div>
@@ -514,14 +572,22 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                             {/* Title for events without image */}
                             {!selectedEvent.imageUrl && (
                                 <div className="flex justify-between items-start mb-6">
-                                    <h2 className="text-2xl font-bold text-gray-800">
+                                    <h2
+                                        lang="de"
+                                        className="text-2xl font-bold text-gray-800 flex-1 min-w-0 break-normal hyphens-auto pr-3"
+                                        style={{
+                                            overflowWrap: 'normal',
+                                            wordBreak: 'normal',
+                                            hyphens: 'auto',
+                                        }}
+                                    >
                                         {selectedEvent.title}
                                     </h2>
                                     <button
                                         onClick={() => setSelectedEvent(null)}
                                         aria-label="Termin schließen"
                                         title="Schließen"
-                                        className="p-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-full shadow-sm transition-colors"
+                                        className="p-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-full shadow-sm transition-colors flex-shrink-0 cursor-pointer"
                                     >
                                         <X className="w-6 h-6" weight="bold" />
                                     </button>
