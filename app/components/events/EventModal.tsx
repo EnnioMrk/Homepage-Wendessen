@@ -363,29 +363,29 @@ export default function EventModal({
                                                         className="object-cover"
                                                     />
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-medium text-gray-900">
-                                                        Bild ausgewählt
-                                                    </p>
-                                                    <div className="flex items-center mt-1 space-x-2">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                setShowCropper(
-                                                                    true,
-                                                                )
-                                                            }
-                                                            className="text-xs flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
-                                                        >
-                                                            <Crop className="w-3 h-3 mr-1" />
-                                                            Zuschneiden
-                                                        </button>
-                                                        <p className="text-xs text-gray-700">
+                                                <div className="flex-1 flex items-stretch justify-between gap-3">
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-900">
+                                                            Bild ausgewählt
+                                                        </p>
+                                                        <p className="mt-1 text-xs text-gray-700">
                                                             Wird in der
                                                             Terminübersicht
                                                             angezeigt
                                                         </p>
                                                     </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setShowCropper(
+                                                                true,
+                                                            )
+                                                        }
+                                                        className="inline-flex items-center justify-center self-stretch rounded-md border border-indigo-200 bg-indigo-50 px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300"
+                                                    >
+                                                        <Crop className="w-4 h-4 mr-1.5" />
+                                                        Bild zuschneiden
+                                                    </button>
                                                 </div>
                                                 <button
                                                     type="button"

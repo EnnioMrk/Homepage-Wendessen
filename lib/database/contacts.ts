@@ -1,5 +1,6 @@
 import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
+import { normalizeLegacyImportance } from '@/lib/constants/contact-priorities';
 
 export interface ContactRecord {
     id: number;
@@ -31,7 +32,7 @@ function convertToContactItem(row: Record<string, unknown>): ContactListItem {
         affiliations: Array.isArray(row.affiliations)
             ? row.affiliations
             : JSON.parse((row.affiliations as string) ?? '[]'),
-        importance: Number(row.importance ?? 0),
+        importance: normalizeLegacyImportance(Number(row.importance ?? 0)),
     };
 }
 
@@ -139,7 +140,7 @@ export async function createContact(contact: ContactInput): Promise<ContactListI
                 ${JSON.stringify(contact.phones)}::jsonb,
                 ${JSON.stringify(contact.addresses)}::jsonb,
                 ${JSON.stringify(contact.affiliations)}::jsonb,
-                ${contact.importance}
+                ${normalizeLegacyImportance(contact.importance)}
             )
             RETURNING *;
         `;
@@ -159,7 +160,7 @@ export async function updateContact(id: number, contact: ContactInput): Promise<
                 phones = ${JSON.stringify(contact.phones)}::jsonb,
                 addresses = ${JSON.stringify(contact.addresses)}::jsonb,
                 affiliations = ${JSON.stringify(contact.affiliations)}::jsonb,
-                importance = ${contact.importance}
+                importance = ${normalizeLegacyImportance(contact.importance)}
             WHERE id = ${id}
             RETURNING *;
         `;

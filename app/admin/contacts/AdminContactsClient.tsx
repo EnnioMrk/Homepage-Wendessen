@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Plus, Trash, PencilSimple, Envelope, Phone, Buildings, MagnifyingGlass, Funnel, X, CaretDown } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
+import {
+    CONTACT_PRIORITY_STOPS,
+    getContactPriorityStop,
+    normalizeLegacyImportance,
+} from '@/lib/constants/contact-priorities';
 
 interface Contact {
     id: string;
@@ -67,7 +72,13 @@ export default function AdminContactsClient({
 
             if (contactsRes.ok) {
                 const contactsData = await contactsRes.json();
-                setContacts(contactsData.contacts || []);
+                const normalizedContacts = (contactsData.contacts || []).map(
+                    (contact: Contact) => ({
+                        ...contact,
+                        importance: normalizeLegacyImportance(contact.importance),
+                    })
+                );
+                setContacts(normalizedContacts);
             } else {
                 setError('Fehler beim Laden der Kontakte');
             }
@@ -245,12 +256,13 @@ export default function AdminContactsClient({
                             className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
                         >
                             <option value="">Alle Prioritäten</option>
-                            <option value="0">Keine Priorität (0)</option>
-                            <option value="1">Niedrig (1)</option>
-                            <option value="2">Mittel (2)</option>
-                            <option value="3">Hoch (3)</option>
-                            <option value="4">Sehr Hoch (4)</option>
-                            <option value="5">Exzellent (5)</option>
+                            {[...CONTACT_PRIORITY_STOPS]
+                                .sort((a, b) => b.value - a.value)
+                                .map((stop) => (
+                                    <option key={stop.value} value={stop.value}>
+                                        {stop.label} ({stop.value}) - {stop.example}
+                                    </option>
+                                ))}
                         </select>
                     </div>
                 </div>
@@ -285,7 +297,7 @@ export default function AdminContactsClient({
                                         </h3>
                                         {contact.importance > 0 && (
                                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                Priorität: {contact.importance}
+                                                Priorität: {getContactPriorityStop(contact.importance).label} ({contact.importance})
                                             </span>
                                         )}
                                     </div>
