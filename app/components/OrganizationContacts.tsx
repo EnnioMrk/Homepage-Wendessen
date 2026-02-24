@@ -1,9 +1,11 @@
 import React from 'react';
 import { getContactsByOrganization } from '@/lib/database/contacts';
+import { getOrganizationById } from '@/lib/database/organizations';
 import ContactCard from './ContactCard';
 
 interface OrganizationContactsProps {
-    organization: string;
+    organization?: string;
+    organizationSlug?: string;
     /**
      * Optional className to override text colors or other styles in the cards.
      */
@@ -20,10 +22,22 @@ interface OrganizationContactsProps {
  */
 export default async function OrganizationContacts({
     organization,
+    organizationSlug,
     colorClassName,
     limit,
 }: OrganizationContactsProps) {
-    const contacts = await getContactsByOrganization(organization);
+    let organizationName = organization;
+
+    if (!organizationName && organizationSlug) {
+        const org = await getOrganizationById(organizationSlug);
+        organizationName = org?.title;
+    }
+
+    if (!organizationName) {
+        return null;
+    }
+
+    const contacts = await getContactsByOrganization(organizationName);
 
     if (contacts.length === 0) {
         return null;
@@ -36,7 +50,7 @@ export default async function OrganizationContacts({
             {displayContacts.map((contact) => {
                 // Find the specific role for this organization
                 const affiliation = contact.affiliations.find((a) =>
-                    a.org.toLowerCase().includes(organization.toLowerCase())
+                    a.org.toLowerCase().includes(organizationName.toLowerCase())
                 );
 
                 // If the user is affiliated with multiple similar org names,

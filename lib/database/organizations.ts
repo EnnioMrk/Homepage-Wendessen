@@ -36,6 +36,26 @@ export async function getOrganizations(): Promise<Organization[]> {
     }
 }
 
+export async function getOrganizationById(
+    id: string
+): Promise<Organization | null> {
+    'use cache';
+    cacheTag('organizations', `organization-id-${id.toLowerCase()}`);
+    try {
+        const result = await sql`
+            SELECT * FROM organizations
+            WHERE LOWER(id) = ${id.toLowerCase()}
+            LIMIT 1;
+        `;
+
+        if (result.length === 0) return null;
+        return convertToOrganization(result[0]);
+    } catch (error) {
+        console.error(`Error fetching organization by id ${id}:`, error);
+        throw new Error('Failed to fetch organization');
+    }
+}
+
 export async function createOrganization(org: OrganizationInput): Promise<Organization> {
     try {
         const result = await sql`

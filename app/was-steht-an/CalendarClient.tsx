@@ -766,13 +766,8 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                     width: 100%;
                 }
 
-                /* Sticky header for agenda view */
                 .calendar-container .rbc-agenda-view table > thead {
-                    position: sticky;
-                    top: 0;
-                    background-color: white;
-                    z-index: 10;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                    display: none;
                 }
             `}</style>
         </div>

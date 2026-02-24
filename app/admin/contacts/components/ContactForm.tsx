@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
 import { Plus, Trash, FloppyDisk } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import {
     CONTACT_PRIORITY_MAX,
     CONTACT_PRIORITY_MIN,
-    CONTACT_PRIORITY_STOPS,
     getContactPriorityStop,
     normalizeLegacyImportance,
 } from '@/lib/constants/contact-priorities';
@@ -118,6 +117,13 @@ export default function ContactForm({
     };
 
     const selectedPriority = getContactPriorityStop(formData.importance);
+    const sliderProgress =
+        ((formData.importance - CONTACT_PRIORITY_MIN) /
+            (CONTACT_PRIORITY_MAX - CONTACT_PRIORITY_MIN)) *
+        100;
+    const sliderStyle = {
+        '--slider-progress': `${sliderProgress}%`,
+    } as CSSProperties;
 
     return (
         <form
@@ -164,35 +170,9 @@ export default function ContactForm({
                                     importance: parseInt(e.target.value, 10),
                                 })
                             }
-                            className="h-2 w-full cursor-pointer accent-primary"
+                            style={sliderStyle}
+                            className="priority-slider h-2 w-full cursor-pointer"
                         />
-
-                        <div className="mt-4 grid grid-cols-1 gap-1.5 sm:grid-cols-8 sm:gap-1">
-                            {CONTACT_PRIORITY_STOPS.map((stop) => (
-                                <div
-                                    key={stop.value}
-                                    className={`flex min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors sm:flex-col sm:gap-0 sm:px-0.5 sm:py-1 sm:text-center ${
-                                        stop.value === selectedPriority.value
-                                            ? 'bg-primary-50 text-primary'
-                                            : 'text-gray-600'
-                                    }`}
-                                >
-                                    <span
-                                        className={`mb-1 h-2 w-2 rounded-full ${
-                                            stop.value === selectedPriority.value
-                                                ? 'bg-primary'
-                                                : 'bg-gray-300'
-                                        }`}
-                                    />
-                                    <p className="text-xs font-semibold leading-tight sm:text-[10px]">
-                                        {stop.value}
-                                    </p>
-                                    <p className="text-[11px] leading-tight sm:break-all sm:text-[9px]">
-                                        {stop.example}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
                     </div>
                 </div>
             </div>

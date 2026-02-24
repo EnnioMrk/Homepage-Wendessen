@@ -155,9 +155,9 @@ export default function AdminContactsClient({
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">Kontaktverzeichnis</h2>
-                <div className="flex space-x-3">
+            <div className="flex items-center justify-center sm:justify-between">
+                <h2 className="hidden text-xl font-semibold text-gray-900 sm:block">Kontaktverzeichnis</h2>
+                <div className="flex justify-center space-x-3">
                     <button
                         onClick={() => router.push('/admin/organizations')}
                         className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm font-medium"
@@ -177,7 +177,7 @@ export default function AdminContactsClient({
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="px-2 sm:px-0 flex flex-col md:flex-row gap-4">
                 <div className="relative flex-grow">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <MagnifyingGlass className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -191,6 +191,13 @@ export default function AdminContactsClient({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                </div>
+            </div>
+
+            <div className="px-2 sm:px-0 flex items-center justify-between gap-3">
+                <div className="text-sm text-gray-500">
+                    {filteredContacts.length} {filteredContacts.length === 1 ? 'Kontakt' : 'Kontakte'} gefunden
+                    {hasActiveFilters && ` (gefiltert aus ${contacts.length})`}
                 </div>
                 <div className="flex gap-2">
                     <button
@@ -267,13 +274,6 @@ export default function AdminContactsClient({
                     </div>
                 </div>
             )}
-
-            <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-500">
-                    {filteredContacts.length} {filteredContacts.length === 1 ? 'Kontakt' : 'Kontakte'} gefunden
-                    {hasActiveFilters && ` (gefiltert aus ${contacts.length})`}
-                </div>
-            </div>
 
             {error && (
                 <div className="bg-red-50 text-red-700 p-4 rounded-md">

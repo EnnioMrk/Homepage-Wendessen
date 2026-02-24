@@ -258,8 +258,8 @@ export default async function JugendfeuerwehrPage() {
                                     >
                                         www.jf-wendessen.jimdo.com
                                     </a>{' '}
-                                    besuchen oder Du wendest Dich direkt an die
-                                    Jugendwarte Cornelius und Frederick Witte.
+                                    besuchen oder Du wendest Dich direkt an DEN
+                                    Jugendwarte Frederick Witte.
                                 </p>
                             </div>
                         </div>

@@ -35,9 +35,9 @@ export const ASSOCIATIONS: Verein[] = [
     {
         id: 'idw',
         title: 'IDW',
-        description: 'Interessengemeinschaft Dorfleben Wendessen',
+        description: 'Initiative Dorfgemeinschaft Wendessen e.V.',
         buttonText: 'Mehr erfahren',
-        buttonHref: '/idw',
+        buttonHref: '/dorfleben/vereine/idw',
         buttonColor: 'cyan',
     },
     {
