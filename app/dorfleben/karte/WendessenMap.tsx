@@ -1,23 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import 'ol/ol.css';
-import Feature from 'ol/Feature';
-import Map from 'ol/Map';
-import View from 'ol/View';
-import Point from 'ol/geom/Point';
-import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
-import XYZ from 'ol/source/XYZ';
-import VectorSource from 'ol/source/Vector';
-import { Fill, Stroke, Style, Text } from 'ol/style';
-import { fromLonLat, transformExtent } from 'ol/proj';
+import { useEffect, useRef } from "react";
+import "ol/ol.css";
+import Feature from "ol/Feature";
+import Map from "ol/Map";
+import View from "ol/View";
+import Point from "ol/geom/Point";
+import TileLayer from "ol/layer/Tile";
+import VectorLayer from "ol/layer/Vector";
+import XYZ from "ol/source/XYZ";
+import VectorSource from "ol/source/Vector";
+import { Fill, Stroke, Style, Text } from "ol/style";
+import { fromLonLat, transformExtent } from "ol/proj";
 
 const WENDESSEN_EXTENT_LON_LAT: [number, number, number, number] = [
-    10.581421,
-    52.149073,
-    10.598289,
-    52.159423,
+    10.581421, 52.149073, 10.598289, 52.159423,
 ];
 
 const WENDESSEN_CENTER_LON_LAT: [number, number] = [
@@ -35,7 +32,7 @@ type OverpassElement = {
     lon?: number;
     center?: { lat: number; lon: number };
     tags?: {
-        'addr:housenumber'?: string;
+        "addr:housenumber"?: string;
     };
 };
 
@@ -44,17 +41,17 @@ type OverpassResponse = {
 };
 
 const BASEMAP: Basemap = {
-    url: 'https://{a-d}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png',
-    attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
+    url: "https://{a-d}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png",
+    attribution: "&copy; OpenStreetMap-Mitwirkende &copy; CARTO",
 };
 
 function createHouseNumberStyle(houseNumber: string) {
     return new Style({
         text: new Text({
             text: houseNumber,
-            font: 'bold 12px Arial, sans-serif',
-            fill: new Fill({ color: '#111827' }),
-            stroke: new Stroke({ color: '#ffffff', width: 3 }),
+            font: "bold 12px Arial, sans-serif",
+            fill: new Fill({ color: "#111827" }),
+            stroke: new Stroke({ color: "#ffffff", width: 3 }),
             overflow: true,
         }),
     });
@@ -62,7 +59,7 @@ function createHouseNumberStyle(houseNumber: string) {
 
 async function fetchHouseNumberFeatures(
     bbox: [number, number, number, number],
-    signal: AbortSignal
+    signal: AbortSignal,
 ) {
     const [west, south, east, north] = bbox;
     const overpassQuery = `
@@ -75,28 +72,32 @@ async function fetchHouseNumberFeatures(
         out center;
     `;
 
-    const response = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
+    const response = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
         headers: {
-            'Content-Type': 'text/plain;charset=UTF-8',
+            "Content-Type": "text/plain;charset=UTF-8",
         },
         body: overpassQuery,
         signal,
     });
 
     if (!response.ok) {
-        throw new Error('Failed to load house numbers from Overpass API');
+        throw new Error("Failed to load house numbers from Overpass API");
     }
 
     const data = (await response.json()) as OverpassResponse;
 
     return data.elements
         .map((element) => {
-            const houseNumber = element.tags?.['addr:housenumber'];
+            const houseNumber = element.tags?.["addr:housenumber"];
             const latitude = element.lat ?? element.center?.lat;
             const longitude = element.lon ?? element.center?.lon;
 
-            if (!houseNumber || latitude === undefined || longitude === undefined) {
+            if (
+                !houseNumber ||
+                latitude === undefined ||
+                longitude === undefined
+            ) {
                 return null;
             }
 
@@ -125,13 +126,13 @@ export default function WendessenMap() {
 
             const projectedExtent = transformExtent(
                 WENDESSEN_EXTENT_LON_LAT,
-                'EPSG:4326',
-                'EPSG:3857'
+                "EPSG:4326",
+                "EPSG:3857",
             );
 
             const houseNumberFeatures = await fetchHouseNumberFeatures(
                 WENDESSEN_EXTENT_LON_LAT,
-                abortController.signal
+                abortController.signal,
             );
 
             if (abortController.signal.aborted) {
@@ -178,7 +179,7 @@ export default function WendessenMap() {
                     duration: 0,
                 });
                 const fittedZoom = view.getZoom();
-                if (typeof fittedZoom === 'number') {
+                if (typeof fittedZoom === "number") {
                     view.setMinZoom(fittedZoom);
                     view.setZoom(fittedZoom);
                 }
@@ -187,7 +188,10 @@ export default function WendessenMap() {
 
         initializeMap().catch((error) => {
             if (!abortController.signal.aborted) {
-                console.error('Failed to initialize map with house numbers:', error);
+                console.error(
+                    "Failed to initialize map with house numbers:",
+                    error,
+                );
             }
         });
 
@@ -202,7 +206,11 @@ export default function WendessenMap() {
     return (
         <div>
             <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg">
-                <div ref={mapContainerRef} className="aspect-square w-full" aria-label="Interaktive Karte von Wendessen" />
+                <div
+                    ref={mapContainerRef}
+                    className="aspect-square w-full"
+                    aria-label="Interaktive Karte von Wendessen"
+                />
             </div>
         </div>
     );
