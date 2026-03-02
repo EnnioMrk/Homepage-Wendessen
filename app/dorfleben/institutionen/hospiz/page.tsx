@@ -4,15 +4,15 @@ import {
     Plant,
     Heart,
     UsersThree,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import ZoomableImage from '@/app/components/ZoomableImage';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import ZoomableImage from "@/app/components/ZoomableImage";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Hospiz im Gutspark - Institutionen',
+    title: "Hospiz im Gutspark - Institutionen",
     description:
-        'Hospiz im Gutspark in Wendessen – Geborgenheit an einem geschichtsträchtigen Ort. Stationäre Versorgung und Begleitung.',
+        "Hospiz im Gutspark in Wendessen – Geborgenheit an einem geschichtsträchtigen Ort. Stationäre Versorgung und Begleitung.",
 };
 
 export default function HospizInstitutionPage() {
@@ -21,14 +21,13 @@ export default function HospizInstitutionPage() {
             <PageHeader
                 title="Hospiz im Gutspark"
                 icon={<House />}
-                backgroundImage="/images/Hospiz.jpg"
+                backgroundImage="/images/hospiz.jpg"
                 color="red" // Using a warm color scheme
             />
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16">
                 <div className="max-w-5xl mx-auto space-y-12 sm:space-y-16">
-
                     {/* Introduction */}
                     <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12">
                         <div className="text-center mb-8">
@@ -39,20 +38,28 @@ export default function HospizInstitutionPage() {
                         </div>
                         <div className="prose prose-lg text-gray-700 mx-auto leading-relaxed">
                             <p>
-                                In Sichtweite der Kirche St. Georg – gleich hinter der historischen Gutsmauer – erhebt sich ein viergeschossiger Bau: das <strong>HospizZentrum Wolfenbüttel</strong>. Neben dem stationären „Hospiz im Gutspark“ hat hier der Hospizverein seine Räume.
+                                In Sichtweite der Kirche St. Georg – gleich
+                                hinter der historischen Gutsmauer – erhebt sich
+                                ein viergeschossiger Bau: das{" "}
+                                <strong>HospizZentrum Wolfenbüttel</strong>.
+                                Neben dem stationären „Hospiz im Gutspark“ hat
+                                hier der Hospizverein seine Räume.
                             </p>
                             <p>
-                                Der weiße Außenputz und das rote Ziegeldach heben sich deutlich vom Grau der Mauer ab. Einzig die Gebäudeform und das große grüne Tor an der Westfront erinnern an die Geschichte des Hauses.
+                                Der weiße Außenputz und das rote Ziegeldach
+                                heben sich deutlich vom Grau der Mauer ab.
+                                Einzig die Gebäudeform und das große grüne Tor
+                                an der Westfront erinnern an die Geschichte des
+                                Hauses.
                             </p>
                             <ZoomableImage
-                                src="/images/Hospiz.jpg"
+                                src="/images/hospiz.jpg"
                                 alt="Hospiz im Gutspark"
                                 caption="Das Hospiz im Gutspark in Wendessen"
                                 className="mb-0"
                             />
                         </div>
                     </div>
-
 
                     {/* Timeline Section */}
                     <div>
@@ -61,7 +68,9 @@ export default function HospizInstitutionPage() {
                                 <Clock className="w-8 h-8 text-red-600" />
                                 Vom Rittergut zum HospizZentrum
                             </h2>
-                            <p className="text-gray-600">Eine Reise durch die Jahrhunderte (1660 - 2024)</p>
+                            <p className="text-gray-600">
+                                Eine Reise durch die Jahrhunderte (1660 - 2024)
+                            </p>
                         </div>
 
                         <div className="relative border-l-4 border-red-200 ml-4 sm:ml-6 md:mx-auto md:max-w-3xl pl-6 sm:pl-8 md:pl-0">
@@ -108,21 +117,38 @@ export default function HospizInstitutionPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 shadow-sm border border-red-100">
                             <h3 className="text-xl font-bold text-red-900 mb-4 flex items-center gap-2">
-                                <Heart className="w-6 h-6 text-red-600" weight="fill" />
+                                <Heart
+                                    className="w-6 h-6 text-red-600"
+                                    weight="fill"
+                                />
                                 Liebevolle Versorgung
                             </h3>
                             <p className="text-gray-800 leading-relaxed">
-                                Das Hospiz kann zehn Gäste aufnehmen – Menschen mit einer lebensverkürzenden Erkrankung, die absehbar zum Tod führen wird. Sie werden hier von Fachkräften medizinisch und pflegerisch versorgt und liebevoll umsorgt.
+                                Das Hospiz kann zehn Gäste aufnehmen – Menschen
+                                mit einer lebensverkürzenden Erkrankung, die
+                                absehbar zum Tod führen wird. Sie werden hier
+                                von Fachkräften medizinisch und pflegerisch
+                                versorgt und liebevoll umsorgt.
                             </p>
                         </div>
 
                         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-sm border border-green-100">
                             <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center gap-2">
-                                <Plant className="w-6 h-6 text-green-600" weight="fill" />
+                                <Plant
+                                    className="w-6 h-6 text-green-600"
+                                    weight="fill"
+                                />
                                 Atmosphäre & Umgebung
                             </h3>
                             <p className="text-gray-800 leading-relaxed">
-                                Die Gäste und ihre An- und Zugehörigen schätzen die Lage des Hauses am Rande des Gutsparks mit seinen hohen Bäumen. Der schön angelegte Hospizgarten und die beiden Terrassen laden zum Verweilen ein. Mit dem Umbau ist es gelungen, bei aller notwendigen Funktionalität eine wohnliche Atmosphäre zu schaffen, die der Historie des Ortes gerecht wird.
+                                Die Gäste und ihre An- und Zugehörigen schätzen
+                                die Lage des Hauses am Rande des Gutsparks mit
+                                seinen hohen Bäumen. Der schön angelegte
+                                Hospizgarten und die beiden Terrassen laden zum
+                                Verweilen ein. Mit dem Umbau ist es gelungen,
+                                bei aller notwendigen Funktionalität eine
+                                wohnliche Atmosphäre zu schaffen, die der
+                                Historie des Ortes gerecht wird.
                             </p>
                         </div>
                     </div>
@@ -132,7 +158,9 @@ export default function HospizInstitutionPage() {
                         <div className="max-w-2xl">
                             <UsersThree className="w-8 h-8 text-gray-400 mx-auto mb-3" />
                             <p className="text-lg text-gray-600 font-medium">
-                                Mit über 30 Mitarbeitenden in Pflege, Hauswirtschaft und Verwaltung ist das Hospiz der größte Arbeitgeber von Wendessen.
+                                Mit über 30 Mitarbeitenden in Pflege,
+                                Hauswirtschaft und Verwaltung ist das Hospiz der
+                                größte Arbeitgeber von Wendessen.
                             </p>
                         </div>
                     </div>
@@ -145,13 +173,17 @@ export default function HospizInstitutionPage() {
                             </h2>
                             <div className="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zum Hospiz im Gutspark oder möchten Sie uns kennenlernen? 
-                                Unsere Ansprechpartner sind gerne für Sie da.
+                                Haben Sie Fragen zum Hospiz im Gutspark oder
+                                möchten Sie uns kennenlernen? Unsere
+                                Ansprechpartner sind gerne für Sie da.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
-                            <OrganizationContacts organization="hospiz-institution-wolfenbuettel" colorClassName="text-red-600" />
+                            <OrganizationContacts
+                                organization="hospiz-institution-wolfenbuettel"
+                                colorClassName="text-red-600"
+                            />
                         </div>
                     </div>
                 </div>
@@ -160,10 +192,17 @@ export default function HospizInstitutionPage() {
     );
 }
 
-function TimelineItem({ year, title, text }: { year: string, title: string, text: string }) {
+function TimelineItem({
+    year,
+    title,
+    text,
+}: {
+    year: string;
+    title: string;
+    text: string;
+}) {
     return (
         <div className="relative md:ml-6 pb-6 md:pb-8">
-
             {/* Dot on the line */}
             <div className="absolute -left-[35px] md:-left-[43px] top-0 flex items-center justify-center w-8 h-8 rounded-full bg-red-100 border-4 border-white shadow-sm ring-2 ring-red-500">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-600"></div>
@@ -176,7 +215,9 @@ function TimelineItem({ year, title, text }: { year: string, title: string, text
                     </span>
                 </div>
                 <div className="mt-1">
-                    <h4 className="text-lg font-bold text-gray-900 mb-2">{title}</h4>
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">
+                        {title}
+                    </h4>
                     <p className="text-gray-700 leading-relaxed text-base">
                         {text}
                     </p>

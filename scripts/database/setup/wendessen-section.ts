@@ -1,7 +1,7 @@
-import { sql } from '../../../lib/sql';
+import { sql } from "../../../lib/sql";
 
 async function setupWendessenSection() {
-    console.log('Setting up wendessen_layouts table...');
+    console.log("Setting up wendessen_layouts table...");
 
     // Create the wendessen_layouts table
     await sql`
@@ -16,7 +16,7 @@ async function setupWendessenSection() {
         );
     `;
 
-    console.log('Created wendessen_layouts table');
+    console.log("Created wendessen_layouts table");
 
     // Create unique index to ensure only one active layout (partially supported by conditional index)
     // We will handle the "one active" logic in the application layer or with a trigger if needed,
@@ -27,9 +27,9 @@ async function setupWendessenSection() {
             ON wendessen_layouts (is_active) 
             WHERE is_active = true;
         `;
-        console.log('Created unique index for active layout');
+        console.log("Created unique index for active layout");
     } catch (e) {
-        console.log('Index might already exist or error:', e);
+        console.log("Index might already exist or error:", e);
     }
 
     // Add permissions
@@ -45,15 +45,15 @@ async function setupWendessenSection() {
         ON CONFLICT (name) DO NOTHING
     `;
 
-    console.log('Added wendessen permissions');
+    console.log("Added wendessen permissions");
 
     // Insert a default initial layout if none exists
     const count = await sql`SELECT count(*) FROM wendessen_layouts`;
-    if (count[0].count === '0') {
+    if (count[0].count === "0") {
         const defaultCardTheme = {
-            highlight: 'bg-primary',
-            background: 'bg-white',
-            button: 'primary'
+            highlight: "bg-primary",
+            background: "bg-white",
+            button: "primary",
         };
 
         await sql`
@@ -64,7 +64,8 @@ async function setupWendessenSection() {
                 ${{
                     title: "SPIELPLÄTZE IN WENDESSEN",
                     subtitle: "HIER KÖNNEN KINDER SPIELEN UND TOBEN",
-                    description: "Wendessen bietet mehrere Spielplätze für verschiedene Altersgruppen.",
+                    description:
+                        "Wendessen bietet mehrere Spielplätze für verschiedene Altersgruppen.",
                     button_text: "Zur Karte",
                     button_href: "/karte?category=playground",
                     theme: defaultCardTheme,
@@ -73,34 +74,37 @@ async function setupWendessenSection() {
                 ${{
                     title: "Lesefutter in Wendessen",
                     subtitle: "Bücherbus kommt jetzt auch regelmäßig!",
-                    description: "Wendessen hat jetzt eine Bücherzelle, die mit einer üppigen Erstausstattung versehen wurde. Und es gibt eine weitere gute Nachricht für Leseratten.",
+                    description:
+                        "Wendessen hat jetzt eine Bücherzelle, die mit einer üppigen Erstausstattung versehen wurde. Und es gibt eine weitere gute Nachricht für Leseratten.",
                     button_text: "Mehr erfahren",
                     button_href: "/lesefutter",
-                    theme: { ...defaultCardTheme, button: "green" }
+                    theme: { ...defaultCardTheme, button: "green" },
                 }},
                 ${{
                     title: "HERZ AM RICHTIGEN FLECK",
                     subtitle: "HOSPIZ WENDESSEN",
-                    description: "In der Natur & in der historischen Mitte von Wendessen",
+                    description:
+                        "In der Natur & in der historischen Mitte von Wendessen",
                     button_text: "Mehr erfahren",
                     button_href: "/hospiz",
                     theme: { ...defaultCardTheme, button: "red" },
                     // Placeholder path based on existing usage
-                     image_url: "/images/Features/Hospiz.jpeg"
+                    image_url: "/images/Features/hospiz.jpeg",
                 }}
             )
         `;
-        console.log('Inserted default layout');
+        console.log("Inserted default layout");
     }
 
     // Verify
-    const layouts = await sql`SELECT id, name, is_active FROM wendessen_layouts`;
-    console.log('Current layouts:', layouts);
+    const layouts =
+        await sql`SELECT id, name, is_active FROM wendessen_layouts`;
+    console.log("Current layouts:", layouts);
 
     process.exit(0);
 }
 
 setupWendessenSection().catch((error) => {
-    console.error('Error setting up wendessen section:', error);
+    console.error("Error setting up wendessen section:", error);
     process.exit(1);
 });

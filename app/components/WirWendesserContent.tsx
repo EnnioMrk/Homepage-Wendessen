@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Users, BookOpen, UserPlus, X } from '@phosphor-icons/react/dist/ssr';
-import Image from 'next/image';
-import PortraitSubmissionModal from '@/app/components/PortraitSubmissionModal';
-import PageHeader from '@/app/components/layout/PageHeader';
-import Modal from '@/app/components/ui/Modal';
+import { useState, useEffect } from "react";
+import { Users, BookOpen, UserPlus, X } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
+import PortraitSubmissionModal from "@/app/components/PortraitSubmissionModal";
+import PageHeader from "@/app/components/layout/PageHeader";
+import Modal from "@/app/components/ui/Modal";
 
 interface ApprovedPortrait {
     id: number;
@@ -27,13 +27,13 @@ export default function WirWendesserContent() {
     useEffect(() => {
         const loadApprovedPortraits = async () => {
             try {
-                const response = await fetch('/api/portraits/approved');
+                const response = await fetch("/api/portraits/approved");
                 if (response.ok) {
                     const data = await response.json();
                     setApprovedPortraits(data);
                 }
             } catch (error) {
-                console.error('Error loading approved portraits:', error);
+                console.error("Error loading approved portraits:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -48,7 +48,7 @@ export default function WirWendesserContent() {
                 title="Wir Wendesser"
                 subtitle="Die Menschen unserer Dorfgemeinschaft"
                 icon={<Users />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="green"
             />
 

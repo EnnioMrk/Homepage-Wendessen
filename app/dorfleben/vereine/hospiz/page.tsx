@@ -5,14 +5,14 @@ import {
     FirstAid,
     Flower,
     ShieldCheck,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Hospizverein Wolfenbüttel e. V. - Vereine',
+    title: "Hospizverein Wolfenbüttel e. V. - Vereine",
     description:
-        'Hospizverein Wolfenbüttel e. V. - Begleitung schwerstkranker und sterbender Menschen sowie deren Angehörige.',
+        "Hospizverein Wolfenbüttel e. V. - Begleitung schwerstkranker und sterbender Menschen sowie deren Angehörige.",
 };
 
 export default async function HospizPage() {
@@ -21,7 +21,7 @@ export default async function HospizPage() {
             <PageHeader
                 title="Hospizverein Wolfenbüttel e. V."
                 icon={<Heart />}
-                backgroundImage="/images/Hospiz.jpg"
+                backgroundImage="/images/hospiz.jpg"
                 color="green"
             />
 
@@ -41,9 +41,9 @@ export default async function HospizPage() {
                             Wolfenbüttel hat der Verein das ehemalige Gutshaus
                             zu einem HospizZentrum umgebaut. In seiner
                             Trägerschaft wurde hier zum 1. Juli 2024 ein
-                            stationäres Hospiz, die „Hospiz im Gutspark
-                            gGmbH“, eröffnet. Unter dem Dach des
-                            HospizZentrums hat auch der Verein seine Räume.
+                            stationäres Hospiz, die „Hospiz im Gutspark gGmbH“,
+                            eröffnet. Unter dem Dach des HospizZentrums hat auch
+                            der Verein seine Räume.
                         </p>
                     </div>
 
@@ -66,7 +66,7 @@ export default async function HospizPage() {
                                 trauernde Menschen zu begleiten.
                             </p>
                             <p>
-                                Derzeit hat der Verein{' '}
+                                Derzeit hat der Verein{" "}
                                 <strong>750 Mitglieder</strong>. Davon
                                 engagieren sich etwa 10 Prozent ehrenamtlich.
                             </p>

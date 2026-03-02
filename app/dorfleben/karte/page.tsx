@@ -1,11 +1,12 @@
-import type { Metadata } from 'next';
-import { MapTrifold } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import WendessenMap from './WendessenMap';
+import type { Metadata } from "next";
+import { MapTrifold } from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import WendessenMap from "./WendessenMap";
 
 export const metadata: Metadata = {
-    title: 'Karte - Dorfleben',
-    description: 'Interaktive Karte mit Fokus auf Wendessen in Wolfenbüttel, Niedersachsen.',
+    title: "Karte - Dorfleben",
+    description:
+        "Interaktive Karte mit Fokus auf Wendessen in Wolfenbüttel, Niedersachsen.",
 };
 
 export default function KartePage() {
@@ -15,7 +16,7 @@ export default function KartePage() {
                 title="Karte"
                 subtitle="Wendessen in Wolfenbüttel, Niedersachsen"
                 icon={<MapTrifold />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="blue"
             />
 
@@ -25,7 +26,8 @@ export default function KartePage() {
                         Interaktive Karte von Wendessen
                     </h2>
                     <p className="text-gray-700">
-                        Die Karte ist auf Wendessen begrenzt und zeigt ausschließlich den Ort und seine direkte Umgebung.
+                        Die Karte ist auf Wendessen begrenzt und zeigt
+                        ausschließlich den Ort und seine direkte Umgebung.
                     </p>
                     <WendessenMap />
                 </div>

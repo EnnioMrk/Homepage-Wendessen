@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 import {
     Briefcase,
     EnvelopeSimple,
@@ -13,14 +13,14 @@ import {
     UsersThree,
     ChartBar,
     ArrowLeft,
-} from '@phosphor-icons/react/dist/ssr';
+} from "@phosphor-icons/react/dist/ssr";
 
-import PageHeader from '@/app/components/layout/PageHeader';
+import PageHeader from "@/app/components/layout/PageHeader";
 
 export const metadata = {
-    title: 'Bürgermeister berichtet 2023 (Archiv) | Wendessen',
+    title: "Bürgermeister berichtet 2023 (Archiv) | Wendessen",
     description:
-        'Archivierter Bürgermeisterbericht von Andreas Rink zum Jahr 2023 - Rückblick und Ausblick für Wendessen',
+        "Archivierter Bürgermeisterbericht von Andreas Rink zum Jahr 2023 - Rückblick und Ausblick für Wendessen",
 };
 
 export default function BuergermeisterBerichtet2023ArchivePage() {
@@ -30,7 +30,7 @@ export default function BuergermeisterBerichtet2023ArchivePage() {
                 title="Bürgermeister berichtet"
                 subtitle="Archivbericht zum Jahr 2023"
                 icon={<UsersThree />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="primary"
             />
 
@@ -52,7 +52,7 @@ export default function BuergermeisterBerichtet2023ArchivePage() {
                         <div className="flex-shrink-0">
                             <div className="w-32 h-32 md:w-40 md:h-40 relative overflow-hidden rounded-2xl shadow-lg ring-4 ring-primary/20">
                                 <Image
-                                    src="/images/Ortsrat/Andreas_Rink.JPG"
+                                    src="/images/Ortsrat/andreas-rink.jpg"
                                     alt="Andreas Rink - Ortsbürgermeister"
                                     fill
                                     className="object-cover object-center"

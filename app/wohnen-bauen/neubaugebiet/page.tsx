@@ -9,14 +9,14 @@ import {
     EnvelopeSimple,
     FileText,
     Calendar,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import ZoomableImage from '@/app/components/ZoomableImage';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import ZoomableImage from "@/app/components/ZoomableImage";
 
 export const metadata = {
-    title: 'Neubaugebiet Leipziger Allee - Wohnen & Bauen in Wendessen',
+    title: "Neubaugebiet Leipziger Allee - Wohnen & Bauen in Wendessen",
     description:
-        'Neues Baugebiet in Wendessen auf dem Gelände der ehemaligen Zuckerfabrik. Moderne Wohnkonzepte am künftigen Bahnhaltepunkt.',
+        "Neues Baugebiet in Wendessen auf dem Gelände der ehemaligen Zuckerfabrik. Moderne Wohnkonzepte am künftigen Bahnhaltepunkt.",
 };
 
 export default function NeubaugebietPage() {
@@ -27,7 +27,7 @@ export default function NeubaugebietPage() {
                 title="Neubaugebiet"
                 subtitle="Leipziger Allee - Zukunft des Wohnens"
                 icon={<Buildings />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="emerald"
             />
 
@@ -102,14 +102,14 @@ export default function NeubaugebietPage() {
 
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
                             <ZoomableImage
-                                src="/images/Bebauungsvorschlag_Leiziger_Allee.jpg"
+                                src="/images/bebauungsvorschlag-leiziger-allee.jpg"
                                 alt="Bebauungsvorschlag Leipziger Allee - Neubaugebiet Wendessen"
                                 caption="Bebauungsvorschlag Leipziger Allee"
                                 className="mb-8"
                             />
 
                             <ZoomableImage
-                                src="/images/Baugebiet Leiziger Allee Wendessen Mai 2024.jpg"
+                                src="/images/baugebiet-leiziger-allee-wendessen-mai-2024.jpg"
                                 alt="Baugebiet Leipziger Allee in Wendessen (Mai 2024) - Fläche für den geplanten Hausbau"
                                 caption="Baugebiet Leipziger Allee (Mai 2024): Hier entstehen die geplanten Häuser"
                                 className="mb-8"
@@ -126,7 +126,7 @@ export default function NeubaugebietPage() {
                                             Die dargestellten Grafiken zeigen
                                             erste Eindrücke der möglichen
                                             künftigen Gestaltung des Geländes
-                                            und sind aktuell{' '}
+                                            und sind aktuell{" "}
                                             <strong>
                                                 noch nicht rechtsverbindlich
                                             </strong>
@@ -135,7 +135,6 @@ export default function NeubaugebietPage() {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 

@@ -7,14 +7,14 @@ import {
     UsersThree,
     User,
     Heart,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Initiative Wendesser Spritzenhaus e.V. - Vereine',
+    title: "Initiative Wendesser Spritzenhaus e.V. - Vereine",
     description:
-        'Die Initiative Wendesser Spritzenhaus e.V. - Erhalt und Pflege des historischen Spritzenhauses im Herzen von Wendessen',
+        "Die Initiative Wendesser Spritzenhaus e.V. - Erhalt und Pflege des historischen Spritzenhauses im Herzen von Wendessen",
 };
 
 export default async function SpritzenhausPage() {
@@ -23,7 +23,7 @@ export default async function SpritzenhausPage() {
             <PageHeader
                 title="Spritzenhaus"
                 icon={<Buildings />}
-                backgroundImage="/images/Vereinsleben/Spritzenhaus.webp"
+                backgroundImage="/images/Vereinsleben/spritzenhaus.webp"
                 color="amber"
             />
 
@@ -61,11 +61,11 @@ export default async function SpritzenhausPage() {
                                     Wendesser Bürgern, die sich für den Erhalt
                                     dieses Gebäudes mitten im alten Ortskern
                                     einsetzen wollten, buchstäblich in letzter
-                                    Minute die{' '}
+                                    Minute die{" "}
                                     <strong>
                                         &quot;Initiative Wendesser Spritzenhaus
                                         e.V.&quot;
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     gegründet.
                                 </p>
                             </div>
@@ -80,8 +80,8 @@ export default async function SpritzenhausPage() {
                                     Mit Mitteln der Stadt, des Landes
                                     Niedersachsen, Eigenmitteln des Vereins und
                                     sehr viel Eigenleistung wurde das Gebäude
-                                    saniert und im{' '}
-                                    <strong>Sommer des Jahres 2000</strong>{' '}
+                                    saniert und im{" "}
+                                    <strong>Sommer des Jahres 2000</strong>{" "}
                                     eingeweiht. Heute bildet dieses kleine
                                     Fachwerkhaus mit seinem - 1952 angebauten -
                                     Schlauchturm zusammen mit der benachbarten
@@ -110,7 +110,7 @@ export default async function SpritzenhausPage() {
                                     Weihnachtsbaummarkt
                                 </h3>
                                 <p className="text-gray-700 mb-4">
-                                    Der Verein veranstaltet seit{' '}
+                                    Der Verein veranstaltet seit{" "}
                                     <strong>1999</strong> jedes Jahr in der
                                     Vorweihnachtszeit einen Weihnachtsbaummarkt,
                                     der sich stetig wachsender Beliebtheit
@@ -225,8 +225,9 @@ export default async function SpritzenhausPage() {
                             </h2>
                             <div className="w-20 h-1 bg-amber-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zum Verein oder zur Erhaltung des Spritzenhauses?
-                                Unser Vorstand steht Ihnen gerne zur Verfügung.
+                                Haben Sie Fragen zum Verein oder zur Erhaltung
+                                des Spritzenhauses? Unser Vorstand steht Ihnen
+                                gerne zur Verfügung.
                             </p>
                         </div>
 

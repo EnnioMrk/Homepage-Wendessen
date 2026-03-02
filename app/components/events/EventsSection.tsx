@@ -1,44 +1,44 @@
-import EventCard from './EventCard';
-import { getUpcomingEvents, CalendarEvent } from '@/lib/database';
+import EventCard from "./EventCard";
+import { getUpcomingEvents, CalendarEvent } from "@/lib/database";
 
 export default async function EventsSection() {
     let events: CalendarEvent[];
     try {
         events = await getUpcomingEvents(3); // Get next 3 upcoming events
     } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
 
         // Fallback to hardcoded events if database fails
         events = [
             {
-                id: 'fallback-1',
-                title: 'Ortsratssitzung',
-                location: 'Dorfgemeinschaftshaus',
-                start: new Date('2025-10-15T19:00:00Z'),
-                end: new Date('2025-10-15T21:00:00Z'),
-                imageUrl: '/images/Events/Ortsratssitzung.jpg',
+                id: "fallback-1",
+                title: "Ortsratssitzung",
+                location: "Dorfgemeinschaftshaus",
+                start: new Date("2025-10-15T19:00:00Z"),
+                end: new Date("2025-10-15T21:00:00Z"),
+                imageUrl: "/images/wendessen-luftaufnahme.jpg",
                 isCancelled: false,
-                category: 'sitzung',
+                category: "sitzung",
             },
             {
-                id: 'fallback-2',
-                title: 'Herbstfest',
-                location: 'Dorfplatz',
-                start: new Date('2025-10-25T14:00:00Z'),
-                end: new Date('2025-10-25T18:00:00Z'),
-                imageUrl: '/images/Events/Herbstfest.jpg',
+                id: "fallback-2",
+                title: "Herbstfest",
+                location: "Dorfplatz",
+                start: new Date("2025-10-25T14:00:00Z"),
+                end: new Date("2025-10-25T18:00:00Z"),
+                imageUrl: "/images/banner.jpg",
                 isCancelled: false,
-                category: 'veranstaltung',
+                category: "veranstaltung",
             },
             {
-                id: 'fallback-3',
-                title: 'Bücherbus',
-                location: 'Bushaltestelle Dorfmitte',
-                start: new Date('2025-10-30T15:00:00Z'),
-                end: new Date('2025-10-30T16:30:00Z'),
-                imageUrl: '/images/Events/Bücherbus.jpeg',
+                id: "fallback-3",
+                title: "Bücherbus",
+                location: "Bushaltestelle Dorfmitte",
+                start: new Date("2025-10-30T15:00:00Z"),
+                end: new Date("2025-10-30T16:30:00Z"),
+                imageUrl: "/images/Features/spielplatz.jpg",
                 isCancelled: false,
-                category: 'kultur',
+                category: "kultur",
             },
         ] as CalendarEvent[];
     }
@@ -55,23 +55,23 @@ export default async function EventsSection() {
                             key={event.id}
                             id={event.id}
                             title={event.title}
-                            location={event.location || 'Wendessen'}
+                            location={event.location || "Wendessen"}
                             time={
                                 startDate
-                                    ? startDate.toLocaleTimeString('de-DE', {
-                                          hour: '2-digit',
-                                          minute: '2-digit',
+                                    ? startDate.toLocaleTimeString("de-DE", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
                                       })
-                                    : ''
+                                    : ""
                             }
                             date={
                                 startDate
-                                    ? startDate.toLocaleDateString('de-DE', {
-                                          day: '2-digit',
-                                          month: '2-digit',
-                                          year: 'numeric',
+                                    ? startDate.toLocaleDateString("de-DE", {
+                                          day: "2-digit",
+                                          month: "2-digit",
+                                          year: "numeric",
                                       })
-                                    : ''
+                                    : ""
                             }
                             imageSrc={event.imageUrl}
                             imageCropData={event.imageCropData}

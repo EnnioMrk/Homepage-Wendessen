@@ -2,21 +2,28 @@
 // import webpush from 'web-push';
 
 // VAPID keys for web push - these should be in environment variables
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
-const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@wendessen.de';
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "";
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:admin@wendessen.de";
 
 interface WebPushLike {
-    setVapidDetails: (subject: string, publicKey: string, privateKey: string) => void;
-    sendNotification: (subscription: unknown, payload: string) => Promise<unknown>;
+    setVapidDetails: (
+        subject: string,
+        publicKey: string,
+        privateKey: string,
+    ) => void;
+    sendNotification: (
+        subscription: unknown,
+        payload: string,
+    ) => Promise<unknown>;
 }
 
 let _webpush: WebPushLike | null = null;
-import { sql } from './sql';
+import { sql } from "./sql";
 
 async function getWebpush(): Promise<WebPushLike> {
     if (_webpush) return _webpush;
-    const wp = (await import('web-push')).default;
+    const wp = (await import("web-push")).default;
     if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
         wp.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
     }
@@ -47,7 +54,7 @@ export interface NotificationPayload {
  */
 export async function savePushSubscription(
     userId: number,
-    subscription: { endpoint: string; keys: { p256dh: string; auth: string } }
+    subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
 ): Promise<void> {
     try {
         await sql`
@@ -61,8 +68,8 @@ export async function savePushSubscription(
                 updated_at = CURRENT_TIMESTAMP
         `;
     } catch (error) {
-        console.error('Error saving push subscription:', error);
-        throw new Error('Failed to save push subscription');
+        console.error("Error saving push subscription:", error);
+        throw new Error("Failed to save push subscription");
     }
 }
 
@@ -73,8 +80,8 @@ export async function removePushSubscription(endpoint: string): Promise<void> {
     try {
         await sql`DELETE FROM push_subscriptions WHERE endpoint = ${endpoint}`;
     } catch (error) {
-        console.error('Error removing push subscription:', error);
-        throw new Error('Failed to remove push subscription');
+        console.error("Error removing push subscription:", error);
+        throw new Error("Failed to remove push subscription");
     }
 }
 
@@ -82,7 +89,7 @@ export async function removePushSubscription(endpoint: string): Promise<void> {
  * Get all push subscriptions for a user
  */
 export async function getUserPushSubscriptions(
-    userId: number
+    userId: number,
 ): Promise<PushSubscription[]> {
     try {
         const result = await sql`
@@ -99,7 +106,7 @@ export async function getUserPushSubscriptions(
             createdAt: new Date(row.created_at as string),
         }));
     } catch (error) {
-        console.error('Error getting user push subscriptions:', error);
+        console.error("Error getting user push subscriptions:", error);
         return [];
     }
 }
@@ -108,7 +115,7 @@ export async function getUserPushSubscriptions(
  * Check if a user has any push subscriptions
  */
 export async function hasUserPushSubscription(
-    userId: number
+    userId: number,
 ): Promise<boolean> {
     try {
         const result = await sql`
@@ -116,7 +123,7 @@ export async function hasUserPushSubscription(
         `;
         return Number(result[0]?.count) > 0;
     } catch (error) {
-        console.error('Error checking user push subscription:', error);
+        console.error("Error checking user push subscription:", error);
         return false;
     }
 }
@@ -125,7 +132,7 @@ export async function hasUserPushSubscription(
  * Get the first push subscription for a user (for sending single notifications)
  */
 export async function getUserPushSubscription(
-    userId: number
+    userId: number,
 ): Promise<PushSubscription | null> {
     const subscriptions = await getUserPushSubscriptions(userId);
     return subscriptions.length > 0 ? subscriptions[0] : null;
@@ -135,7 +142,7 @@ export async function getUserPushSubscription(
  * Get all subscriptions for users with a specific permission
  */
 export async function getSubscriptionsForPermission(
-    permission: string
+    permission: string,
 ): Promise<PushSubscription[]> {
     try {
         // Get subscriptions for users who have the permission in their custom_permissions JSONB column
@@ -160,7 +167,7 @@ export async function getSubscriptionsForPermission(
             createdAt: new Date(row.created_at as string),
         }));
     } catch (error) {
-        console.error('Error getting subscriptions for permission:', error);
+        console.error("Error getting subscriptions for permission:", error);
         return [];
     }
 }
@@ -170,7 +177,7 @@ export async function getSubscriptionsForPermission(
  */
 export async function hasNotificationBeenSent(
     eventType: string,
-    resourceId: string
+    resourceId: string,
 ): Promise<boolean> {
     try {
         const result = await sql`
@@ -179,7 +186,7 @@ export async function hasNotificationBeenSent(
         `;
         return Number(result[0]?.count) > 0;
     } catch (error) {
-        console.error('Error checking notification event:', error);
+        console.error("Error checking notification event:", error);
         return false;
     }
 }
@@ -189,7 +196,7 @@ export async function hasNotificationBeenSent(
  */
 export async function markNotificationSent(
     eventType: string,
-    resourceId: string
+    resourceId: string,
 ): Promise<void> {
     try {
         await sql`
@@ -198,7 +205,7 @@ export async function markNotificationSent(
             ON CONFLICT (event_type, resource_id) DO NOTHING
         `;
     } catch (error) {
-        console.error('Error marking notification sent:', error);
+        console.error("Error marking notification sent:", error);
     }
 }
 
@@ -207,10 +214,10 @@ export async function markNotificationSent(
  */
 export async function sendPushNotification(
     subscription: PushSubscription,
-    payload: NotificationPayload
+    payload: NotificationPayload,
 ): Promise<boolean> {
     if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
-        console.warn('VAPID keys not configured, skipping push notification');
+        console.warn("VAPID keys not configured, skipping push notification");
         return false;
     }
 
@@ -224,20 +231,17 @@ export async function sendPushNotification(
 
     try {
         const wp = await getWebpush();
-        await wp.sendNotification(
-            pushSubscription,
-            JSON.stringify(payload)
-        );
+        await wp.sendNotification(pushSubscription, JSON.stringify(payload));
         return true;
     } catch (error: unknown) {
         const err = error as { statusCode?: number };
-        console.error('Error sending push notification:', error);
+        console.error("Error sending push notification:", error);
 
         // If subscription is invalid/expired, remove it
         if (err.statusCode === 410 || err.statusCode === 404) {
             console.log(
-                'Subscription expired, removing:',
-                subscription.endpoint
+                "Subscription expired, removing:",
+                subscription.endpoint,
             );
             await removePushSubscription(subscription.endpoint);
         }
@@ -252,7 +256,7 @@ export async function notifyUsersWithPermission(
     permission: string,
     eventType: string,
     resourceId: string,
-    payload: NotificationPayload
+    payload: NotificationPayload,
 ): Promise<number> {
     // Check if this notification was already sent
     const alreadySent = await hasNotificationBeenSent(eventType, resourceId);
@@ -280,7 +284,7 @@ export async function notifyUsersWithPermission(
     }
 
     console.log(
-        `Sent ${successCount}/${subscriptions.length} notifications for ${eventType}:${resourceId}`
+        `Sent ${successCount}/${subscriptions.length} notifications for ${eventType}:${resourceId}`,
     );
     return successCount;
 }
@@ -290,19 +294,19 @@ export async function notifyUsersWithPermission(
  */
 export async function notifyNewPortrait(
     portraitId: string,
-    submitterName: string
+    submitterName: string,
 ): Promise<void> {
     await notifyUsersWithPermission(
-        'portraits.view',
-        'new_portrait',
+        "portraits.view",
+        "new_portrait",
         portraitId,
         {
-            title: 'Neues Portrait eingereicht',
+            title: "Neues Portrait eingereicht",
             body: `${submitterName} hat ein Portrait eingereicht und wartet auf Freigabe.`,
-            icon: '/images/logo.png',
-            url: '/admin/portraits',
-            tag: 'new-portrait',
-        }
+            icon: "/images/wappen.png",
+            url: "/admin/portraits",
+            tag: "new-portrait",
+        },
     );
 }
 
@@ -312,20 +316,21 @@ export async function notifyNewPortrait(
 export async function notifyNewSharedGallery(
     submissionGroupId: string,
     submitterName: string,
-    imageCount: number
+    imageCount: number,
 ): Promise<void> {
     await notifyUsersWithPermission(
-        'shared_gallery.view',
-        'new_shared_gallery',
+        "shared_gallery.view",
+        "new_shared_gallery",
         submissionGroupId,
         {
-            title: 'Neue Impressionen eingereicht',
-            body: `${submitterName} hat ${imageCount} ${imageCount === 1 ? 'Bild' : 'Bilder'
-                } eingereicht.`,
-            icon: '/images/logo.png',
-            url: '/admin/shared-gallery',
-            tag: 'new-shared-gallery',
-        }
+            title: "Neue Impressionen eingereicht",
+            body: `${submitterName} hat ${imageCount} ${
+                imageCount === 1 ? "Bild" : "Bilder"
+            } eingereicht.`,
+            icon: "/images/wappen.png",
+            url: "/admin/shared-gallery",
+            tag: "new-shared-gallery",
+        },
     );
 }
 
@@ -335,20 +340,21 @@ export async function notifyNewSharedGallery(
 export async function notifySharedGalleryAppended(
     submissionGroupId: string,
     submitterName: string,
-    imageCount: number
+    imageCount: number,
 ): Promise<void> {
     await notifyUsersWithPermission(
-        'shared_gallery.view',
-        'shared_gallery_appended',
+        "shared_gallery.view",
+        "shared_gallery_appended",
         submissionGroupId,
         {
-            title: 'Impressionen ergänzt',
-            body: `${submitterName} hat ${imageCount} ${imageCount === 1 ? 'Bild' : 'Bilder'
-                } zu einer bestehenden Einreichung hinzugefügt.`,
-            icon: '/images/logo.png',
-            url: '/admin/shared-gallery',
-            tag: 'shared-gallery-appended',
-        }
+            title: "Impressionen ergänzt",
+            body: `${submitterName} hat ${imageCount} ${
+                imageCount === 1 ? "Bild" : "Bilder"
+            } zu einer bestehenden Einreichung hinzugefügt.`,
+            icon: "/images/wappen.png",
+            url: "/admin/shared-gallery",
+            tag: "shared-gallery-appended",
+        },
     );
 }
 
@@ -396,7 +402,7 @@ async function getPendingPortraits(): Promise<PendingPortrait[]> {
             daysWaiting: Number(row.days_waiting),
         }));
     } catch (error) {
-        console.error('Error getting pending portraits:', error);
+        console.error("Error getting pending portraits:", error);
         return [];
     }
 }
@@ -420,12 +426,12 @@ async function getPendingSharedGalleryGroups(): Promise<
         `;
         return result.map((row: Record<string, unknown>) => ({
             submissionGroupId: String(row.submission_group_id),
-            submitterName: String(row.submitter_name || 'Unbekannt'),
+            submitterName: String(row.submitter_name || "Unbekannt"),
             imageCount: Number(row.image_count),
             daysWaiting: Number(row.days_waiting),
         }));
     } catch (error) {
-        console.error('Error getting pending shared gallery groups:', error);
+        console.error("Error getting pending shared gallery groups:", error);
         return [];
     }
 }
@@ -448,16 +454,16 @@ export async function sendPortraitReminders(): Promise<{
             const resourceId = String(portrait.id);
 
             const sent = await notifyUsersWithPermission(
-                'portraits.view',
+                "portraits.view",
                 eventType,
                 resourceId,
                 {
                     title: `⏰ Portrait wartet seit ${reminderDay} Tagen`,
                     body: `Das Portrait von "${portrait.name}" wartet seit ${reminderDay} Tagen auf Freigabe.`,
-                    icon: '/images/logo.png',
-                    url: '/admin/portraits',
+                    icon: "/images/wappen.png",
+                    url: "/admin/portraits",
                     tag: `portrait-reminder-${portrait.id}`,
-                }
+                },
             );
             if (sent > 0) sentCount++;
         }
@@ -485,21 +491,22 @@ export async function sendSharedGalleryReminders(): Promise<{
 
             const imageText =
                 group.imageCount === 1
-                    ? '1 Bild'
+                    ? "1 Bild"
                     : `${group.imageCount} Bilder`;
 
             const sent = await notifyUsersWithPermission(
-                'shared_gallery.view',
+                "shared_gallery.view",
                 eventType,
                 resourceId,
                 {
                     title: `⏰ Impressionen warten seit ${reminderDay} Tagen`,
-                    body: `${imageText} von "${group.submitterName}" ${group.imageCount === 1 ? 'wartet' : 'warten'
-                        } seit ${reminderDay} Tagen auf Freigabe.`,
-                    icon: '/images/logo.png',
-                    url: '/admin/shared-gallery',
+                    body: `${imageText} von "${group.submitterName}" ${
+                        group.imageCount === 1 ? "wartet" : "warten"
+                    } seit ${reminderDay} Tagen auf Freigabe.`,
+                    icon: "/images/wappen.png",
+                    url: "/admin/shared-gallery",
                     tag: `shared-gallery-reminder-${group.submissionGroupId}`,
-                }
+                },
             );
             if (sent > 0) sentCount++;
         }
@@ -522,7 +529,7 @@ export async function sendAllPendingReminders(): Promise<{
     ]);
 
     console.log(
-        `Reminder check complete: Portraits ${portraits.sent}/${portraits.checked}, Shared Gallery ${sharedGallery.sent}/${sharedGallery.checked}`
+        `Reminder check complete: Portraits ${portraits.sent}/${portraits.checked}, Shared Gallery ${sharedGallery.sent}/${sharedGallery.checked}`,
     );
 
     return { portraits, sharedGallery };

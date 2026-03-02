@@ -1,12 +1,12 @@
-import { getContacts } from '@/lib/database';
-import ContactDirectory from './ContactDirectory';
-import PageHeader from '@/app/components/layout/PageHeader';
-import { AddressBook } from '@phosphor-icons/react/dist/ssr';
+import { getContacts } from "@/lib/database";
+import ContactDirectory from "./ContactDirectory";
+import PageHeader from "@/app/components/layout/PageHeader";
+import { AddressBook } from "@phosphor-icons/react/dist/ssr";
 
 export const metadata = {
-    title: 'Kontaktverzeichnis - Wendessen',
+    title: "Kontaktverzeichnis - Wendessen",
     description:
-        'Alle Ansprechpartner in Wendessen – durchsuchen, sortieren und filtern.',
+        "Alle Ansprechpartner in Wendessen – durchsuchen, sortieren und filtern.",
 };
 
 export default async function KontaktVerzeichnisPage() {
@@ -15,8 +15,8 @@ export default async function KontaktVerzeichnisPage() {
     // Precompute flattened fields for client-side filtering
     const initial = contacts.map((c) => ({
         ...c,
-        firstOrg: c.affiliations?.[0]?.org ?? '',
-        firstRole: c.affiliations?.[0]?.role ?? '',
+        firstOrg: c.affiliations?.[0]?.org ?? "",
+        firstRole: c.affiliations?.[0]?.role ?? "",
         // importance is already included from the database
     }));
 
@@ -27,7 +27,7 @@ export default async function KontaktVerzeichnisPage() {
                 subtitle="Finden Sie die richtigen Ansprechpartner in Wendessen – schnell und übersichtlich."
                 icon={<AddressBook />}
                 color="emerald"
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
             />
 
             {/* Controls + List */}

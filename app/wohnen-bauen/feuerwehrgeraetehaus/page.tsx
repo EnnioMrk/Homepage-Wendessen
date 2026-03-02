@@ -7,14 +7,14 @@ import {
     Clock,
     Heart,
     Calendar,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import ZoomableImage from '@/app/components/ZoomableImage';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import ZoomableImage from "@/app/components/ZoomableImage";
 
 export const metadata = {
-    title: 'Feuerwehrgerätehaus - Wohnen & Bauen in Wendessen',
+    title: "Feuerwehrgerätehaus - Wohnen & Bauen in Wendessen",
     description:
-        'Neues Feuerwehrgerätehaus in Wendessen am Eckgrundstück Leipziger Allee / Ahlumer Weg. Moderne Unterbringung für unsere Freiwillige Feuerwehr.',
+        "Neues Feuerwehrgerätehaus in Wendessen am Eckgrundstück Leipziger Allee / Ahlumer Weg. Moderne Unterbringung für unsere Freiwillige Feuerwehr.",
 };
 
 export default function FeuerwehrgeraetehausPage() {
@@ -25,7 +25,7 @@ export default function FeuerwehrgeraetehausPage() {
                 title="Feuerwehrgerätehaus"
                 subtitle="Neue Heimat für unsere Feuerwehr"
                 icon={<Buildings />}
-                backgroundImage="/images/Vereinsleben/Freiwillige_Feuerwehr.jpeg"
+                backgroundImage="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
                 color="red"
             />
 
@@ -57,7 +57,7 @@ export default function FeuerwehrgeraetehausPage() {
                                     Ahlumer Weg/ Leipziger Allee ein
                                     Feuerwehrhaus - das erste in der langen
                                     Geschichte der Freiwilligen Feuerwehr, die
-                                    seit Jahrzehnten mehr recht als schlecht in
+                                    seit Jahrzehnten mehr schlecht als recht in
                                     der ehemaligen alten Schule am Kirchring
                                     untergebracht ist.
                                 </p>
@@ -116,13 +116,13 @@ export default function FeuerwehrgeraetehausPage() {
                             </div>
 
                             <ZoomableImage
-                                src="/images/Feuerwehrhaus Wendessen Eingangsansicht.jpg"
+                                src="/images/feuerwehrhaus-wendessen-eingangsansicht.jpg"
                                 alt="3D-Visualisierung der Eingangsansicht des geplanten Feuerwehrgerätehauses in Wendessen"
                                 caption="3D-Visualisierung: Eingangsansicht des geplanten Feuerwehrgerätehauses in Wendessen"
                                 className="mb-2"
                             />
                             <ZoomableImage
-                                src="/images/Lageplan Feuerwehrgerätehaus.jpg"
+                                src="/images/lageplan-feuerwehrgeraetehaus.jpg"
                                 alt="Lageplan des geplanten Feuerwehrgerätehauses in Wendessen"
                                 caption="Bebauungsplan Feuerwehrgerätehaus"
                                 className="mb-2"
@@ -217,15 +217,15 @@ export default function FeuerwehrgeraetehausPage() {
                                                 90 Quadratmeter
                                             </li>
                                             <li>
-                                                • <strong>Erste Mieter:</strong>{' '}
+                                                • <strong>Erste Mieter:</strong>{" "}
                                                 Anfang 2024
                                             </li>
                                             <li>
-                                                • <strong>Investor:</strong>{' '}
+                                                • <strong>Investor:</strong>{" "}
                                                 Privat
                                             </li>
                                             <li>
-                                                • <strong>Status:</strong>{' '}
+                                                • <strong>Status:</strong>{" "}
                                                 Aktuell im Bau
                                             </li>
                                         </ul>

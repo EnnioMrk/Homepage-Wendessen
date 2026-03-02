@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 import {
     ArrowSquareOut,
     MapPin,
@@ -7,7 +7,7 @@ import {
     Phone,
     Briefcase,
     Clock,
-} from '@phosphor-icons/react/dist/ssr';
+} from "@phosphor-icons/react/dist/ssr";
 
 interface ContactInfoCardProps {
     icon: React.ReactNode;
@@ -26,12 +26,16 @@ interface CardContentProps {
     isClickable: boolean;
 }
 
-const CardContent = ({ icon, label, value, gradient, isClickable }: CardContentProps) => (
+const CardContent = ({
+    icon,
+    label,
+    value,
+    gradient,
+    isClickable,
+}: CardContentProps) => (
     <div
         className={`group relative overflow-hidden rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 bg-white ${
-            isClickable
-                ? 'transform hover:-translate-y-2 cursor-pointer'
-                : ''
+            isClickable ? "transform hover:-translate-y-2 cursor-pointer" : ""
         }`}
     >
         <div className="flex items-start space-x-4">
@@ -47,16 +51,16 @@ const CardContent = ({ icon, label, value, gradient, isClickable }: CardContentP
                 <p
                     className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-300 break-words overflow-hidden"
                     style={{
-                        display: '-webkit-box',
+                        display: "-webkit-box",
                         WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        wordBreak: 'break-all',
+                        WebkitBoxOrient: "vertical",
+                        wordBreak: "break-all",
                         fontSize:
                             value.length > 25
                                 ? value.length > 35
-                                    ? '0.875rem'
-                                    : '1rem'
-                                : '1.125rem',
+                                    ? "0.875rem"
+                                    : "1rem"
+                                : "1.125rem",
                     }}
                 >
                     {value}
@@ -139,7 +143,7 @@ export default function ContactPersonCard({
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             {/* Hero Section */}
             <div className="relative bg-gradient-to-r from-primary via-secondary to-primary py-20 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/images/Wendessen_Luftaufnahme.jpg')] bg-cover bg-center opacity-20"></div>
+                <div className="absolute inset-0 bg-[url('/images/wendessen-luftaufnahme.jpg')] bg-cover bg-center opacity-20"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90"></div>
 
                 <div className="relative z-10 container mx-auto px-4">
@@ -214,8 +218,8 @@ export default function ContactPersonCard({
                     <div
                         className={`grid gap-6 mb-12 ${
                             contactInfo.phone
-                                ? 'grid-cols-1 lg:grid-cols-2'
-                                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                                ? "grid-cols-1 lg:grid-cols-2"
+                                : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
                         }`}
                     >
                         {/* Address */}

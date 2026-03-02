@@ -1,18 +1,18 @@
-import OrtsratMemberCard from '../../../components/OrtsratMemberCard';
+import OrtsratMemberCard from "../../../components/OrtsratMemberCard";
 import {
     UsersThree,
     Buildings,
     Lightning,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
 
 export const metadata = {
-    title: 'Ortsratsmitglieder - Dorfleben Wendessen',
+    title: "Ortsratsmitglieder - Dorfleben Wendessen",
     description:
-        'Lernen Sie die Mitglieder unseres Ortsrates kennen - Ihre Vertreter vor Ort',
+        "Lernen Sie die Mitglieder unseres Ortsrates kennen - Ihre Vertreter vor Ort",
 };
 
-import { ORTSRAT_MEMBERS } from '@/lib/constants/members';
+import { ORTSRAT_MEMBERS } from "@/lib/constants/members";
 
 const ortsratMembers = ORTSRAT_MEMBERS;
 
@@ -23,7 +23,7 @@ export default function OrtsratMitgliederPage() {
                 title="Ortsrat"
                 subtitle="Lernen Sie die Menschen kennen, die sich für unser Wendessen einsetzen"
                 icon={<UsersThree />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="primary"
             />
 
@@ -37,8 +37,10 @@ export default function OrtsratMitgliederPage() {
                                 key={member.name}
                                 name={member.name}
                                 position={member.position || member.role}
-                                party={member.party || 'parteilos'}
-                                imageSrc={member.imageSrc || '/images/Placeholder/member.webp'}
+                                party={member.party || "parteilos"}
+                                imageSrc={
+                                    member.imageSrc || "/images/wappen.png"
+                                }
                                 imageAlt={member.imageAlt || member.name}
                                 contactSlug={member.contactSlug}
                             />

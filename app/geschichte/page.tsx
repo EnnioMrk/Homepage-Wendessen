@@ -1,11 +1,11 @@
-import { BookOpen } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import ZoomableImage from '@/app/components/ZoomableImage';
+import { BookOpen } from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import ZoomableImage from "@/app/components/ZoomableImage";
 
 export const metadata = {
-    title: 'Geschichte - Wendessen',
+    title: "Geschichte - Wendessen",
     description:
-        'Die Geschichte von Wendessen - Von der ersten urkundlichen Erwähnung 1170 als Winedissen bis heute. Chronik eines Dorfes mit über 850 Jahren Geschichte.',
+        "Die Geschichte von Wendessen - Von der ersten urkundlichen Erwähnung 1170 als Winedissen bis heute. Chronik eines Dorfes mit über 850 Jahren Geschichte.",
 };
 
 export default function GeschichtePage() {
@@ -16,7 +16,7 @@ export default function GeschichtePage() {
                 title="Geschichte"
                 subtitle="850+ Jahre Wendessen — Von Winedissen zu Wendessen (1170 bis heute)"
                 icon={<BookOpen />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="amber"
             />
 
@@ -116,7 +116,7 @@ export default function GeschichtePage() {
                                 Die wichtigsten Meilensteine in der Geschichte
                                 Wendessens
                             </p>
-                        </div>{' '}
+                        </div>{" "}
                         <div className="space-y-8">
                             {/* 1218 - Patronatsrechte */}
                             <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6 bg-white rounded-3xl p-6 sm:p-8 shadow-xl">
@@ -158,7 +158,7 @@ export default function GeschichtePage() {
                                             zerstört
                                         </p>
                                         <p>
-                                            <strong>19. Juni 1550:</strong>{' '}
+                                            <strong>19. Juni 1550:</strong>{" "}
                                             Überfall der Stadt Braunschweig auf
                                             Wendessen
                                         </p>
@@ -188,7 +188,7 @@ export default function GeschichtePage() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                                             <div>
                                                 <p>
-                                                    <strong>1736:</strong>{' '}
+                                                    <strong>1736:</strong>{" "}
                                                     Fürstliches Kammergut
                                                 </p>
                                                 <p>
@@ -198,11 +198,11 @@ export default function GeschichtePage() {
                                             </div>
                                             <div>
                                                 <p>
-                                                    <strong>1864-2001:</strong>{' '}
+                                                    <strong>1864-2001:</strong>{" "}
                                                     Besitz Familie Seeliger
                                                 </p>
                                                 <p>
-                                                    <strong>Heute:</strong>{' '}
+                                                    <strong>Heute:</strong>{" "}
                                                     Hospizzentrum Wendessen
                                                 </p>
                                             </div>
@@ -245,7 +245,7 @@ export default function GeschichtePage() {
                                     </h4>
                                     <div className="bg-gray-50 p-4 rounded-xl space-y-3 text-gray-700">
                                         <p>
-                                            <strong>1843:</strong>{' '}
+                                            <strong>1843:</strong>{" "}
                                             Eisenbahnanschluss an der Strecke
                                             Braunschweig-Helmstedt
                                         </p>
@@ -255,11 +255,16 @@ export default function GeschichtePage() {
                                             1957)
                                         </p>
                                         <p>
-                                            <strong>1957:</strong> Ende der Zuckerfabrik
+                                            <strong>1957:</strong> Ende der
+                                            Zuckerfabrik
                                         </p>
                                         <div className="bg-blue-100 p-3 rounded-lg">
                                             <p className="text-blue-800">
-                                                <strong>Heute:</strong> Bebauung des Geländes mitEin- und Mehrfamilienhäusern geplant, Wiederinbetriebnahme des Bahnhaltepunktes vorgesehen.
+                                                <strong>Heute:</strong> Bebauung
+                                                des Geländes mitEin- und
+                                                Mehrfamilienhäusern geplant,
+                                                Wiederinbetriebnahme des
+                                                Bahnhaltepunktes vorgesehen.
                                             </p>
                                         </div>
                                     </div>
@@ -368,11 +373,11 @@ export default function GeschichtePage() {
                                 Über 850 Jahre lebendige Geschichte
                             </h1>
                             <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-8">
-                                Von Winedissen zu Wendessen - unser Dorf hat Kriesen und
-                                Kriege überstanden, sich gewandelt und ist
-                                gewachsen. Heute blicken wir stolz auf über 850
-                                Jahre Geschichte zurück und schauen optimistisch
-                                in die Zukunft.
+                                Von Winedissen zu Wendessen - unser Dorf hat
+                                Kriesen und Kriege überstanden, sich gewandelt
+                                und ist gewachsen. Heute blicken wir stolz auf
+                                über 850 Jahre Geschichte zurück und schauen
+                                optimistisch in die Zukunft.
                             </p>
                             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-8">
                                 <div className="flex items-center space-x-2 text-amber-600">
@@ -385,7 +390,7 @@ export default function GeschichtePage() {
 
                             <div className="flex justify-center mb-10">
                                 <ZoomableImage
-                                    src="/images/Wappen.png"
+                                    src="/images/wappen.png"
                                     alt="Wappen von Wendessen"
                                     className="mb-0 w-32 sm:w-40"
                                     imageClassName="object-contain"
@@ -395,18 +400,25 @@ export default function GeschichtePage() {
 
                             <div className="max-w-3xl mx-auto text-center mb-12 space-y-4">
                                 <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic">
-                                    Der Name Wendessen bedeutet „Heim im Weidezaun“. Er wird im Wappen durch den grünen Flechtzaun, der zudem auf die Landwirtschaft als wichtigen Wirtschaftszweig verweist, versinnbildlicht.
+                                    Der Name Wendessen bedeutet „Heim im
+                                    Weidezaun“. Er wird im Wappen durch den
+                                    grünen Flechtzaun, der zudem auf die
+                                    Landwirtschaft als wichtigen
+                                    Wirtschaftszweig verweist, versinnbildlicht.
                                 </p>
                                 <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic">
-                                    Die Wehrkirche von Wendessen ist St. Georg geweiht. Als Sinnbild der Kirche erscheint das heraldische Attribut des Schutzpatrons, das rote Kreuz auf silbernem Grund.
+                                    Die Wehrkirche von Wendessen ist St. Georg
+                                    geweiht. Als Sinnbild der Kirche erscheint
+                                    das heraldische Attribut des Schutzpatrons,
+                                    das rote Kreuz auf silbernem Grund.
                                 </p>
                             </div>
-                            
+
                             <div className="bg-white p-6 rounded-2xl shadow-lg mt-8">
                                 <p className="text-base sm:text-lg text-gray-600">
                                     <strong className="text-amber-700">
                                         Ortsheimatpfleger:
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     Erich Isensee
                                 </p>
                             </div>

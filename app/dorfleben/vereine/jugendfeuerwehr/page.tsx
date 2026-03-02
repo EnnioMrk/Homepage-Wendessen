@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 import {
     Fire,
     UsersThree,
@@ -6,14 +6,14 @@ import {
     Lightning,
     UserPlus,
     MapPin,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Jugendfeuerwehr Wendessen - Vereine',
+    title: "Jugendfeuerwehr Wendessen - Vereine",
     description:
-        'Die Jugendfeuerwehr Wendessen - Spaß, Action und feuerwehrtechnisches Wissen für Kinder und Jugendliche von 10 bis 16 Jahren',
+        "Die Jugendfeuerwehr Wendessen - Spaß, Action und feuerwehrtechnisches Wissen für Kinder und Jugendliche von 10 bis 16 Jahren",
 };
 
 export default async function JugendfeuerwehrPage() {
@@ -22,7 +22,7 @@ export default async function JugendfeuerwehrPage() {
             <PageHeader
                 title="Jugendfeuerwehr"
                 icon={<Fire />}
-                backgroundImage="/images/Vereinsleben/Jugendfeuerwehr.jpeg"
+                backgroundImage="/images/Vereinsleben/jugendfeuerwehr.jpeg"
                 color="orange"
             />
 
@@ -33,7 +33,7 @@ export default async function JugendfeuerwehrPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-orange-100">
                             <Image
-                                src="/images/Vereinsleben/Jugendfeuerwehr.jpeg"
+                                src="/images/Vereinsleben/jugendfeuerwehr.jpeg"
                                 alt="Jugendfeuerwehr Wendessen in Aktion"
                                 fill
                                 className="object-cover"
@@ -78,11 +78,11 @@ export default async function JugendfeuerwehrPage() {
                             </div>
 
                             <p className="text-lg">
-                                Wir sind die{' '}
+                                Wir sind die{" "}
                                 <strong>
                                     Jugendgruppe der Freiwilligen Feuerwehr
                                     Wolfenbüttel im Ortsteil Wendessen
-                                </strong>{' '}
+                                </strong>{" "}
                                 und mittlerweile gibt es unsere Jugendfeuerwehr
                                 schon <strong>über 25 Jahre</strong>.
                             </p>
@@ -93,7 +93,7 @@ export default async function JugendfeuerwehrPage() {
                                     Wer kann mitmachen?
                                 </h3>
                                 <p className="text-lg">
-                                    Bei uns gibt es{' '}
+                                    Bei uns gibt es{" "}
                                     <strong>
                                         Jungen und Mädchen im Alter von 10 bis
                                         16 Jahren
@@ -193,12 +193,12 @@ export default async function JugendfeuerwehrPage() {
 
                         <div className="text-center text-gray-700">
                             <p className="text-lg mb-6">
-                                Gemeinsam mit unserem{' '}
+                                Gemeinsam mit unserem{" "}
                                 <strong>
                                     Jugendfeuerwehrwart Christoph Schmegner
                                 </strong>
-                                , seinem{' '}
-                                <strong>Stellvertreter Frederick Witte</strong>{' '}
+                                , seinem{" "}
+                                <strong>Stellvertreter Frederick Witte</strong>{" "}
                                 sowie unseren Betreuern eignen wir uns durch
                                 Erlernen und Üben feuerwehrtechnisches Wissen
                                 an.
@@ -226,7 +226,7 @@ export default async function JugendfeuerwehrPage() {
 
                             <div className="space-y-6 text-gray-700 text-lg">
                                 <p>
-                                    Wenn Du zwischen{' '}
+                                    Wenn Du zwischen{" "}
                                     <strong>10 und 16 Jahren alt</strong> bist
                                     und gern bei uns mitmachen möchtest, dann
                                     melde Dich doch bei uns!
@@ -238,7 +238,7 @@ export default async function JugendfeuerwehrPage() {
                                         Wo du uns findest:
                                     </h4>
                                     <p className="text-orange-700">
-                                        Das Feuerwehr-Gerätehaus findest Du{' '}
+                                        Das Feuerwehr-Gerätehaus findest Du{" "}
                                         <strong>
                                             mitten im Dorf gegenüber dem
                                             Spielplatz
@@ -249,7 +249,7 @@ export default async function JugendfeuerwehrPage() {
 
                                 <p>
                                     Wenn Du neugierig geworden bist kannst Du
-                                    uns auch gerne einmal im Internet unter{' '}
+                                    uns auch gerne einmal im Internet unter{" "}
                                     <a
                                         href="http://www.jf-wendessen.jimdo.com"
                                         target="_blank"
@@ -257,7 +257,7 @@ export default async function JugendfeuerwehrPage() {
                                         className="text-orange-600 hover:text-orange-700 font-semibold underline"
                                     >
                                         www.jf-wendessen.jimdo.com
-                                    </a>{' '}
+                                    </a>{" "}
                                     besuchen oder Du wendest Dich direkt an DEN
                                     Jugendwarte Frederick Witte.
                                 </p>

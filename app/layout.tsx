@@ -68,7 +68,7 @@ export default function RootLayout({
                                             className="cursor-pointer"
                                         >
                                             <Image
-                                                src="/images/Wappen.png"
+                                                src="/images/wappen.png"
                                                 alt="Wappen Wendessen"
                                                 width={48}
                                                 height={48}

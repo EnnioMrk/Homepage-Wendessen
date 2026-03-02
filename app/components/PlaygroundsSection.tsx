@@ -1,11 +1,11 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 export default function PlaygroundsSection() {
     return (
         <div className="group relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white">
             <div className="relative min-h-[400px] lg:min-h-[500px] overflow-hidden">
                 <Image
-                    src="/images/Features/Spielplatz.jpg"
+                    src="/images/Features/spielplatz.jpg"
                     alt="Spielplatz Wendessen"
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -17,7 +17,7 @@ export default function PlaygroundsSection() {
                             className="text-2xl md:text-3xl lg:text-5xl font-bold mb-4 lg:mb-6 leading-tight drop-shadow-lg"
                             style={{
                                 textShadow:
-                                    '1px 1px 2px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8), 1px -1px 2px rgba(0,0,0,0.8), -1px 1px 2px rgba(0,0,0,0.8)',
+                                    "1px 1px 2px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.8), 1px -1px 2px rgba(0,0,0,0.8), -1px 1px 2px rgba(0,0,0,0.8)",
                             }}
                         >
                             3 Spielplätze im Ort!

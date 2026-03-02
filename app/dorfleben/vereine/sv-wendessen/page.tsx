@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 import {
     Medal,
     Star,
@@ -10,14 +10,14 @@ import {
     SoccerBall,
     ShoppingCart,
     Baby,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'SV Wendessen - Dorfleben',
+    title: "SV Wendessen - Dorfleben",
     description:
-        'SV Wendessen - Über 75 Jahre Vereinstradition. Fußball, Gymnastik, Tennis, Tischtennis, Tanzsport und vieles mehr für die ganze Familie.',
+        "SV Wendessen - Über 75 Jahre Vereinstradition. Fußball, Gymnastik, Tennis, Tischtennis, Tanzsport und vieles mehr für die ganze Familie.",
 };
 
 export default async function SVWendessenPage() {
@@ -26,7 +26,7 @@ export default async function SVWendessenPage() {
             <PageHeader
                 title="SV Wendessen"
                 icon={<Medal />}
-                backgroundImage="/images/Vereinsleben/SV_Wendessen.JPG"
+                backgroundImage="/images/Vereinsleben/sv-wendessen.jpg"
                 color="blue"
             />
 
@@ -37,11 +37,11 @@ export default async function SVWendessenPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-blue-100">
                             <Image
-                                src="/images/Vereinsleben/SV_Wendessen.JPG"
+                                src="/images/Vereinsleben/sv-wendessen.jpg"
                                 alt="SV Wendessen - Weinrich-Arena und Vereinsgelände"
                                 fill
                                 className="object-cover"
-                                style={{ objectPosition: 'center 43%' }}
+                                style={{ objectPosition: "center 43%" }}
                                 priority
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -50,7 +50,7 @@ export default async function SVWendessenPage() {
                                     className="text-3xl font-bold mb-2 drop-shadow-lg"
                                     style={{
                                         textShadow:
-                                            '2px 2px 4px rgba(0,0,0,0.8)',
+                                            "2px 2px 4px rgba(0,0,0,0.8)",
                                     }}
                                 >
                                     Weinrich-Arena Wendessen
@@ -59,7 +59,7 @@ export default async function SVWendessenPage() {
                                     className="text-lg drop-shadow-md"
                                     style={{
                                         textShadow:
-                                            '1px 1px 3px rgba(0,0,0,0.8)',
+                                            "1px 1px 3px rgba(0,0,0,0.8)",
                                     }}
                                 >
                                     Unser Sportplatz und Vereinsheim - Zentrum
@@ -86,16 +86,16 @@ export default async function SVWendessenPage() {
                         <div className="space-y-6 text-gray-700 leading-relaxed">
                             <p className="text-lg">
                                 Vor über <strong>75 Jahren</strong> gründeten
-                                eine Handvoll fußballbegeisterter Männer den{' '}
+                                eine Handvoll fußballbegeisterter Männer den{" "}
                                 <strong>SV Wendessen</strong>. Die größte Sparte
-                                des Vereins ist die{' '}
+                                des Vereins ist die{" "}
                                 <strong>Fußballabteilung</strong> geblieben.
                                 Nicht nur die Kids und die Männer lieben diesen
-                                Sport, auch die{' '}
+                                Sport, auch die{" "}
                                 <strong>
                                     Frauen sind mit Begeisterung und großem
                                     Erfolg
-                                </strong>{' '}
+                                </strong>{" "}
                                 dabei.
                             </p>
 
@@ -222,11 +222,11 @@ export default async function SVWendessenPage() {
                             <p className="text-lg">
                                 Heute bieten wir neben dem Fußballtraining für
                                 Kinder, Frauen und Männer weitere sportliche
-                                Aktivitäten an, die überwiegend im{' '}
+                                Aktivitäten an, die überwiegend im{" "}
                                 <strong>
                                     Vereinsheim bzw. auf dem Sportplatz, der
                                     Weinrich-Arena
-                                </strong>{' '}
+                                </strong>{" "}
                                 in Wendessen stattfinden.
                             </p>
 
@@ -237,14 +237,14 @@ export default async function SVWendessenPage() {
                                 </h4>
                                 <p className="text-amber-800 mb-3">
                                     Sport macht durstig und hungrig. Hier hilft
-                                    unser Vereinswirt mit{' '}
+                                    unser Vereinswirt mit{" "}
                                     <strong>
                                         leckeren Speisen und kalten Getränken
                                     </strong>
                                     . Diese bietet er nicht nur den Sportlern,
-                                    sondern{' '}
+                                    sondern{" "}
                                     <strong>allen Interessierten</strong> und
-                                    berät gerne bei der Ausrichtung von{' '}
+                                    berät gerne bei der Ausrichtung von{" "}
                                     <strong>
                                         Familienfeiern und Versammlungen
                                     </strong>
@@ -265,12 +265,12 @@ export default async function SVWendessenPage() {
 
                         <div className="space-y-6 text-gray-700 leading-relaxed">
                             <p className="text-lg">
-                                Unser Verein lebt vom{' '}
+                                Unser Verein lebt vom{" "}
                                 <strong>
                                     Interesse seiner Mitglieder und der
                                     Ortsgemeinschaft
                                 </strong>
-                                . Jeder fördert so gut er kann, mit{' '}
+                                . Jeder fördert so gut er kann, mit{" "}
                                 <strong>
                                     Engagement im Sportbereich,
                                     Mitgliederbeiträgen und Teilnahme
@@ -284,11 +284,11 @@ export default async function SVWendessenPage() {
                                     Besonderer Dank
                                 </h4>
                                 <p className="text-blue-800">
-                                    Unsere{' '}
+                                    Unsere{" "}
                                     <strong>
                                         Sponsoren und unseren Förderkreis
                                         &ldquo;Pool 99&rdquo;
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     heben wir besonders heraus, weil wir durch
                                     ihre Unterstützung unserer
                                     Vereinsgemeinschaft viel Gutes tun können.
@@ -309,7 +309,7 @@ export default async function SVWendessenPage() {
                         <div className="space-y-6 text-gray-700 leading-relaxed text-center">
                             <p className="text-lg">
                                 Wir freuen uns auf Ihr Interesse und sind für
-                                Reaktionen dankbar. Möchten Sie mit uns zusammen{' '}
+                                Reaktionen dankbar. Möchten Sie mit uns zusammen{" "}
                                 <strong>
                                     Sport machen, die Gemeinschaft pflegen, neue
                                     Mitbürger kennen lernen
@@ -322,7 +322,7 @@ export default async function SVWendessenPage() {
                                     <strong>
                                         Greifen Sie zum Telefon oder schicken
                                         Sie uns eine Mail/SMS.
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     So erfahren Sie die Trainingszeiten, die
                                     Kosten und die Mitgestaltungsmöglichkeiten.
                                     Abteilungsleiter und Vorstand steht
@@ -340,8 +340,9 @@ export default async function SVWendessenPage() {
                             </h2>
                             <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zu unseren Abteilungen oder möchten Sie Mitglied werden?
-                                Unsere Ansprechpartner sind gerne für Sie da.
+                                Haben Sie Fragen zu unseren Abteilungen oder
+                                möchten Sie Mitglied werden? Unsere
+                                Ansprechpartner sind gerne für Sie da.
                             </p>
                         </div>
 
