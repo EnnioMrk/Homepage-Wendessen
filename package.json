@@ -10,6 +10,8 @@
         "build": "bun run lint && next build",
         "start": "bun run --bun next start",
         "lint": "eslint .",
+        "format": "eslint . --fix",
+        "stash": "sh .husky/pre-stash",
         "test": "bun test",
         "test:unit": "bun test tests/lib tests/validation",
         "test:integration": "bun test tests/integration",
