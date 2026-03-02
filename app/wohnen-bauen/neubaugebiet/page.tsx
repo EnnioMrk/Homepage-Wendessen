@@ -60,14 +60,6 @@ export default function NeubaugebietPage() {
                                     Bahnhaltepunkt ein neues Baugebiet.
                                 </p>
                             </div>
-
-                            <p>
-                                Die planungsrechtlichen Schritte für die
-                                Erschließung und Bebauung des Geländes werden
-                                von der Stadt Wolfenbüttel erledigt. Mit einer
-                                Bebauung ist frühestens Ende 2023 zu rechnen.
-                            </p>
-
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-500 p-6 rounded-2xl">
                                 <h4 className="text-xl font-bold text-blue-700 mb-3 flex items-center">
                                     <Calendar className="w-6 h-6 mr-2" />

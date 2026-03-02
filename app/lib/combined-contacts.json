@@ -201,11 +201,15 @@
 
     {
         "name": "Lothar Lange",
-        "emails": [],
-        "phones": [{ "type": "phone", "value": "05331 / 966756" }],
+        "emails": ["Schriftfuehrer@sv-wendessen.de"],
+        "phones": [
+            { "type": "mobile", "value": "0171 3480517" },
+            { "type": "phone", "value": "05331 / 966756" }
+        ],
         "addresses": ["Im Weingarten 9a, 38300 Wolfenbüttel"],
         "affiliations": [
-            { "org": "Schützenverein Wendessen e.V.", "role": "Schriftführer" }
+            { "org": "Schützenverein Wendessen e.V.", "role": "Schriftführer" },
+            { "org": "SV Wendessen", "role": "Schriftführer" }
         ],
         "sources": ["app/dorfleben/vereine/schuetzenverein/page.tsx"]
     },
@@ -251,9 +255,9 @@
     },
 
     {
-        "name": "Lennart Meinberg",
+        "name": "Sandro Karkowski",
         "emails": ["fussball@sv-wendessen.de"],
-        "phones": [{ "type": "mobile", "value": "0160 44 87 045" }],
+        "phones": [{ "type": "mobile", "value": "0151 6726 3454" }],
         "addresses": [],
         "affiliations": [{ "org": "SV Wendessen", "role": "Kontakt Fußball" }],
         "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
@@ -274,14 +278,17 @@
         "phones": [{ "type": "phone", "value": "05331-4 41 33" }],
         "addresses": [],
         "affiliations": [
-            { "org": "SV Wendessen", "role": "Kontakt Gymnastikabteilung" }
+            {
+                "org": "SV Wendessen",
+                "role": "Kontakt Gymnastikabteilung (Aerobic, Fit and Fun für Jedermann, Wirbelsäulengymnastik, Yoga)"
+            }
         ],
         "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
     },
     {
-        "name": "Hanna Simon",
+        "name": "Oliver Niedens",
         "emails": ["kinderturnen@sv-wendessen.de"],
-        "phones": [{ "type": "mobile", "value": "0159 01 33 46 64" }],
+        "phones": [{ "type": "mobile", "value": "0151 22 32 93 45" }],
         "addresses": [],
         "affiliations": [
             { "org": "SV Wendessen", "role": "Kontakt Kinderturnen" }
@@ -289,12 +296,15 @@
         "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
     },
     {
-        "name": "Manfred Rasche",
+        "name": "Ingo Dinter",
         "emails": ["tanzsport@sv-wendessen.de"],
-        "phones": [{ "type": "phone", "value": "05331 31 86 7" }],
+        "phones": [{ "type": "mobile", "value": "0179 519 2258" }],
         "addresses": [],
         "affiliations": [
-            { "org": "SV Wendessen", "role": "Kontakt Tanzsport" }
+            {
+                "org": "SV Wendessen",
+                "role": "Kontakt Tanzsport (Paare, Standard und lateinamerikanische Tänze)"
+            }
         ],
         "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
     },
@@ -335,6 +345,42 @@
         "phones": [{ "type": "mobile", "value": "0176 55491268" }],
         "addresses": [],
         "affiliations": [{ "org": "SV Wendessen", "role": "Vereinswirt" }],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Hendrik Weber",
+        "emails": ["ersterVorsitzender@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0170 2875491" }],
+        "addresses": ["Am Buschkopf 46, 38300 Wolfenbüttel"],
+        "affiliations": [{ "org": "SV Wendessen", "role": "Vorsitzender" }],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Marcel Döring",
+        "emails": ["zweiterVorsitzender@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0151 61519018" }],
+        "addresses": ["Am Park 7, 38321 Denkte"],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Stellv. Vorsitzender" }
+        ],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Hanna Hintze",
+        "emails": ["Kassenwart@sv-wendessen.de"],
+        "phones": [{ "type": "phone", "value": "05331 / 992903" }],
+        "addresses": ["In den Äckern 31, 38300 Wolfenbüttel"],
+        "affiliations": [{ "org": "SV Wendessen", "role": "Kassenwartin" }],
+        "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Cordula Buchholz",
+        "emails": ["Stellv.Kassenwart@sv-wendessen.de"],
+        "phones": [{ "type": "mobile", "value": "0175 8963240" }],
+        "addresses": ["Eckweg 6, 38173 Dettum"],
+        "affiliations": [
+            { "org": "SV Wendessen", "role": "Stellv. Kassenwartin" }
+        ],
         "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
     },
     {

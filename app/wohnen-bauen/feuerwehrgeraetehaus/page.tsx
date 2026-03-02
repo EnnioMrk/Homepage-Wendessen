@@ -180,61 +180,7 @@ export default function FeuerwehrgeraetehausPage() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Additional Development */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                                Weitere Entwicklung
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6"></div>
-                            <p className="text-base sm:text-lg text-gray-600">
-                                Zusätzliche Wohnprojekte in der Nähe
-                            </p>
-                        </div>
-
-                        <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-center">
-                                    <Buildings className="w-6 h-6 mr-3" />
-                                    Mehrfamilienhaus zwischen
-                                    Feuerwehrgerätehaus und Hotel Gala
-                                </h3>
-                                <div className="space-y-4">
-                                    <p className="text-lg text-gray-800">
-                                        Zwischen dem künftigen
-                                        Feuerwehrgerätehaus und dem ehemaligen
-                                        Hotel Gala errichtet ein privater
-                                        Investor aktuell ein Mehrfamilienhaus.
-                                    </p>
-                                    <div className="bg-white border border-emerald-200 p-4 rounded-xl">
-                                        <h4 className="font-bold text-emerald-700 mb-2">
-                                            Projektdetails:
-                                        </h4>
-                                        <ul className="space-y-1 text-gray-700">
-                                            <li>
-                                                • <strong>6 Wohnungen</strong> à
-                                                90 Quadratmeter
-                                            </li>
-                                            <li>
-                                                • <strong>Erste Mieter:</strong>{" "}
-                                                Anfang 2024
-                                            </li>
-                                            <li>
-                                                • <strong>Investor:</strong>{" "}
-                                                Privat
-                                            </li>
-                                            <li>
-                                                • <strong>Status:</strong>{" "}
-                                                Aktuell im Bau
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    
                     {/* Timeline */}
                     <div className="mb-16">
                         <div className="text-center mb-12">

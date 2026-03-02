@@ -5,6 +5,34 @@ import { parseWeatherReport } from '@/lib/utils/weather-utils';
 const WEATHER_REPORT_URL =
     'https://www.wetterstation.ws/cms/iframes/Wetter_aktuell/Text/ws_report.txt';
 
+function getCharsetFromContentType(contentType: string | null): string | null {
+    if (!contentType) return null;
+    const match = contentType.match(/charset=([^;\s]+)/i);
+    return match ? match[1].trim().toLowerCase() : null;
+}
+
+function decodeWeatherReport(buffer: ArrayBuffer, contentType: string | null): string {
+    const bytes = new Uint8Array(buffer);
+    const declaredCharset = getCharsetFromContentType(contentType);
+
+    const decoderCandidates = [
+        declaredCharset,
+        'windows-1252',
+        'iso-8859-1',
+        'utf-8',
+    ].filter((value): value is string => Boolean(value));
+
+    for (const charset of decoderCandidates) {
+        try {
+            return new TextDecoder(charset).decode(bytes);
+        } catch {
+            // try next charset candidate
+        }
+    }
+
+    return new TextDecoder().decode(bytes);
+}
+
 export async function GET() {
     await connection();
     try {
@@ -16,7 +44,11 @@ export async function GET() {
             throw new Error(`Weather station returned ${response.status}`);
         }
 
-        const text = await response.text();
+        const buffer = await response.arrayBuffer();
+        const text = decodeWeatherReport(
+            buffer,
+            response.headers.get('content-type'),
+        );
 
         // Parse the weather report on the server
         console.log('Fetched weather report text:', text);
