@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import 'ol/ol.css';
 import Feature from 'ol/Feature';
 import Map from 'ol/Map';
@@ -25,9 +25,7 @@ const WENDESSEN_CENTER_LON_LAT: [number, number] = [
     (52.149073 + 52.159423) / 2,
 ];
 
-type BasemapOption = {
-    id: string;
-    label: string;
+type Basemap = {
     url: string;
     attribution: string;
 };
@@ -45,26 +43,10 @@ type OverpassResponse = {
     elements: OverpassElement[];
 };
 
-const BASEMAPS: BasemapOption[] = [
-    {
-        id: 'carto-nolabels',
-        label: 'CARTO Hell (ohne Labels)',
-        url: 'https://{a-d}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-        attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
-    },
-    {
-        id: 'carto-voyager-nolabels',
-        label: 'CARTO Voyager (ohne Labels)',
-        url: 'https://{a-d}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png',
-        attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
-    },
-    {
-        id: 'carto-dark-nolabels',
-        label: 'CARTO Dunkel (ohne Labels)',
-        url: 'https://{a-d}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
-        attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
-    },
-];
+const BASEMAP: Basemap = {
+    url: 'https://{a-d}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO',
+};
 
 function createHouseNumberStyle(houseNumber: string) {
     return new Style({
@@ -131,9 +113,6 @@ async function fetchHouseNumberFeatures(
 
 export default function WendessenMap() {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
-    const [selectedBasemapId, setSelectedBasemapId] = useState<string>(
-        BASEMAPS[0].id
-    );
 
     useEffect(() => {
         let map: Map | null = null;
@@ -143,10 +122,6 @@ export default function WendessenMap() {
             if (!mapContainerRef.current) {
                 return;
             }
-
-            const selectedBasemap =
-                BASEMAPS.find((option) => option.id === selectedBasemapId) ??
-                BASEMAPS[0];
 
             const projectedExtent = transformExtent(
                 WENDESSEN_EXTENT_LON_LAT,
@@ -183,8 +158,8 @@ export default function WendessenMap() {
                 layers: [
                     new TileLayer({
                         source: new XYZ({
-                            url: selectedBasemap.url,
-                            attributions: selectedBasemap.attribution,
+                            url: BASEMAP.url,
+                            attributions: BASEMAP.attribution,
                             wrapX: false,
                         }),
                     }),
@@ -222,31 +197,10 @@ export default function WendessenMap() {
                 map.setTarget(undefined);
             }
         };
-    }, [selectedBasemapId]);
+    }, []);
 
     return (
-        <div className="space-y-3">
-            <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
-                <label
-                    htmlFor="basemap-select"
-                    className="mb-2 block text-sm font-medium text-gray-700"
-                >
-                    Kartenstil
-                </label>
-                <select
-                    id="basemap-select"
-                    value={selectedBasemapId}
-                    onChange={(event) => setSelectedBasemapId(event.target.value)}
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900"
-                >
-                    {BASEMAPS.map((option) => (
-                        <option key={option.id} value={option.id}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
+        <div>
             <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg">
                 <div ref={mapContainerRef} className="aspect-square w-full" aria-label="Interaktive Karte von Wendessen" />
             </div>
