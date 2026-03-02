@@ -170,7 +170,12 @@ export async function createSession(user: AdminUser): Promise<string> {
 
 // Get current session data
 export async function getSessionData(): Promise<SessionData | null> {
-    const cookieStore = await cookies();
+    let cookieStore: Awaited<ReturnType<typeof cookies>>;
+    try {
+        cookieStore = await cookies();
+    } catch {
+        return null;
+    }
     const sessionToken = cookieStore.get(SESSION_COOKIE_NAME);
 
     if (!sessionToken?.value) {
