@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     ArrowLeft,
     FloppyDisk,
     ImageSquare,
     Trash,
     PencilSimple,
-} from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
-import { usePermissions } from '@/lib/usePermissions';
-import FeatureCard from '@/app/components/FeatureCard';
-import TailwindColorPicker from '@/app/admin/components/TailwindColorPicker';
-import PageSelector from '@/app/admin/components/PageSelector';
-import Modal from '@/app/components/ui/Modal';
+} from "@phosphor-icons/react/dist/ssr";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
+import GalleryImagePicker from "@/app/admin/components/GalleryImagePicker";
+import { usePermissions } from "@/lib/usePermissions";
+import FeatureCard from "@/app/components/FeatureCard";
+import TailwindColorPicker from "@/app/admin/components/TailwindColorPicker";
+import PageSelector from "@/app/admin/components/PageSelector";
+import Modal from "@/app/components/ui/Modal";
 
 // ... (existing imports)
 
@@ -46,66 +46,66 @@ interface LayoutData {
 }
 
 const DEFAULT_THEME: CardTheme = {
-    highlight: 'green',
-    background: 'green',
-    button: 'green',
+    highlight: "green",
+    background: "green",
+    button: "green",
 };
 
 const THEME_PRESETS: Record<string, CardTheme> = {
-    Green: { highlight: 'green', background: 'green', button: 'green' },
-    Blue: { highlight: 'blue', background: 'blue', button: 'blue' },
-    Warm: { highlight: 'amber', background: 'orange', button: 'red' },
-    Slate: { highlight: 'slate', background: 'gray', button: 'gray' },
-    Purple: { highlight: 'violet', background: 'purple', button: 'purple' },
+    Green: { highlight: "green", background: "green", button: "green" },
+    Blue: { highlight: "blue", background: "blue", button: "blue" },
+    Warm: { highlight: "amber", background: "orange", button: "red" },
+    Slate: { highlight: "slate", background: "gray", button: "gray" },
+    Purple: { highlight: "violet", background: "purple", button: "purple" },
 };
 
 const PRESET_BG: Record<string, string> = {
-    Green: '#16a34a', // green-600
-    Blue: '#2563eb', // blue-600
-    Warm: '#f97316', // orange-500
-    Slate: '#64748b', // slate-500
-    Purple: '#7c3aed', // violet-600
+    Green: "#16a34a", // green-600
+    Blue: "#2563eb", // blue-600
+    Warm: "#f97316", // orange-500
+    Slate: "#64748b", // slate-500
+    Purple: "#7c3aed", // violet-600
 };
 
 const PRESET_LABEL_DE: Record<string, string> = {
-    Green: 'Grün',
-    Blue: 'Blau',
-    Warm: 'Warm',
-    Slate: 'Grau',
-    Purple: 'Violett',
+    Green: "Grün",
+    Blue: "Blau",
+    Warm: "Warm",
+    Slate: "Grau",
+    Purple: "Violett",
 };
 
 const EMPTY_CARD: CardData = {
-    title: '',
-    subtitle: '',
-    description: '',
-    button_text: 'Mehr erfahren',
-    button_href: '#',
+    title: "",
+    subtitle: "",
+    description: "",
+    button_text: "Mehr erfahren",
+    button_href: "#",
     theme: DEFAULT_THEME,
 };
 
 export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const router = useRouter();
     const { hasPermission } = usePermissions();
-    const canUpload = hasPermission('gallery.upload');
+    const canUpload = hasPermission("gallery.upload");
 
     const [loading, setLoading] = useState(!!layoutId);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showImagePicker, setShowImagePicker] = useState<
-        'card_1' | 'card_2' | 'card_3' | null
+        "card_1" | "card_2" | "card_3" | null
     >(null);
     const [editingThemeFor, setEditingThemeFor] = useState<
-        null | 'card_1' | 'card_2' | 'card_3'
+        null | "card_1" | "card_2" | "card_3"
     >(null);
     const [tempTheme, setTempTheme] = useState<CardTheme>(DEFAULT_THEME);
 
     const [formData, setFormData] = useState<LayoutData>({
-        name: '',
+        name: "",
         is_active: false,
-        card_1: { ...EMPTY_CARD, title: 'Karte 1' },
-        card_2: { ...EMPTY_CARD, title: 'Karte 2' },
-        card_3: { ...EMPTY_CARD, title: 'Karte 3' },
+        card_1: { ...EMPTY_CARD, title: "Karte 1" },
+        card_2: { ...EMPTY_CARD, title: "Karte 2" },
+        card_3: { ...EMPTY_CARD, title: "Karte 3" },
     });
 
     useEffect(() => {
@@ -126,7 +126,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             // Better: I will fetch list and find it client side for now, or just implement GET in next step.
             // I'll assume I'll fix the API to support GET /api/admin/wendessen/[id] or just use list for now to save a step.
             // Let's use list for now.
-            const response = await fetch('/api/admin/wendessen');
+            const response = await fetch("/api/admin/wendessen");
             if (response.ok) {
                 const data = (await response.json()) as {
                     layouts: Array<LayoutData & { id: number }>;
@@ -137,14 +137,14 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                 if (found) {
                     setFormData(found);
                 } else {
-                    setError('Layout nicht gefunden');
+                    setError("Layout nicht gefunden");
                 }
             } else {
-                setError('Fehler beim Laden');
+                setError("Fehler beim Laden");
             }
         } catch (error) {
             console.error(error);
-            setError('Fehler beim Laden');
+            setError("Fehler beim Laden");
         } finally {
             setLoading(false);
         }
@@ -152,7 +152,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
     const handleSave = async () => {
         if (!formData.name) {
-            setError('Bitte geben Sie einen Namen für das Layout ein.');
+            setError("Bitte geben Sie einen Namen für das Layout ein.");
             return;
         }
 
@@ -162,33 +162,33 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         try {
             const url = layoutId
                 ? `/api/admin/wendessen/${layoutId}`
-                : '/api/admin/wendessen';
+                : "/api/admin/wendessen";
 
-            const method = layoutId ? 'PUT' : 'POST';
+            const method = layoutId ? "PUT" : "POST";
 
             const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             if (response.ok) {
-                router.push('/admin/wendessen');
+                router.push("/admin/wendessen");
                 router.refresh();
             } else {
                 const data = await response.json();
-                setError(data.error || 'Fehler beim Speichern');
+                setError(data.error || "Fehler beim Speichern");
             }
         } catch (error) {
             console.error(error);
-            setError('Fehler beim Speichern');
+            setError("Fehler beim Speichern");
         } finally {
             setSaving(false);
         }
     };
 
     const updateCard = <K extends keyof CardData>(
-        cardKey: 'card_1' | 'card_2' | 'card_3',
+        cardKey: "card_1" | "card_2" | "card_3",
         field: K,
         value: CardData[K],
     ) => {
@@ -202,7 +202,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     };
 
     const updateCardTheme = (
-        cardKey: 'card_1' | 'card_2' | 'card_3',
+        cardKey: "card_1" | "card_2" | "card_3",
         theme: CardTheme,
     ) => {
         setFormData((prev) => ({
@@ -241,7 +241,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                         <ArrowLeft size={24} />
                     </button>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        {layoutId ? 'Layout bearbeiten' : 'Neues Layout'}
+                        {layoutId ? "Layout bearbeiten" : "Neues Layout"}
                     </h1>
                 </div>
                 <div className="flex items-center gap-2">
@@ -293,27 +293,27 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
             {/* Cards Editor */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {(['card_1', 'card_2', 'card_3'] as const).map(
+                {(["card_1", "card_2", "card_3"] as const).map(
                     (cardKey, index) => (
                         <div
                             key={cardKey}
                             className={`bg-white p-6 rounded-lg shadow ${
-                                index === 0 ? 'lg:col-span-2' : ''
+                                index === 0 ? "lg:col-span-2" : ""
                             }`}
                         >
                             <div className="flex justify-between items-start mb-6 border-b pb-4">
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900">
                                         {index === 0
-                                            ? 'Karte 1'
+                                            ? "Karte 1"
                                             : index === 1
-                                              ? 'Karte 2'
-                                              : 'Karte 3'}
+                                              ? "Karte 2"
+                                              : "Karte 3"}
                                     </h3>
                                     <p className="text-sm text-gray-500">
                                         {index === 0
-                                            ? 'Die Hauptkarte, nimmt viel Platz ein.'
-                                            : 'Kleinere Karte an der Seite.'}
+                                            ? "Die Hauptkarte, nimmt viel Platz ein."
+                                            : "Kleinere Karte an der Seite."}
                                     </p>
                                 </div>
                             </div>
@@ -331,7 +331,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         className="grid gap-2"
                                         style={{
                                             gridTemplateColumns:
-                                                'repeat(auto-fit, minmax(140px, 1fr))',
+                                                "repeat(auto-fit, minmax(140px, 1fr))",
                                         }}
                                     >
                                         {Object.entries(THEME_PRESETS).map(
@@ -355,10 +355,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                             backgroundColor:
                                                                 PRESET_BG[
                                                                     name
-                                                                ] || '#ddd',
+                                                                ] || "#ddd",
                                                             display:
-                                                                'inline-block',
-                                                            border: '1px solid rgba(0,0,0,0.08)',
+                                                                "inline-block",
+                                                            border: "1px solid rgba(0,0,0,0.08)",
                                                         }}
                                                     />
                                                     <span className="text-sm text-gray-700">
@@ -393,8 +393,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                             <div
                                 className={`grid grid-cols-1 gap-6 ${
                                     index === 0
-                                        ? 'md:grid-cols-2'
-                                        : 'min-[1400px]:grid-cols-2'
+                                        ? "md:grid-cols-2"
+                                        : "min-[1400px]:grid-cols-2"
                                 }`}
                             >
                                 {/* Editor Column */}
@@ -411,7 +411,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 onChange={(e) =>
                                                     updateCard(
                                                         cardKey,
-                                                        'title',
+                                                        "title",
                                                         e.target.value,
                                                     )
                                                 }
@@ -430,7 +430,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 onChange={(e) =>
                                                     updateCard(
                                                         cardKey,
-                                                        'subtitle',
+                                                        "subtitle",
                                                         e.target.value,
                                                     )
                                                 }
@@ -450,7 +450,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     onChange={(e) =>
                                                         updateCard(
                                                             cardKey,
-                                                            'description',
+                                                            "description",
                                                             e.target.value,
                                                         )
                                                     }
@@ -461,7 +461,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 <div className="text-right text-xs text-gray-500">
                                                     {formData[cardKey]
                                                         .description?.length ||
-                                                        0}{' '}
+                                                        0}{" "}
                                                     / 350 Zeichen
                                                 </div>
                                             </div>
@@ -477,13 +477,13 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     onClick={() => {
                                                         updateCard(
                                                             cardKey,
-                                                            'button_text',
-                                                            '',
+                                                            "button_text",
+                                                            "",
                                                         );
                                                         updateCard(
                                                             cardKey,
-                                                            'button_href',
-                                                            '',
+                                                            "button_href",
+                                                            "",
                                                         );
                                                     }}
                                                     className="text-xs font-medium text-gray-600 hover:text-gray-900"
@@ -506,7 +506,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         onChange={(e) =>
                                                             updateCard(
                                                                 cardKey,
-                                                                'button_text',
+                                                                "button_text",
                                                                 e.target.value,
                                                             )
                                                         }
@@ -528,7 +528,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         onChange={(href) =>
                                                             updateCard(
                                                                 cardKey,
-                                                                'button_href',
+                                                                "button_href",
                                                                 href,
                                                             )
                                                         }
@@ -550,7 +550,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         onChange={(e) =>
                                                             updateCard(
                                                                 cardKey,
-                                                                'button_href',
+                                                                "button_href",
                                                                 e.target.value,
                                                             )
                                                         }
@@ -574,8 +574,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         </label>
                                         <div className="text-xs text-gray-500">
                                             {formData[cardKey].image_url
-                                                ? 'Mit Bild'
-                                                : 'Nur Text'}
+                                                ? "Mit Bild"
+                                                : "Nur Text"}
                                         </div>
                                     </div>
 
@@ -585,7 +585,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             <FeatureCard
                                                 title={
                                                     formData[cardKey].title ||
-                                                    'Titel'
+                                                    "Titel"
                                                 }
                                                 subtitle={
                                                     formData[cardKey].subtitle
@@ -593,7 +593,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 description={
                                                     formData[cardKey]
                                                         .description ||
-                                                    'Beschreibungstext...'
+                                                    "Beschreibungstext..."
                                                 }
                                                 buttonText={
                                                     formData[cardKey]
@@ -622,9 +622,9 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     !formData[cardKey].image_url
                                                 }
                                                 variant={
-                                                    cardKey === 'card_1'
-                                                        ? 'hero'
-                                                        : 'centered'
+                                                    cardKey === "card_1"
+                                                        ? "hero"
+                                                        : "centered"
                                                 }
                                                 className="h-full min-h-[300px]"
                                                 compact={true}
@@ -656,8 +656,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     onClick={() =>
                                                         updateCard(
                                                             cardKey,
-                                                            'image_url',
-                                                            '',
+                                                            "image_url",
+                                                            "",
                                                         )
                                                     }
                                                     className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     Plus,
     Check,
     Trash,
     PencilSimple,
     Copy,
-} from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import PromptDialog from '@/app/components/ui/PromptDialog';
+} from "@phosphor-icons/react/dist/ssr";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
+import PromptDialog from "@/app/components/ui/PromptDialog";
 
 interface Layout {
     id: number;
@@ -48,16 +48,16 @@ export default function AdminWendessenClient({
 
     const fetchLayouts = async () => {
         try {
-            const response = await fetch('/api/admin/wendessen');
+            const response = await fetch("/api/admin/wendessen");
             if (response.ok) {
                 const data = await response.json();
                 setLayouts(data.layouts || []);
             } else {
-                setError('Fehler beim Laden der Layouts');
+                setError("Fehler beim Laden der Layouts");
             }
         } catch (error) {
-            console.error('Error fetching layouts:', error);
-            setError('Fehler beim Laden der Layouts');
+            console.error("Error fetching layouts:", error);
+            setError("Fehler beim Laden der Layouts");
         } finally {
             setLoading(false);
         }
@@ -67,19 +67,19 @@ export default function AdminWendessenClient({
         setIsActivating(id);
         try {
             const response = await fetch(`/api/admin/wendessen/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ is_active: true }),
             });
 
             if (response.ok) {
                 fetchLayouts(); // Refresh to show new active status
             } else {
-                alert('Fehler beim Aktivieren des Layouts');
+                alert("Fehler beim Aktivieren des Layouts");
             }
         } catch (error) {
-            console.error('Error activating layout:', error);
-            alert('Fehler beim Aktivieren des Layouts');
+            console.error("Error activating layout:", error);
+            alert("Fehler beim Aktivieren des Layouts");
         } finally {
             setIsActivating(null);
         }
@@ -89,7 +89,7 @@ export default function AdminWendessenClient({
         setIsDeleting(true);
         try {
             const response = await fetch(`/api/admin/wendessen/${id}`, {
-                method: 'DELETE',
+                method: "DELETE",
             });
 
             if (response.ok) {
@@ -97,11 +97,11 @@ export default function AdminWendessenClient({
                 setLayoutToDelete(null);
             } else {
                 const data = await response.json();
-                alert(data.error || 'Fehler beim Löschen');
+                alert(data.error || "Fehler beim Löschen");
             }
         } catch (error) {
-            console.error('Error deleting layout:', error);
-            alert('Fehler beim Löschen');
+            console.error("Error deleting layout:", error);
+            alert("Fehler beim Löschen");
         } finally {
             setIsDeleting(false);
         }
@@ -115,13 +115,13 @@ export default function AdminWendessenClient({
         setDuplicatingLayoutId(layout.id);
 
         try {
-            const response = await fetch('/api/admin/wendessen', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const response = await fetch("/api/admin/wendessen", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: layout.name?.trim()
                         ? `${layout.name} (Kopie)`
-                        : 'Layout Kopie',
+                        : "Layout Kopie",
                     card_1: layout.card_1,
                     card_2: layout.card_2,
                     card_3: layout.card_3,
@@ -132,11 +132,11 @@ export default function AdminWendessenClient({
                 fetchLayouts();
             } else {
                 const data = await response.json();
-                alert(data.error || 'Fehler beim Duplizieren');
+                alert(data.error || "Fehler beim Duplizieren");
             }
         } catch (error) {
-            console.error('Error duplicating layout:', error);
-            alert('Fehler beim Duplizieren');
+            console.error("Error duplicating layout:", error);
+            alert("Fehler beim Duplizieren");
         } finally {
             setDuplicatingLayoutId(null);
         }
@@ -152,7 +152,7 @@ export default function AdminWendessenClient({
                 </h2>
                 {canManage && (
                     <button
-                        onClick={() => router.push('/admin/wendessen/neu')}
+                        onClick={() => router.push("/admin/wendessen/neu")}
                         className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
                     >
                         <Plus size={16} className="mr-2" />
@@ -191,10 +191,10 @@ export default function AdminWendessenClient({
                                         )}
                                     </div>
                                     <p className="text-sm text-gray-500">
-                                        Erstellt am{' '}
+                                        Erstellt am{" "}
                                         {new Date(
                                             layout.created_at,
-                                        ).toLocaleDateString('de-DE')}
+                                        ).toLocaleDateString("de-DE")}
                                     </p>
                                 </div>
                                 <div className="flex items-center space-x-2">
@@ -256,13 +256,13 @@ export default function AdminWendessenClient({
                                                 disabled={layout.is_active} // Cannot delete active
                                                 className={`p-2 transition-colors ${
                                                     layout.is_active
-                                                        ? 'text-gray-200 cursor-not-allowed'
-                                                        : 'text-gray-400 hover:text-red-600'
+                                                        ? "text-gray-200 cursor-not-allowed"
+                                                        : "text-gray-400 hover:text-red-600"
                                                 }`}
                                                 title={
                                                     layout.is_active
-                                                        ? 'Aktives Layout kann nicht gelöscht werden'
-                                                        : 'Löschen'
+                                                        ? "Aktives Layout kann nicht gelöscht werden"
+                                                        : "Löschen"
                                                 }
                                             >
                                                 <Trash size={20} />
