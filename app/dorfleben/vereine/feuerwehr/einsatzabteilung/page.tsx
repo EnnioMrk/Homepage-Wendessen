@@ -6,14 +6,14 @@ import {
     Clock,
     MapPin,
     Globe,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import ContactCardFetcher from '@/app/components/ContactCardFetcher';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import ContactCardFetcher from "@/app/components/ContactCardFetcher";
 
 export const metadata = {
-    title: 'Freiwillige Feuerwehr Wendessen - Vereine',
+    title: "Freiwillige Feuerwehr Wendessen - Vereine",
     description:
-        'Die Freiwillige Feuerwehr Wendessen - Retten, Löschen, Bergen, Schützen. Werden Sie Teil unserer Gemeinschaft!',
+        "Die Freiwillige Feuerwehr Wendessen - Retten, Löschen, Bergen, Schützen. Werden Sie Teil unserer Gemeinschaft!",
 };
 
 export default async function FeuerwehrPage() {
@@ -22,7 +22,7 @@ export default async function FeuerwehrPage() {
             <PageHeader
                 title="Feuerwehr"
                 icon={<Fire />}
-                backgroundImage="/images/Vereinsleben/Freiwillige_Feuerwehr.jpeg"
+                backgroundImage="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
                 color="red"
             />
 
@@ -46,7 +46,7 @@ export default async function FeuerwehrPage() {
                         <div className="space-y-4 sm:space-y-6 text-gray-700 leading-relaxed text-sm sm:text-base">
                             <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 p-4 sm:p-6 rounded-r-xl sm:rounded-r-2xl">
                                 <p className="text-base sm:text-lg">
-                                    Auch wir, die{' '}
+                                    Auch wir, die{" "}
                                     <strong>
                                         &quot;Freiwillige Feuerwehr
                                         Wendessen&quot;
@@ -82,7 +82,7 @@ export default async function FeuerwehrPage() {
                                     <strong>
                                         Werden auch Sie Feuerwehrfrau oder
                                         Feuerwehrmann!
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     Tragen auch Sie dazu bei, dass der
                                     &quot;Rote Hahn&quot; in Wendessen weiterhin
                                     keine Chance hat und wir weiterhin so
@@ -287,8 +287,9 @@ export default async function FeuerwehrPage() {
                             </h2>
                             <div className="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zur Einsatzabteilung, der Jugendfeuerwehr oder
-                                unserem Förderverein? Wir sind gerne für Sie da.
+                                Haben Sie Fragen zur Einsatzabteilung, der
+                                Jugendfeuerwehr oder unserem Förderverein? Wir
+                                sind gerne für Sie da.
                             </p>
                         </div>
 

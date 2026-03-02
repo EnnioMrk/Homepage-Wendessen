@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import { Descendant } from 'slate';
 import Image from 'next/image';
+import Modal from '@/app/components/ui/Modal';
 
 interface ArticleRendererProps {
     content: Descendant[];
@@ -26,10 +26,8 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
     const maxZoom = 8;
     const zoomStep = 0.15;
 
-    const handleWheel = useCallback((e: WheelEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+    const applyZoomDelta = useCallback((deltaY: number) => {
+        const delta = deltaY > 0 ? -zoomStep : zoomStep;
         setZoom((prev) => {
             const newZoom = Math.min(maxZoom, Math.max(minZoom, prev + delta));
             // Reset position when zooming out to 1 or less
@@ -39,6 +37,21 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
             return newZoom;
         });
     }, []);
+
+    const handleWheel = useCallback((e: WheelEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        applyZoomDelta(e.deltaY);
+    }, [applyZoomDelta]);
+
+    const handleWheelReact = useCallback(
+        (e: React.WheelEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            applyZoomDelta(e.deltaY);
+        },
+        [applyZoomDelta]
+    );
 
     const handleMouseDown = useCallback(
         (e: React.MouseEvent) => {
@@ -126,80 +139,86 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
         // Prevent default touch move to stop parent scrolling
         const preventTouchScroll = (e: TouchEvent) => e.preventDefault();
 
-        // Add wheel listener with passive: false to enable preventDefault
         const container = containerRef.current;
         if (container) {
-            container.addEventListener('wheel', handleWheel, {
-                passive: false,
-            });
             container.addEventListener('touchmove', preventTouchScroll, {
                 passive: false,
             });
         }
 
         // Store original body overflow and set to hidden
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
+        // Handled by Modal component
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             if (container) {
-                container.removeEventListener('wheel', handleWheel);
                 container.removeEventListener('touchmove', preventTouchScroll);
             }
             // Restore original overflow value
-            document.body.style.overflow = originalOverflow;
+            // Handled by Modal component
         };
     }, [handleKeyDown, handleWheel]);
 
-    // Use portal to render directly to body, escaping any parent transform/filter contexts
-    return createPortal(
-        <div
-            ref={containerRef}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm overflow-hidden"
-            onClick={handleBackdropClick}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            style={{
-                cursor:
-                    zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-out',
-            }}
+    // Use Modal component for rendering
+    return (
+        <Modal
+            isOpen={true}
+            onClose={onClose}
+            variant="none"
+            maxWidth="full"
+            className="h-screen w-screen !mb-0 overflow-hidden"
+            centered
+            backdropBlur
         >
-            {/* Close hint - positioned at top, outside image area */}
-            <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm z-10 pointer-events-none">
-                ESC oder Hintergrund klicken zum Schließen
-            </div>
-
             <div
-                className="relative select-none"
+                ref={containerRef}
+                className="w-full h-screen flex items-center justify-center bg-black/80 overflow-hidden overscroll-none"
+                onClick={handleBackdropClick}
+                onWheel={handleWheelReact}
+                onWheelCapture={handleWheelReact}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
                 style={{
-                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
-                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                    cursor:
+                        zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-out',
+                    touchAction: 'none',
                 }}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
             >
-                <Image
-                    src={src}
-                    alt={alt}
-                    width={1200}
-                    height={800}
-                    className="max-h-[85vh] max-w-[90vw] rounded-lg shadow-2xl object-contain"
-                    draggable={false}
-                    unoptimized
-                />
-            </div>
+                {/* Close hint - positioned at top, outside image area */}
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm z-10 pointer-events-none">
+                    ESC oder Hintergrund klicken zum Schließen
+                </div>
 
-            {/* Zoom indicator */}
-            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium pointer-events-none">
-                {Math.round(zoom * 100)}%{' '}
-                {zoom > 1 && '• Ziehen zum Verschieben'}
+                <div
+                    className="relative select-none"
+                    style={{
+                        transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+                        transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                    }}
+                    onMouseDown={handleMouseDown}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <Image
+                        src={src}
+                        alt={alt}
+                        width={1200}
+                        height={800}
+                        className="max-h-[85vh] max-w-[90vw] rounded-lg shadow-2xl object-contain"
+                        draggable={false}
+                        unoptimized
+                    />
+                </div>
+
+                {/* Zoom indicator */}
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium pointer-events-none">
+                    {Math.round(zoom * 100)}%{' '}
+                    {zoom > 1 && '• Ziehen zum Verschieben'}
+                </div>
             </div>
-        </div>,
-        document.body
+        </Modal>
     );
 }
 

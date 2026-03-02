@@ -1,5 +1,6 @@
-import { cacheTag, unstable_cache } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
+import { normalizeLegacyImportance } from '@/lib/constants/contact-priorities';
 
 export interface ContactRecord {
     id: number;
@@ -31,7 +32,7 @@ function convertToContactItem(row: Record<string, unknown>): ContactListItem {
         affiliations: Array.isArray(row.affiliations)
             ? row.affiliations
             : JSON.parse((row.affiliations as string) ?? '[]'),
-        importance: Number(row.importance ?? 0),
+        importance: normalizeLegacyImportance(Number(row.importance ?? 0)),
     };
 }
 
@@ -62,27 +63,25 @@ export async function getContactByName(
     }
 }
 
-export const getContactsByOrganization = unstable_cache(
-    async (organization: string): Promise<ContactListItem[]> => {
-        const orgPattern = `%${organization.toLowerCase()}%`;
-        try {
-            const result = await sql`
-                SELECT * FROM contacts
-                WHERE EXISTS (
-                    SELECT 1 FROM jsonb_array_elements(affiliations) a
-                    WHERE LOWER(a->>'org') LIKE ${orgPattern}
-                )
-                ORDER BY importance DESC, name ASC;
-            `;
-            return result.map(convertToContactItem);
-        } catch (error) {
-            console.error(`Error fetching contacts for organization ${organization}:`, error);
-            throw new Error('Failed to fetch contacts by organization');
-        }
-    },
-    ['contacts-by-org'],
-    { tags: ['contacts'], revalidate: 3600 }
-);
+export async function getContactsByOrganization(organization: string): Promise<ContactListItem[]> {
+    'use cache';
+    cacheTag('contacts');
+    const orgPattern = `%${organization.toLowerCase()}%`;
+    try {
+        const result = await sql`
+            SELECT * FROM contacts
+            WHERE EXISTS (
+                SELECT 1 FROM jsonb_array_elements(affiliations) a
+                WHERE LOWER(a->>'org') LIKE ${orgPattern}
+            )
+            ORDER BY importance DESC, name ASC;
+        `;
+        return result.map(convertToContactItem);
+    } catch (error) {
+        console.error(`Error fetching contacts for organization ${organization}:`, error);
+        throw new Error('Failed to fetch contacts by organization');
+    }
+}
 
 export async function searchContacts(
     query: string
@@ -141,7 +140,7 @@ export async function createContact(contact: ContactInput): Promise<ContactListI
                 ${JSON.stringify(contact.phones)}::jsonb,
                 ${JSON.stringify(contact.addresses)}::jsonb,
                 ${JSON.stringify(contact.affiliations)}::jsonb,
-                ${contact.importance}
+                ${normalizeLegacyImportance(contact.importance)}
             )
             RETURNING *;
         `;
@@ -161,7 +160,7 @@ export async function updateContact(id: number, contact: ContactInput): Promise<
                 phones = ${JSON.stringify(contact.phones)}::jsonb,
                 addresses = ${JSON.stringify(contact.addresses)}::jsonb,
                 affiliations = ${JSON.stringify(contact.affiliations)}::jsonb,
-                importance = ${contact.importance}
+                importance = ${normalizeLegacyImportance(contact.importance)}
             WHERE id = ${id}
             RETURNING *;
         `;

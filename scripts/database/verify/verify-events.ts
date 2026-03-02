@@ -12,6 +12,7 @@ async function verify() {
         'category',
         'organizer',
         'image_url',
+        'image_crop_data',
         'verein_id',
         'is_cancelled',
         'cancelled_at',

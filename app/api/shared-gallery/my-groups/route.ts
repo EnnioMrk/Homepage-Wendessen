@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { getSharedGallerySubmissionGroups } from '@/lib/database';
 
 export async function GET(request: Request) {
+    await connection();
     try {
         const { searchParams } = new URL(request.url);
         const email = searchParams.get('email');
@@ -31,7 +33,7 @@ export async function GET(request: Request) {
         console.error('Error fetching my groups:', error);
         return NextResponse.json(
             { error: 'Failed to fetch groups' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

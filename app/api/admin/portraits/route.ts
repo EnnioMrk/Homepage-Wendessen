@@ -12,27 +12,13 @@ import { revalidateTagSafe } from '@/lib/revalidate';
 import { deleteFromBlob } from '@/lib/utils/blob-utils';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
-// Helper function to notify WebSocket server
-async function notifyClients() {
-    try {
-        // Non-blocking call
-        fetch('http://localhost:8081/broadcast', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'refresh' }),
-        }).catch(err => console.error('WS notify error:', err));
-    } catch (error) {
-        console.error('Error notifying WebSocket server:', error);
-    }
-}
-
 // GET - Load all submissions
 export async function GET() {
     try {
         if (!(await isAuthenticated())) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -40,7 +26,7 @@ export async function GET() {
         if (!hasPermission(user, 'portraits.view')) {
             return NextResponse.json(
                 { message: 'Keine Berechtigung' },
-                { status: 403 }
+                { status: 403 },
             );
         }
 
@@ -58,7 +44,7 @@ export async function GET() {
         console.error('Error loading portrait submissions:', error);
         return NextResponse.json(
             { message: 'Fehler beim Laden der Portrait-Einreichungen' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
@@ -69,7 +55,7 @@ export async function PATCH(request: NextRequest) {
         if (!(await isAuthenticated())) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -77,7 +63,7 @@ export async function PATCH(request: NextRequest) {
         if (!hasPermission(user, 'portraits.edit')) {
             return NextResponse.json(
                 { message: 'Keine Berechtigung' },
-                { status: 403 }
+                { status: 403 },
             );
         }
 
@@ -86,14 +72,14 @@ export async function PATCH(request: NextRequest) {
         if (!id || !action) {
             return NextResponse.json(
                 { message: 'ID und Aktion sind erforderlich' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
         if (!['approve', 'reject', 'reset'].includes(action)) {
             return NextResponse.json(
                 { message: 'Ungültige Aktion' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -101,15 +87,15 @@ export async function PATCH(request: NextRequest) {
             action === 'approve'
                 ? 'approved'
                 : action === 'reset'
-                    ? 'pending'
-                    : 'rejected';
+                  ? 'pending'
+                  : 'rejected';
         const submission = await updatePortraitStatus(id, status, 'admin');
 
         // If rejecting, trigger cleanup of old rejected portraits
         if (action === 'reject') {
             try {
                 const cleanedUpPortraits = await cleanupOldRejectedPortraits(
-                    PORTRAIT_CONFIG.MAX_REJECTED_PORTRAITS
+                    PORTRAIT_CONFIG.MAX_REJECTED_PORTRAITS,
                 );
                 if (cleanedUpPortraits.length > 0) {
                     // Delete images from MinIO storage
@@ -120,19 +106,19 @@ export async function PATCH(request: NextRequest) {
                             } catch (blobError) {
                                 console.error(
                                     `Failed to delete image from storage for portrait ${portrait.id}:`,
-                                    blobError
+                                    blobError,
                                 );
                             }
                         }
                     }
                     console.log(
-                        `Cleaned up ${cleanedUpPortraits.length} old rejected portraits after rejecting submission ${id}`
+                        `Cleaned up ${cleanedUpPortraits.length} old rejected portraits after rejecting submission ${id}`,
                     );
                 }
             } catch (cleanupError) {
                 console.error(
                     'Error during rejected portraits cleanup:',
-                    cleanupError
+                    cleanupError,
                 );
                 // Don't fail the rejection if cleanup fails
             }
@@ -145,14 +131,14 @@ export async function PATCH(request: NextRequest) {
             action === 'approve'
                 ? 'approved'
                 : action === 'reset'
-                    ? 'reset to pending'
-                    : 'rejected';
+                  ? 'reset to pending'
+                  : 'rejected';
         const messageText =
             action === 'approve'
                 ? 'freigegeben'
                 : action === 'reset'
-                    ? 'zurückgesetzt'
-                    : 'abgelehnt';
+                  ? 'zurückgesetzt'
+                  : 'abgelehnt';
 
         console.log(`Portrait submission ${id} ${actionText} by admin`);
 
@@ -165,8 +151,8 @@ export async function PATCH(request: NextRequest) {
                 action === 'approve'
                     ? 'portrait.approve'
                     : action === 'reject'
-                        ? 'portrait.reject'
-                        : 'portrait.reset',
+                      ? 'portrait.reject'
+                      : 'portrait.reset',
             resourceType: 'portrait',
             resourceId: id,
             resourceTitle: submission.name,
@@ -177,7 +163,7 @@ export async function PATCH(request: NextRequest) {
         });
 
         // Notify clients about the change
-        notifyClients();
+        // notifyClients(); removed as invalid
 
         return NextResponse.json({
             message: `Einreichung erfolgreich ${messageText}`,
@@ -191,7 +177,7 @@ export async function PATCH(request: NextRequest) {
         console.error('Error updating submission status:', error);
         return NextResponse.json(
             { message: 'Fehler beim Aktualisieren der Einreichung' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
@@ -202,7 +188,7 @@ export async function DELETE(request: NextRequest) {
         if (!(await isAuthenticated())) {
             return NextResponse.json(
                 { message: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -210,7 +196,7 @@ export async function DELETE(request: NextRequest) {
         if (!hasPermission(user, 'portraits.delete')) {
             return NextResponse.json(
                 { message: 'Keine Berechtigung' },
-                { status: 403 }
+                { status: 403 },
             );
         }
 
@@ -219,7 +205,7 @@ export async function DELETE(request: NextRequest) {
         if (!id) {
             return NextResponse.json(
                 { message: 'ID ist erforderlich' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -233,7 +219,7 @@ export async function DELETE(request: NextRequest) {
             } catch (blobError) {
                 console.error(
                     `Failed to delete image from storage for portrait ${id}:`,
-                    blobError
+                    blobError,
                 );
                 // Continue even if blob deletion fails - the DB record is already deleted
             }
@@ -260,7 +246,7 @@ export async function DELETE(request: NextRequest) {
         });
 
         // Notify clients about the change
-        notifyClients();
+        // notifyClients(); removed as invalid
 
         return NextResponse.json({
             message: 'Einreichung erfolgreich gelöscht',
@@ -269,7 +255,7 @@ export async function DELETE(request: NextRequest) {
         console.error('Error deleting submission:', error);
         return NextResponse.json(
             { message: 'Fehler beim Löschen der Einreichung' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

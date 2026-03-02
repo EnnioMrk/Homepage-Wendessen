@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import { useState, useEffect } from "react";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
 import {
     Cloud,
     Thermometer,
@@ -14,8 +14,8 @@ import {
     MapPin,
     Clock,
     Warning,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
 
 interface WeatherData {
     location: string;
@@ -59,7 +59,7 @@ export default function WetterPage() {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [lastUpdate, setLastUpdate] = useState<string>('');
+    const [lastUpdate, setLastUpdate] = useState<string>("");
 
     useEffect(() => {
         const fetchWeatherData = async () => {
@@ -67,15 +67,15 @@ export default function WetterPage() {
                 setLoading(true);
 
                 // Fetch pre-parsed JSON from API
-                const response = await fetch('/api/weather');
+                const response = await fetch("/api/weather");
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch weather data');
+                    throw new Error("Failed to fetch weather data");
                 }
 
                 // Ensure we actually received JSON. If not, log body for debugging.
-                const contentType = response.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
+                const contentType = response.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
                     const parsedData = await response.json();
 
                     // Map to the simpler interface used by this page
@@ -122,17 +122,17 @@ export default function WetterPage() {
                 } else {
                     const textBody = await response.text();
                     console.error(
-                        'Unexpected non-JSON response from /api/weather:',
-                        textBody
+                        "Unexpected non-JSON response from /api/weather:",
+                        textBody,
                     );
                     throw new Error(
-                        'Received non-JSON response from weather API'
+                        "Received non-JSON response from weather API",
                     );
                 }
                 setError(null);
             } catch (err) {
-                setError('Fehler beim Laden der Wetterdaten');
-                console.error('Weather fetch error:', err);
+                setError("Fehler beim Laden der Wetterdaten");
+                console.error("Weather fetch error:", err);
             } finally {
                 setLoading(false);
             }
@@ -175,7 +175,7 @@ export default function WetterPage() {
                 title="Wetter"
                 subtitle={`Aktuelle Wetterdaten aus Wendessen`}
                 icon={<Cloud />}
-                backgroundImage="/images/Wendessen_Luftaufnahme.jpg"
+                backgroundImage="/images/wendessen-luftaufnahme.jpg"
                 color="blue"
             />
 
@@ -188,7 +188,7 @@ export default function WetterPage() {
                             <p className="text-gray-600">
                                 <span className="font-semibold">
                                     Letzte Aktualisierung:
-                                </span>{' '}
+                                </span>{" "}
                                 {lastUpdate}
                             </p>
                         </div>
@@ -210,12 +210,12 @@ export default function WetterPage() {
                                 </div>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div>
-                                        Min:{' '}
+                                        Min:{" "}
                                         {weatherData?.temperature.min.value}°C (
                                         {weatherData?.temperature.min.time})
                                     </div>
                                     <div>
-                                        Max:{' '}
+                                        Max:{" "}
                                         {weatherData?.temperature.max.value}°C (
                                         {weatherData?.temperature.max.time})
                                     </div>
@@ -268,7 +268,7 @@ export default function WetterPage() {
                                 </div>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div>
-                                        Richtung: {weatherData?.wind.direction}{' '}
+                                        Richtung: {weatherData?.wind.direction}{" "}
                                         ({weatherData?.wind.degrees}°)
                                     </div>
                                     <div>
@@ -292,19 +292,20 @@ export default function WetterPage() {
                                 </div>
                                 <div className="space-y-1 text-sm text-gray-600">
                                     <div
-                                        className={`${(weatherData?.pressure.trend ?? 0) >
+                                        className={`${
+                                            (weatherData?.pressure.trend ?? 0) >
                                             0
-                                            ? 'text-green-600'
-                                            : (weatherData?.pressure
-                                                .trend ?? 0) < 0
-                                                ? 'text-red-600'
-                                                : 'text-gray-600'
-                                            }`}
+                                                ? "text-green-600"
+                                                : (weatherData?.pressure
+                                                        .trend ?? 0) < 0
+                                                  ? "text-red-600"
+                                                  : "text-gray-600"
+                                        }`}
                                     >
-                                        Trend:{' '}
+                                        Trend:{" "}
                                         {(weatherData?.pressure.trend ?? 0) > 0
-                                            ? '+'
-                                            : ''}
+                                            ? "+"
+                                            : ""}
                                         {weatherData?.pressure.trend ?? 0} hPa/h
                                     </div>
                                 </div>
@@ -343,23 +344,23 @@ export default function WetterPage() {
                                 </h3>
                                 <div className="space-y-2 text-gray-600">
                                     <div>
-                                        Heute:{' '}
+                                        Heute:{" "}
                                         <span className="font-semibold">
-                                            {weatherData?.precipitation.today}{' '}
+                                            {weatherData?.precipitation.today}{" "}
                                             l/m²
                                         </span>
                                     </div>
                                     <div>
-                                        Monat:{' '}
+                                        Monat:{" "}
                                         <span className="font-semibold">
-                                            {weatherData?.precipitation.month}{' '}
+                                            {weatherData?.precipitation.month}{" "}
                                             l/m²
                                         </span>
                                     </div>
                                     <div>
-                                        Jahr:{' '}
+                                        Jahr:{" "}
                                         <span className="font-semibold">
-                                            {weatherData?.precipitation.year}{' '}
+                                            {weatherData?.precipitation.year}{" "}
                                             l/m²
                                         </span>
                                     </div>

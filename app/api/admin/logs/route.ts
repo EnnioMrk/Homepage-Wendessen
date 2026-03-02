@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { getAdminLogs } from '@/lib/admin-log';
 
 export async function GET(request: Request) {
+    await connection();
     try {
         const authenticated = await isAuthenticated();
         if (!authenticated) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -46,7 +48,7 @@ export async function GET(request: Request) {
         console.error('Error fetching admin logs:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

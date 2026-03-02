@@ -4,7 +4,7 @@ import {
     deleteOrganization,
     updateOrganization,
 } from '@/lib/database/organizations';
-import { revalidateTagSafe } from '@/lib/revalidate';
+import { revalidateTagSafe, revalidatePathSafe } from '@/lib/revalidate';
 
 export async function PUT(
     request: NextRequest,
@@ -30,6 +30,7 @@ export async function PUT(
         });
 
         revalidateTagSafe('organizations');
+        revalidatePathSafe('/');
         return NextResponse.json({ organization: updatedOrg });
     } catch (error) {
         if ((error as Error).message === 'Unauthorized') {
@@ -56,6 +57,7 @@ export async function DELETE(
         await deleteOrganization(id);
 
         revalidateTagSafe('organizations');
+        revalidatePathSafe('/');
         return NextResponse.json({ success: true });
     } catch (error) {
         if ((error as Error).message === 'Unauthorized') {

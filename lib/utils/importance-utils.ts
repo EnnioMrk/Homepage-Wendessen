@@ -1,3 +1,5 @@
+import { normalizeLegacyImportance } from '@/lib/constants/contact-priorities';
+
 /**
  * Utility functions for calculating contact importance based on roles
  */
@@ -36,6 +38,7 @@ const ROLE_IMPORTANCE: Record<string, number> = {
     '2. Vorsitzende': 350,
     'Kassenführer': 300,
     'Kassiererin': 300,
+    'Kassenwart': 300,
     'Schriftführer': 250,
     'Schriftführerin': 250,
 
@@ -67,15 +70,15 @@ export function calculateImportance(affiliations: Affiliation[]): number {
         maxImportance = Math.max(maxImportance, roleImportance);
     }
 
-    return maxImportance;
+    return normalizeLegacyImportance(maxImportance);
 }
 
 /**
  * Check if a role has high importance (for potential special handling)
  * @param role Role string to check
- * @returns True if role has high importance (>= 500)
+ * @returns True if role has high importance (priority level >= 5)
  */
 export function isHighImportanceRole(role: string): boolean {
     const importance = ROLE_IMPORTANCE[role] || 0;
-    return importance >= 500;
+    return normalizeLegacyImportance(importance) >= 5;
 }

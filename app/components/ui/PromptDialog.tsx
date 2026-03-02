@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { WarningCircle } from '@phosphor-icons/react';
 
 interface PromptDialogProps {
@@ -32,10 +33,29 @@ export default function PromptDialog({
 }: PromptDialogProps) {
     const [isConfirming, setIsConfirming] = useState(false);
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     useEffect(() => {
         if (!isOpen) {
             setIsConfirming(false);
         }
+    }, [isOpen]);
+
+    // Prevent body scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
     }, [isOpen]);
 
     const handleConfirm = async () => {
@@ -48,10 +68,10 @@ export default function PromptDialog({
         }
     };
 
-    if (!isOpen) return null;
+    if (!mounted || !isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+    return createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -75,8 +95,18 @@ export default function PromptDialog({
                         <div
                             className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full"
                             style={{
-                                backgroundColor: accentColor === 'red' ? '#fee2e2' : accentColor === 'primary' ? 'rgb(var(--primary) / 0.1)' : `${accentColor}1a`,
-                                color: accentColor === 'red' ? '#dc2626' : accentColor === 'primary' ? 'rgb(var(--primary))' : accentColor,
+                                backgroundColor:
+                                    accentColor === 'red'
+                                        ? '#fee2e2'
+                                        : accentColor === 'primary'
+                                          ? 'rgb(var(--primary) / 0.1)'
+                                          : `${accentColor}1a`,
+                                color:
+                                    accentColor === 'red'
+                                        ? '#dc2626'
+                                        : accentColor === 'primary'
+                                          ? 'rgb(var(--primary))'
+                                          : accentColor,
                             }}
                         >
                             {icon ?? (
@@ -128,23 +158,32 @@ export default function PromptDialog({
                         onClick={handleConfirm}
                         className="relative w-full rounded-lg px-5 py-3 text-base font-semibold text-white shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto"
                         style={{
-                            backgroundColor: accentColor === 'red' ? '#dc2626' : accentColor === 'primary' ? 'rgb(var(--primary))' : accentColor,
+                            backgroundColor:
+                                accentColor === 'red'
+                                    ? '#dc2626'
+                                    : accentColor === 'primary'
+                                      ? 'rgb(var(--primary))'
+                                      : accentColor,
                         }}
                         disabled={isConfirming}
                         onMouseEnter={(e) => {
                             if (isConfirming) return;
                             if (accentColor === 'red') {
-                                e.currentTarget.style.backgroundColor = '#b91c1c';
+                                e.currentTarget.style.backgroundColor =
+                                    '#b91c1c';
                             } else if (accentColor === 'primary') {
-                                e.currentTarget.style.backgroundColor = 'rgb(var(--primary-dark))';
+                                e.currentTarget.style.backgroundColor =
+                                    'rgb(var(--primary-dark))';
                             }
                         }}
                         onMouseLeave={(e) => {
                             if (isConfirming) return;
                             if (accentColor === 'red') {
-                                e.currentTarget.style.backgroundColor = '#dc2626';
+                                e.currentTarget.style.backgroundColor =
+                                    '#dc2626';
                             } else if (accentColor === 'primary') {
-                                e.currentTarget.style.backgroundColor = 'rgb(var(--primary))';
+                                e.currentTarget.style.backgroundColor =
+                                    'rgb(var(--primary))';
                             }
                         }}
                     >
@@ -158,15 +197,21 @@ export default function PromptDialog({
                                         key={i}
                                         className="h-2 w-2 rounded-full bg-white"
                                         style={{
-                                            animation: 'pulse-opacity 1.2s ease-in-out infinite',
+                                            animation:
+                                                'pulse-opacity 1.2s ease-in-out infinite',
                                             animationDelay: `${i * 0.2}s`,
                                         }}
                                     />
                                 ))}
                                 <style jsx>{`
                                     @keyframes pulse-opacity {
-                                        0%, 100% { opacity: 0.3; }
-                                        50% { opacity: 1; }
+                                        0%,
+                                        100% {
+                                            opacity: 0.3;
+                                        }
+                                        50% {
+                                            opacity: 1;
+                                        }
                                     }
                                 `}</style>
                             </span>
@@ -174,6 +219,7 @@ export default function PromptDialog({
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }

@@ -336,5 +336,45 @@
         "addresses": [],
         "affiliations": [{ "org": "SV Wendessen", "role": "Vereinswirt" }],
         "sources": ["app/dorfleben/vereine/sv-wendessen/page.tsx"]
+    },
+    {
+        "name": "Ulrike Jungkurth",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331 68680" }],
+        "addresses": ["Dorfstraße 18, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Kirchbauverein", "role": "1. Vorsitzende" }
+        ],
+        "sources": ["app/dorfleben/vereine/kirchbauverein/page.tsx"]
+    },
+    {
+        "name": "Achim Cirksena",
+        "emails": [],
+        "phones": [{ "type": "mobile", "value": "0151 / 50615180" }],
+        "addresses": ["Bäckergasse 5A, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Kirchbauverein", "role": "2. Vorsitzender" }
+        ],
+        "sources": ["app/dorfleben/vereine/kirchbauverein/page.tsx"]
+    },
+    {
+        "name": "Ralf Eilers",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331 65110" }],
+        "addresses": ["Am Gute 5, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Kirchbauverein", "role": "Kassenwart" }
+        ],
+        "sources": ["app/dorfleben/vereine/kirchbauverein/page.tsx"]
+    },
+    {
+        "name": "Dietlind Gärtner-Peterhoff",
+        "emails": [],
+        "phones": [{ "type": "phone", "value": "05331 905091" }],
+        "addresses": ["Am Gute 1a, 38300 Wendessen"],
+        "affiliations": [
+            { "org": "Kirchbauverein", "role": "Schriftführerin" }
+        ],
+        "sources": ["app/dorfleben/vereine/kirchbauverein/page.tsx"]
     }
 ]

@@ -7,6 +7,7 @@ import LazySharedGalleryImage from '@/app/components/LazySharedGalleryImage';
 import { SharedGalleryImageProvider } from '@/app/components/SharedGalleryImageContext';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
+import Modal from '@/app/components/ui/Modal';
 import {
     ArrowLeft,
     Check,
@@ -414,250 +415,239 @@ export default function AdminSharedGallery({
                 </div>
 
                 {/* Detail Modal */}
-                {selectedSubmission && !showRejectModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-start">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <h3 className="text-2xl font-bold text-gray-900">
-                                            {selectedSubmission.title}
-                                        </h3>
-                                        {getStatusBadge(
-                                            selectedSubmission.status
-                                        )}
-                                    </div>
-                                    {selectedSubmission.submitterName && (
-                                        <p className="text-gray-600">
-                                            Eingereicht von{' '}
-                                            <strong>
-                                                {
-                                                    selectedSubmission.submitterName
-                                                }
-                                            </strong>
-                                        </p>
-                                    )}
+                <Modal
+                    isOpen={Boolean(selectedSubmission && !showRejectModal)}
+                    onClose={() => setSelectedSubmission(null)}
+                    maxWidth="4xl"
+                    backdropBlur
+                >
+                    <div className="p-6 md:p-8">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                        {selectedSubmission?.title}
+                                    </h3>
+                                    {selectedSubmission && getStatusBadge(selectedSubmission.status)}
                                 </div>
-                                <button
-                                    onClick={() => setSelectedSubmission(null)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
-                                    <X size={24} />
-                                </button>
+                                {selectedSubmission?.submitterName && (
+                                    <p className="text-gray-700">
+                                        <span className="text-gray-600 font-medium">Eingereicht von:</span>{' '}
+                                        <strong className="text-gray-900 font-semibold">
+                                            {selectedSubmission.submitterName}
+                                        </strong>
+                                    </p>
+                                )}
                             </div>
 
-                            <div className="p-6">
-                                {/* Image */}
-                                <div className="mb-6 relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
-                                    {selectedSubmission.imageUrl ? (
-                                        <Image
-                                            src={selectedSubmission.imageUrl}
-                                            alt={selectedSubmission.title}
-                                            fill
-                                            className="object-contain"
-                                        />
-                                    ) : (
-                                        <LazySharedGalleryImage
-                                            imageId={selectedSubmission.id}
-                                            alt={selectedSubmission.title}
-                                            fill
-                                            className="object-contain"
-                                            onLoad={(imageUrl) => {
-                                                selectedSubmission.imageUrl =
-                                                    imageUrl;
-                                            }}
-                                        />
-                                    )}
-                                </div>
+                            {canDelete && selectedSubmission && (
+                                <button
+                                    onClick={() => setSubmissionToDelete(selectedSubmission)}
+                                    className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors text-sm font-medium border border-red-100"
+                                    title="Einreichung löschen"
+                                >
+                                    <Trash size={18} />
+                                    Einreichung löschen
+                                </button>
+                            )}
+                        </div>
 
-                                {/* Details */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                    {selectedSubmission.description && (
-                                        <div className="md:col-span-2">
-                                            <h4 className="font-semibold text-gray-900 mb-1">
-                                                Beschreibung
-                                            </h4>
-                                            <p className="text-gray-700">
-                                                {selectedSubmission.description}
-                                            </p>
-                                        </div>
-                                    )}
-                                    {selectedSubmission.submitterEmail && (
-                                        <div>
-                                            <h4 className="font-semibold text-gray-900 mb-1">
-                                                E-Mail
-                                            </h4>
-                                            <p className="text-gray-700">
-                                                {
-                                                    selectedSubmission.submitterEmail
-                                                }
-                                            </p>
-                                        </div>
-                                    )}
+                        <div>
+                            {/* Image Preview */}
+                            <div className="mb-8 relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+                                {selectedSubmission?.imageUrl ? (
+                                    <Image
+                                        src={selectedSubmission.imageUrl}
+                                        alt={selectedSubmission.title}
+                                        fill
+                                        className="object-contain p-2"
+                                        unoptimized
+                                    />
+                                ) : selectedSubmission ? (
+                                    <LazySharedGalleryImage
+                                        imageId={selectedSubmission.id}
+                                        alt={selectedSubmission.title}
+                                        fill
+                                        className="object-contain p-2"
+                                        onLoad={(imageUrl) => {
+                                            selectedSubmission.imageUrl = imageUrl;
+                                        }}
+                                    />
+                                ) : null}
+                            </div>
+
+                            {/* Details Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+                                {selectedSubmission?.description && (
+                                    <div className="md:col-span-2">
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                                            Beschreibung
+                                        </h4>
+                                        <p className="text-gray-900 leading-relaxed italic border-l-4 border-gray-200 pl-4 py-1">
+                                            &quot;{selectedSubmission.description}&quot;
+                                        </p>
+                                    </div>
+                                )}
+                                {selectedSubmission?.submitterEmail && (
                                     <div>
-                                        <h4 className="font-semibold text-gray-900 mb-1">
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                                            E-Mail-Adresse
+                                        </h4>
+                                        <p className="text-gray-900 font-medium">
+                                            {selectedSubmission.submitterEmail}
+                                        </p>
+                                    </div>
+                                )}
+                                {selectedSubmission && (
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
                                             Eingereicht am
                                         </h4>
-                                        <p className="text-gray-700">
-                                            {new Date(
-                                                selectedSubmission.submittedAt
-                                            ).toLocaleString('de-DE')}
+                                        <p className="text-gray-900 font-medium">
+                                            {new Date(selectedSubmission.submittedAt).toLocaleString('de-DE', {
+                                                dateStyle: 'medium',
+                                                timeStyle: 'short'
+                                            })}
                                         </p>
                                     </div>
-                                    {selectedSubmission.reviewedAt && (
-                                        <>
-                                            <div>
-                                                <h4 className="font-semibold text-gray-900 mb-1">
-                                                    Geprüft am
-                                                </h4>
-                                                <p className="text-gray-700">
-                                                    {new Date(
-                                                        selectedSubmission.reviewedAt
-                                                    ).toLocaleString('de-DE')}
-                                                </p>
-                                            </div>
-                                            {selectedSubmission.reviewedBy && (
-                                                <div>
-                                                    <h4 className="font-semibold text-gray-900 mb-1">
-                                                        Geprüft von
-                                                    </h4>
-                                                    <p className="text-gray-700">
-                                                        {
-                                                            selectedSubmission.reviewedBy
-                                                        }
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                    {selectedSubmission.rejectionReason && (
-                                        <div className="md:col-span-2">
-                                            <h4 className="font-semibold text-gray-900 mb-1">
-                                                Ablehnungsgrund
+                                )}
+                                {selectedSubmission?.reviewedAt && (
+                                    <>
+                                        <div>
+                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                                                Geprüft am
                                             </h4>
-                                            <p className="text-gray-700">
-                                                {
-                                                    selectedSubmission.rejectionReason
-                                                }
+                                            <p className="text-gray-900 font-medium">
+                                                {new Date(selectedSubmission.reviewedAt).toLocaleString('de-DE', {
+                                                    dateStyle: 'medium',
+                                                    timeStyle: 'short'
+                                                })}
                                             </p>
                                         </div>
-                                    )}
-                                </div>
+                                        {selectedSubmission.reviewedBy && (
+                                            <div>
+                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                                                    Geprüft von
+                                                </h4>
+                                                <p className="text-gray-900 font-medium">
+                                                    {selectedSubmission.reviewedBy}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                {selectedSubmission?.rejectionReason && (
+                                    <div className="md:col-span-2 bg-red-50 p-4 rounded-xl border border-red-100">
+                                        <h4 className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">
+                                            Ablehnungsgrund
+                                        </h4>
+                                        <p className="text-red-900 font-medium whitespace-pre-wrap">
+                                            {selectedSubmission.rejectionReason}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
 
-                                {/* Actions */}
-                                <div className="flex gap-3 pt-4 border-t border-gray-200">
-                                    {selectedSubmission.status ===
-                                        'pending' && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    handleApprove(
-                                                        selectedSubmission.id
-                                                    )
-                                                }
-                                                disabled={processing}
-                                                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:bg-gray-400 flex items-center justify-center"
-                                            >
-                                                {processing ? (
-                                                    <LoadingSpinner
-                                                        size="sm"
-                                                        color="white"
-                                                    />
-                                                ) : (
-                                                    <>
-                                                        <Check
-                                                            size={16}
-                                                            className="mr-2"
-                                                        />
-                                                        Freigeben
-                                                    </>
-                                                )}
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    setShowRejectModal(true)
-                                                }
-                                                disabled={processing}
-                                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:bg-gray-400 flex items-center justify-center"
-                                            >
-                                                <X size={16} className="mr-2" />
-                                                Ablehnen
-                                            </button>
-                                        </>
-                                    )}
-                                    {canDelete && (
+                            {/* Actions Footer */}
+                            <div className="flex flex-wrap gap-3 pt-6 border-t border-gray-100">
+                                {selectedSubmission?.status === 'pending' && (
+                                    <>
                                         <button
-                                            onClick={() =>
-                                                setSubmissionToDelete(
-                                                    selectedSubmission
-                                                )
-                                            }
+                                            onClick={() => handleApprove(selectedSubmission.id)}
                                             disabled={processing}
-                                            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium disabled:bg-gray-400 flex items-center justify-center"
+                                            className="flex-1 min-w-[150px] px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400 flex items-center justify-center gap-2"
                                         >
-                                            <Trash size={16} className="mr-2" />
-                                            Löschen
+                                            {processing ? (
+                                                <LoadingSpinner size="sm" color="white" />
+                                            ) : (
+                                                <>
+                                                    <Check size={20} weight="bold" />
+                                                    Freigeben
+                                                </>
+                                            )}
                                         </button>
-                                    )}
-                                </div>
+                                        <button
+                                            onClick={() => setShowRejectModal(true)}
+                                            disabled={processing}
+                                            className="flex-1 min-w-[150px] px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400 flex items-center justify-center gap-2"
+                                        >
+                                            <X size={20} weight="bold" />
+                                            Ablehnen
+                                        </button>
+                                    </>
+                                )}
+                                {selectedSubmission?.status !== 'pending' && (
+                                    <button
+                                        onClick={() => setSelectedSubmission(null)}
+                                        className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Schließen
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
-                )}
+                </Modal>
 
                 {/* Reject Modal */}
-                {showRejectModal && selectedSubmission && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-lg w-full max-w-md p-6">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">
-                                Einreichung ablehnen
-                            </h3>
-                            <p className="text-gray-700 mb-4">
-                                Möchten Sie wirklich diese Einreichung ablehnen?
-                            </p>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Grund (optional)
-                                </label>
-                                <textarea
-                                    value={rejectionReason}
-                                    onChange={(e) =>
-                                        setRejectionReason(e.target.value)
-                                    }
-                                    placeholder="Grund für die Ablehnung..."
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900"
-                                />
-                            </div>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => {
-                                        setShowRejectModal(false);
-                                        setRejectionReason('');
-                                    }}
-                                    disabled={processing}
-                                    className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium"
-                                >
-                                    Abbrechen
-                                </button>
-                                <button
-                                    onClick={handleReject}
-                                    disabled={processing}
-                                    className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:bg-gray-400"
-                                >
-                                    {processing ? (
-                                        <LoadingSpinner
-                                            size="sm"
-                                            color="white"
-                                        />
-                                    ) : (
-                                        'Ablehnen'
-                                    )}
-                                </button>
-                            </div>
+                <Modal
+                    isOpen={Boolean(showRejectModal && selectedSubmission)}
+                    onClose={() => {
+                        setShowRejectModal(false);
+                        setRejectionReason('');
+                    }}
+                    maxWidth="md"
+                    backdropBlur
+                >
+                    <div className="p-6 md:p-8">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                            Einreichung ablehnen
+                        </h3>
+                        <p className="text-gray-700 mb-4">
+                            Möchten Sie wirklich diese Einreichung ablehnen?
+                        </p>
+                        <div className="mb-6">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Grund (optional)
+                            </label>
+                            <textarea
+                                value={rejectionReason}
+                                onChange={(e) =>
+                                    setRejectionReason(e.target.value)
+                                }
+                                placeholder="Grund für die Ablehnung..."
+                                rows={3}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 transition-all font-medium"
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowRejectModal(false);
+                                    setRejectionReason('');
+                                }}
+                                disabled={processing}
+                                className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-semibold transition-all"
+                            >
+                                Abbrechen
+                            </button>
+                            <button
+                                onClick={handleReject}
+                                disabled={processing}
+                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400"
+                            >
+                                {processing ? (
+                                    <LoadingSpinner
+                                        size="sm"
+                                        color="white"
+                                    />
+                                ) : (
+                                    'Ablehnen'
+                                )}
+                            </button>
                         </div>
                     </div>
-                )}
+                </Modal>
 
                 {/* Approve Confirmation Dialog */}
                 <PromptDialog

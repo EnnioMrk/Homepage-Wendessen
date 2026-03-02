@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     ArrowLeft,
     FloppyDisk,
     ImageSquare,
     Trash,
     PencilSimple,
-} from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
-import { usePermissions } from '@/lib/usePermissions';
-import FeatureCard from '@/app/components/FeatureCard';
-import TailwindColorPicker from '@/app/admin/components/TailwindColorPicker';
-import PageSelector from '@/app/admin/components/PageSelector';
-
+} from "@phosphor-icons/react/dist/ssr";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
+import GalleryImagePicker from "@/app/admin/components/GalleryImagePicker";
+import { usePermissions } from "@/lib/usePermissions";
+import FeatureCard from "@/app/components/FeatureCard";
+import TailwindColorPicker from "@/app/admin/components/TailwindColorPicker";
+import PageSelector from "@/app/admin/components/PageSelector";
+import Modal from "@/app/components/ui/Modal";
 
 // ... (existing imports)
 
@@ -46,69 +46,67 @@ interface LayoutData {
 }
 
 const DEFAULT_THEME: CardTheme = {
-    highlight: 'green',
-    background: 'green',
-    button: 'green',
+    highlight: "green",
+    background: "green",
+    button: "green",
 };
 
 const THEME_PRESETS: Record<string, CardTheme> = {
-    Green: { highlight: 'green', background: 'green', button: 'green' },
-    Blue: { highlight: 'blue', background: 'blue', button: 'blue' },
-    Warm: { highlight: 'amber', background: 'orange', button: 'red' },
-    Slate: { highlight: 'slate', background: 'gray', button: 'gray' },
-    Purple: { highlight: 'violet', background: 'purple', button: 'purple' },
+    Green: { highlight: "green", background: "green", button: "green" },
+    Blue: { highlight: "blue", background: "blue", button: "blue" },
+    Warm: { highlight: "amber", background: "orange", button: "red" },
+    Slate: { highlight: "slate", background: "gray", button: "gray" },
+    Purple: { highlight: "violet", background: "purple", button: "purple" },
 };
 
 const PRESET_BG: Record<string, string> = {
-    Green: '#16a34a', // green-600
-    Blue: '#2563eb', // blue-600
-    Warm: '#f97316', // orange-500
-    Slate: '#64748b', // slate-500
-    Purple: '#7c3aed', // violet-600
+    Green: "#16a34a", // green-600
+    Blue: "#2563eb", // blue-600
+    Warm: "#f97316", // orange-500
+    Slate: "#64748b", // slate-500
+    Purple: "#7c3aed", // violet-600
 };
 
 const PRESET_LABEL_DE: Record<string, string> = {
-    Green: 'Grün',
-    Blue: 'Blau',
-    Warm: 'Warm',
-    Slate: 'Grau',
-    Purple: 'Violett',
+    Green: "Grün",
+    Blue: "Blau",
+    Warm: "Warm",
+    Slate: "Grau",
+    Purple: "Violett",
 };
 
 const EMPTY_CARD: CardData = {
-    title: '',
-    subtitle: '',
-    description: '',
-    button_text: 'Mehr erfahren',
-    button_href: '#',
+    title: "",
+    subtitle: "",
+    description: "",
+    button_text: "Mehr erfahren",
+    button_href: "#",
     theme: DEFAULT_THEME,
 };
 
 export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     const router = useRouter();
     const { hasPermission } = usePermissions();
-    const canUpload = hasPermission('gallery.upload');
+    const canUpload = hasPermission("gallery.upload");
 
     const [loading, setLoading] = useState(!!layoutId);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showImagePicker, setShowImagePicker] = useState<
-
-        'card_1' | 'card_2' | 'card_3' | null
+        "card_1" | "card_2" | "card_3" | null
     >(null);
     const [editingThemeFor, setEditingThemeFor] = useState<
-        null | 'card_1' | 'card_2' | 'card_3'
+        null | "card_1" | "card_2" | "card_3"
     >(null);
     const [tempTheme, setTempTheme] = useState<CardTheme>(DEFAULT_THEME);
 
     const [formData, setFormData] = useState<LayoutData>({
-        name: '',
+        name: "",
         is_active: false,
-        card_1: { ...EMPTY_CARD, title: 'Karte 1' },
-        card_2: { ...EMPTY_CARD, title: 'Karte 2' },
-        card_3: { ...EMPTY_CARD, title: 'Karte 3' },
+        card_1: { ...EMPTY_CARD, title: "Karte 1" },
+        card_2: { ...EMPTY_CARD, title: "Karte 2" },
+        card_3: { ...EMPTY_CARD, title: "Karte 3" },
     });
-
 
     useEffect(() => {
         if (layoutId) {
@@ -128,25 +126,25 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
             // Better: I will fetch list and find it client side for now, or just implement GET in next step.
             // I'll assume I'll fix the API to support GET /api/admin/wendessen/[id] or just use list for now to save a step.
             // Let's use list for now.
-            const response = await fetch('/api/admin/wendessen');
+            const response = await fetch("/api/admin/wendessen");
             if (response.ok) {
                 const data = (await response.json()) as {
                     layouts: Array<LayoutData & { id: number }>;
                 };
                 const found = data.layouts.find(
-                    (l) => l.id != null && l.id.toString() === id
+                    (l) => l.id != null && l.id.toString() === id,
                 );
                 if (found) {
                     setFormData(found);
                 } else {
-                    setError('Layout nicht gefunden');
+                    setError("Layout nicht gefunden");
                 }
             } else {
-                setError('Fehler beim Laden');
+                setError("Fehler beim Laden");
             }
         } catch (error) {
             console.error(error);
-            setError('Fehler beim Laden');
+            setError("Fehler beim Laden");
         } finally {
             setLoading(false);
         }
@@ -154,7 +152,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
     const handleSave = async () => {
         if (!formData.name) {
-            setError('Bitte geben Sie einen Namen für das Layout ein.');
+            setError("Bitte geben Sie einen Namen für das Layout ein.");
             return;
         }
 
@@ -164,35 +162,35 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
         try {
             const url = layoutId
                 ? `/api/admin/wendessen/${layoutId}`
-                : '/api/admin/wendessen';
+                : "/api/admin/wendessen";
 
-            const method = layoutId ? 'PUT' : 'POST';
+            const method = layoutId ? "PUT" : "POST";
 
             const response = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             if (response.ok) {
-                router.push('/admin/wendessen');
+                router.push("/admin/wendessen");
                 router.refresh();
             } else {
                 const data = await response.json();
-                setError(data.error || 'Fehler beim Speichern');
+                setError(data.error || "Fehler beim Speichern");
             }
         } catch (error) {
             console.error(error);
-            setError('Fehler beim Speichern');
+            setError("Fehler beim Speichern");
         } finally {
             setSaving(false);
         }
     };
 
     const updateCard = <K extends keyof CardData>(
-        cardKey: 'card_1' | 'card_2' | 'card_3',
+        cardKey: "card_1" | "card_2" | "card_3",
         field: K,
-        value: CardData[K]
+        value: CardData[K],
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -204,8 +202,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
     };
 
     const updateCardTheme = (
-        cardKey: 'card_1' | 'card_2' | 'card_3',
-        theme: CardTheme
+        cardKey: "card_1" | "card_2" | "card_3",
+        theme: CardTheme,
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -243,25 +241,27 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                         <ArrowLeft size={24} />
                     </button>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        {layoutId ? 'Layout bearbeiten' : 'Neues Layout'}
+                        {layoutId ? "Layout bearbeiten" : "Neues Layout"}
                     </h1>
                 </div>
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center disabled:opacity-50"
-                >
-                    {saving ? (
-                        <LoadingSpinner
-                            size="sm"
-                            color="white"
-                            className="mr-2"
-                        />
-                    ) : (
-                        <FloppyDisk size={20} className="mr-2" />
-                    )}
-                    Speichern
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center disabled:opacity-50"
+                    >
+                        {saving ? (
+                            <LoadingSpinner
+                                size="sm"
+                                color="white"
+                                className="mr-2"
+                            />
+                        ) : (
+                            <FloppyDisk size={20} className="mr-2" />
+                        )}
+                        Speichern
+                    </button>
+                </div>
             </div>
 
             {error && (
@@ -293,27 +293,27 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
 
             {/* Cards Editor */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {(['card_1', 'card_2', 'card_3'] as const).map(
+                {(["card_1", "card_2", "card_3"] as const).map(
                     (cardKey, index) => (
                         <div
                             key={cardKey}
                             className={`bg-white p-6 rounded-lg shadow ${
-                                index === 0 ? 'lg:col-span-2' : ''
+                                index === 0 ? "lg:col-span-2" : ""
                             }`}
                         >
                             <div className="flex justify-between items-start mb-6 border-b pb-4">
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900">
                                         {index === 0
-                                            ? 'Karte 1'
+                                            ? "Karte 1"
                                             : index === 1
-                                            ? 'Karte 2'
-                                            : 'Karte 3'}
+                                              ? "Karte 2"
+                                              : "Karte 3"}
                                     </h3>
                                     <p className="text-sm text-gray-500">
                                         {index === 0
-                                            ? 'Die Hauptkarte, nimmt viel Platz ein.'
-                                            : 'Kleinere Karte an der Seite.'}
+                                            ? "Die Hauptkarte, nimmt viel Platz ein."
+                                            : "Kleinere Karte an der Seite."}
                                     </p>
                                 </div>
                             </div>
@@ -331,7 +331,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         className="grid gap-2"
                                         style={{
                                             gridTemplateColumns:
-                                                'repeat(auto-fit, minmax(140px, 1fr))',
+                                                "repeat(auto-fit, minmax(140px, 1fr))",
                                         }}
                                     >
                                         {Object.entries(THEME_PRESETS).map(
@@ -342,7 +342,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     onClick={() =>
                                                         updateCardTheme(
                                                             cardKey,
-                                                            theme
+                                                            theme,
                                                         )
                                                     }
                                                     className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
@@ -355,10 +355,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                             backgroundColor:
                                                                 PRESET_BG[
                                                                     name
-                                                                ] || '#ddd',
+                                                                ] || "#ddd",
                                                             display:
-                                                                'inline-block',
-                                                            border: '1px solid rgba(0,0,0,0.08)',
+                                                                "inline-block",
+                                                            border: "1px solid rgba(0,0,0,0.08)",
                                                         }}
                                                     />
                                                     <span className="text-sm text-gray-700">
@@ -367,7 +367,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                         ] || name}
                                                     </span>
                                                 </button>
-                                            )
+                                            ),
                                         )}
 
                                         {/* Anpassen included as a grid item so total tiles (presets + Anpassen) = 6 */}
@@ -375,7 +375,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             type="button"
                                             onClick={() => {
                                                 setTempTheme(
-                                                    formData[cardKey].theme
+                                                    formData[cardKey].theme,
                                                 );
                                                 setEditingThemeFor(cardKey);
                                             }}
@@ -393,8 +393,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                             <div
                                 className={`grid grid-cols-1 gap-6 ${
                                     index === 0
-                                        ? 'md:grid-cols-2'
-                                        : 'min-[1400px]:grid-cols-2'
+                                        ? "md:grid-cols-2"
+                                        : "min-[1400px]:grid-cols-2"
                                 }`}
                             >
                                 {/* Editor Column */}
@@ -411,8 +411,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 onChange={(e) =>
                                                     updateCard(
                                                         cardKey,
-                                                        'title',
-                                                        e.target.value
+                                                        "title",
+                                                        e.target.value,
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 border rounded-md mt-2"
@@ -430,8 +430,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 onChange={(e) =>
                                                     updateCard(
                                                         cardKey,
-                                                        'subtitle',
-                                                        e.target.value
+                                                        "subtitle",
+                                                        e.target.value,
                                                     )
                                                 }
                                                 className="w-full px-3 py-2 border rounded-md mt-1"
@@ -441,25 +441,56 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             <label className="block text-sm font-medium text-gray-700">
                                                 Beschreibung
                                             </label>
-                                            <textarea
-                                                value={
-                                                    formData[cardKey]
-                                                        .description
-                                                }
-                                                onChange={(e) =>
-                                                    updateCard(
-                                                        cardKey,
-                                                        'description',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                rows={5}
-                                                className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5"
-                                            />
+                                            <div className="relative">
+                                                <textarea
+                                                    value={
+                                                        formData[cardKey]
+                                                            .description
+                                                    }
+                                                    onChange={(e) =>
+                                                        updateCard(
+                                                            cardKey,
+                                                            "description",
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    maxLength={350}
+                                                    rows={5}
+                                                    className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                />
+                                                <div className="text-right text-xs text-gray-500">
+                                                    {formData[cardKey]
+                                                        .description?.length ||
+                                                        0}{" "}
+                                                    / 350 Zeichen
+                                                </div>
+                                            </div>
                                         </div>
                                         {/* Button Configuration */}
                                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                            <h5 className="text-sm font-medium text-gray-900 mb-3">Button Einstellungen</h5>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h5 className="text-sm font-medium text-gray-900">
+                                                    Button Einstellungen
+                                                </h5>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        updateCard(
+                                                            cardKey,
+                                                            "button_text",
+                                                            "",
+                                                        );
+                                                        updateCard(
+                                                            cardKey,
+                                                            "button_href",
+                                                            "",
+                                                        );
+                                                    }}
+                                                    className="text-xs font-medium text-gray-600 hover:text-gray-900"
+                                                >
+                                                    Kein Button
+                                                </button>
+                                            </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                                 {/* Button Text */}
                                                 <div>
@@ -468,27 +499,43 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        value={formData[cardKey].button_text}
+                                                        value={
+                                                            formData[cardKey]
+                                                                .button_text
+                                                        }
                                                         onChange={(e) =>
-                                                            updateCard(cardKey, 'button_text', e.target.value)
+                                                            updateCard(
+                                                                cardKey,
+                                                                "button_text",
+                                                                e.target.value,
+                                                            )
                                                         }
                                                         placeholder="Mehr erfahren"
                                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                     />
                                                 </div>
-                                                
+
                                                 {/* Page Selector */}
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-600 mb-1">
                                                         Seite verlinken
                                                     </label>
                                                     <PageSelector
-                                                        value={formData[cardKey].button_href}
-                                                        onChange={(href) => updateCard(cardKey, 'button_href', href)}
+                                                        value={
+                                                            formData[cardKey]
+                                                                .button_href
+                                                        }
+                                                        onChange={(href) =>
+                                                            updateCard(
+                                                                cardKey,
+                                                                "button_href",
+                                                                href,
+                                                            )
+                                                        }
                                                         placeholder="Seite wählen..."
                                                     />
                                                 </div>
-                                                
+
                                                 {/* Custom Link */}
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -496,17 +543,27 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        value={formData[cardKey].button_href}
+                                                        value={
+                                                            formData[cardKey]
+                                                                .button_href
+                                                        }
                                                         onChange={(e) =>
-                                                            updateCard(cardKey, 'button_href', e.target.value)
+                                                            updateCard(
+                                                                cardKey,
+                                                                "button_href",
+                                                                e.target.value,
+                                                            )
                                                         }
                                                         placeholder="/pfad/zur/seite"
                                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                     />
                                                 </div>
                                             </div>
+                                            <p className="text-xs text-gray-500 mt-3">
+                                                Wenn Text oder Link leer ist,
+                                                wird kein Button angezeigt.
+                                            </p>
                                         </div>
-
                                     </div>
                                 </div>
 
@@ -517,8 +574,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         </label>
                                         <div className="text-xs text-gray-500">
                                             {formData[cardKey].image_url
-                                                ? 'Mit Bild'
-                                                : 'Nur Text'}
+                                                ? "Mit Bild"
+                                                : "Nur Text"}
                                         </div>
                                     </div>
 
@@ -528,7 +585,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                             <FeatureCard
                                                 title={
                                                     formData[cardKey].title ||
-                                                    'Titel'
+                                                    "Titel"
                                                 }
                                                 subtitle={
                                                     formData[cardKey].subtitle
@@ -536,13 +593,16 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 description={
                                                     formData[cardKey]
                                                         .description ||
-                                                    'Beschreibungstext...'
+                                                    "Beschreibungstext..."
                                                 }
                                                 buttonText={
                                                     formData[cardKey]
-                                                        .button_text || 'Button'
+                                                        .button_text
                                                 }
-                                                buttonHref="#"
+                                                buttonHref={
+                                                    formData[cardKey]
+                                                        .button_href
+                                                }
                                                 buttonColor={
                                                     formData[cardKey].theme
                                                         .button
@@ -562,15 +622,14 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     !formData[cardKey].image_url
                                                 }
                                                 variant={
-                                                    cardKey === 'card_1'
-                                                        ? 'hero'
-                                                        : 'centered'
+                                                    cardKey === "card_1"
+                                                        ? "hero"
+                                                        : "centered"
                                                 }
                                                 className="h-full min-h-[300px]"
                                                 compact={true}
                                             />
                                         </div>
-
 
                                         {/* Image Controls */}
                                         <div className="flex gap-2 mt-4">
@@ -597,8 +656,8 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     onClick={() =>
                                                         updateCard(
                                                             cardKey,
-                                                            'image_url',
-                                                            ''
+                                                            "image_url",
+                                                            "",
                                                         )
                                                     }
                                                     className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
@@ -612,7 +671,7 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                 </div>
                             </div>
                         </div>
-                    )
+                    ),
                 )}
             </div>
 
@@ -624,104 +683,102 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                 />
             )}
 
-            {/* Theme customization modal (inline, no external dependency) */}
-            {editingThemeFor && (
-                <div className="relative z-50">
-                    <div className="fixed inset-0 bg-black/30" aria-hidden />
-                    <div className="fixed inset-0 flex items-center justify-center p-2">
-                        <div className="mx-auto w-full max-w-[16rem] sm:max-w-[20rem] md:max-w-[28rem] lg:max-w-[28rem] xl:max-w-[28rem] bg-white rounded-lg p-3 shadow-md">
-                            <div className="flex items-start justify-between gap-4">
-                                <h3 className="text-base font-semibold text-gray-900">
-                                    Theme anpassen
-                                </h3>
+            {/* Theme customization modal */}
+            <Modal
+                isOpen={!!editingThemeFor}
+                onClose={() => setEditingThemeFor(null)}
+                maxWidth="md"
+                showCloseButton
+                className="p-3"
+            >
+                <div>
+                    <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-base font-semibold text-gray-900">
+                            Theme anpassen
+                        </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                            <div className="w-28 text-right">
+                                <span className="text-sm text-gray-600">
+                                    Primär
+                                </span>
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">
-                                            Primär
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <TailwindColorPicker
-                                            value={tempTheme.highlight}
-                                            onChange={(c) =>
-                                                setTempTheme((t) => ({
-                                                    ...t,
-                                                    highlight: c,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">
-                                            Hintergrund
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <TailwindColorPicker
-                                            value={tempTheme.background}
-                                            onChange={(c) =>
-                                                setTempTheme((t) => ({
-                                                    ...t,
-                                                    background: c,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                                    <div className="w-28 text-right">
-                                        <span className="text-sm text-gray-600">
-                                            Button
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <TailwindColorPicker
-                                            value={tempTheme.button}
-                                            onChange={(c) =>
-                                                setTempTheme((t) => ({
-                                                    ...t,
-                                                    button: c,
-                                                }))
-                                            }
-                                        />
-                                    </div>
-                                </div>
+                            <div>
+                                <TailwindColorPicker
+                                    value={tempTheme.highlight}
+                                    onChange={(c) =>
+                                        setTempTheme((t) => ({
+                                            ...t,
+                                            highlight: c,
+                                        }))
+                                    }
+                                />
                             </div>
+                        </div>
 
-                            <div className="mt-4 flex flex-col gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setEditingThemeFor(null)}
-                                    className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
-                                >
-                                    Abbrechen
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (editingThemeFor)
-                                            updateCardTheme(
-                                                editingThemeFor,
-                                                tempTheme
-                                            );
-                                        setEditingThemeFor(null);
-                                    }}
-                                    className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
-                                >
-                                    Speichern
-                                </button>
+                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                            <div className="w-28 text-right">
+                                <span className="text-sm text-gray-600">
+                                    Hintergrund
+                                </span>
+                            </div>
+                            <div>
+                                <TailwindColorPicker
+                                    value={tempTheme.background}
+                                    onChange={(c) =>
+                                        setTempTheme((t) => ({
+                                            ...t,
+                                            background: c,
+                                        }))
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
+                            <div className="w-28 text-right">
+                                <span className="text-sm text-gray-600">
+                                    Button
+                                </span>
+                            </div>
+                            <div>
+                                <TailwindColorPicker
+                                    value={tempTheme.button}
+                                    onChange={(c) =>
+                                        setTempTheme((t) => ({
+                                            ...t,
+                                            button: c,
+                                        }))
+                                    }
+                                />
                             </div>
                         </div>
                     </div>
+
+                    <div className="mt-4 flex flex-col gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setEditingThemeFor(null)}
+                            className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
+                        >
+                            Abbrechen
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (editingThemeFor)
+                                    updateCardTheme(editingThemeFor, tempTheme);
+                                setEditingThemeFor(null);
+                            }}
+                            className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
+                        >
+                            Speichern
+                        </button>
+                    </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 }

@@ -4,13 +4,17 @@ import {
     createOrganization,
     getOrganizations,
 } from '@/lib/database/organizations';
-import { revalidateTagSafe } from '@/lib/revalidate';
+import { revalidateTagSafe, revalidatePathSafe } from '@/lib/revalidate';
 
 export async function GET() {
     try {
         await ensureAdmin();
         const organizations = await getOrganizations();
-        return NextResponse.json({ organizations });
+        return NextResponse.json({ organizations }, {
+            headers: {
+                'Cache-Control': 'no-store, max-age=0',
+            }
+        });
     } catch (error) {
         if ((error as Error).message === 'Unauthorized') {
             return NextResponse.json(
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
         });
 
         revalidateTagSafe('organizations');
+        revalidatePathSafe('/');
         return NextResponse.json({ organization: newOrg });
     } catch (error) {
         if ((error as Error).message === 'Unauthorized') {

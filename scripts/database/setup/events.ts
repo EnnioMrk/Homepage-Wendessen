@@ -16,6 +16,7 @@ async function setupEvents() {
                 category VARCHAR(50) DEFAULT 'sonstiges',
                 organizer VARCHAR(255),
                 image_url TEXT,
+                image_crop_data JSONB,
                 verein_id VARCHAR(50),
                 is_cancelled BOOLEAN DEFAULT FALSE,
                 cancelled_at TIMESTAMP WITH TIME ZONE,
@@ -26,8 +27,18 @@ async function setupEvents() {
         `;
         console.log('✓ events table ensured');
 
+        // Ensure all columns exist (for existing tables)
+        await sql`
+            ALTER TABLE events 
+            ADD COLUMN IF NOT EXISTS image_crop_data JSONB,
+            ADD COLUMN IF NOT EXISTS verein_id VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS is_cancelled BOOLEAN DEFAULT FALSE,
+            ADD COLUMN IF NOT EXISTS cancelled_at TIMESTAMP WITH TIME ZONE,
+            ADD COLUMN IF NOT EXISTS cancelled_by VARCHAR(255);
+        `;
+        console.log('✓ events columns ensured');
+
         await sql`CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);`;
-        console.log('✓ events indexes ensured');
 
         console.log('✅ Events setup complete');
     } catch (err) {

@@ -12,8 +12,17 @@ interface PhotoData {
     file: File;
     preview: string;
     description: string;
-    dateTaken?: Date;
     location?: string;
+}
+
+function parseDateInputToDate(dateValue: string): Date | undefined {
+    if (!dateValue) return undefined;
+
+    const [year, month, day] = dateValue.split('-').map(Number);
+
+    if (!year || !month || !day) return undefined;
+
+    return new Date(year, month - 1, day, 12, 0, 0);
 }
 
 export default function SharedGallerySubmissionForm() {
@@ -29,6 +38,9 @@ export default function SharedGallerySubmissionForm() {
     const [success, setSuccess] = useState(false);
     const [hasConsent, setHasConsent] = useState(false);
     const [socialConsent, setSocialConsent] = useState(false);
+    const [collectionDateStart, setCollectionDateStart] = useState('');
+    const [collectionDateEnd, setCollectionDateEnd] = useState('');
+    const [hasDateRange, setHasDateRange] = useState(false);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
@@ -56,29 +68,14 @@ export default function SharedGallerySubmissionForm() {
             try {
                 // Extract EXIF data
                 const exifData = await exifr.parse(file, {
-                    pick: [
-                        'DateTimeOriginal',
-                        'CreateDate',
-                        'DateTime',
-                        'GPSLatitude',
-                        'GPSLongitude',
-                    ],
+                    pick: ['GPSLatitude', 'GPSLongitude'],
                 });
-
-                // Get date taken from EXIF
-                let dateTaken: Date | undefined;
-                if (exifData) {
-                    dateTaken =
-                        exifData.DateTimeOriginal ||
-                        exifData.CreateDate ||
-                        exifData.DateTime;
-                }
 
                 // Get location from GPS data
                 let location: string | undefined;
                 if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
                     location = `${exifData.GPSLatitude.toFixed(
-                        6
+                        6,
                     )}, ${exifData.GPSLongitude.toFixed(6)}`;
                 }
 
@@ -89,7 +86,6 @@ export default function SharedGallerySubmissionForm() {
                         file,
                         preview: reader.result as string,
                         description: '',
-                        dateTaken,
                         location,
                     });
                     loaded++;
@@ -144,6 +140,23 @@ export default function SharedGallerySubmissionForm() {
             return;
         }
 
+        if (hasDateRange) {
+            if (!collectionDateStart || !collectionDateEnd) {
+                setError(
+                    'Bitte geben Sie für den Zeitraum ein Start- und Enddatum an',
+                );
+                return;
+            }
+
+            if (collectionDateEnd < collectionDateStart) {
+                setError('Das Enddatum darf nicht vor dem Startdatum liegen');
+                return;
+            }
+        }
+
+        const collectionDateTaken = parseDateInputToDate(collectionDateStart);
+        const collectionDateRangeEnd = parseDateInputToDate(collectionDateEnd);
+
         setLoading(true);
         setError(null);
 
@@ -173,7 +186,11 @@ export default function SharedGallerySubmissionForm() {
                         imageData: photo.preview,
                         imageMimeType: photo.file.type,
                         imageFilename: photo.file.name,
-                        dateTaken: photo.dateTaken?.toISOString(),
+                        dateTaken: collectionDateTaken?.toISOString(),
+                        dateTakenRangeEnd:
+                            hasDateRange && collectionDateRangeEnd
+                                ? collectionDateRangeEnd.toISOString()
+                                : undefined,
                         location: photo.location,
                         socialConsent: socialConsent,
                     }),
@@ -183,7 +200,7 @@ export default function SharedGallerySubmissionForm() {
                     const errorData = await response.json();
                     setError(
                         errorData.error ||
-                            `Fehler beim Hochladen von Foto ${i + 1}`
+                            `Fehler beim Hochladen von Foto ${i + 1}`,
                     );
                     setLoading(false);
                     return;
@@ -200,6 +217,9 @@ export default function SharedGallerySubmissionForm() {
             });
             setHasConsent(false);
             setSocialConsent(false);
+            setCollectionDateStart('');
+            setCollectionDateEnd('');
+            setHasDateRange(false);
         } catch (err) {
             console.error('Submission error:', err);
             setError('Fehler beim Einreichen der Fotos');
@@ -306,10 +326,83 @@ export default function SharedGallerySubmissionForm() {
                     {photos.length === 0
                         ? 'Ihre'
                         : photos.length === 1
-                        ? 'Ihr'
-                        : `alle ${photos.length}`}{' '}
+                          ? 'Ihr'
+                          : `alle ${photos.length}`}{' '}
                     Foto{photos.length !== 1 ? 's' : ''}
                 </p>
+            </div>
+
+            {/* Collection Date */}
+            <div className="mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200 space-y-4">
+                <div>
+                    <label
+                        htmlFor="collectionDateStart"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                        Aufnahmedatum der Sammlung (optional)
+                    </label>
+                    <input
+                        type="date"
+                        id="collectionDateStart"
+                        value={collectionDateStart}
+                        onChange={(e) => setCollectionDateStart(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                        Gilt für alle Fotos dieser Einreichung
+                    </p>
+                </div>
+
+                <div className="flex items-start">
+                    <div className="flex items-center h-5">
+                        <input
+                            id="hasDateRange"
+                            type="checkbox"
+                            checked={hasDateRange}
+                            onChange={(e) => {
+                                const checked = e.target.checked;
+                                setHasDateRange(checked);
+                                if (!checked) {
+                                    setCollectionDateEnd('');
+                                }
+                            }}
+                            className="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded"
+                        />
+                    </div>
+                    <div className="ml-3 text-sm">
+                        <label
+                            htmlFor="hasDateRange"
+                            className="font-medium text-gray-800"
+                        >
+                            Zeitraum statt einzelner Tag
+                        </label>
+                        <p className="text-gray-600 text-xs mt-1">
+                            Aktivieren Sie dies, wenn die Fotos an mehreren
+                            Tagen aufgenommen wurden.
+                        </p>
+                    </div>
+                </div>
+
+                {hasDateRange && (
+                    <div>
+                        <label
+                            htmlFor="collectionDateEnd"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                        >
+                            Enddatum *
+                        </label>
+                        <input
+                            type="date"
+                            id="collectionDateEnd"
+                            value={collectionDateEnd}
+                            onChange={(e) =>
+                                setCollectionDateEnd(e.target.value)
+                            }
+                            min={collectionDateStart || undefined}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Image Upload */}
@@ -389,27 +482,6 @@ export default function SharedGallerySubmissionForm() {
                                                 ).toFixed(2)}{' '}
                                                 MB)
                                             </p>
-                                            {photo.dateTaken && (
-                                                <p className="text-xs text-gray-500">
-                                                    📅 Aufgenommen:{' '}
-                                                    {photo.dateTaken.toLocaleDateString(
-                                                        'de-DE',
-                                                        {
-                                                            day: '2-digit',
-                                                            month: '2-digit',
-                                                            year: 'numeric',
-                                                        }
-                                                    )}{' '}
-                                                    um{' '}
-                                                    {photo.dateTaken.toLocaleTimeString(
-                                                        'de-DE',
-                                                        {
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                        }
-                                                    )}
-                                                </p>
-                                            )}
                                             {photo.location && (
                                                 <p className="text-xs text-gray-500">
                                                     📍 GPS: {photo.location}
@@ -422,8 +494,8 @@ export default function SharedGallerySubmissionForm() {
                                         onClick={() => {
                                             setPhotos(
                                                 photos.filter(
-                                                    (_, i) => i !== index
-                                                )
+                                                    (_, i) => i !== index,
+                                                ),
                                             );
                                         }}
                                         className="p-2 h-fit bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -438,7 +510,7 @@ export default function SharedGallerySubmissionForm() {
                             onClick={() =>
                                 document
                                     .querySelector<HTMLInputElement>(
-                                        'input[type="file"]'
+                                        'input[type="file"]',
                                     )
                                     ?.click()
                             }

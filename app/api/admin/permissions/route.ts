@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { requirePermission } from '@/lib/permissions';
 import { getPermissionsByCategory } from '@/lib/database';
 
 export async function GET() {
+    await connection();
     try {
         await requirePermission('users.view');
 
@@ -12,7 +14,7 @@ export async function GET() {
         console.error('Error fetching permissions:', error);
         return NextResponse.json(
             { error: 'Failed to fetch permissions' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

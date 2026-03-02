@@ -26,13 +26,14 @@ interface NewsItem {
 }
 
 interface ArchiveItem {
-    id: number;
+    id: number | string;
     title: string;
     author?: string;
     category?: string;
     created_date?: string;
     content: string;
     created_at: string;
+    href?: string;
     type: 'document';
 }
 
@@ -41,19 +42,6 @@ type CombinedItem = NewsItem | ArchiveItem;
 interface ArchiveClientProps {
     archiveItems: Omit<ArchiveItem, 'type'>[];
     archivedNews: Omit<NewsItem, 'type'>[];
-}
-
-function getNewsCategoryColors(category: string): string {
-    const colorMap: Record<string, string> = {
-        Bildung: 'bg-amber-100 text-amber-800',
-        Gemeinschaft: 'bg-green-100 text-green-800',
-        Feuerwehr: 'bg-red-100 text-red-800',
-        Digital: 'bg-indigo-100 text-indigo-800',
-        Sport: 'bg-blue-100 text-blue-800',
-        Kultur: 'bg-purple-100 text-purple-800',
-        Verwaltung: 'bg-gray-100 text-gray-800',
-    };
-    return colorMap[category] || 'bg-gray-100 text-gray-800';
 }
 
 function extractTextFromContent(content: string): string {
@@ -84,9 +72,11 @@ function extractTextFromContent(content: string): string {
 }
 
 export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveClientProps) {
+    type FilterType = 'all' | 'news' | 'document' | 'webseite';
+
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'date-desc' | 'date-asc' | 'title'>('date-desc');
-    const [filterType, setFilterType] = useState<'all' | 'news' | 'document'>('all');
+    const [filterType, setFilterType] = useState<FilterType>('all');
     const [filterCategory, setFilterCategory] = useState<string>('all');
 
     // Combine all items with type information and extract preview text from news content
@@ -116,7 +106,20 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
             return { ...item, previewText, type: 'news' as const };
         });
         const docs: ArchiveItem[] = archiveItems.map(item => ({ ...item, type: 'document' as const }));
-        return [...news, ...docs];
+
+        const ortsratBericht2023: ArchiveItem = {
+            id: 'ortsrat-bericht-2023',
+            title: 'Neujahrsgruß 2023 des Ortsbürgermeisters',
+            author: 'Andreas M. Rink',
+            category: 'Bericht',
+            created_date: '2023-01-01',
+            created_at: '2023-01-01T00:00:00.000Z',
+            href: '/dorfleben/archiv/ortsrat-bericht/2023',
+            content: 'Grußwort zum Jahresbeginn 2023 mit Rückblick auf 2022 und Ausblick auf die Themen des Ortsrates für 2023.',
+            type: 'document',
+        };
+
+        return [...news, ortsratBericht2023, ...docs];
     }, [archiveItems, archivedNews]);
 
     // Extract all unique categories
@@ -158,6 +161,14 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
     const filteredAndSortedItems = useMemo(() => {
         let items: CombinedItem[] = allItems;
 
+        const getItemFilterType = (item: CombinedItem): Exclude<FilterType, 'all'> => {
+            if (item.type === 'news') {
+                return 'news';
+            }
+
+            return item.id === 'ortsrat-bericht-2023' ? 'webseite' : 'document';
+        };
+
         // Apply search
         if (searchQuery.trim()) {
             const results = fuse.search(searchQuery);
@@ -166,7 +177,7 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
 
         // Apply type filter
         if (filterType !== 'all') {
-            items = items.filter(item => item.type === filterType);
+            items = items.filter(item => getItemFilterType(item) === filterType);
         }
 
         // Apply category filter
@@ -233,11 +244,12 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                             </label>
                             <select
                                 value={filterType}
-                                onChange={(e) => setFilterType(e.target.value as 'all' | 'news' | 'document')}
+                                onChange={(e) => setFilterType(e.target.value as FilterType)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-gray-900"
                             >
                                 <option value="all">Alle Typen</option>
                                 <option value="news">Nachrichten</option>
+                                <option value="webseite">Webseite</option>
                                 <option value="document">Dokumente</option>
                             </select>
                         </div>
@@ -322,33 +334,33 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                                 <Link 
                                     key={`news-${item.id}`}
                                     href={`/neuigkeiten/${item.articleId}`}
-                                    className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-1"
+                                    className="group relative overflow-hidden rounded-3xl border border-emerald-100 bg-white/95 shadow-[0_12px_32px_-24px_rgba(5,150,105,0.65)] transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-200 hover:shadow-[0_24px_48px_-28px_rgba(5,150,105,0.75)]"
                                 >
-                                    {/* Header with gradient */}
-                                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4">
+                                    {/* Header */}
+                                    <div className="p-5 pb-4 border-b border-emerald-100/80 bg-emerald-50/40">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
-                                                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                                                    <Newspaper className="w-5 h-5 text-white" />
+                                                <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700">
+                                                    <Newspaper className="w-5 h-5" />
                                                 </div>
-                                                <span className="text-white text-xs font-semibold uppercase tracking-wide drop-shadow-sm">
-                                                    Nachricht
+                                                <span className="text-emerald-700 text-xs font-semibold uppercase tracking-[0.14em]">
+                                                    {item.category}
                                                 </span>
                                             </div>
-                                            <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${getNewsCategoryColors(item.category)}`}>
-                                                {item.category}
+                                            <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full">
+                                                Nachricht
                                             </span>
                                         </div>
                                     </div>
 
                                     {/* Content */}
                                     <div className="p-6">
-                                        <h3 className="font-bold text-gray-900 text-xl mb-3 line-clamp-2 group-hover:text-green-600 transition-colors">
+                                        <h3 className="font-bold text-gray-900 text-xl mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors">
                                             {item.title}
                                         </h3>
                                         
-                                        <div className="flex items-center text-sm text-gray-500 mb-4">
-                                            <CalendarBlank className="w-4 h-4 mr-2 flex-shrink-0" />
+                                        <div className="flex items-center text-sm text-gray-600 mb-4">
+                                            <CalendarBlank className="w-4 h-4 mr-2 flex-shrink-0 text-emerald-600" />
                                             <span>{new Date(item.publishedDate).toLocaleDateString('de-DE', { 
                                                 year: 'numeric', 
                                                 month: 'long',
@@ -356,54 +368,59 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                                             })}</span>
                                         </div>
                                         
-                                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                                        <p className="text-gray-700 text-sm leading-relaxed line-clamp-3 mb-5">
                                             {item.previewText || 'Keine Vorschau verfügbar. Klicken Sie, um den vollständigen Artikel zu lesen.'}
                                         </p>
+
+                                        <div className="text-sm font-semibold text-emerald-700 group-hover:text-emerald-800 transition-colors">
+                                            Artikel lesen →
+                                        </div>
                                     </div>
                                 </Link>
                             );
                         } else {
+                            const isMayorReport = item.id === 'ortsrat-bericht-2023';
                             return (
                                 <Link 
                                     key={`doc-${item.id}`}
-                                    href={`/dorfleben/archiv/${item.id}`}
-                                    className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-indigo-200 hover:-translate-y-1"
+                                    href={item.href || `/dorfleben/archiv/${item.id}`}
+                                    className="group relative overflow-hidden rounded-3xl border border-indigo-100 bg-white/95 shadow-[0_12px_32px_-24px_rgba(79,70,229,0.65)] transition-all duration-300 hover:-translate-y-1.5 hover:border-indigo-200 hover:shadow-[0_24px_48px_-28px_rgba(79,70,229,0.75)]"
                                 >
-                                    {/* Header with gradient */}
-                                    <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-4">
+                                    {/* Header */}
+                                    <div className="p-5 pb-4 border-b border-indigo-100/80 bg-indigo-50/40">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
-                                                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                                                    <Article className="w-5 h-5 text-white" />
+                                                <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700">
+                                                    <Article className="w-5 h-5" />
                                                 </div>
-                                                <span className="text-white text-xs font-semibold uppercase tracking-wide drop-shadow-sm">
-                                                    Dokument
-                                                </span>
+                                                {item.category && (
+                                                    <span className="text-indigo-700 text-xs font-semibold uppercase tracking-[0.14em]">
+                                                        {item.category}
+                                                    </span>
+                                                )}
                                             </div>
-                                            {item.category && (
-                                                <span className="px-2.5 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
-                                                    {item.category}
-                                                </span>
-                                            )}
+                                            <span className="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full">
+                                                {isMayorReport ? 'Webseite' : 'Dokument'}
+                                            </span>
                                         </div>
                                     </div>
 
                                     {/* Content */}
                                     <div className="p-6">
-                                        <h3 className="font-bold text-gray-900 text-xl mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                        <h3 className="font-bold text-gray-900 text-xl mb-3 line-clamp-2 group-hover:text-indigo-700 transition-colors">
                                             {item.title}
                                         </h3>
                                         
                                         <div className="space-y-2 mb-4">
                                             {item.author && (
-                                                <div className="flex items-center text-sm text-gray-500">
-                                                    <User className="w-4 h-4 mr-2 flex-shrink-0" />
+                                                <div className="flex items-center text-sm text-gray-600">
+                                                    <User className="w-4 h-4 mr-2 flex-shrink-0 text-indigo-600" />
                                                     <span className="truncate">{item.author}</span>
                                                 </div>
                                             )}
                                             {item.created_date && (
-                                                <div className="flex items-center text-sm text-gray-500">
-                                                    <CalendarBlank className="w-4 h-4 mr-2 flex-shrink-0" />
+                                                <div className="flex items-center text-sm text-gray-600">
+                                                    <CalendarBlank className="w-4 h-4 mr-2 flex-shrink-0 text-indigo-600" />
                                                     <span>{new Date(item.created_date).toLocaleDateString('de-DE', { 
                                                         year: 'numeric', 
                                                         month: 'long',
@@ -413,7 +430,7 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                                             )}
                                         </div>
                                         
-                                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                                        <p className="text-gray-700 text-sm leading-relaxed line-clamp-3 mb-5">
                                             {(() => {
                                                 try {
                                                     const parsed = JSON.parse(item.content);
@@ -426,6 +443,10 @@ export default function ArchiveClient({ archiveItems, archivedNews }: ArchiveCli
                                                 }
                                             })()}
                                         </p>
+
+                                        <div className="text-sm font-semibold text-indigo-700 group-hover:text-indigo-800 transition-colors">
+                                            {isMayorReport ? 'Webseite öffnen →' : 'Dokument öffnen →'}
+                                        </div>
                                     </div>
                                 </Link>
                             );

@@ -9,14 +9,14 @@ import {
     EnvelopeSimple,
     Buildings,
     Clock,
-} from '@phosphor-icons/react/dist/ssr';
+} from "@phosphor-icons/react/dist/ssr";
 
-import PageHeader from '@/app/components/layout/PageHeader';
+import PageHeader from "@/app/components/layout/PageHeader";
 
 export const metadata = {
-    title: 'Kirchengemeinde Ahlum-Atzum-Wendessen - Dorfleben',
+    title: "Kirchengemeinde Ahlum-Atzum-Wendessen - Dorfleben",
     description:
-        'Herzlich willkommen in der Kirchengemeinde Ahlum-Atzum-Wendessen. Gottesdienste, Veranstaltungen und Gemeinschaft.',
+        "Herzlich willkommen in der Kirchengemeinde Ahlum-Atzum-Wendessen. Gottesdienste, Veranstaltungen und Gemeinschaft.",
 };
 
 export default function KirchePage() {
@@ -26,7 +26,7 @@ export default function KirchePage() {
                 title="Kirche"
                 subtitle="Kirchengemeinde Ahlum-Atzum-Wendessen"
                 icon={<Cross />}
-                backgroundImage="/images/Kirche.webp"
+                backgroundImage="/images/Vereinsleben/kirche.webp"
                 color="purple"
             />
 
@@ -343,7 +343,10 @@ export default function KirchePage() {
                         </p>
                         <div className="flex justify-center mt-6">
                             <div className="flex items-center space-x-2 text-purple-600">
-                                <Cross className="w-6 h-6" fill="currentColor" />
+                                <Cross
+                                    className="w-6 h-6"
+                                    fill="currentColor"
+                                />
                                 <span className="font-semibold">
                                     Willkommen in unserer Gemeinschaft
                                 </span>

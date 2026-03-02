@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { connection } from 'next/server';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { sql } from '@/lib/sql';
@@ -16,12 +17,13 @@ export interface PendingTasksResponse {
 }
 
 export async function GET() {
+    await connection();
     try {
         const authenticated = await isAuthenticated();
         if (!authenticated) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
@@ -83,7 +85,7 @@ export async function GET() {
         console.error('Error fetching pending tasks:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

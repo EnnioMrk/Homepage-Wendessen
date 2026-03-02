@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { getCategoryColorClasses } from '@/lib/utils/news-utils';
-import Link from 'next/link';
-import { ArrowRight, PushPin } from '@phosphor-icons/react';
+import { getCategoryColorClasses } from "@/lib/utils/news-utils";
+import Link from "next/link";
+import { ArrowRight, PushPin } from "@phosphor-icons/react";
 
 interface NewsCardProps {
     category: string;
@@ -21,16 +21,16 @@ export default function NewsCard({
 }: NewsCardProps) {
     const colors = getCategoryColorClasses(category);
     const date = new Date(publishedDate);
-    const formattedDate = date.toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
+    const formattedDate = date.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
     });
 
     const cardContent = (
         <div
             className={`relative rounded-lg shadow-lg border bg-white hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col h-full ${
-                isPinned ? '' : 'border-gray-200'
+                isPinned ? "" : "border-gray-200"
             }`}
             style={isPinned ? { borderColor: colors.borderColor } : {}}
         >
@@ -39,8 +39,8 @@ export default function NewsCard({
                 style={{ backgroundColor: colors.borderColor, opacity: 0.7 }}
             ></div>
             <div className="p-3 md:p-4 lg:p-6 flex flex-col flex-grow">
-                <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
-                    <div className="flex items-center">
+                <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4 gap-2">
+                    <div className="flex items-center min-w-0 max-[420px]:hidden">
                         <div
                             className="w-2 h-2 rounded-full mr-2 md:mr-3"
                             style={{
@@ -52,8 +52,8 @@ export default function NewsCard({
                             {category}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <span className="text-xs md:text-sm text-gray-500">
+                    <div className="flex items-center gap-1 shrink-0">
+                        <span className="text-xs md:text-sm text-gray-500 whitespace-nowrap">
                             {formattedDate}
                         </span>
                         {isPinned && (
@@ -69,14 +69,14 @@ export default function NewsCard({
                     className="text-sm md:text-base lg:text-lg font-semibold text-gray-900 mb-2 md:mb-3 transition-colors duration-200 group-hover:text-opacity-90 flex-grow"
                     style={
                         {
-                            '--hover-color': colors.hoverColor,
-                        } as React.CSSProperties & { '--hover-color': string }
+                            "--hover-color": colors.hoverColor,
+                        } as React.CSSProperties & { "--hover-color": string }
                     }
                     onMouseEnter={(e) => {
                         e.currentTarget.style.color = colors.hoverColor;
                     }}
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.color = '';
+                        e.currentTarget.style.color = "";
                     }}
                 >
                     {title}

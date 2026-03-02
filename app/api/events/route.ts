@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEvents, createEvent, CalendarEvent } from '@/lib/database';
+import {
+    getEvents,
+    getEventsFresh,
+    createEvent,
+    CalendarEvent,
+} from '@/lib/database';
 import { hasPermission } from '@/lib/permissions';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        const events = await getEvents();
+        const fresh =
+            request.nextUrl.searchParams.get('fresh') === '1' ||
+            request.nextUrl.searchParams.has('t');
+        const events = fresh ? await getEventsFresh() : await getEvents();
+
         return NextResponse.json(events, {
             headers: {
                 'Cache-Control':
@@ -18,7 +27,7 @@ export async function GET() {
         console.error('API Error fetching events:', error);
         return NextResponse.json(
             { error: 'Failed to fetch events' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
@@ -33,17 +42,20 @@ export async function POST(request: NextRequest) {
         if (!currentUser) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
-                { status: 401 }
+                { status: 401 },
             );
         }
 
         const hasGlobalCreate = hasPermission(currentUser, 'events.create');
-        const hasVereinCreate = hasPermission(currentUser, 'verein.events.create');
+        const hasVereinCreate = hasPermission(
+            currentUser,
+            'verein.events.create',
+        );
 
         if (!hasGlobalCreate && !hasVereinCreate) {
             return NextResponse.json(
                 { error: 'Forbidden: Missing permission to create events' },
-                { status: 403 }
+                { status: 403 },
             );
         }
 
@@ -59,8 +71,10 @@ export async function POST(request: NextRequest) {
                 // If they have permission but no Verein, they can ONLY create general events (no vereinId)
                 if (eventData.vereinId) {
                     return NextResponse.json(
-                        { error: 'Forbidden: You are not assigned to a Verein and cannot create events for one.' },
-                        { status: 403 }
+                        {
+                            error: 'Forbidden: You are not assigned to a Verein and cannot create events for one.',
+                        },
+                        { status: 403 },
                     );
                 }
                 vereinId = undefined;
@@ -72,8 +86,10 @@ export async function POST(request: NextRequest) {
                 // Optional: If they tried to send a different ID, we could error, but silently correcting it is also safe/admin-friendly
                 if (eventData.vereinId && eventData.vereinId !== vereinId) {
                     return NextResponse.json(
-                        { error: 'Forbidden: You can only create events for your own Verein.' },
-                        { status: 403 }
+                        {
+                            error: 'Forbidden: You can only create events for your own Verein.',
+                        },
+                        { status: 403 },
                     );
                 }
             }
@@ -83,7 +99,7 @@ export async function POST(request: NextRequest) {
         if (!eventData.title || !eventData.start || !eventData.end) {
             return NextResponse.json(
                 { error: 'Title, start, and end are required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
@@ -97,6 +113,7 @@ export async function POST(request: NextRequest) {
             category: eventData.category || 'sonstiges',
             organizer: eventData.organizer || '',
             imageUrl: eventData.imageUrl || '',
+            imageCropData: eventData.imageCropData,
             vereinId: vereinId,
         };
 
@@ -104,6 +121,7 @@ export async function POST(request: NextRequest) {
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
@@ -128,7 +146,7 @@ export async function POST(request: NextRequest) {
         console.error('API Error creating event:', error);
         return NextResponse.json(
             { error: 'Failed to create event' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

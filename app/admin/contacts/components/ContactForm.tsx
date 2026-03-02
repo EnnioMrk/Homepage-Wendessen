@@ -1,8 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
 import { Plus, Trash, FloppyDisk } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import {
+    CONTACT_PRIORITY_MAX,
+    CONTACT_PRIORITY_MIN,
+    getContactPriorityStop,
+    normalizeLegacyImportance,
+} from '@/lib/constants/contact-priorities';
 
 export interface ContactData {
     name: string;
@@ -40,8 +46,19 @@ export default function ContactForm({
     onCancel,
     isSubmitting = false,
 }: ContactFormProps) {
+    const getInitialFormData = (data?: ContactData): ContactData => {
+        if (!data) {
+            return emptyContact;
+        }
+
+        return {
+            ...data,
+            importance: normalizeLegacyImportance(data.importance),
+        };
+    };
+
     const [formData, setFormData] = useState<ContactData>(
-        initialData || emptyContact
+        getInitialFormData(initialData)
     );
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [, setLoadingOrgs] = useState(false);
@@ -63,6 +80,10 @@ export default function ContactForm({
         };
         fetchOrgs();
     }, []);
+
+    useEffect(() => {
+        setFormData(getInitialFormData(initialData));
+    }, [initialData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -95,6 +116,15 @@ export default function ContactForm({
         }));
     };
 
+    const selectedPriority = getContactPriorityStop(formData.importance);
+    const sliderProgress =
+        ((formData.importance - CONTACT_PRIORITY_MIN) /
+            (CONTACT_PRIORITY_MAX - CONTACT_PRIORITY_MIN)) *
+        100;
+    const sliderStyle = {
+        '--slider-progress': `${sliderProgress}%`,
+    } as CSSProperties;
+
     return (
         <form
             onSubmit={handleSubmit}
@@ -117,20 +147,34 @@ export default function ContactForm({
 
             <div>
                 <label className="block text-sm font-medium text-gray-700">
-                    Priorität (0 = Normal, höher = Höhere Priorität)
+                    Priorität
                 </label>
-                <input
-                    type="number"
-                    min="0"
-                    value={formData.importance}
-                    onChange={(e) =>
-                        setFormData({
-                            ...formData,
-                            importance: parseInt(e.target.value) || 0,
-                        })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                />
+                <div className="mt-2 rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
+                    <div className="rounded-md bg-white/80 px-3 py-2 text-sm text-gray-900">
+                        <span className="font-semibold">
+                            Stufe {selectedPriority.value}: {selectedPriority.label}
+                        </span>{' '}
+                        <span className="text-gray-700">({selectedPriority.example})</span>
+                    </div>
+
+                    <div className="mt-3 pb-1">
+                        <input
+                            type="range"
+                            min={CONTACT_PRIORITY_MIN}
+                            max={CONTACT_PRIORITY_MAX}
+                            step={1}
+                            value={formData.importance}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    importance: parseInt(e.target.value, 10),
+                                })
+                            }
+                            style={sliderStyle}
+                            className="priority-slider h-2 w-full cursor-pointer"
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Emails */}

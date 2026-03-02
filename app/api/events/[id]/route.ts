@@ -11,7 +11,7 @@ import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function GET(
     _request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     try {
         const { id } = await params;
@@ -20,7 +20,7 @@ export async function GET(
         if (!event) {
             return NextResponse.json(
                 { error: 'Event not found' },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
@@ -29,14 +29,14 @@ export async function GET(
         console.error('API Error fetching event:', error);
         return NextResponse.json(
             { error: 'Failed to fetch event' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     try {
         const { id } = await params;
@@ -46,7 +46,7 @@ export async function PUT(
         if (!existingEvent) {
             return NextResponse.json(
                 { error: 'Event not found' },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
@@ -71,7 +71,7 @@ export async function PUT(
                     {
                         error: 'Forbidden: You can only edit events from your own Verein',
                     },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
         }
@@ -97,12 +97,15 @@ export async function PUT(
             updateData.organizer = eventData.organizer;
         if (eventData.imageUrl !== undefined)
             updateData.imageUrl = eventData.imageUrl;
+        if (eventData.imageCropData !== undefined)
+            updateData.imageCropData = eventData.imageCropData;
         // vereinId is explicitly excluded to prevent accidental changes
 
         const updatedEvent = await updateEvent(id, updateData);
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
@@ -126,14 +129,14 @@ export async function PUT(
         console.error('API Error updating event:', error);
         return NextResponse.json(
             { error: 'Failed to update event' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     try {
         const { id } = await params;
@@ -143,7 +146,7 @@ export async function DELETE(
         if (!existingEvent) {
             return NextResponse.json(
                 { error: 'Event not found' },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
@@ -169,7 +172,7 @@ export async function DELETE(
                     {
                         error: 'Forbidden: You can only delete events from your own Verein',
                     },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
         }
@@ -178,6 +181,7 @@ export async function DELETE(
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
@@ -197,7 +201,7 @@ export async function DELETE(
 
         return NextResponse.json(
             { message: 'Event deleted successfully' },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (error: unknown) {
         console.error('API Error deleting event:', error);
@@ -210,13 +214,13 @@ export async function DELETE(
         ) {
             return NextResponse.json(
                 { error: errorMessage },
-                { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
+                { status: errorMessage.includes('Unauthorized') ? 401 : 403 },
             );
         }
 
         return NextResponse.json(
             { error: 'Failed to delete event' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }

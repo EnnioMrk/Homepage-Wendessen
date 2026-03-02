@@ -7,13 +7,14 @@ import {
     Clock,
     Heart,
     Calendar,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import ZoomableImage from "@/app/components/ZoomableImage";
 
 export const metadata = {
-    title: 'Feuerwehrgerätehaus - Wohnen & Bauen in Wendessen',
+    title: "Feuerwehrgerätehaus - Wohnen & Bauen in Wendessen",
     description:
-        'Neues Feuerwehrgerätehaus in Wendessen am Eckgrundstück Leipziger Allee / Ahlumer Weg. Moderne Unterbringung für unsere Freiwillige Feuerwehr.',
+        "Neues Feuerwehrgerätehaus in Wendessen am Eckgrundstück Leipziger Allee / Ahlumer Weg. Moderne Unterbringung für unsere Freiwillige Feuerwehr.",
 };
 
 export default function FeuerwehrgeraetehausPage() {
@@ -24,7 +25,7 @@ export default function FeuerwehrgeraetehausPage() {
                 title="Feuerwehrgerätehaus"
                 subtitle="Neue Heimat für unsere Feuerwehr"
                 icon={<Buildings />}
-                backgroundImage="/images/Vereinsleben/Freiwillige_Feuerwehr.jpeg"
+                backgroundImage="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
                 color="red"
             />
 
@@ -52,38 +53,44 @@ export default function FeuerwehrgeraetehausPage() {
                                     Neues Feuerwehrgerätehaus am Eckgrundstück
                                 </h3>
                                 <p className="text-lg">
-                                    Die Stadt Wolfenbüttel hat 2021 das
-                                    Eckgrundstück Leipziger Allee / Ahlumer Weg
-                                    erworben - und dort soll nun unsere
-                                    Feuerwehr endlich eine neue Heimat erhalten.
+                                    In Wendessen entsteht auf dem Eckgrundstück
+                                    Ahlumer Weg/ Leipziger Allee ein
+                                    Feuerwehrhaus - das erste in der langen
+                                    Geschichte der Freiwilligen Feuerwehr, die
+                                    seit Jahrzehnten mehr schlecht als recht in
+                                    der ehemaligen alten Schule am Kirchring
+                                    untergebracht ist.
                                 </p>
                             </div>
 
                             <p>
-                                Die aktuelle Unterbringung der Feuerwehr in der
-                                Alten Schule entspricht schon seit vielen Jahren
-                                nicht mehr dem, was notwendig ist. Und darum
-                                freut sich ganz Wendessen darauf, dass in einem
-                                Neubau den Erfordernissen und Anforderungen
-                                Rechnung getragen werden soll.
+                                Das neue Haus wird Platz für die aktuell über 60
+                                aktiven Feuerwehrleute (darunter auch die
+                                Mitglieder der Kinder- und Jugendfeuerwehr)
+                                sowie für zwei Fahrzeuge bieten. Vorgesehen ist
+                                die Errichtung eines 2-geschossigen Gebäudes in
+                                Massivbauweise mit einem Satteldach und einer
+                                Photovoltaikanlage.
                             </p>
 
                             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-500 p-6 rounded-2xl">
                                 <h4 className="text-xl font-bold text-blue-700 mb-3 flex items-center">
                                     <Calendar className="w-6 h-6 mr-2" />
-                                    Planungsstand
+                                    Bauphase & Fertigstellung
                                 </h4>
+                                <p className="mb-2">
+                                    Mit den ersten Maßnahmen (Herstellen des
+                                    Grundstückes) wurde nach langer Planung im
+                                    Herbst 2025 begonnen.
+                                </p>
                                 <p>
-                                    <strong>Grundstückserwerb:</strong> 2021
-                                    durch die Stadt Wolfenbüttel
+                                    <strong>Spatenstich:</strong> Februar 2026
                                     <br />
-                                    <strong>Planungspriorität:</strong> 2.
-                                    Stelle nach Halchter
+                                    <strong>Budget:</strong> 4,5 Millionen Euro
+                                    (Stadt Wolfenbüttel)
                                     <br />
-                                    <strong>Spatenstich:</strong> Nicht vor 2025
-                                    <br />
-                                    <strong>Status:</strong> In der
-                                    Planungsphase der Stadt Wolfenbüttel
+                                    <strong>Fertigstellung:</strong> 2. Quartal
+                                    2027
                                 </p>
                             </div>
 
@@ -107,6 +114,19 @@ export default function FeuerwehrgeraetehausPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            <ZoomableImage
+                                src="/images/feuerwehrhaus-wendessen-eingangsansicht.jpg"
+                                alt="3D-Visualisierung der Eingangsansicht des geplanten Feuerwehrgerätehauses in Wendessen"
+                                caption="3D-Visualisierung: Eingangsansicht des geplanten Feuerwehrgerätehauses in Wendessen"
+                                className="mb-2"
+                            />
+                            <ZoomableImage
+                                src="/images/lageplan-feuerwehrgeraetehaus.jpg"
+                                alt="Lageplan des geplanten Feuerwehrgerätehauses in Wendessen"
+                                caption="Bebauungsplan Feuerwehrgerätehaus"
+                                className="mb-2"
+                            />
                         </div>
                     </div>
 
@@ -197,15 +217,15 @@ export default function FeuerwehrgeraetehausPage() {
                                                 90 Quadratmeter
                                             </li>
                                             <li>
-                                                • <strong>Erste Mieter:</strong>{' '}
+                                                • <strong>Erste Mieter:</strong>{" "}
                                                 Anfang 2024
                                             </li>
                                             <li>
-                                                • <strong>Investor:</strong>{' '}
+                                                • <strong>Investor:</strong>{" "}
                                                 Privat
                                             </li>
                                             <li>
-                                                • <strong>Status:</strong>{' '}
+                                                • <strong>Status:</strong>{" "}
                                                 Aktuell im Bau
                                             </li>
                                         </ul>
@@ -263,11 +283,12 @@ export default function FeuerwehrgeraetehausPage() {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-yellow-800">
-                                            Ab 2025 - Baubeginn
+                                            2025-2026 - Baubeginn
                                         </h4>
                                         <p className="text-gray-700">
-                                            Spatenstich für das neue
-                                            Feuerwehrgerätehaus
+                                            Herbst &apos;25:
+                                            Grundstücksvorbereitung | Feb
+                                            &apos;26: Spatenstich
                                         </p>
                                     </div>
                                 </div>
@@ -278,11 +299,10 @@ export default function FeuerwehrgeraetehausPage() {
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-gray-700">
-                                            2026-2027 - Fertigstellung
+                                            2027 - Fertigstellung
                                         </h4>
                                         <p className="text-gray-700">
-                                            Neue Heimat für die Freiwillige
-                                            Feuerwehr Wendessen
+                                            Geplant für 2. Quartal 2027
                                         </p>
                                     </div>
                                 </div>

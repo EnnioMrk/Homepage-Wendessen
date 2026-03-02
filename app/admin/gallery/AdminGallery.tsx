@@ -19,6 +19,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import PromptDialog from '@/app/components/ui/PromptDialog';
+import Modal from '@/app/components/ui/Modal';
 
 interface GalleryImage {
     id: string;
@@ -481,156 +482,169 @@ export default function AdminGallery() {
             />
 
             {/* Upload Modal */}
-            {showUploadModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">
-                                {selectedFiles.length === 1
-                                    ? 'Bild hochladen'
-                                    : `${selectedFiles.length} Bilder hochladen`}
-                            </h3>
-                            <button
-                                onClick={() => {
-                                    setShowUploadModal(false);
-                                    setSelectedFiles([]);
-                                    setUploadName('');
-                                }}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
+            <Modal
+                isOpen={showUploadModal}
+                onClose={() => {
+                    setShowUploadModal(false);
+                    setSelectedFiles([]);
+                    setUploadName('');
+                }}
+                maxWidth="2xl"
+                backdropBlur={true}
+            >
+                <div className="p-6 text-left">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium text-gray-900">
+                            {selectedFiles.length === 1
+                                ? 'Bild hochladen'
+                                : `${selectedFiles.length} Bilder hochladen`}
+                        </h3>
+                        <button
+                            onClick={() => {
+                                setShowUploadModal(false);
+                                setSelectedFiles([]);
+                                setUploadName('');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
 
-                        {selectedFiles.length > 0 && (
-                            <div className="mb-4">
-                                {selectedFiles.length === 1 ? (
-                                    <div className="aspect-video relative bg-gray-100 rounded-lg overflow-hidden">
-                                        <Image
-                                            src={URL.createObjectURL(
-                                                selectedFiles[0]
-                                            )}
-                                            alt="Preview"
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                                        {selectedFiles.map((file, index) => (
-                                            <div
-                                                key={index}
-                                                className="aspect-square relative bg-gray-100 rounded-lg overflow-hidden"
-                                            >
-                                                <Image
-                                                    src={URL.createObjectURL(
-                                                        file
-                                                    )}
-                                                    alt={`Preview ${index + 1}`}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                                <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                                                    {file.name.length > 15
-                                                        ? file.name.substring(
-                                                              0,
-                                                              12
-                                                          ) + '...'
-                                                        : file.name}
-                                                </div>
+                    {selectedFiles.length > 0 && (
+                        <div className="mb-4">
+                            {selectedFiles.length === 1 ? (
+                                <div className="aspect-video relative bg-gray-100 rounded-lg overflow-hidden">
+                                    <Image
+                                        src={URL.createObjectURL(
+                                            selectedFiles[0]
+                                        )}
+                                        alt="Preview"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                    {selectedFiles.map((file, index) => (
+                                        <div
+                                            key={index}
+                                            className="aspect-square relative bg-gray-100 rounded-lg overflow-hidden"
+                                        >
+                                            <Image
+                                                src={URL.createObjectURL(
+                                                    file
+                                                )}
+                                                alt={`Preview ${index + 1}`}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                            <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                                                {file.name.length > 15
+                                                    ? file.name.substring(
+                                                          0,
+                                                          12
+                                                      ) + '...'
+                                                    : file.name}
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {selectedFiles.length === 1 && (
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Bildname *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={uploadName}
-                                    onChange={(e) =>
-                                        setUploadName(e.target.value)
-                                    }
-                                    placeholder="Name für das Bild eingeben..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                    autoFocus
-                                />
-                            </div>
-                        )}
-
-                        {selectedFiles.length > 1 && (
-                            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                                <p className="text-sm text-blue-800">
-                                    <strong>Hinweis:</strong> Bei mehreren
-                                    Bildern werden die ursprünglichen Dateinamen
-                                    verwendet.
-                                </p>
-                            </div>
-                        )}
-
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                onClick={() => {
-                                    setShowUploadModal(false);
-                                    setSelectedFiles([]);
-                                    setUploadName('');
-                                }}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-                            >
-                                Abbrechen
-                            </button>
-                            <button
-                                onClick={handleUpload}
-                                disabled={
-                                    uploading ||
-                                    (selectedFiles.length === 1 &&
-                                        !uploadName.trim()) ||
-                                    selectedFiles.length === 0
-                                }
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 flex items-center"
-                            >
-                                {uploading ? (
-                                    <>
-                                        <LoadingSpinner
-                                            size="sm"
-                                            color="white"
-                                            className="mr-2"
-                                        />
-                                        Hochladen...
-                                    </>
-                                ) : (
-                                    <>
-                                        <UploadSimple
-                                            size={16}
-                                            className="mr-2"
-                                        />
-                                        {selectedFiles.length === 1
-                                            ? 'Hochladen'
-                                            : `${selectedFiles.length} Bilder hochladen`}
-                                    </>
-                                )}
-                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                    )}
+
+                    {selectedFiles.length === 1 && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Bildname *
+                            </label>
+                            <input
+                                type="text"
+                                value={uploadName}
+                                onChange={(e) =>
+                                    setUploadName(e.target.value)
+                                }
+                                placeholder="Name für das Bild eingeben..."
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                                autoFocus
+                            />
+                        </div>
+                    )}
+
+                    {selectedFiles.length > 1 && (
+                        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                            <p className="text-sm text-blue-800">
+                                <strong>Hinweis:</strong> Bei mehreren
+                                Bildern werden die ursprünglichen Dateinamen
+                                verwendet.
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="flex justify-end space-x-3">
+                        <button
+                            onClick={() => {
+                                setShowUploadModal(false);
+                                setSelectedFiles([]);
+                                setUploadName('');
+                            }}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                        >
+                            Abbrechen
+                        </button>
+                        <button
+                            onClick={handleUpload}
+                            disabled={
+                                uploading ||
+                                (selectedFiles.length === 1 &&
+                                    !uploadName.trim()) ||
+                                selectedFiles.length === 0
+                            }
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 flex items-center"
+                        >
+                            {uploading ? (
+                                <>
+                                    <LoadingSpinner
+                                        size="sm"
+                                        color="white"
+                                        className="mr-2"
+                                    />
+                                    Hochladen...
+                                </>
+                            ) : (
+                                <>
+                                    <UploadSimple
+                                        size={16}
+                                        className="mr-2"
+                                    />
+                                    {selectedFiles.length === 1
+                                        ? 'Hochladen'
+                                        : `${selectedFiles.length} Bilder hochladen`}
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
-            )}
+            </Modal>
 
             {/* Image Detail Modal */}
-            {selectedImage && !isRenaming && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4 pb-4 pt-[66px] md:pt-[68px] lg:pt-[70px] z-50 overflow-y-auto">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-3xl mx-4 my-auto">
+            <Modal
+                isOpen={selectedImage !== null && !isRenaming}
+                onClose={() => setSelectedImage(null)}
+                maxWidth="3xl"
+                backdropBlur={true}
+                centered={false}
+            >
+                {selectedImage && (
+                    <div className="p-6 text-left">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-900">
                                 {selectedImage.displayName}
                             </h3>
                             <button
                                 onClick={() => setSelectedImage(null)}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
                             >
                                 <X size={20} />
                             </button>
@@ -708,13 +722,21 @@ export default function AdminGallery() {
                             </a>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </Modal>
 
             {/* Rename Modal */}
-            {selectedImage && isRenaming && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <Modal
+                isOpen={selectedImage !== null && isRenaming}
+                onClose={() => {
+                    setIsRenaming(false);
+                    setSelectedImage(null);
+                }}
+                maxWidth="md"
+                backdropBlur={true}
+            >
+                {selectedImage && (
+                    <div className="p-6 text-left">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-900">
                                 Bild umbenennen
@@ -724,7 +746,7 @@ export default function AdminGallery() {
                                     setIsRenaming(false);
                                     setSelectedImage(null);
                                 }}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
                             >
                                 <X size={20} />
                             </button>
@@ -778,8 +800,8 @@ export default function AdminGallery() {
                             </button>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </Modal>
 
             {/* Delete Confirmation Dialog */}
             <PromptDialog

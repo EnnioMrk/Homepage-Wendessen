@@ -1,11 +1,10 @@
-import Image from 'next/image';
+import Image from "next/image";
 import {
     Church,
     Buildings,
     Clock,
     CheckCircle,
     Wrench,
-    Hammer,
     MusicNotesSimple,
     MapPin,
     EnvelopeSimple,
@@ -13,23 +12,23 @@ import {
     Plus,
     Heart,
     Globe,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Kirchbauverein St. Georg Wendessen - Dorfleben',
+    title: "Kirchbauverein St. Georg Wendessen - Dorfleben",
     description:
-        'Der Kirchbauverein St. Georg Wendessen - Erhaltung und Pflege der historischen Wehrkirche aus dem 12. Jahrhundert',
+        "Der Kirchbauverein St. Georg Wendessen - Erhaltung und Pflege der historischen Wehrkirche aus dem 12. Jahrhundert",
 };
 
 export default async function KirchbauvereinsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
-                title="Kirchbauverein"
+                title="Kirchbauverein St. Georg Wendessen e.V."
                 icon={<Church />}
-                backgroundImage="/images/Vereinsleben/Kirche.webp"
+                backgroundImage="/images/Vereinsleben/kirche.webp"
                 color="blue"
             />
 
@@ -40,7 +39,7 @@ export default async function KirchbauvereinsPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-blue-100">
                             <Image
-                                src="/images/Vereinsleben/Kirche.webp"
+                                src="/images/Vereinsleben/kirche.webp"
                                 alt="St. Georg Kirche Wendessen - Historische Wehrkirche aus dem 12. Jahrhundert"
                                 fill
                                 className="object-cover"
@@ -81,10 +80,10 @@ export default async function KirchbauvereinsPage() {
                                     Vereinsgründung
                                 </h3>
                                 <p className="text-lg">
-                                    Der{' '}
+                                    Der{" "}
                                     <strong>
                                         Kirchbauverein St. Georg Wendessen
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     wurde im <strong>Januar 2002</strong> als
                                     gemeinnütziger Verein gegründet und hat
                                     zurzeit <strong>96 Mitglieder</strong>.
@@ -98,14 +97,14 @@ export default async function KirchbauvereinsPage() {
                                     Historischer Hintergrund
                                 </h3>
                                 <p>
-                                    Im{' '}
+                                    Im{" "}
                                     <strong>
                                         12. Jahrhundert als Wehrkirche erbaut
                                     </strong>
-                                    , gehört die Wendesser Kirche zu den{' '}
+                                    , gehört die Wendesser Kirche zu den{" "}
                                     <strong>ältesten in Wolfenbüttel</strong>.
                                     Nach ihrer fast vollständigen Zerstörung
-                                    durch einen Bombenangriff im{' '}
+                                    durch einen Bombenangriff im{" "}
                                     <strong>Januar 1944</strong> wurde die
                                     Kirche durch das Engagement des damaligen
                                     Pfarrers und durch großzügige Unterstützung
@@ -123,7 +122,7 @@ export default async function KirchbauvereinsPage() {
                                     Diese Tradition führt der Kirchbauverein nun
                                     seit Vereinsgründung weiter fort. Das
                                     vorrangige Ziel des Vereins ist, in
-                                    Zusammenarbeit mit der{' '}
+                                    Zusammenarbeit mit der{" "}
                                     <strong>
                                         Kirchengemeinde Ahlum – Atzum –
                                         Wendessen
@@ -176,29 +175,6 @@ export default async function KirchbauvereinsPage() {
                                     </li>
                                 </ul>
                             </div>
-
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg">
-                                <h3 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
-                                    <Hammer className="w-8 h-8 mr-3" />
-                                    Aktuelles Projekt 2022
-                                </h3>
-                                <div className="bg-white p-6 rounded-xl border border-blue-200">
-                                    <h4 className="font-semibold text-blue-800 text-xl mb-3">
-                                        Zwei neue Glocken für St. Georg
-                                        Wendessen!
-                                    </h4>
-                                    <p className="text-gray-700">
-                                        Das aktuelle Projekt soll noch im Jahr
-                                        2022 abgeschlossen sein.
-                                    </p>
-                                </div>
-                                <div className="mt-6 bg-gradient-to-r from-blue-100 to-indigo-100 p-4 rounded-xl">
-                                    <p className="text-blue-800 font-medium text-center">
-                                        Ein wichtiger Meilenstein für unsere
-                                        Kirchengemeinde
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -214,7 +190,7 @@ export default async function KirchbauvereinsPage() {
                         <div className="space-y-6 text-gray-700 leading-relaxed">
                             <p className="text-lg">
                                 Einer der Wege, um Geld für den Verein zu
-                                erwirtschaften, sind die mittlerweile{' '}
+                                erwirtschaften, sind die mittlerweile{" "}
                                 <strong>fest etablierten Konzerte</strong>.
                                 Jazz-, Klezmer-, Folk- oder klassische Musik
                                 zieht regelmäßig Publikum aus der ganzen Region
@@ -253,8 +229,8 @@ export default async function KirchbauvereinsPage() {
                             <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-2xl mt-6">
                                 <p className="text-purple-800 font-medium text-center">
                                     Der Verein ist damit nicht nur für das
-                                    Kirchengebäude, sondern auch als{' '}
-                                    <strong>kultureller Veranstalter</strong>{' '}
+                                    Kirchengebäude, sondern auch als{" "}
+                                    <strong>kultureller Veranstalter</strong>{" "}
                                     von Bedeutung.
                                 </p>
                             </div>
@@ -330,7 +306,7 @@ export default async function KirchbauvereinsPage() {
 
                             <div className="mt-6">
                                 <a
-                                    href="https://www.kirchbauverein-wendessen.de/beitreten/"
+                                    href="https://www.kirchbauverein-wendessen.de/wp-content/uploads/2021/09/Beitrittserklaerung.pdf"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
@@ -391,7 +367,7 @@ export default async function KirchbauvereinsPage() {
                             <div className="bg-white rounded-2xl p-4 shadow-lg max-w-md mx-auto">
                                 <div className="relative w-full h-24 md:h-28 rounded-xl overflow-hidden">
                                     <Image
-                                        src="/images/Vereinsleben/Kirchbauverein.webp"
+                                        src="/images/Vereinsleben/kirchbauverein.webp"
                                         alt="Kirchbauverein St. Georg Wendessen Logo"
                                         fill
                                         className="object-contain"
@@ -434,12 +410,13 @@ export default async function KirchbauvereinsPage() {
                         </h2>
                         <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
                         <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                            Möchten Sie unsere Arbeit unterstützen oder haben Sie Fragen zu unseren Veranstaltungen?
-                            Wir freuen uns über Ihre Nachricht.
+                            Möchten Sie unsere Arbeit unterstützen oder haben
+                            Sie Fragen zu unseren Veranstaltungen? Wir freuen
+                            uns über Ihre Nachricht.
                         </p>
                     </div>
 
-                    <div className="max-w-md mx-auto px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto px-4">
                         <OrganizationContacts
                             organization="Kirchbauverein"
                             colorClassName="text-blue-600"

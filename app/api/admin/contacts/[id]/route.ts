@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getContactById, updateContact, deleteContact } from '@/lib/database/contacts';
 import { withPermission } from '@/lib/permissions';
+import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 
 export async function GET(
     _request: NextRequest,
@@ -26,6 +27,11 @@ export async function PUT(
         const id = parseInt(idStr);
         const data = await request.json();
         const contact = await updateContact(id, data);
+
+        // Revalidate caches
+        revalidateTagSafe('contacts');
+        revalidatePathSafe('/');
+
         return NextResponse.json({ contact });
     });
 }
@@ -38,6 +44,11 @@ export async function DELETE(
     return withPermission('contacts.delete', async () => {
         const id = parseInt(idStr);
         await deleteContact(id);
+
+        // Revalidate caches
+        revalidateTagSafe('contacts');
+        revalidatePathSafe('/');
+
         return NextResponse.json({ success: true });
     });
 }

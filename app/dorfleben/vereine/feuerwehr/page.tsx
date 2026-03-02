@@ -1,12 +1,12 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { Fire } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+import Image from "next/image";
+import Link from "next/link";
+import { Fire } from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
 
 export const metadata = {
-    title: 'Feuerwehr Wendessen - Übersicht',
+    title: "Feuerwehr Wendessen - Übersicht",
     description:
-        'Übersicht über die Feuerwehr in Wendessen: Freiwillige Feuerwehr und Jugendfeuerwehr',
+        "Übersicht über die Feuerwehr in Wendessen: Freiwillige Feuerwehr und Jugendfeuerwehr",
 };
 
 export default function FeuerwehrOverviewPage() {
@@ -16,13 +16,17 @@ export default function FeuerwehrOverviewPage() {
                 title="Feuerwehr Wendessen"
                 subtitle="Wählen Sie einen Bereich"
                 icon={<Fire />}
-                backgroundImage="/images/Vereinsleben/Freiwillige_Feuerwehr.jpg"
+                backgroundImage="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
                 color="red"
             />
 
             {/* Image Selection Grid */}
             <div className="flex-1 px-4 sm:px-6 lg:px-8">
-                <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-0">
+                <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-0 relative">
+                    {/* Red Bar (Vertical on Large screens, Horizontal on Mobile) */}
+                    <div className="absolute left-1/2 top-0 bottom-0 w-3 bg-white -translate-x-1/2 z-20 hidden lg:block shadow-lg"></div>
+                    <div className="absolute top-1/2 left-0 right-0 h-3 bg-white -translate-y-1/2 z-20 block lg:hidden shadow-lg"></div>
+
                     {/* Freiwillige Feuerwehr / Einsatzabteilung - LEFT IMAGE */}
                     <Link
                         href="/dorfleben/vereine/feuerwehr/einsatzabteilung"
@@ -31,7 +35,7 @@ export default function FeuerwehrOverviewPage() {
                     >
                         <div className="relative h-[50vh] lg:h-[calc(100vh-300px)] w-full">
                             <Image
-                                src="/images/Vereinsleben/Freiwillige_Feuerwehr.jpg"
+                                src="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
                                 alt="Freiwillige Feuerwehr"
                                 fill
                                 className="object-cover"
@@ -39,7 +43,7 @@ export default function FeuerwehrOverviewPage() {
                             />
                             {/* Inverted radial vignette - dark center, lighter edges */}
                             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,black_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0.4)_60%,transparent_80%,transparent_100%)]"></div>
-                            
+
                             {/* Text Content - Centered with group hover on container */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
                                 <div className="transition-all duration-300 group-hover:scale-110">
@@ -62,7 +66,7 @@ export default function FeuerwehrOverviewPage() {
                     >
                         <div className="relative h-[50vh] lg:h-[calc(100vh-300px)] w-full">
                             <Image
-                                src="/images/Vereinsleben/Jugendfeuerwehr.jpeg"
+                                src="/images/Vereinsleben/jugendfeuerwehr.jpeg"
                                 alt="Jugendfeuerwehr"
                                 fill
                                 className="object-cover"
@@ -70,7 +74,7 @@ export default function FeuerwehrOverviewPage() {
                             />
                             {/* Inverted radial vignette - dark center, lighter edges */}
                             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,black_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0.4)_60%,transparent_80%,transparent_100%)]"></div>
-                            
+
                             {/* Text Content - Centered with group hover on container */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
                                 <div className="transition-all duration-300 group-hover:scale-110">
@@ -89,4 +93,3 @@ export default function FeuerwehrOverviewPage() {
         </div>
     );
 }
-

@@ -124,7 +124,7 @@
 /* Agenda view styling */
 .rbc-agenda-view {
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-top: 0;
     overflow: hidden;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .rbc-agenda-view .rbc-agenda-date-cell {
-    padding: 12px 16px;
+    padding: 12px 8px;
     background-color: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
     font-weight: 600;
@@ -142,7 +142,7 @@
 }
 
 .rbc-agenda-view .rbc-agenda-time-cell {
-    padding: 12px 16px;
+    padding: 12px 8px;
     background-color: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
     border-left: 1px solid #e2e8f0;
@@ -165,9 +165,74 @@
 
 /* Ensure agenda shows all events */
 .rbc-agenda-view tbody tr {
-    display: table-row !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 12px;
     opacity: 1 !important;
     visibility: visible !important;
+}
+
+.rbc-agenda-view tbody tr:last-child {
+    margin-bottom: 0;
+}
+
+.rbc-agenda-view .rbc-agenda-date-cell,
+.rbc-agenda-view .rbc-agenda-time-cell {
+    width: auto;
+    flex: 0 0 auto;
+    min-width: 0 !important;
+    border-bottom: 0;
+}
+
+.rbc-agenda-view .rbc-agenda-date-cell {
+    flex: 1 1 auto;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.rbc-agenda-view .rbc-agenda-time-cell {
+    border-left: 0 !important;
+    text-align: right;
+    justify-content: flex-end;
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell {
+    width: 100%;
+    flex: 1 0 100%;
+    border-left: 0 !important;
+    border-top: 1px solid #e2e8f0;
+    cursor: pointer;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-sitzung) {
+    background-color: #eff6ff;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-veranstaltung) {
+    background-color: #f0fdf4;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-sport) {
+    background-color: #fff7ed;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-kultur) {
+    background-color: #faf5ff;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-notfall) {
+    background-color: #fef2f2;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-sonstiges) {
+    background-color: #f9fafb;
+}
+
+.rbc-agenda-view .rbc-agenda-event-cell:has(.agenda-category-cancelled) {
+    background-color: #f3f4f6;
 }
 
 .rbc-agenda-view .rbc-agenda-content {
@@ -195,4 +260,82 @@
     text-align: center;
     color: #6b7280;
     font-style: italic;
+}
+
+/* Remove empty all-day row in week/day time views */
+.rbc-time-view .rbc-allday-cell {
+    display: none;
+}
+
+.rbc-time-view .rbc-time-header-content {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.rbc-time-view .rbc-event-label {
+    display: none;
+}
+
+.rbc-time-view .rbc-event-content {
+    margin-left: 0;
+}
+
+@media (max-width: 767px) {
+    .rbc-month-view .rbc-header,
+    .rbc-time-view .rbc-header {
+        font-size: 12px !important;
+        padding: 8px 2px !important;
+        text-align: center !important;
+    }
+
+    .rbc-agenda-view .rbc-agenda-content {
+        overflow-x: hidden !important;
+    }
+
+    .rbc-agenda-view table,
+    .rbc-agenda-view tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .rbc-agenda-view thead {
+        display: none;
+    }
+
+    .rbc-agenda-view tbody tr {
+        margin-bottom: 10px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        background: #ffffff;
+    }
+
+    .rbc-agenda-view .rbc-agenda-date-cell,
+    .rbc-agenda-view .rbc-agenda-time-cell {
+        display: flex;
+        align-items: center;
+        min-width: 0 !important;
+        padding: 8px 8px;
+        border-bottom: 0;
+    }
+
+    .rbc-agenda-view .rbc-agenda-date-cell {
+        font-weight: 600;
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    .rbc-agenda-view .rbc-agenda-time-cell {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .rbc-agenda-view .rbc-agenda-event-cell {
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 0;
+        padding: 10px 12px;
+    }
+
+    .rbc-agenda-view .rbc-agenda-date-cell,
+    .rbc-agenda-view .rbc-agenda-time-cell {
+        background-color: #f8fafc;
+    }
 }

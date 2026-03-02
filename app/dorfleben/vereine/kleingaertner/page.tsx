@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 import {
     Flower,
     ArrowsOutSimple,
@@ -10,14 +10,14 @@ import {
     Shield,
     Buildings,
     Heart,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Kleingärtner Wendessen - Dorfleben',
+    title: "Kleingärtner Wendessen - Dorfleben",
     description:
-        'Kleingärtner Wendessen - 58 Gärten mit je 500 m² für Arbeit und Erholung. Sozialverträgliche Kosten mit Wasser- und Stromanschluss.',
+        "Kleingärtner Wendessen - 58 Gärten mit je 500 m² für Arbeit und Erholung. Sozialverträgliche Kosten mit Wasser- und Stromanschluss.",
 };
 
 export default async function KleingaertnerPage() {
@@ -26,7 +26,7 @@ export default async function KleingaertnerPage() {
             <PageHeader
                 title="Kleingärtnerverein"
                 icon={<Plant />}
-                backgroundImage="/images/Vereinsleben/Kleingärten.jpeg"
+                backgroundImage="/images/Vereinsleben/kleingarten.jpeg"
                 color="green"
             />
 
@@ -37,7 +37,7 @@ export default async function KleingaertnerPage() {
                     <div className="text-center mb-16">
                         <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-green-100">
                             <Image
-                                src="/images/Vereinsleben/Kleingärten.jpeg"
+                                src="/images/Vereinsleben/kleingarten.jpeg"
                                 alt="Kleingärten Wendessen - Gartenanlage für Erholung und Arbeit"
                                 fill
                                 className="object-cover"
@@ -78,11 +78,11 @@ export default async function KleingaertnerPage() {
                                 </h3>
                                 <p className="text-lg text-green-800">
                                     Unsere <strong>58 Gärten</strong> haben
-                                    jeweils eine Größe von ca.{' '}
+                                    jeweils eine Größe von ca.{" "}
                                     <strong>500 m²</strong>. Die Gärten haben
-                                    durchweg{' '}
+                                    durchweg{" "}
                                     <strong>Wasser- und Stromanschluss</strong>.
-                                    Die Kosten (Pacht und Beitrag) sind{' '}
+                                    Die Kosten (Pacht und Beitrag) sind{" "}
                                     <strong>sozialverträglich</strong> und
                                     beinhalten u.a. unsere Gartenzeitung und
                                     eine Unfallversicherung.
@@ -98,9 +98,9 @@ export default async function KleingaertnerPage() {
                                 <p className="text-blue-800">
                                     Die Arbeit und Erholung im Kleingarten
                                     bietet viele Vorteile für jung und alt.
-                                    Neben der{' '}
+                                    Neben der{" "}
                                     <strong>körperlichen Betätigung</strong> ist
-                                    es vor allem die{' '}
+                                    es vor allem die{" "}
                                     <strong>
                                         Freude am eigenen Obst und Gemüse
                                     </strong>
@@ -143,7 +143,7 @@ export default async function KleingaertnerPage() {
                                 <p className="text-gray-700">
                                     Wasser- und Stromanschluss in jedem Garten
                                 </p>
-                            </div>{' '}
+                            </div>{" "}
                             {/* Costs */}
                             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
                                 <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">

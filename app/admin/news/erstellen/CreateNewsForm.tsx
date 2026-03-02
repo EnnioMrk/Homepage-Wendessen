@@ -9,7 +9,7 @@ import EnhancedRichTextEditor from '@/app/components/EnhancedRichTextEditor';
 import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 
-const initialEditorValue: Descendant[] = [
+const getInitialEditorValue = (): Descendant[] => [
     {
         type: 'paragraph',
         children: [{ text: '' }],
@@ -19,7 +19,7 @@ const initialEditorValue: Descendant[] = [
 export default function CreateNewsForm() {
     const router = useRouter();
     const [step, setStep] = useState<'initial' | 'editing' | 'preview'>(
-        'initial'
+        'initial',
     );
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -27,8 +27,9 @@ export default function CreateNewsForm() {
     // Form data
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
-    const [articleContent, setArticleContent] =
-        useState<Descendant[]>(initialEditorValue);
+    const [articleContent, setArticleContent] = useState<Descendant[]>(
+        getInitialEditorValue(),
+    );
 
     const handleInitialSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -278,7 +279,7 @@ export default function CreateNewsForm() {
                                                 day: '2-digit',
                                                 month: 'long',
                                                 year: 'numeric',
-                                            }
+                                            },
                                         )}
                                     </span>
                                 </div>

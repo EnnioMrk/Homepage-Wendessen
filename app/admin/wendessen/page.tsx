@@ -24,6 +24,7 @@ async function AdminWendessenContent() {
     // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canView = hasPermission(currentUser, 'wendessen.view');
+    const canCreate = hasPermission(currentUser, 'wendessen.create');
     const canManage = hasPermission(currentUser, 'wendessen.manage');
 
     if (!canView) {
@@ -37,7 +38,8 @@ async function AdminWendessenContent() {
                         Keine Berechtigung
                     </h2>
                     <p className="text-gray-600 mb-6">
-                        Sie haben keine Berechtigung, diesen Bereich zu verwalten.
+                        Sie haben keine Berechtigung, diesen Bereich zu
+                        verwalten.
                     </p>
                     <Link
                         href="/admin/dashboard"
@@ -77,7 +79,10 @@ async function AdminWendessenContent() {
             </header>
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <AdminWendessenClient canManage={canManage} />
+                <AdminWendessenClient
+                    canManage={canManage}
+                    canCreate={canCreate || canManage}
+                />
             </main>
         </div>
     );

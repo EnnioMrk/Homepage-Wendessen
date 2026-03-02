@@ -1,9 +1,11 @@
 import React from 'react';
 import { getContactsByOrganization } from '@/lib/database/contacts';
+import { getOrganizationById } from '@/lib/database/organizations';
 import ContactCard from './ContactCard';
 
 interface OrganizationContactsProps {
-    organization: string;
+    organization?: string;
+    organizationSlug?: string;
     /**
      * Optional className to override text colors or other styles in the cards.
      */
@@ -20,10 +22,22 @@ interface OrganizationContactsProps {
  */
 export default async function OrganizationContacts({
     organization,
+    organizationSlug,
     colorClassName,
     limit,
 }: OrganizationContactsProps) {
-    const contacts = await getContactsByOrganization(organization);
+    let organizationName = organization;
+
+    if (!organizationName && organizationSlug) {
+        const org = await getOrganizationById(organizationSlug);
+        organizationName = org?.title;
+    }
+
+    if (!organizationName) {
+        return null;
+    }
+
+    const contacts = await getContactsByOrganization(organizationName);
 
     if (contacts.length === 0) {
         return null;
@@ -35,18 +49,39 @@ export default async function OrganizationContacts({
         <>
             {displayContacts.map((contact) => {
                 // Find the specific role for this organization
-                const affiliation = contact.affiliations.find(a => 
-                    a.org.toLowerCase().includes(organization.toLowerCase())
+                const affiliation = contact.affiliations.find((a) =>
+                    a.org.toLowerCase().includes(organizationName.toLowerCase())
                 );
-                
-                // If the user is affiliated with multiple similar org names, 
+
+                // If the user is affiliated with multiple similar org names,
                 // we take the first match or default to 'Mitglied'
                 const role = affiliation ? affiliation.role : 'Mitglied';
-                
+
                 // Get the first phone/email
                 // Logic mimics ContactCardFetcher's behavior
-                const phone = contact.phones.length > 0 ? contact.phones[0].value : undefined;
-                const email = contact.emails.length > 0 ? contact.emails[0] : undefined;
+                const phone =
+                    contact.phones.length > 0 ? contact.phones[0].value : undefined;
+                const email =
+                    contact.emails.length > 0 ? contact.emails[0] : undefined;
+
+                if (displayContacts.length === 1) {
+                    return (
+                        <div
+                            key={contact.id}
+                            className="md:col-span-2 flex justify-center"
+                        >
+                            <div className="w-full max-w-md">
+                                <ContactCard
+                                    name={contact.name}
+                                    role={role}
+                                    phone={phone}
+                                    email={email}
+                                    colorClassName={colorClassName}
+                                />
+                            </div>
+                        </div>
+                    );
+                }
 
                 return (
                     <ContactCard

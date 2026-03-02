@@ -6,7 +6,7 @@ import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     try {
         const { id } = await params;
@@ -19,7 +19,7 @@ export async function POST(
             console.log('Event not found:', id);
             return NextResponse.json(
                 { error: 'Event not found' },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
@@ -36,7 +36,7 @@ export async function POST(
             'Role:',
             user.roleName,
             'VereinId:',
-            user.vereinId
+            user.vereinId,
         );
 
         // If user has verein permission, verify they can only cancel their own verein's events
@@ -60,20 +60,20 @@ export async function POST(
                     'Verein mismatch - User vereinId:',
                     user.vereinId,
                     'Event vereinId:',
-                    existingEvent.vereinId
+                    existingEvent.vereinId,
                 );
                 return NextResponse.json(
                     {
                         error: 'Forbidden: You can only cancel events from your own Verein',
                     },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
         }
 
         console.log(
             'User has permission, cancelling event. User:',
-            user.username
+            user.username,
         );
 
         // Use username, fallback to "admin" if not available
@@ -86,6 +86,7 @@ export async function POST(
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
@@ -119,20 +120,20 @@ export async function POST(
         ) {
             return NextResponse.json(
                 { error: errorMessage },
-                { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
+                { status: errorMessage.includes('Unauthorized') ? 401 : 403 },
             );
         }
 
         return NextResponse.json(
             { error: `Failed to cancel event: ${errorMessage}` },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     try {
         const { id } = await params;
@@ -142,7 +143,7 @@ export async function DELETE(
         if (!existingEvent) {
             return NextResponse.json(
                 { error: 'Event not found' },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
@@ -173,7 +174,7 @@ export async function DELETE(
                     {
                         error: 'Forbidden: You can only restore events from your own Verein',
                     },
-                    { status: 403 }
+                    { status: 403 },
                 );
             }
         }
@@ -182,6 +183,7 @@ export async function DELETE(
 
         // Revalidate pages that show events
         revalidatePathSafe('/');
+        revalidatePathSafe('/was-steht-an');
         revalidateTagSafe('events');
 
         // Log the action
@@ -214,13 +216,13 @@ export async function DELETE(
         ) {
             return NextResponse.json(
                 { error: errorMessage },
-                { status: errorMessage.includes('Unauthorized') ? 401 : 403 }
+                { status: errorMessage.includes('Unauthorized') ? 401 : 403 },
             );
         }
 
         return NextResponse.json(
             { error: 'Failed to restore event' },
-            { status: 500 }
+            { status: 500 },
         );
     }
 }
