@@ -1,9 +1,7 @@
 ﻿import { getEvents } from '@/lib/database';
 import { CalendarBlank } from '@phosphor-icons/react/dist/ssr';
 import PageHeader from '@/app/components/layout/PageHeader';
-import CalendarClient from './CalendarClient';
-import { Suspense } from 'react';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import CalendarClientNoSSR from './CalendarClientNoSSR';
 
 export default async function WasStehAnPage() {
     const initialEvents = await getEvents();
@@ -20,22 +18,7 @@ export default async function WasStehAnPage() {
 
             {/* Main Content */}
             <div className="container mx-auto px-4 py-16">
-                <Suspense
-                    fallback={
-                        <div className="max-w-6xl mx-auto">
-                            <div className="bg-white rounded-3xl p-12 shadow-xl text-center">
-                                <LoadingSpinner
-                                    size="xl"
-                                    color="indigo"
-                                    text="Lade Termine..."
-                                    centered
-                                />
-                            </div>
-                        </div>
-                    }
-                >
-                    <CalendarClient initialEvents={initialEvents} />
-                </Suspense>
+                <CalendarClientNoSSR initialEvents={initialEvents} />
             </div>
         </div>
     );

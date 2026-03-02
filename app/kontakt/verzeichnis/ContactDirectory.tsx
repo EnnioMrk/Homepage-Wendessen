@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-    EnvelopeSimple,
+    EnvelopeIcon,
     Phone,
     MagnifyingGlass,
     Funnel,
@@ -151,7 +151,7 @@ function ContactModal({
                                                 href={`mailto:${email}`}
                                                 className="flex items-center text-blue-700 hover:text-blue-900 hover:underline transition-colors"
                                             >
-                                                <EnvelopeSimple className="w-4 h-4 mr-2 flex-shrink-0" />
+                                                <EnvelopeIcon className="w-4 h-4 mr-2 flex-shrink-0" />
                                                 <span>{email}</span>
                                             </a>
                                         ))}
@@ -275,7 +275,7 @@ function ContactCard({
                             href={`mailto:${firstEmail}`}
                             className="flex items-center text-blue-700 hover:text-blue-900 hover:underline transition-colors group/link"
                         >
-                            <EnvelopeSimple className="w-4 h-4 mr-2 flex-shrink-0" />
+                            <EnvelopeIcon className="w-4 h-4 mr-2 flex-shrink-0" />
                             <span className="truncate text-sm">
                                 {firstEmail}
                             </span>

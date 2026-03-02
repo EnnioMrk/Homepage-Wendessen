@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr';
+import { EnvelopeIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface OrtsratMemberCardProps {
     name: string;
@@ -61,7 +61,7 @@ const CardContent = ({
             {contactSlug && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-foreground font-semibold shadow-lg flex items-center space-x-2">
-                        <EnvelopeSimple className="w-4 h-4" />
+                        <EnvelopeIcon className="w-4 h-4" />
                         <span>Kontakt</span>
                     </div>
                 </div>

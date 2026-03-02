@@ -2,7 +2,7 @@ import Image from "next/image";
 import {
     ArrowSquareOut,
     MapPin,
-    EnvelopeSimple,
+    EnvelopeIcon,
     DeviceMobile,
     Phone,
     Briefcase,
@@ -233,7 +233,7 @@ export default function ContactPersonCard({
                         {/* Email */}
                         <ContactInfoCard
                             icon={
-                                <EnvelopeSimple className="w-6 h-6 text-white" />
+                                <EnvelopeIcon className="w-6 h-6 text-white" />
                             }
                             label="E-Mail"
                             value={contactInfo.email}

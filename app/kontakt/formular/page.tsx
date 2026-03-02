@@ -4,7 +4,7 @@ import {
     MapPin,
     Clock,
     Heart,
-    EnvelopeSimple,
+    EnvelopeIcon,
     PaperPlaneTilt,
 } from '@phosphor-icons/react/dist/ssr';
 
@@ -25,7 +25,7 @@ export default function KontaktformularPage() {
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center justify-center mb-6">
                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl mr-4">
-                                <EnvelopeSimple className="w-8 h-8 text-emerald-600" />
+                                <EnvelopeIcon className="w-8 h-8 text-emerald-600" />
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
                                 Kontaktformular
@@ -280,9 +280,7 @@ export default function KontaktformularPage() {
                                     </a>
                                 </div>
                                 <div className="flex items-center space-x-3">
-                                    <EnvelopeSimple className="w-5 h-5 text-emerald-500" />
-                                    <EnvelopeSimple className="w-5 h-5 text-emerald-500" />
-                                    <PaperPlaneTilt className="w-5 h-5 mr-2" />
+                                    <EnvelopeIcon className="w-5 h-5 text-emerald-500" />
                                     <a
                                         href="mailto:info@wendessen.de"
                                         className="text-emerald-600 hover:text-emerald-800 transition-colors"

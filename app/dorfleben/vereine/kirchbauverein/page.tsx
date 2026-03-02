@@ -7,7 +7,7 @@ import {
     Wrench,
     MusicNotesSimple,
     MapPin,
-    EnvelopeSimple,
+    EnvelopeIcon,
     UsersThree,
     Plus,
     Heart,
@@ -237,7 +237,7 @@ export default async function KirchbauvereinsPage() {
 
                             <div className="bg-white p-6 rounded-2xl border-2 border-purple-200">
                                 <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                                    <EnvelopeSimple className="w-5 h-5 mr-2" />
+                                    <EnvelopeIcon className="w-5 h-5 mr-2" />
                                     Newsletter abonnieren
                                 </h4>
                                 <p className="text-gray-700 mb-3">
@@ -248,7 +248,7 @@ export default async function KirchbauvereinsPage() {
                                     href="mailto:kirchbauverein.wendessen@gmail.com"
                                     className="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold"
                                 >
-                                    <EnvelopeSimple className="w-4 h-4 mr-1" />
+                                    <EnvelopeIcon className="w-4 h-4 mr-1" />
                                     kirchbauverein.wendessen@gmail.com
                                 </a>
                             </div>
@@ -395,7 +395,7 @@ export default async function KirchbauvereinsPage() {
                                 href="mailto:kirchbauverein.wendessen@gmail.com"
                                 className="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
                             >
-                                <EnvelopeSimple className="w-5 h-5 mr-2" />
+                                <EnvelopeIcon className="w-5 h-5 mr-2" />
                                 E-Mail schreiben
                             </a>
                         </div>

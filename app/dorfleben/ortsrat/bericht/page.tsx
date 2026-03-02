@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
     Briefcase,
-    EnvelopeSimple,
+    EnvelopeIcon,
     Buildings,
     Warning,
     Lightning,
@@ -71,7 +71,7 @@ export default function BuergermeisterBerichtetPage() {
                                     <span>Marketingberater</span>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <EnvelopeSimple className="w-5 h-5 text-primary" />
+                                    <EnvelopeIcon className="w-5 h-5 text-primary" />
                                     <Link
                                         href="/kontakt/andreas-rink"
                                         className="text-primary hover:text-primary-dark transition-colors"

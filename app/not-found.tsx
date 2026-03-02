@@ -7,7 +7,7 @@ import {
     House,
     Buildings,
     UsersThree,
-    EnvelopeSimple,
+    EnvelopeIcon,
 } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata = {
@@ -130,7 +130,7 @@ export default function NotFound() {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                                        <EnvelopeSimple className="w-5 h-5 text-purple-600 group-hover:text-orange-600" />
+                                        <EnvelopeIcon className="w-5 h-5 text-purple-600 group-hover:text-orange-600" />
                                     </div>
                                     <div>
                                         <div className="font-semibold text-gray-800 group-hover:text-orange-700">

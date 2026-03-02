@@ -6,7 +6,7 @@ import {
     Train,
     Shield,
     Phone,
-    EnvelopeSimple,
+    EnvelopeIcon,
     FileText,
     Calendar,
 } from "@phosphor-icons/react/dist/ssr";
@@ -232,7 +232,7 @@ export default function NeubaugebietPage() {
                                         </a>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <EnvelopeSimple className="w-5 h-5 text-emerald-500" />
+                                        <EnvelopeIcon className="w-5 h-5 text-emerald-500" />
                                         <a
                                             href="mailto:stephan.malonnek@mgm-management.de"
                                             className="text-emerald-600 hover:text-emerald-800 transition-colors"

@@ -1,4 +1,4 @@
-import { Phone, User, Envelope } from '@phosphor-icons/react/dist/ssr';
+import { Phone, User, EnvelopeIcon } from '@phosphor-icons/react/dist/ssr';
 
 interface ContactCardProps {
     name: string;
@@ -37,7 +37,7 @@ export default function ContactCard({
                             href={`mailto:${email}`}
                             className="flex items-center text-slate-700 font-medium text-base md:text-lg transition-colors hover:text-red-600 truncate"
                         >
-                            <Envelope className="w-5 h-5 mr-3 text-slate-400 group-hover:text-red-600 transition-colors" weight="fill" />
+                            <EnvelopeIcon className="w-5 h-5 mr-3 text-slate-400 group-hover:text-red-600 transition-colors" weight="fill" />
                             <span className="truncate">{email}</span>
                         </a>
                     </div>

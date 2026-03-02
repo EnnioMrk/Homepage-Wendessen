@@ -8,7 +8,7 @@ import {
 } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/de';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import './calendar.css';
 import { CalendarEvent } from '@/lib/database';
@@ -126,6 +126,7 @@ interface CalendarClientProps {
 
 export default function CalendarClient({ initialEvents }: CalendarClientProps) {
     const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+    const initialRenderNow = useMemo(() => new Date(), []);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null,
@@ -465,7 +466,7 @@ export default function CalendarClient({ initialEvents }: CalendarClientProps) {
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredEvents
-                            .filter((event) => event.start >= new Date())
+                            .filter((event) => event.start >= initialRenderNow)
                             .sort(
                                 (a, b) => a.start.getTime() - b.start.getTime(),
                             )

@@ -8,7 +8,7 @@ import {
     FloppyDisk,
     Globe,
     Chat,
-    Envelope,
+    EnvelopeIcon,
     MagnifyingGlass,
     ShareNetwork,
     Check,
@@ -37,7 +37,7 @@ const categoryConfig: Record<
 > = {
     general: { label: 'Allgemein', icon: Globe, color: 'blue' },
     footer: { label: 'Footer', icon: Chat, color: 'green' },
-    contact: { label: 'Kontakt', icon: Envelope, color: 'purple' },
+    contact: { label: 'Kontakt', icon: EnvelopeIcon, color: 'purple' },
     social: { label: 'Social Media', icon: ShareNetwork, color: 'pink' },
     seo: { label: 'SEO', icon: MagnifyingGlass, color: 'orange' },
 };

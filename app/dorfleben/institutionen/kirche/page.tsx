@@ -6,7 +6,7 @@ import {
     Globe,
     User,
     Phone,
-    EnvelopeSimple,
+    EnvelopeIcon,
     Buildings,
     Clock,
 } from "@phosphor-icons/react/dist/ssr";
@@ -242,7 +242,7 @@ export default function KirchePage() {
                                         </a>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <EnvelopeSimple className="w-5 h-5 text-purple-500" />
+                                        <EnvelopeIcon className="w-5 h-5 text-purple-500" />
                                         <a
                                             href="mailto:dieter.schultz-seitz@lk-bs.de"
                                             className="text-purple-600 hover:text-purple-800 transition-colors"
@@ -296,7 +296,7 @@ export default function KirchePage() {
                                         <p>10:00 - 12:00 Uhr</p>
                                     </div>
                                     <div className="flex items-center justify-center space-x-2">
-                                        <EnvelopeSimple className="w-4 h-4 text-blue-500" />
+                                        <EnvelopeIcon className="w-4 h-4 text-blue-500" />
                                         <a
                                             href="mailto:ahlum.buero@lk-bs.de"
                                             className="text-blue-600 hover:text-blue-800 transition-colors"

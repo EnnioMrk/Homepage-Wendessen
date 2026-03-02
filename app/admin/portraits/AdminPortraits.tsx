@@ -9,7 +9,7 @@ import {
     Clock,
     CheckCircle,
     XCircle,
-    EnvelopeSimple,
+    EnvelopeIcon,
     Calendar,
     ArrowCounterClockwise,
     WarningCircle,
@@ -348,7 +348,7 @@ export default function AdminPortraits({
                                     })}
                                     {submission.email && (
                                         <>
-                                            <EnvelopeSimple className="w-3 h-3 ml-3 mr-1" />
+                                            <EnvelopeIcon className="w-3 h-3 ml-3 mr-1" />
                                             <span className="truncate">
                                                 {submission.email}
                                             </span>

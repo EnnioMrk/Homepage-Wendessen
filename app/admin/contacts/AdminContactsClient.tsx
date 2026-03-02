@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash, PencilSimple, Envelope, Phone, Buildings, MagnifyingGlass, Funnel, X, CaretDown } from '@phosphor-icons/react/dist/ssr';
+import { Plus, Trash, PencilSimple, EnvelopeIcon, Phone, Buildings, MagnifyingGlass, Funnel, X, CaretDown } from '@phosphor-icons/react/dist/ssr';
 import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
 import PromptDialog from '@/app/components/ui/PromptDialog';
 import {
@@ -305,7 +305,7 @@ export default function AdminContactsClient({
                                     <div className="flex flex-wrap gap-y-1 gap-x-4 text-sm text-gray-500">
                                         {contact.emails.length > 0 && (
                                             <div className="flex items-center">
-                                                <Envelope size={14} className="mr-1.5 text-gray-400" />
+                                                <EnvelopeIcon size={14} className="mr-1.5 text-gray-400" />
                                                 <span className="truncate max-w-[200px]">{contact.emails[0]}</span>
                                                 {contact.emails.length > 1 && <span className="ml-1">+{contact.emails.length - 1}</span>}
                                             </div>
