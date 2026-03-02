@@ -1,42 +1,42 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { List, X } from '@phosphor-icons/react/dist/ssr';
-import { useAdminAuth } from '@/lib/useAdminAuth';
+import React, { useState } from "react";
+import Link from "next/link";
+import { List, X } from "@phosphor-icons/react/dist/ssr";
+import { useAdminAuth } from "@/lib/useAdminAuth";
 
 import {
     DORFLEBEN_NAV,
     WOHNEN_BAUEN_NAV,
     KONTAKT_NAV,
     type NavItem,
-} from '@/lib/constants/navigation';
+} from "@/lib/constants/navigation";
 
 const dorflebenItems = DORFLEBEN_NAV;
 const wohnenBauenItems = WOHNEN_BAUEN_NAV;
 const kontaktItems = KONTAKT_NAV;
 
 const sectionTitleClasses =
-    'px-2 pb-1 text-xs font-semibold tracking-[0.12em] text-foreground/70';
-const sectionContainerClasses = 'rounded-md border border-border p-2';
+    "px-2 pb-1 text-xs font-semibold tracking-[0.12em] text-foreground/70";
+const sectionContainerClasses = "rounded-md border border-border p-2";
 const linkClasses =
-    'flex items-center justify-between rounded-md px-2 py-2 text-[15px] font-medium text-foreground hover:bg-primary/20 hover:text-primary-dark';
+    "flex items-center justify-between rounded-md px-2 py-2 text-[15px] font-medium text-foreground hover:bg-primary/20 hover:text-primary-dark";
 
 function renderNavTree(
     items: NavItem[],
     onNavigate: () => void,
     level = 1,
-    maxDepth = Number.POSITIVE_INFINITY
+    maxDepth = Number.POSITIVE_INFINITY,
 ) {
     const nestedListClasses =
         level === 1
-            ? 'space-y-1'
-            : 'mt-1 ml-2 space-y-1 border-l border-border pl-2';
+            ? "space-y-1"
+            : "mt-1 ml-2 space-y-1 border-l border-border pl-2";
 
     const groupLabelClasses =
         level === 1
-            ? 'block rounded-md px-2 py-1 text-sm font-semibold text-foreground'
-            : 'block rounded-md px-2 py-1 text-sm font-semibold text-foreground/90';
+            ? "block rounded-md px-2 py-1 text-sm font-semibold text-foreground"
+            : "block rounded-md px-2 py-1 text-sm font-semibold text-foreground/90";
 
     return (
         <ul className={nestedListClasses}>
@@ -60,12 +60,19 @@ function renderNavTree(
                                 </span>
                             </Link>
                         ) : (
-                            <span className={groupLabelClasses}>{item.title}</span>
+                            <span className={groupLabelClasses}>
+                                {item.title}
+                            </span>
                         )}
 
                         {item.items &&
                             level < maxDepth &&
-                            renderNavTree(item.items, onNavigate, level + 1, maxDepth)}
+                            renderNavTree(
+                                item.items,
+                                onNavigate,
+                                level + 1,
+                                maxDepth,
+                            )}
                     </li>
                 );
             })}
@@ -97,8 +104,9 @@ export default function MobileNavbar() {
                 />
             )}
             <nav
-                className={`fixed top-0 right-0 z-50 h-full w-72 bg-background shadow-lg transform transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'
-                    }`}
+                className={`fixed top-0 right-0 z-50 h-full w-72 bg-background shadow-lg transform transition-transform duration-300 ${
+                    open ? "translate-x-0" : "translate-x-full"
+                }`}
                 aria-label="Mobile Navigation"
             >
                 <div className="flex items-center justify-center p-4 border-b border-border relative">
@@ -132,15 +140,24 @@ export default function MobileNavbar() {
                         </li>
 
                         <li className={sectionContainerClasses}>
-                            <span className={sectionTitleClasses}>DORFLEBEN</span>
-                            {renderNavTree(dorflebenItems, () => setOpen(false))}
+                            <span className={sectionTitleClasses}>
+                                DORFLEBEN
+                            </span>
+                            {renderNavTree(dorflebenItems, () =>
+                                setOpen(false),
+                            )}
                         </li>
 
                         <li className={sectionContainerClasses}>
                             <span className={sectionTitleClasses}>
                                 WOHNEN & BAUEN
                             </span>
-                            {renderNavTree(wohnenBauenItems, () => setOpen(false), 1, 1)}
+                            {renderNavTree(
+                                wohnenBauenItems,
+                                () => setOpen(false),
+                                1,
+                                1,
+                            )}
                         </li>
 
                         <li>
@@ -193,7 +210,12 @@ export default function MobileNavbar() {
 
                         <li className={sectionContainerClasses}>
                             <span className={sectionTitleClasses}>KONTAKT</span>
-                            {renderNavTree(kontaktItems, () => setOpen(false), 1, 1)}
+                            {renderNavTree(
+                                kontaktItems,
+                                () => setOpen(false),
+                                1,
+                                1,
+                            )}
                         </li>
 
                         {/* Admin Dashboard Link - Only show when authenticated */}

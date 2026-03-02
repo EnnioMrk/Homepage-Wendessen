@@ -1,7 +1,7 @@
-import CroppedImage from '../ui/CroppedImage';
-import { Calendar } from '@phosphor-icons/react/dist/ssr';
-import { ImageCropConfig } from '@/lib/database/events';
-import Link from 'next/link';
+import CroppedImage from "../ui/CroppedImage";
+import { Calendar } from "@phosphor-icons/react/dist/ssr";
+import { ImageCropConfig } from "@/lib/database/events";
+import Link from "next/link";
 
 interface EventCardProps {
     id: string;
@@ -32,7 +32,7 @@ export default function EventCard({
         <Link
             href={`/was-steht-an?event=${id}`}
             className={`group relative min-h-[18rem] aspect-auto sm:aspect-[16/9] md:aspect-[4/5] lg:aspect-square overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border block ${
-                isCancelled ? 'border-red-300 opacity-75' : 'border-gray-200'
+                isCancelled ? "border-red-300 opacity-75" : "border-gray-200"
             }`}
         >
             {hasImage && imageSrc ? (
@@ -64,7 +64,7 @@ export default function EventCard({
                         )}
                         <h3
                             className={`text-xl font-bold mb-2 group-hover:text-accent transition-colors duration-300 drop-shadow-lg ${
-                                isCancelled ? 'line-through' : ''
+                                isCancelled ? "line-through" : ""
                             }`}
                         >
                             {title}
@@ -98,7 +98,7 @@ export default function EventCard({
                             )}
                             <h3
                                 className={`text-xl font-bold mb-2 group-hover:text-gray-900 transition-colors duration-300 ${
-                                    isCancelled ? 'line-through' : ''
+                                    isCancelled ? "line-through" : ""
                                 }`}
                             >
                                 {title}

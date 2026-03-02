@@ -7,8 +7,8 @@ interface FeatureCardProps {
     description: string;
     imageSrc?: string;
     imageAlt?: string;
-    buttonText: string;
-    buttonHref: string;
+    buttonText?: string;
+    buttonHref?: string;
     buttonColor: string;
     highlightColor?: string;
     backgroundColor?: string;
@@ -48,6 +48,7 @@ export default function FeatureCard({
     const effectiveButtonColor = BUTTON_COLOR_CLASSES[buttonColor] ? buttonColor : 'green';
     const effectiveHighlightColor = highlightColor && TEXT_HIGHLIGHT_CLASSES[highlightColor] ? highlightColor : effectiveButtonColor;
     const effectiveBackgroundColor = backgroundColor && BG_GRADIENT_CLASSES[backgroundColor] ? backgroundColor : effectiveButtonColor;
+    const hasButton = Boolean(buttonText?.trim()) && Boolean(buttonHref?.trim());
 
     const isHero = variant === 'hero';
 
@@ -72,15 +73,17 @@ export default function FeatureCard({
                             </span>
                         ))}
                     </div>
-                    <div className={isHero ? '' : 'text-center'}>
-                        <a
-                            href={buttonHref}
-                            className={`inline-flex items-center justify-center ${BUTTON_COLOR_CLASSES[effectiveButtonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn ${compact ? 'px-4 py-2' : 'px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-4'}`}
-                        >
-                            <span className="mr-2">{buttonText}</span>
-                            <ArrowRight className={`transform group-hover/btn:translate-x-1 transition-transform duration-300 ${compact ? 'w-4 h-4' : 'w-4 h-4 md:w-5 md:h-5'}`} />
-                        </a>
-                    </div>
+                    {hasButton && (
+                        <div className={isHero ? '' : 'text-center'}>
+                            <a
+                                href={buttonHref}
+                                className={`inline-flex items-center justify-center ${BUTTON_COLOR_CLASSES[effectiveButtonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn ${compact ? 'px-4 py-2' : 'px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-4'}`}
+                            >
+                                <span className="mr-2">{buttonText}</span>
+                                <ArrowRight className={`transform group-hover/btn:translate-x-1 transition-transform duration-300 ${compact ? 'w-4 h-4' : 'w-4 h-4 md:w-5 md:h-5'}`} />
+                            </a>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -140,15 +143,17 @@ export default function FeatureCard({
                                 </span>
                             ))}
                         </div>
-                        <div className={`${isHero ? '' : 'text-center'}`}>
-                            <a
-                                href={buttonHref}
-                                className={`inline-flex items-center justify-center ${BUTTON_COLOR_CLASSES[effectiveButtonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn backdrop-blur-sm ${compact ? 'px-4 py-2' : 'px-4 md:px-6 py-2 md:py-3'}`}
-                            >
-                                <span className="mr-2">{buttonText}</span>
-                                <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-300" />
-                            </a>
-                        </div>
+                        {hasButton && (
+                            <div className={`${isHero ? '' : 'text-center'}`}>
+                                <a
+                                    href={buttonHref}
+                                    className={`inline-flex items-center justify-center ${BUTTON_COLOR_CLASSES[effectiveButtonColor]} text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group/btn backdrop-blur-sm ${compact ? 'px-4 py-2' : 'px-4 md:px-6 py-2 md:py-3'}`}
+                                >
+                                    <span className="mr-2">{buttonText}</span>
+                                    <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-300" />
+                                </a>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

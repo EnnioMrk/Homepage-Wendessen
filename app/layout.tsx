@@ -1,33 +1,37 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import Link from 'next/link';
-import Image from 'next/image';
-import { MenubarDemo } from '@/app/components/layout/menubar';
-import MobileNavbar from '@/app/components/layout/mobile-navbar';
-import { Footer } from '@/app/components/layout/footer';
-import { AdminAuthProvider } from '@/lib/admin-auth-context';
-import { Suspense } from 'react';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import Link from "next/link";
+import Image from "next/image";
+import { MenubarDemo } from "@/app/components/layout/menubar";
+import MobileNavbar from "@/app/components/layout/mobile-navbar";
+import { Footer } from "@/app/components/layout/footer";
+import { AdminAuthProvider } from "@/lib/admin-auth-context";
+import { Suspense } from "react";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: 'Wendessen.de - Unser Dorf im Netz',
+    title: "Wendessen.de - Unser Dorf im Netz",
     description:
-        'Willkommen auf der offiziellen Webseite von Wendessen. Neuigkeiten, Termine, Vereine und mehr.',
+        "Willkommen auf der offiziellen Webseite von Wendessen. Neuigkeiten, Termine, Vereine und mehr.",
     icons: {
         icon: [
-            { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-            { url: '/favicon.svg', type: 'image/svg+xml' },
+            { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+            { url: "/favicon.svg", type: "image/svg+xml" },
         ],
-        shortcut: '/favicon.ico',
+        shortcut: "/favicon.ico",
         apple: [
-            { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+            {
+                url: "/apple-touch-icon.png",
+                sizes: "180x180",
+                type: "image/png",
+            },
         ],
     },
-    manifest: '/site.webmanifest',
+    manifest: "/site.webmanifest",
     appleWebApp: {
-        title: 'Wendessen',
+        title: "Wendessen",
     },
 };
 
@@ -45,7 +49,13 @@ export default function RootLayout({
                 className={`${inter.className} min-h-full bg-background-secondary`}
                 suppressHydrationWarning={true}
             >
-                <Suspense fallback={<div className="h-screen flex items-center justify-center">Laden...</div>}>
+                <Suspense
+                    fallback={
+                        <div className="h-screen flex items-center justify-center">
+                            Laden...
+                        </div>
+                    }
+                >
                     <AdminAuthProvider>
                         <div className="flex min-h-screen flex-col">
                             {/* Navigation with Wappen icon */}
@@ -53,7 +63,10 @@ export default function RootLayout({
                                 <div className="container mx-auto flex items-center justify-between py-1">
                                     {/* Logo on the left */}
                                     <div className="flex items-center px-4">
-                                        <Link href="/" className="cursor-pointer">
+                                        <Link
+                                            href="/"
+                                            className="cursor-pointer"
+                                        >
                                             <Image
                                                 src="/images/Wappen.png"
                                                 alt="Wappen Wendessen"

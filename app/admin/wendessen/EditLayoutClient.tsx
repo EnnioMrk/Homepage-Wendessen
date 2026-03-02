@@ -468,9 +468,29 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                         </div>
                                         {/* Button Configuration */}
                                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                            <h5 className="text-sm font-medium text-gray-900 mb-3">
-                                                Button Einstellungen
-                                            </h5>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h5 className="text-sm font-medium text-gray-900">
+                                                    Button Einstellungen
+                                                </h5>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        updateCard(
+                                                            cardKey,
+                                                            'button_text',
+                                                            '',
+                                                        );
+                                                        updateCard(
+                                                            cardKey,
+                                                            'button_href',
+                                                            '',
+                                                        );
+                                                    }}
+                                                    className="text-xs font-medium text-gray-600 hover:text-gray-900"
+                                                >
+                                                    Kein Button
+                                                </button>
+                                            </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                                 {/* Button Text */}
                                                 <div>
@@ -539,6 +559,10 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                     />
                                                 </div>
                                             </div>
+                                            <p className="text-xs text-gray-500 mt-3">
+                                                Wenn Text oder Link leer ist,
+                                                wird kein Button angezeigt.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -573,9 +597,12 @@ export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
                                                 }
                                                 buttonText={
                                                     formData[cardKey]
-                                                        .button_text || 'Button'
+                                                        .button_text
                                                 }
-                                                buttonHref="#"
+                                                buttonHref={
+                                                    formData[cardKey]
+                                                        .button_href
+                                                }
                                                 buttonColor={
                                                     formData[cardKey].theme
                                                         .button
