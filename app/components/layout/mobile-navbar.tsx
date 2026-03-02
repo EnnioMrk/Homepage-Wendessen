@@ -5,11 +5,73 @@ import Link from 'next/link';
 import { List, X } from '@phosphor-icons/react/dist/ssr';
 import { useAdminAuth } from '@/lib/useAdminAuth';
 
-import { DORFLEBEN_NAV, WOHNEN_BAUEN_NAV, KONTAKT_NAV } from '@/lib/constants/navigation';
+import {
+    DORFLEBEN_NAV,
+    WOHNEN_BAUEN_NAV,
+    KONTAKT_NAV,
+    type NavItem,
+} from '@/lib/constants/navigation';
 
 const dorflebenItems = DORFLEBEN_NAV;
 const wohnenBauenItems = WOHNEN_BAUEN_NAV;
 const kontaktItems = KONTAKT_NAV;
+
+const sectionTitleClasses =
+    'px-2 pb-1 text-xs font-semibold tracking-[0.12em] text-foreground/70';
+const sectionContainerClasses = 'rounded-md border border-border p-2';
+const linkClasses =
+    'flex items-center justify-between rounded-md px-2 py-2 text-[15px] font-medium text-foreground hover:bg-primary/20 hover:text-primary-dark';
+
+function renderNavTree(
+    items: NavItem[],
+    onNavigate: () => void,
+    level = 1,
+    maxDepth = Number.POSITIVE_INFINITY
+) {
+    const nestedListClasses =
+        level === 1
+            ? 'space-y-1'
+            : 'mt-1 ml-2 space-y-1 border-l border-border pl-2';
+
+    const groupLabelClasses =
+        level === 1
+            ? 'block rounded-md px-2 py-1 text-sm font-semibold text-foreground'
+            : 'block rounded-md px-2 py-1 text-sm font-semibold text-foreground/90';
+
+    return (
+        <ul className={nestedListClasses}>
+            {items.map((item, index) => {
+                const key = `${item.title}-${level}-${index}`;
+
+                return (
+                    <li key={key}>
+                        {item.href ? (
+                            <Link
+                                href={item.href}
+                                className={linkClasses}
+                                onClick={onNavigate}
+                            >
+                                <span>{item.title}</span>
+                                <span
+                                    aria-hidden="true"
+                                    className="text-base leading-none text-foreground/60"
+                                >
+                                    ›
+                                </span>
+                            </Link>
+                        ) : (
+                            <span className={groupLabelClasses}>{item.title}</span>
+                        )}
+
+                        {item.items &&
+                            level < maxDepth &&
+                            renderNavTree(item.items, onNavigate, level + 1, maxDepth)}
+                    </li>
+                );
+            })}
+        </ul>
+    );
+}
 
 export default function MobileNavbar() {
     const [open, setOpen] = useState(false);
@@ -52,158 +114,86 @@ export default function MobileNavbar() {
                     </button>
                 </div>
                 <div className="h-[calc(100%-65px)] overflow-y-auto">
-                    <ul className="flex flex-col gap-2 p-4">
+                    <ul className="flex flex-col gap-3 p-4">
                         <li>
                             <Link
                                 href="/"
-                                className="block py-2 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                className={linkClasses}
                                 onClick={() => setOpen(false)}
                             >
-                                HOME
+                                <span>HOME</span>
+                                <span
+                                    aria-hidden="true"
+                                    className="text-base leading-none text-foreground/60"
+                                >
+                                    ›
+                                </span>
                             </Link>
                         </li>
-                        <li>
-                            <span className="block py-2 px-2 font-semibold text-foreground">
-                                DORFLEBEN
-                            </span>
-                            <ul className="pl-4">
-                                {dorflebenItems.map((item) => (
-                                    <React.Fragment key={item.title}>
-                                        {item.href ? (
-                                            <li>
-                                                <Link
-                                                    href={item.href}
-                                                    className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                    onClick={() =>
-                                                        setOpen(false)
-                                                    }
-                                                >
-                                                    {item.title}
-                                                </Link>
-                                            </li>
-                                        ) : (
-                                            <li className="font-medium py-1 text-foreground">
-                                                {item.title}
-                                            </li>
-                                        )}
-                                        {item.items && (
-                                            <ul className="pl-4">
-                                                {item.items.map((subItem) => (
-                                                    <React.Fragment key={subItem.title}>
-                                                        <li>
-                                                            {subItem.href ? (
-                                                                <Link
-                                                                    href={subItem.href}
-                                                                    className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                                    onClick={() =>
-                                                                        setOpen(false)
-                                                                    }
-                                                                >
-                                                                    {subItem.title}
-                                                                </Link>
-                                                            ) : (
-                                                                <span className="block py-1 px-2 text-foreground font-medium">
-                                                                    {subItem.title}
-                                                                </span>
-                                                            )}
-                                                        </li>
-                                                        {subItem.items && (
-                                                            <ul className="pl-4">
-                                                                {subItem.items.map((thirdItem) => (
-                                                                    <li key={thirdItem.title}>
-                                                                        {thirdItem.href ? (
-                                                                            <Link
-                                                                                href={thirdItem.href}
-                                                                                className="block py-1 px-2 rounded text-sm text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                                                onClick={() =>
-                                                                                    setOpen(false)
-                                                                                }
-                                                                            >
-                                                                                {thirdItem.title}
-                                                                            </Link>
-                                                                        ) : (
-                                                                            <span className="block py-1 px-2 text-sm text-foreground">
-                                                                                {thirdItem.title}
-                                                                            </span>
-                                                                        )}
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        )}
-                                                    </React.Fragment>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </ul>
+
+                        <li className={sectionContainerClasses}>
+                            <span className={sectionTitleClasses}>DORFLEBEN</span>
+                            {renderNavTree(dorflebenItems, () => setOpen(false))}
                         </li>
-                        <li>
-                            <span className="block py-2 px-2 font-semibold text-foreground">
+
+                        <li className={sectionContainerClasses}>
+                            <span className={sectionTitleClasses}>
                                 WOHNEN & BAUEN
                             </span>
-                            <ul className="pl-4">
-                                {wohnenBauenItems.map((item) => (
-                                    <li key={item.title}>
-                                        {item.href && (
-                                            <Link
-                                                href={item.href}
-                                                className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                onClick={() => setOpen(false)}
-                                            >
-                                                {item.title}
-                                            </Link>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
+                            {renderNavTree(wohnenBauenItems, () => setOpen(false), 1, 1)}
                         </li>
+
                         <li>
                             <Link
                                 href="/was-steht-an"
-                                className="block py-2 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                className={linkClasses}
                                 onClick={() => setOpen(false)}
                             >
-                                WAS STEHT AN?
+                                <span>WAS STEHT AN?</span>
+                                <span
+                                    aria-hidden="true"
+                                    className="text-base leading-none text-foreground/60"
+                                >
+                                    ›
+                                </span>
                             </Link>
                         </li>
+
                         <li>
                             <Link
                                 href="/geschichte"
-                                className="block py-2 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                className={linkClasses}
                                 onClick={() => setOpen(false)}
                             >
-                                GESCHICHTE
+                                <span>GESCHICHTE</span>
+                                <span
+                                    aria-hidden="true"
+                                    className="text-base leading-none text-foreground/60"
+                                >
+                                    ›
+                                </span>
                             </Link>
                         </li>
+
                         <li>
                             <Link
                                 href="/impressionen"
-                                className="block py-2 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
+                                className={linkClasses}
                                 onClick={() => setOpen(false)}
                             >
-                                IMPRESSIONEN
+                                <span>IMPRESSIONEN</span>
+                                <span
+                                    aria-hidden="true"
+                                    className="text-base leading-none text-foreground/60"
+                                >
+                                    ›
+                                </span>
                             </Link>
                         </li>
-                        <li>
-                            <span className="block py-2 px-2 font-semibold text-foreground">
-                                KONTAKT
-                            </span>
-                            <ul className="pl-4">
-                                {kontaktItems.map((item) => (
-                                    <li key={item.title}>
-                                        {item.href && (
-                                            <Link
-                                                href={item.href}
-                                                className="block py-1 px-2 rounded text-foreground hover:bg-primary/20 hover:text-primary-dark"
-                                                onClick={() => setOpen(false)}
-                                            >
-                                                {item.title}
-                                            </Link>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
+
+                        <li className={sectionContainerClasses}>
+                            <span className={sectionTitleClasses}>KONTAKT</span>
+                            {renderNavTree(kontaktItems, () => setOpen(false), 1, 1)}
                         </li>
 
                         {/* Admin Dashboard Link - Only show when authenticated */}

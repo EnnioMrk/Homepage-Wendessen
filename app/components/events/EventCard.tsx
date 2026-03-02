@@ -31,7 +31,7 @@ export default function EventCard({
     return (
         <Link
             href={`/was-steht-an?event=${id}`}
-            className={`group relative aspect-[16/9] md:aspect-[4/5] lg:aspect-square overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border block ${
+            className={`group relative min-h-[18rem] aspect-auto sm:aspect-[16/9] md:aspect-[4/5] lg:aspect-square overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 border block ${
                 isCancelled ? 'border-red-300 opacity-75' : 'border-gray-200'
             }`}
         >

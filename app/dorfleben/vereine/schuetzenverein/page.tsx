@@ -11,14 +11,14 @@ import {
     Lightbulb,
     Egg,
     BowlFood,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+} from "@phosphor-icons/react/dist/ssr";
+import PageHeader from "@/app/components/layout/PageHeader";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
-    title: 'Schützenverein Wendessen e.V. - Dorfleben',
+    title: "Schützenverein Wendessen e.V. - Dorfleben",
     description:
-        'Schützenverein Wendessen e.V. - Sportliche Heimat für über 50 Mitglieder. Schießsport für Kinder, Jugendliche, Frauen und Männer.',
+        "Schützenverein Wendessen e.V. - Sportliche Heimat für über 50 Mitglieder. Schießsport für Kinder, Jugendliche, Frauen und Männer.",
 };
 
 export default async function SchuetzenvereinsPage() {
@@ -40,33 +40,18 @@ export default async function SchuetzenvereinsPage() {
                         </p>
                     </div>
 
-                    {/* Website Notice */}
-                    <div className="bg-gradient-to-r from-orange-50 to-yellow-50 border-l-4 border-orange-500 p-6 rounded-r-2xl mb-16">
-                        <div className="flex items-center mb-3">
-                            <Info className="w-6 h-6 mr-2 text-orange-600" />
-                            <h3 className="text-xl font-semibold text-orange-800">
-                                Website im Umbau
-                            </h3>
-                        </div>
-                        <p className="text-orange-800">
-                            Unsere WebSite befindet sich derzeit gerade im
-                            Umbau. Auf diesen Seiten finden Sie Informationen
-                            über unseren Verein und unsere Aktivitäten.
-                        </p>
-                    </div>
-
                     {/* About Section */}
                     <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
                         <div className="space-y-6 text-gray-700 leading-relaxed">
                             <p className="text-lg">
-                                Unser{' '}
-                                <strong>Schützenverein Wendessen e.V.</strong>{' '}
+                                Unser{" "}
+                                <strong>Schützenverein Wendessen e.V.</strong>{" "}
                                 ist mehr als nur ein Name. Er ist die sportliche
                                 Heimat von über <strong>50 Mitgliedern</strong>.
-                                Bei uns können{' '}
+                                Bei uns können{" "}
                                 <strong>
                                     Kinder, Jugendliche, Frauen und Männer
-                                </strong>{' '}
+                                </strong>{" "}
                                 den Schießsport ausüben - allein, zu zweit oder
                                 mit der ganzen Familie.
                             </p>
@@ -237,8 +222,8 @@ export default async function SchuetzenvereinsPage() {
                                 Für alle Dorfbürger!
                             </h3>
                             <p className="text-red-800 text-lg mb-4">
-                                An diesen Veranstaltungen können{' '}
-                                <strong>alle Bürger unseres Dorfes</strong>{' '}
+                                An diesen Veranstaltungen können{" "}
+                                <strong>alle Bürger unseres Dorfes</strong>{" "}
                                 teilnehmen (Informationen kommen frühzeitig).
                             </p>
                             <div className="bg-white p-6 rounded-xl border border-red-200">
@@ -246,11 +231,11 @@ export default async function SchuetzenvereinsPage() {
                                     Das Highlight:
                                 </h4>
                                 <p className="text-red-800">
-                                    Der{' '}
+                                    Der{" "}
                                     <strong>
                                         Volkskönig und die Volkskönigin
-                                    </strong>{' '}
-                                    sind für ein Jahr{' '}
+                                    </strong>{" "}
+                                    sind für ein Jahr{" "}
                                     <strong>kostenfreie Mitglieder</strong> des
                                     Schützenvereines.
                                 </p>
@@ -264,7 +249,7 @@ export default async function SchuetzenvereinsPage() {
                                 Hinweis:
                             </h4>
                             <p className="text-yellow-800">
-                                Den Königinnen und Königen entstehen{' '}
+                                Den Königinnen und Königen entstehen{" "}
                                 <strong>keine Kosten</strong>. Lediglich zum
                                 Königsball würden wir uns über eine
                                 Getränkespende freuen!
@@ -286,11 +271,11 @@ export default async function SchuetzenvereinsPage() {
 
                         <div className="space-y-6 text-gray-700">
                             <p className="text-lg">
-                                Mit unseren{' '}
+                                Mit unseren{" "}
                                 <strong>
                                     Jugendlichen im Alter von 9-17 Jahren
-                                </strong>{' '}
-                                wird neben dem Schießsport{' '}
+                                </strong>{" "}
+                                wird neben dem Schießsport{" "}
                                 <strong>Luftgewehr und Luftpistole</strong> auch
                                 einiges an Freizeitaktivitäten geboten (z.B.
                                 gemeinsame Ausflüge usw.).
@@ -302,7 +287,7 @@ export default async function SchuetzenvereinsPage() {
                                     Neu: Infrarotanlage
                                 </h4>
                                 <p className="text-purple-800 mb-3">
-                                    Hier darf schon <strong>ab 6 Jahren</strong>{' '}
+                                    Hier darf schon <strong>ab 6 Jahren</strong>{" "}
                                     geschossen werden, da keine Munition
                                     verwendet wird. Unsere Schützenjugend ist
                                     begeistert.
@@ -319,10 +304,10 @@ export default async function SchuetzenvereinsPage() {
                                     Aktueller Hinweis:
                                 </h4>
                                 <p className="text-red-800">
-                                    Leider kann derzeit{' '}
+                                    Leider kann derzeit{" "}
                                     <strong>
                                         kein Training für Jugendliche
-                                    </strong>{' '}
+                                    </strong>{" "}
                                     angeboten werden.
                                 </p>
                             </div>

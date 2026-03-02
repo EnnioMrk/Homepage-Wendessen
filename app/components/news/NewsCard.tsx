@@ -39,8 +39,8 @@ export default function NewsCard({
                 style={{ backgroundColor: colors.borderColor, opacity: 0.7 }}
             ></div>
             <div className="p-3 md:p-4 lg:p-6 flex flex-col flex-grow">
-                <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
-                    <div className="flex items-center">
+                <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4 gap-2">
+                    <div className="flex items-center min-w-0 max-[420px]:hidden">
                         <div
                             className="w-2 h-2 rounded-full mr-2 md:mr-3"
                             style={{
@@ -52,8 +52,8 @@ export default function NewsCard({
                             {category}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <span className="text-xs md:text-sm text-gray-500">
+                    <div className="flex items-center gap-1 shrink-0">
+                        <span className="text-xs md:text-sm text-gray-500 whitespace-nowrap">
                             {formattedDate}
                         </span>
                         {isPinned && (
