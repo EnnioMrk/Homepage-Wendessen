@@ -144,7 +144,7 @@ export const REDAKTIONSTEAM_KERNTEAM: TeamMember[] = [
     { name: "Andreas Rink", role: "Ortsrat" },
     { name: "Christina Balder", role: "Ortsrat" },
     { name: "Marc Both", role: "Ortsrat" },
-    { name: "Ennio Marke", role: "Gestaltung" },
+    { name: "Ennio Marke", role: "Entwicklung" },
 ];
 
 export const REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE: TeamMember[] = [

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Descendant } from 'slate';
-import Image from 'next/image';
-import Modal from '@/app/components/ui/Modal';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Descendant } from "slate";
+import Image from "next/image";
+import Modal from "@/app/components/ui/Modal";
 
 interface ArticleRendererProps {
     content: Descendant[];
@@ -38,11 +38,14 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
         });
     }, []);
 
-    const handleWheel = useCallback((e: WheelEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        applyZoomDelta(e.deltaY);
-    }, [applyZoomDelta]);
+    const handleWheel = useCallback(
+        (e: WheelEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            applyZoomDelta(e.deltaY);
+        },
+        [applyZoomDelta],
+    );
 
     const handleWheelReact = useCallback(
         (e: React.WheelEvent<HTMLDivElement>) => {
@@ -50,7 +53,7 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
             e.stopPropagation();
             applyZoomDelta(e.deltaY);
         },
-        [applyZoomDelta]
+        [applyZoomDelta],
     );
 
     const handleMouseDown = useCallback(
@@ -64,7 +67,7 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 });
             }
         },
-        [zoom, position]
+        [zoom, position],
     );
 
     const handleMouseMove = useCallback(
@@ -76,7 +79,7 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 });
             }
         },
-        [isDragging, dragStart, zoom]
+        [isDragging, dragStart, zoom],
     );
 
     const handleMouseUp = useCallback(() => {
@@ -94,7 +97,7 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 });
             }
         },
-        [zoom, position]
+        [zoom, position],
     );
 
     const handleTouchMove = useCallback(
@@ -107,7 +110,7 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 });
             }
         },
-        [isDragging, dragStart, zoom]
+        [isDragging, dragStart, zoom],
     );
 
     const handleTouchEnd = useCallback(() => {
@@ -116,11 +119,11 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
 
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
+            if (e.key === "Escape") {
                 onClose();
             }
         },
-        [onClose]
+        [onClose],
     );
 
     const handleBackdropClick = useCallback(
@@ -130,18 +133,18 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 onClose();
             }
         },
-        [isDragging, onClose]
+        [isDragging, onClose],
     );
 
     useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener("keydown", handleKeyDown);
 
         // Prevent default touch move to stop parent scrolling
         const preventTouchScroll = (e: TouchEvent) => e.preventDefault();
 
         const container = containerRef.current;
         if (container) {
-            container.addEventListener('touchmove', preventTouchScroll, {
+            container.addEventListener("touchmove", preventTouchScroll, {
                 passive: false,
             });
         }
@@ -150,9 +153,9 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
         // Handled by Modal component
 
         return () => {
-            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener("keydown", handleKeyDown);
             if (container) {
-                container.removeEventListener('touchmove', preventTouchScroll);
+                container.removeEventListener("touchmove", preventTouchScroll);
             }
             // Restore original overflow value
             // Handled by Modal component
@@ -181,8 +184,12 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                 onMouseLeave={handleMouseUp}
                 style={{
                     cursor:
-                        zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-out',
-                    touchAction: 'none',
+                        zoom > 1
+                            ? isDragging
+                                ? "grabbing"
+                                : "grab"
+                            : "zoom-out",
+                    touchAction: "none",
                 }}
             >
                 {/* Close hint - positioned at top, outside image area */}
@@ -194,7 +201,9 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                     className="relative select-none"
                     style={{
                         transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
-                        transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                        transition: isDragging
+                            ? "none"
+                            : "transform 0.1s ease-out",
                     }}
                     onMouseDown={handleMouseDown}
                     onTouchStart={handleTouchStart}
@@ -208,14 +217,13 @@ function ImagePreview({ src, alt, onClose }: ImagePreviewProps) {
                         height={800}
                         className="max-h-[85vh] max-w-[90vw] rounded-lg shadow-2xl object-contain"
                         draggable={false}
-                        unoptimized
                     />
                 </div>
 
                 {/* Zoom indicator */}
                 <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium pointer-events-none">
-                    {Math.round(zoom * 100)}%{' '}
-                    {zoom > 1 && '• Ziehen zum Verschieben'}
+                    {Math.round(zoom * 100)}%{" "}
+                    {zoom > 1 && "• Ziehen zum Verschieben"}
                 </div>
             </div>
         </Modal>
@@ -229,7 +237,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
     } | null>(null);
 
     const renderNode = (node: Descendant, index: number): React.ReactNode => {
-        if ('text' in node) {
+        if ("text" in node) {
             let text: React.ReactNode = node.text;
 
             if (node.bold) {
@@ -251,11 +259,11 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
             url?: string;
         };
         const children = element.children.map((child, idx) =>
-            renderNode(child, idx)
+            renderNode(child, idx),
         );
 
         switch (element.type) {
-            case 'heading-one':
+            case "heading-one":
                 return (
                     <h1
                         key={index}
@@ -264,7 +272,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         {children}
                     </h1>
                 );
-            case 'heading-two':
+            case "heading-two":
                 return (
                     <h2
                         key={index}
@@ -273,7 +281,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         {children}
                     </h2>
                 );
-            case 'bulleted-list':
+            case "bulleted-list":
                 return (
                     <ul
                         key={index}
@@ -282,7 +290,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         {children}
                     </ul>
                 );
-            case 'numbered-list':
+            case "numbered-list":
                 return (
                     <ol
                         key={index}
@@ -291,13 +299,13 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         {children}
                     </ol>
                 );
-            case 'list-item':
+            case "list-item":
                 return (
                     <li key={index} className="text-gray-700 leading-relaxed">
                         {children}
                     </li>
                 );
-            case 'link':
+            case "link":
                 return (
                     <a
                         key={index}
@@ -309,43 +317,43 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         {children}
                     </a>
                 );
-            case 'image':
+            case "image":
                 const imageElement = element as {
-                    type: 'image';
+                    type: "image";
                     url: string;
                     alt?: string;
-                    imageSize?: 'small' | 'medium' | 'large' | 'full';
-                    position?: 'left' | 'center' | 'right';
+                    imageSize?: "small" | "medium" | "large" | "full";
+                    position?: "left" | "center" | "right";
                     textFlow?: boolean;
                     children: Descendant[];
                 };
 
-                const size = imageElement.imageSize || 'medium';
-                const position = imageElement.position || 'center';
+                const size = imageElement.imageSize || "medium";
+                const position = imageElement.position || "center";
                 const textFlow = imageElement.textFlow ?? false;
 
                 const sizeStyles: Record<string, string> = {
-                    small: '200px',
-                    medium: '400px',
-                    large: '600px',
-                    full: '100%',
+                    small: "200px",
+                    medium: "400px",
+                    large: "600px",
+                    full: "100%",
                 };
 
                 // Determine wrapper alignment (for non-flowing images)
                 const getWrapperAlignment = (pos: string) => {
-                    if (pos === 'left') return 'text-left';
-                    if (pos === 'right') return 'text-right';
-                    return 'text-center';
+                    if (pos === "left") return "text-left";
+                    if (pos === "right") return "text-right";
+                    return "text-center";
                 };
 
                 // For text flow, use float classes
                 const getFloatClasses = (pos: string) => {
-                    if (pos === 'left') return 'float-left mr-6 mb-4';
-                    if (pos === 'right') return 'float-right ml-6 mb-4';
-                    return '';
+                    if (pos === "left") return "float-left mr-6 mb-4";
+                    if (pos === "right") return "float-right ml-6 mb-4";
+                    return "";
                 };
 
-                if (textFlow && position !== 'center') {
+                if (textFlow && position !== "center") {
                     // Text flows around image
                     return (
                         <div
@@ -355,17 +363,16 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         >
                             <Image
                                 src={imageElement.url}
-                                alt={imageElement.alt || 'Bild'}
+                                alt={imageElement.alt || "Bild"}
                                 width={parseInt(sizeStyles[size]) || 400}
                                 height={parseInt(sizeStyles[size]) || 400}
                                 className="rounded-lg shadow-md w-full h-auto cursor-zoom-in hover:opacity-90 transition-opacity"
                                 onClick={() =>
                                     setPreviewImage({
                                         src: imageElement.url,
-                                        alt: imageElement.alt || 'Bild',
+                                        alt: imageElement.alt || "Bild",
                                     })
                                 }
-                                unoptimized
                             />
                         </div>
                     );
@@ -376,7 +383,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                     <div
                         key={index}
                         className={`my-6 clear-both ${getWrapperAlignment(
-                            position
+                            position,
                         )}`}
                     >
                         <div
@@ -385,17 +392,16 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                         >
                             <Image
                                 src={imageElement.url}
-                                alt={imageElement.alt || 'Bild'}
+                                alt={imageElement.alt || "Bild"}
                                 width={parseInt(sizeStyles[size]) || 400}
                                 height={parseInt(sizeStyles[size]) || 400}
                                 className="rounded-lg shadow-md w-full h-auto cursor-zoom-in hover:opacity-90 transition-opacity"
                                 onClick={() =>
                                     setPreviewImage({
                                         src: imageElement.url,
-                                        alt: imageElement.alt || 'Bild',
+                                        alt: imageElement.alt || "Bild",
                                     })
                                 }
-                                unoptimized
                             />
                             {imageElement.alt && (
                                 <p className="text-sm text-gray-600 text-center mt-2 italic">

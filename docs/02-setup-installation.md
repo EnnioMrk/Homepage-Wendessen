@@ -4,23 +4,23 @@
 
 ### Hardware Requirements
 
--   **CPU**: Any modern processor (Intel/AMD/ARM)
--   **RAM**: Minimum 4GB, recommended 8GB+
--   **Storage**: At least 1GB free space for dependencies
--   **Network**: Stable internet connection for database and deployment
+- **CPU**: Any modern processor (Intel/AMD/ARM)
+- **RAM**: Minimum 4GB, recommended 8GB+
+- **Storage**: At least 1GB free space for dependencies
+- **Network**: Stable internet connection for database and deployment
 
 ### Software Requirements
 
--   **Operating System**: macOS, Linux, or Windows 10/11
--   **Node.js**: Version 18.17+ (LTS recommended)
--   **Bun**: Latest stable version (preferred runtime)
--   **Git**: For version control
--   **VS Code**: Recommended editor with TypeScript support
+- **Operating System**: macOS, Linux, or Windows 10/11
+- **Node.js**: Version 18.17+ (LTS recommended)
+- **Bun**: Latest stable version (preferred runtime)
+- **Git**: For version control
+- **VS Code**: Recommended editor with TypeScript support
 
 ### Browser Support
 
--   **Modern Browsers**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
--   **Mobile Browsers**: iOS Safari 14+, Android Chrome 90+
+- **Modern Browsers**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **Mobile Browsers**: iOS Safari 14+, Android Chrome 90+
 
 ## 🛠️ Environment Setup
 
@@ -94,9 +94,9 @@ ADMIN_PASSWORD="your_secure_admin_password"
 
 #### Environment Variables Explained
 
--   `DATABASE_URL`: Neon PostgreSQL connection string
--   `ADMIN_PASSWORD`: Password for admin panel access
--   `NEXT_PUBLIC_VERCEL_ANALYTICS_ID`: (Optional) Vercel Analytics ID
+- `DATABASE_URL`: Neon PostgreSQL connection string
+- `ADMIN_PASSWORD`: Password for admin panel access
+- `NEXT_PUBLIC_VERCEL_ANALYTICS_ID`: (Optional) Vercel Analytics ID
 
 ### 3. Database Setup
 
@@ -154,10 +154,30 @@ bun run dev
 npm run dev
 ```
 
+### Local HTTPS with mkcert
+
+1. Install `mkcert` and create a local CA once:
+
+```bash
+# macOS (Homebrew)
+brew install mkcert nss
+mkcert -install
+```
+
+2. Start the app with HTTPS:
+
+```bash
+bun run dev:https
+```
+
+This command automatically creates local cert files in `certs/` (if missing) and starts Next.js with those certificates.
+
 The application will be available at:
 
--   **Frontend**: http://localhost:3000
--   **Admin Panel**: http://localhost:3000/admin
+- **Frontend**: http://localhost:3000
+- **Frontend (HTTPS)**: https://localhost:3000
+- **Admin Panel**: http://localhost:3000/admin
+- **Admin Panel (HTTPS)**: https://localhost:3000/admin
 
 ### Building for Production
 
@@ -174,6 +194,8 @@ bun run start
 ```bash
 # Development
 bun run dev          # Start development server with Turbopack
+bun run dev:https    # Start development server with HTTPS (mkcert)
+bun run certs:mkcert # Generate local mkcert certificate files
 bun run build        # Build for production
 bun run start        # Start production server
 bun run lint         # Run ESLint
@@ -194,21 +216,21 @@ bun run scripts/setup-contacts.ts
 
 Visit http://localhost:3000 and verify:
 
--   [ ] Homepage loads correctly
--   [ ] Events section displays sample events
--   [ ] News section shows sample articles
--   [ ] Navigation works properly
--   [ ] Mobile responsive design
+- [ ] Homepage loads correctly
+- [ ] Events section displays sample events
+- [ ] News section shows sample articles
+- [ ] Navigation works properly
+- [ ] Mobile responsive design
 
 ### 2. Admin Panel Verification
 
 Visit http://localhost:3000/admin and verify:
 
--   [ ] Login page loads
--   [ ] Can login with `ADMIN_PASSWORD`
--   [ ] Dashboard displays correctly
--   [ ] Can create/edit events
--   [ ] Can manage news articles
+- [ ] Login page loads
+- [ ] Can login with `ADMIN_PASSWORD`
+- [ ] Dashboard displays correctly
+- [ ] Can create/edit events
+- [ ] Can manage news articles
 
 ### 3. Database Verification
 
@@ -277,10 +299,10 @@ bun add -D @types/node @types/react @types/react-dom
 
 ### Hot Reload Testing
 
--   Make changes to any file
--   Verify auto-reload works
--   Check console for errors
--   Test admin functionality
+- Make changes to any file
+- Verify auto-reload works
+- Check console for errors
+- Test admin functionality
 
 ### Database Changes
 
