@@ -69,7 +69,7 @@ export default function NeubaugebietPage() {
                                     <strong>Planungsphase:</strong> Aktuell
                                     laufend durch die Stadt Wolfenbüttel
                                     <br />
-                                    <strong>Baubeginn:</strong> Frühestens Ende
+                                    <strong>Baubeginn:</strong> Ende
                                     2026
                                     <br />
                                     <strong>Status:</strong> Planungsrechtliche
@@ -93,6 +93,39 @@ export default function NeubaugebietPage() {
                         </div>
 
                         <div className="bg-white rounded-3xl p-8 shadow-xl">
+                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-500 p-6 rounded-r-2xl mb-8">
+                                <h3 className="text-xl font-bold text-emerald-800 mb-4">
+                                    Aktueller Planungsstand
+                                </h3>
+                                <div className="space-y-4 text-gray-700 leading-relaxed">
+                                    <p>
+                                        Das Gelände der ehemaligen Zuckerfabrik in Wendessen wurde von einem privaten
+                                        Investor erworben, im <strong>Sommer 2022</strong> erfolgte der Beschluss zur Aufstellung eines
+                                        Bebauungsplanes.
+                                    </p>
+                                    <p>
+                                        Das Plangebiet umfasst rund <strong>29.000 Quadratmeter</strong> und unterteilt sich in Flächen für
+                                        Allgemeine Wohngebiete und Verkehrsflächen. Durch den Bebauungsplan wird ein Wohngebiet für etwa
+                                        <strong> 30 Wohneinheiten</strong> in Einzel- oder Doppelhäusern und um die <strong>35 Geschosswohnungen</strong> vorbereitet.
+                                        Die Haupterschließung des Wohngebietes erfolgt von der „Leipziger Allee“ aus mittels einer Ringstraße,
+                                        die inzwischen bereits den Namen „Zuckerring“ erhalten hat. Zusätzlich soll das geplante Wohngebiet
+                                        fußläufig und für den Radverkehr über den „Lindenblick“ angebunden werden.
+                                    </p>
+                                    <p>
+                                        Im Westen grenzt das Baugebiet an die offene Landschaft. Entlang der südlichen Grenze verläuft die Bahntrasse
+                                        Wolfenbüttel - Schöppenstedt. Im Rahmen der Stationsoffensive des Regionalverbands
+                                        Großraum Braunschweig ist dort ein Haltepunkt der geplanten Regio-Bahn vorgesehen, der gemäß den
+                                        aktuellen Planungen der Deutschen Bahn voraussichtlich im Jahr <strong>2028/29</strong> umgesetzt werden soll.
+                                    </p>
+                                    <p>
+                                        In unmittelbarer Nähe zum künftigen Bahnhaltepunkt ist ein Park+Ride sowie ein
+                                        Bike+Ride-Platz geplant. Zur Anbindung des Baugebietes werden im Zuge des Umbaus der
+                                        B79 und der Erstellung eines „ÖPNV-Knotenpunktes“ eine Bushaltebucht auf der Westseite
+                                        und eine Bushaltestelle auf der Ostseite gebaut. Ergänzend dazu entsteht eine Querungshilfe.
+                                    </p>
+                                </div>
+                            </div>
+
                             <ZoomableImage
                                 src="/images/bebauungsvorschlag-leiziger-allee.jpg"
                                 alt="Bebauungsvorschlag Leipziger Allee - Neubaugebiet Wendessen"

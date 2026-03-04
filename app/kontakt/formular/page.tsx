@@ -57,7 +57,7 @@ export default function KontaktformularPage() {
 
                     {/* Contact Form */}
                     <div className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl mb-12">
-                        <form className="space-y-8">
+                        <form action="/api/contact" method="POST" className="space-y-8">
                             {/* Personal Information */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
