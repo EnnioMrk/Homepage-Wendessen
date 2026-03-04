@@ -10,6 +10,11 @@
 export function isMinioUrl(url: string | null | undefined): boolean {
     if (!url) return false;
 
+    //if node env is not development return
+    if(process.env.NODE_ENV !== 'development') {
+        return false;
+    }
+
     const parsed = parseHttpUrl(url);
     if (!parsed) return false;
 
