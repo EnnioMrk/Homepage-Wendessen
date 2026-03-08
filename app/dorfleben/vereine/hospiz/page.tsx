@@ -5,6 +5,8 @@ import {
     FirstAid,
     Flower,
     ShieldCheck,
+    UsersThree,
+    Plus,
 } from "@phosphor-icons/react/dist/ssr";
 import PageHeader from "@/app/components/layout/PageHeader";
 import OrganizationContacts from "@/app/components/OrganizationContacts";
@@ -176,6 +178,88 @@ export default async function HospizPage() {
                                     Das „Hospiz im Gutspark“ bietet stationäre
                                     Plätze unter der Trägerschaft des Vereins.
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Membership Information */}
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                            Mitgliedschaft & Unterstützung
+                        </h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-green-600 to-teal-600 mx-auto mb-6"></div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg">
+                            <h3 className="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                                <UsersThree className="w-8 h-8 mr-3" />
+                                Jahresbeiträge
+                            </h3>
+
+                            <div className="space-y-4">
+                                <div className="bg-white p-4 rounded-xl border border-green-200">
+                                    <div className="flex justify-between items-center gap-4">
+                                        <span className="font-semibold text-green-800">
+                                            Einzelpersonen
+                                        </span>
+                                        <span className="text-2xl font-bold text-green-700 whitespace-nowrap">
+                                            40 €
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-xl border border-green-200">
+                                    <div className="flex justify-between items-center gap-4">
+                                        <span className="font-semibold text-green-800">
+                                            Paare
+                                        </span>
+                                        <span className="text-2xl font-bold text-green-700 whitespace-nowrap">
+                                            60 €
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <a
+                                    href="/pdfs/hospizverein-beitrittserklaerung.pdf"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+                                >
+                                    <Plus className="w-5 h-5 mr-2" />
+                                    Beitrittsformular
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-8 rounded-3xl shadow-lg">
+                            <h3 className="text-2xl font-bold text-teal-700 mb-6 flex items-center">
+                                <Heart className="w-8 h-8 mr-3" />
+                                Spenden
+                            </h3>
+
+                            <p className="text-gray-700 mb-6">
+                                Sie möchten uns gern finanziell unterstützen?
+                                Dann freuen wir uns sehr über Ihre Spende.
+                            </p>
+
+                            <div className="bg-white p-6 rounded-xl border border-teal-200">
+                                <h4 className="font-semibold text-teal-800 mb-3">
+                                    Bankverbindung:
+                                </h4>
+                                <div className="space-y-2 text-gray-700">
+                                    <p>
+                                        <strong>
+                                            Hospizverein Wolfenbüttel e.V.
+                                        </strong>
+                                    </p>
+                                    <p className="font-mono text-sm bg-teal-50 p-2 rounded">
+                                        IBAN: DE 16 2505 0000 0151 8233 33
+                                    </p>
+                                    <p>Braunschweigische Landessparkasse</p>
+                                </div>
                             </div>
                         </div>
                     </div>

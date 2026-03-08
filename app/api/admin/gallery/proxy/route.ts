@@ -38,6 +38,10 @@ function getAllowedHosts(): Set<string> {
 
 export async function GET(request: NextRequest) {
     try {
+        if (process.env.NEXT_PHASE === 'phase-production-build') {
+            return new NextResponse('Prerender Skip', { status: 200 });
+        }
+
         await requirePermission('gallery.view');
 
         const rawUrl = request.nextUrl.searchParams.get('url');
