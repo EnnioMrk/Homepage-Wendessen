@@ -67,7 +67,7 @@ export default async function HospizPage() {
                             </p>
                             <p>
                                 Derzeit hat der Verein{" "}
-                                <strong>750 Mitglieder</strong>. Davon
+                                <strong>780 Mitglieder</strong>. Davon
                                 engagieren sich etwa 10 Prozent ehrenamtlich.
                             </p>
 
@@ -83,12 +83,13 @@ export default async function HospizPage() {
                             </div>
 
                             <p>
-                                Sie ist daher angewiesen auf Geldspenden und nur
-                                realisierbar durch Zeitspenden vieler
-                                Ehrenamtlicher. In Wolfenbüttel erfährt die
-                                Hospizarbeit vielfältige Unterstützung durch
-                                Stiftungen und Unternehmen, Verbände und Vereine
-                                sowie zahlreiche Bürgerinnen und Bürger.
+                                Hospizarbeit ist daher angewiesen auf
+                                Geldspenden und nur realisierbar durch
+                                Zeitspenden vieler Ehrenamtlicher. In
+                                Wolfenbüttel erfährt die Hospizarbeit
+                                vielfältige Unterstützung durch Stiftungen und
+                                Unternehmen, Verbände und Vereine sowie
+                                zahlreiche Bürgerinnen und Bürger.
                             </p>
                         </div>
                     </div>
@@ -97,7 +98,7 @@ export default async function HospizPage() {
                     <div className="mb-16">
                         <div className="text-center mb-12">
                             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                                Ursere Leistungen
+                                Unsere Leistungen
                             </h2>
                             <div className="w-24 h-1 bg-gradient-to-r from-teal-600 to-green-600 mx-auto mb-6"></div>
                             <p className="text-lg text-gray-600">

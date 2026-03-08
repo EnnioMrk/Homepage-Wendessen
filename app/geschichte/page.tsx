@@ -369,12 +369,18 @@ export default function GeschichtePage() {
                     {/* Closing Statement */}
                     <div className="text-center bg-gradient-to-r from-amber-50 to-orange-50 rounded-4xl p-12 shadow-2xl">
                         <div className="max-w-4xl mx-auto">
+                            <ZoomableImage
+                                src="/images/850-jahre-geschichte.jpg"
+                                alt="Historische Aufnahme zu 850 Jahren Wendessen"
+                                caption="850 Jahre Geschichte Wendessens"
+                                className="mb-10"
+                            />
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-800 leading-tight mb-6">
                                 Über 850 Jahre lebendige Geschichte
                             </h1>
                             <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-8">
                                 Von Winedissen zu Wendessen - unser Dorf hat
-                                Kriesen und Kriege überstanden, sich gewandelt
+                                Krisen und Kriege überstanden, sich gewandelt
                                 und ist gewachsen. Heute blicken wir stolz auf
                                 über 850 Jahre Geschichte zurück und schauen
                                 optimistisch in die Zukunft.
