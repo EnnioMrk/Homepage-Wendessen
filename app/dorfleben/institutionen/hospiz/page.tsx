@@ -169,19 +169,18 @@ export default function HospizInstitutionPage() {
                     <div className="mt-16 sm:mt-24 md:mt-32">
                         <div className="text-center mb-12 md:mb-20">
                             <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-                                Ihre Ansprechpartner
+                                Ihr Ansprechpartner
                             </h2>
                             <div className="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
                             <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zum Hospiz im Gutspark oder
-                                möchten Sie uns kennenlernen? Unsere
-                                Ansprechpartner sind gerne für Sie da.
+                                Haben Sie Fragen zum &quot;Hospiz im Gutspark&quot; oder
+                                möchten Sie uns kennenlernen? Wir sind gerne für Sie da.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
                             <OrganizationContacts
-                                organization="hospiz-institution-wolfenbuettel"
+                                organization="hospiz-institution-wendessen"
                                 colorClassName="text-red-600"
                             />
                         </div>
