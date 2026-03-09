@@ -234,7 +234,7 @@ export default async function SeniorenkreisPage() {
 
                         <div className="max-w-md mx-auto px-4">
                             <OrganizationContacts
-                                organization="Seniorenkreis Wendessen"
+                                organizationId="seniorenkreis-wendessen"
                                 colorClassName="text-emerald-600"
                             />
                         </div>

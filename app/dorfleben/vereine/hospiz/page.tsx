@@ -277,7 +277,7 @@ export default async function HospizPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         <OrganizationContacts
-                            organization="Hospizverein Wolfenbüttel"
+                            organizationId="hospizverein-wolfenbuettel-ev"
                             colorClassName="text-green-600"
                         />
                     </div>

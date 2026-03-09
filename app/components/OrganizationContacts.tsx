@@ -1,11 +1,14 @@
 import React from 'react';
-import { getContactsByOrganization } from '@/lib/database/contacts';
+import { getContactsByOrganizationId } from '@/lib/database/contacts';
 import { getOrganizationById } from '@/lib/database/organizations';
+import {
+    getFallbackOrganizationById,
+    getOrganizationLookupValues,
+} from '@/lib/constants/organization-contact-lookup';
 import ContactCard from './ContactCard';
 
 interface OrganizationContactsProps {
-    organization?: string;
-    organizationSlug?: string;
+    organizationId: string;
     /**
      * Optional className to override text colors or other styles in the cards.
      */
@@ -21,23 +24,23 @@ interface OrganizationContactsProps {
  * Contacts are ordered by importance (desc) then name (asc).
  */
 export default async function OrganizationContacts({
-    organization,
-    organizationSlug,
+    organizationId,
     colorClassName,
     limit,
 }: OrganizationContactsProps) {
-    let organizationName = organization;
+    const organization =
+        (await getOrganizationById(organizationId)) ??
+        getFallbackOrganizationById(organizationId);
 
-    if (!organizationName && organizationSlug) {
-        const org = await getOrganizationById(organizationSlug);
-        organizationName = org?.title;
-    }
-
-    if (!organizationName) {
+    if (!organization) {
         return null;
     }
 
-    const contacts = await getContactsByOrganization(organizationName);
+    const organizationMatchers = getOrganizationLookupValues(organization)
+        .filter((value): value is string => Boolean(value?.trim()))
+        .map((value) => value.trim().toLowerCase());
+
+    const contacts = await getContactsByOrganizationId(organizationId);
 
     if (contacts.length === 0) {
         return null;
@@ -50,7 +53,9 @@ export default async function OrganizationContacts({
             {displayContacts.map((contact) => {
                 // Find the specific role for this organization
                 const affiliation = contact.affiliations.find((a) =>
-                    a.org.toLowerCase().includes(organizationName.toLowerCase())
+                    organizationMatchers.some((matcher) =>
+                        a.org.toLowerCase().includes(matcher)
+                    )
                 );
 
                 // If the user is affiliated with multiple similar org names,

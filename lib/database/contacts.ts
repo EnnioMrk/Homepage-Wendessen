@@ -1,6 +1,11 @@
 import { cacheTag } from 'next/cache';
 import { sql } from '../sql';
 import { normalizeLegacyImportance } from '@/lib/constants/contact-priorities';
+import {
+    getFallbackOrganizationById,
+    getOrganizationLookupValues,
+} from '@/lib/constants/organization-contact-lookup';
+import { getOrganizationById } from './organizations';
 
 export interface ContactRecord {
     id: number;
@@ -80,6 +85,43 @@ export async function getContactsByOrganization(organization: string): Promise<C
     } catch (error) {
         console.error(`Error fetching contacts for organization ${organization}:`, error);
         throw new Error('Failed to fetch contacts by organization');
+    }
+}
+
+export async function getContactsByOrganizationId(
+    organizationId: string
+): Promise<ContactListItem[]> {
+    'use cache';
+    cacheTag('contacts', 'organizations', `organization-id-${organizationId.toLowerCase()}`);
+
+    const organization =
+        (await getOrganizationById(organizationId)) ??
+        getFallbackOrganizationById(organizationId);
+
+    if (!organization) {
+        return [];
+    }
+
+    const lookupPatterns = getOrganizationLookupValues(organization)
+        .filter((value): value is string => Boolean(value?.trim()))
+        .map((value) => `%${value.trim().toLowerCase()}%`);
+
+    try {
+        const result = await sql`
+            SELECT * FROM contacts
+            WHERE EXISTS (
+                SELECT 1 FROM jsonb_array_elements(affiliations) a
+                WHERE LOWER(a->>'org') LIKE ANY(${lookupPatterns}::text[])
+            )
+            ORDER BY importance DESC, name ASC;
+        `;
+        return result.map(convertToContactItem);
+    } catch (error) {
+        console.error(
+            `Error fetching contacts for organization ID ${organizationId}:`,
+            error
+        );
+        throw new Error('Failed to fetch contacts by organization ID');
     }
 }
 

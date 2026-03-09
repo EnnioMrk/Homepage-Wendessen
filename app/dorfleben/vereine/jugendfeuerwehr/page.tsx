@@ -280,7 +280,7 @@ export default async function JugendfeuerwehrPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
-                            <OrganizationContacts organization="Jugendfeuerwehr Wendessen" />
+                            <OrganizationContacts organizationId="jugendfeuerwehr-wendessen" />
                         </div>
                     </div>
 

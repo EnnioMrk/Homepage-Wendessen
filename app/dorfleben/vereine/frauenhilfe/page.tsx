@@ -261,7 +261,7 @@ export default function FrauenhilfePage() {
 
                         <div className="max-w-md mx-auto px-4">
                             <OrganizationContacts
-                                organization="Frauenhilfe"
+                                organizationId="frauenhilfe-wendessen"
                                 colorClassName="text-pink-600"
                             />
                         </div>
