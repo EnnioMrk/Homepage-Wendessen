@@ -278,7 +278,7 @@ export default async function SchuetzenvereinsPage() {
                         </div>
                         <div className="w-full md:w-auto min-w-[300px]">
                             <OrganizationContacts
-                                organization="Schützenverein Wendessen e.V."
+                                organizationId="schutzenverein-wendessen-ev"
                                 colorClassName="text-red-600"
                             />
                         </div>

@@ -180,7 +180,7 @@ export default function HospizInstitutionPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
                             <OrganizationContacts
-                                organization="hospiz-institution-wendessen"
+                                organizationId="hospiz-institution-wendessen"
                                 colorClassName="text-red-600"
                             />
                         </div>

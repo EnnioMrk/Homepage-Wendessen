@@ -8,7 +8,7 @@ import {
     Globe,
 } from "@phosphor-icons/react/dist/ssr";
 import PageHeader from "@/app/components/layout/PageHeader";
-import ContactCardFetcher from "@/app/components/ContactCardFetcher";
+import OrganizationContacts from "@/app/components/OrganizationContacts";
 
 export const metadata = {
     title: "Freiwillige Feuerwehr Wendessen - Vereine",
@@ -294,14 +294,9 @@ export default async function FeuerwehrPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
-                            <ContactCardFetcher
-                                name="Kai Brackmann"
-                                fallbackRole="Ortsbrandmeister"
-                            />
-                            <ContactCardFetcher
-                                name="Jessica Schulz"
-                                fallbackRole="stellv. Ortsbrandmeisterin"
-                                colorClassName="text-orange-600"
+                            <OrganizationContacts
+                                organizationId="freiwillige-feuerwehr-wendessen"
+                                colorClassName="text-red-600"
                             />
                         </div>
                     </div>

@@ -328,7 +328,7 @@ export default async function SchuetzenvereinsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         <OrganizationContacts
-                            organization="Schützenverein"
+                            organizationId="schutzenverein-wendessen-ev"
                             colorClassName="text-red-600"
                         />
                     </div>

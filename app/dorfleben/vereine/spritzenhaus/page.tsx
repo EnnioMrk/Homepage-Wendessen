@@ -233,7 +233,7 @@ export default async function SpritzenhausPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-5xl mx-auto px-4">
                             <OrganizationContacts
-                                organization="Initiative Wendesser Spritzenhaus e.V."
+                                organizationId="initiative-wendesser-spritzenhaus-ev"
                                 colorClassName="text-amber-600"
                             />
                         </div>

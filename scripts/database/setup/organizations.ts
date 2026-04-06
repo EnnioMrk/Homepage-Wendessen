@@ -57,6 +57,12 @@ const SEED_ORGANIZATIONS = [
         description: null
     },
     {
+        id: "hospiz-institution-wendessen",
+        title: "Hospiz Wendessen",
+        alt_title: "Hospiz",
+        description: null
+    },
+    {
         id: "kirchbauverein-wendessen",
         title: "Kirchbauverein Wendessen",
         alt_title: "Kirchbauverein",
@@ -72,6 +78,12 @@ const SEED_ORGANIZATIONS = [
         id: "frauenhilfe-wendessen",
         title: "Frauenhilfe Wendessen",
         alt_title: "Frauenhilfe",
+        description: null
+    },
+    {
+        id: "idw",
+        title: "Initiative Dorfgemeinschaft Wendessen e.V",
+        alt_title: "IDW",
         description: null
     }
 ];

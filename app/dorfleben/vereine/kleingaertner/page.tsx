@@ -243,7 +243,7 @@ export default async function KleingaertnerPage() {
 
                         <div className="max-w-xl mx-auto px-4">
                             <OrganizationContacts
-                                organization="Kleingärtnerverein Wendessen"
+                                organizationId="kleingartnerverein-wendessen"
                                 colorClassName="text-green-600"
                             />
                         </div>

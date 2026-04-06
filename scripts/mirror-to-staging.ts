@@ -1,15 +1,16 @@
 #!/usr/bin/env bun
 /**
- * Mirror Database to Test Database
+ * Mirror Production Database to Staging Database
  *
  * This script copies all tables and data from the production database
- * to a test database. It's useful for testing with real data without
- * affecting the production environment.
+ * to the staging database.
  *
  * Usage:
- *   bun run mirror-to-test-db
+ *   bun run mirror-to-staging
  *
- * Requires .env file with DATABASE_URL and TEST_DATABASE_URL
+ * Requires .env file with PROD_DATABASE_URL and DATABASE_URL.
+ * The source database must be named "prod" and the target database
+ * must be named "staging" or the script will abort.
  */
 
 import Pg from 'pg';
@@ -37,27 +38,54 @@ if (fs.existsSync(envPath)) {
 
 const { Pool } = Pg;
 
+function getDatabaseName(connectionString: string): string | null {
+    try {
+        const url = new URL(connectionString);
+        const pathname = url.pathname.replace(/^\//, '');
+        return pathname ? decodeURIComponent(pathname) : null;
+    } catch {
+        return null;
+    }
+}
+
 // Validate environment variables
-const SOURCE_DATABASE_URL = process.env.DATABASE_URL;
-const TARGET_DATABASE_URL = process.env.TEST_DATABASE_URL;
+const SOURCE_DATABASE_URL = process.env.PROD_DATABASE_URL;
+const TARGET_DATABASE_URL = process.env.DATABASE_URL;
 
 if (!SOURCE_DATABASE_URL) {
     console.error(
-        '❌ DATABASE_URL environment variable is required (source database)'
+        '❌ PROD_DATABASE_URL environment variable is required (source production database)'
     );
     process.exit(1);
 }
 
 if (!TARGET_DATABASE_URL) {
     console.error(
-        '❌ TEST_DATABASE_URL environment variable is required (target test database)'
+        '❌ DATABASE_URL environment variable is required (target staging database)'
     );
     process.exit(1);
 }
 
 // Safety check: don't allow mirroring to the same database
 if (SOURCE_DATABASE_URL === TARGET_DATABASE_URL) {
-    console.error('❌ SOURCE and TARGET database URLs cannot be the same!');
+    console.error('❌ Source and target database URLs cannot be the same!');
+    process.exit(1);
+}
+
+const sourceDatabaseName = getDatabaseName(SOURCE_DATABASE_URL);
+const targetDatabaseName = getDatabaseName(TARGET_DATABASE_URL);
+
+if (sourceDatabaseName !== 'prod') {
+    console.error(
+        `❌ PROD_DATABASE_URL must point to a database named "prod". Found: ${sourceDatabaseName ?? 'unknown'}`
+    );
+    process.exit(1);
+}
+
+if (targetDatabaseName !== 'staging') {
+    console.error(
+        `❌ DATABASE_URL must point to a database named "staging". Found: ${targetDatabaseName ?? 'unknown'}`
+    );
     process.exit(1);
 }
 
@@ -338,13 +366,13 @@ async function resetSequences(
 }
 
 async function mirrorDatabase() {
-    console.log('🔄 Starting database mirror to test database...\n');
+    console.log('🔄 Starting database mirror from prod to staging...\n');
 
     try {
         // Get existing tables from source
         const sourceTables = await getExistingTables(sourcePool);
         console.log(
-            `📊 Found ${sourceTables.length} tables in source database:`
+            `📊 Found ${sourceTables.length} tables in production database:`
         );
         console.log(`   ${sourceTables.join(', ')}\n`);
 
@@ -355,7 +383,7 @@ async function mirrorDatabase() {
         ];
 
         // Step 1: Drop existing tables in target (reverse order for foreign keys)
-        console.log('🗑️  Dropping existing tables in test database...');
+        console.log('🗑️  Dropping existing tables in staging database...');
         for (const tableName of [...orderedTables].reverse()) {
             try {
                 await targetPool.query(
@@ -372,7 +400,7 @@ async function mirrorDatabase() {
         console.log('');
 
         // Step 2: Create tables in target
-        console.log('📝 Creating tables in test database...');
+        console.log('📝 Creating tables in staging database...');
         for (const tableName of orderedTables) {
             try {
                 const schema = await getTableSchema(sourcePool, tableName);
@@ -388,7 +416,7 @@ async function mirrorDatabase() {
         console.log('');
 
         // Step 3: Copy data
-        console.log('📦 Copying data to test database...');
+        console.log('📦 Copying data to staging database...');
         for (const tableName of orderedTables) {
             try {
                 const count = await copyTableData(
@@ -450,7 +478,7 @@ async function mirrorDatabase() {
         console.log('   ✓ Sequences reset\n');
 
         // Verify the migration
-        console.log('✅ Verifying migration...');
+        console.log('✅ Verifying mirror...');
         for (const tableName of orderedTables) {
             const sourceCount = await sourcePool.query(
                 `SELECT COUNT(*) as count FROM "${tableName}"`
@@ -470,7 +498,7 @@ async function mirrorDatabase() {
             }
         }
 
-        console.log('\n🎉 Database mirror completed successfully!');
+        console.log('\n🎉 Production database successfully mirrored to staging!');
     } catch (error) {
         console.error('\n❌ Error during database mirror:', error);
         process.exit(1);
