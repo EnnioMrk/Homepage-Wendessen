@@ -27,7 +27,6 @@ export default async function KirchbauvereinsPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
             <PageHeader
                 title="Kirchbauverein St. Georg Wendessen e.V."
-                icon={<Church />}
                 backgroundImage="/images/Vereinsleben/kirche.webp"
                 color="blue"
             />

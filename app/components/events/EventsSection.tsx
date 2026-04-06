@@ -50,20 +50,36 @@ export default async function EventsSection() {
                     const startDate = event.start
                         ? new Date(event.start)
                         : null;
+                    const endDate = event.end ? new Date(event.end) : null;
+
+                    let timeDisplay = "";
+                    if (startDate) {
+                        timeDisplay = startDate.toLocaleTimeString("de-DE", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        });
+
+                        if (endDate) {
+                            const endTime = endDate.toLocaleTimeString(
+                                "de-DE",
+                                {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                }
+                            );
+                            if (endTime !== timeDisplay) {
+                                timeDisplay += ` - ${endTime}`;
+                            }
+                        }
+                    }
+
                     return (
                         <EventCard
                             key={event.id}
                             id={event.id}
                             title={event.title}
                             location={event.location || "Wendessen"}
-                            time={
-                                startDate
-                                    ? startDate.toLocaleTimeString("de-DE", {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                      })
-                                    : ""
-                            }
+                            time={timeDisplay}
                             date={
                                 startDate
                                     ? startDate.toLocaleDateString("de-DE", {
