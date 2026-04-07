@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { List, X } from "@phosphor-icons/react/dist/ssr";
 import { useAdminAuth } from "@/lib/useAdminAuth";
@@ -83,6 +83,17 @@ function renderNavTree(
 export default function MobileNavbar() {
     const [open, setOpen] = useState(false);
     const { isAuthenticated } = useAdminAuth();
+
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [open]);
 
     return (
         <div className="lg:hidden">

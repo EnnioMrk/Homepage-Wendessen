@@ -38,7 +38,7 @@ export default function GeschichtePage() {
 
                     {/* Name Evolution */}
                     <div className="mb-20">
-                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-4xl p-10 shadow-2xl border-l-8 border-amber-500">
+                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-4xl p-4 shadow-2xl border-l-8 border-amber-500">
                             <div className="text-center mb-12">
                                 <h3 className="text-4xl font-bold text-amber-800 mb-4">
                                     Die Entwicklung des Ortsnamens
@@ -46,7 +46,7 @@ export default function GeschichtePage() {
                                 <div className="w-24 h-1 bg-amber-600 mx-auto mb-6"></div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
                                 <div className="bg-white p-6 rounded-2xl shadow-lg text-center">
                                     <div className="text-3xl font-bold text-amber-700 mb-2">
                                         Winedissen
@@ -261,7 +261,7 @@ export default function GeschichtePage() {
                                         <div className="bg-blue-100 p-3 rounded-lg">
                                             <p className="text-blue-800">
                                                 <strong>Heute:</strong> Bebauung
-                                                des Geländes mitEin- und
+                                                des Geländes mit Ein- und
                                                 Mehrfamilienhäusern geplant,
                                                 Wiederinbetriebnahme des
                                                 Bahnhaltepunktes vorgesehen.
@@ -305,8 +305,8 @@ export default function GeschichtePage() {
                     {/* Population Development */}
                     <div className="mb-20">
                         <div className="text-center mb-16">
-                            <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
-                                Bevölkerungsentwicklung
+                            <h3 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 hyphens-manual">
+                                Bevölkerungs&shy;entwicklung
                             </h3>
                             <div className="w-32 h-2 bg-gradient-to-r from-teal-600 to-cyan-600 mx-auto mb-8"></div>
                             <p className="text-base sm:text-lg text-gray-600">
@@ -367,7 +367,7 @@ export default function GeschichtePage() {
                     </div>
 
                     {/* Closing Statement */}
-                    <div className="text-center bg-gradient-to-r from-amber-50 to-orange-50 rounded-4xl p-12 shadow-2xl">
+                    <div className="text-center bg-gradient-to-r from-amber-50 to-orange-50 rounded-4xl p-8 shadow-2xl">
                         <div className="max-w-4xl mx-auto">
                             <ZoomableImage
                                 src="/images/850-jahre-geschichte.jpg"
@@ -378,14 +378,14 @@ export default function GeschichtePage() {
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-800 leading-tight mb-6">
                                 Über 850 Jahre lebendige Geschichte
                             </h1>
-                            <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-8">
+                            <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-8 px-4">
                                 Von Winedissen zu Wendessen - unser Dorf hat
                                 Krisen und Kriege überstanden, sich gewandelt
                                 und ist gewachsen. Heute blicken wir stolz auf
                                 über 850 Jahre Geschichte zurück und schauen
                                 optimistisch in die Zukunft.
                             </p>
-                            <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-8">
+                            <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-8 px-4">
                                 <div className="flex items-center space-x-2 text-amber-600">
                                     <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
                                     <span className="text-lg sm:text-xl md:text-2xl font-bold text-center sm:text-left">
@@ -404,7 +404,7 @@ export default function GeschichtePage() {
                                 />
                             </div>
 
-                            <div className="max-w-3xl mx-auto text-center mb-12 space-y-4">
+                            <div className="max-w-3xl mx-auto text-center mb-12 space-y-4 px-4">
                                 <p className="text-base sm:text-lg text-gray-700 leading-relaxed italic">
                                     Der Name Wendessen bedeutet „Heim im
                                     Weidezaun“. Er wird im Wappen durch den
@@ -420,7 +420,7 @@ export default function GeschichtePage() {
                                 </p>
                             </div>
 
-                            <div className="bg-white p-6 rounded-2xl shadow-lg mt-8">
+                            <div className="bg-white p-3 sm:p-6 rounded-2xl shadow-lg mt-8">
                                 <p className="text-base sm:text-lg text-gray-600">
                                     <strong className="text-amber-700">
                                         Ortsheimatpfleger:
