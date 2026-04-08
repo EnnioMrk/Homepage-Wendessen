@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../../lib/permissions';
+import dns from 'dns';
+import net from 'net';
 
 function resolveHost(endpoint?: string): string | null {
     if (!endpoint) return null;
@@ -36,6 +38,54 @@ function getAllowedHosts(): Set<string> {
     return hosts;
 }
 
+function isIpPrivateOrLoopback(ip: string): boolean {
+    if (!net.isIP(ip)) return false;
+
+    // IPv4 checks
+    if (net.isIPv4(ip)) {
+        const octets = ip.split('.').map(Number);
+        const [a, b] = octets;
+
+        // 10.0.0.0/8
+        if (a === 10) return true;
+        // 172.16.0.0/12
+        if (a === 172 && b >= 16 && b <= 31) return true;
+        // 192.168.0.0/16
+        if (a === 192 && b === 168) return true;
+        // 127.0.0.0/8 loopback
+        if (a === 127) return true;
+        // 169.254.0.0/16 link-local
+        if (a === 169 && b === 254) return true;
+    }
+
+    // IPv6 private/link-local/loopback ranges
+    const ipv6 = ip.toLowerCase();
+    if (ipv6 === '::1') return true; // loopback
+    if (ipv6.startsWith('fc') || ipv6.startsWith('fd')) return true; // unique local
+    if (ipv6.startsWith('fe80:')) return true; // link-local
+
+    return false;
+}
+
+async function ensureSafeHost(
+    targetUrl: URL,
+    allowedHosts: Set<string>,
+): Promise<void> {
+    const hostname = targetUrl.hostname.toLowerCase();
+
+    if (allowedHosts.size > 0 && !allowedHosts.has(hostname)) {
+        throw new Error('Host not allowed');
+    }
+
+    // Resolve hostname to IP and ensure it is not private/loopback
+    const addresses = await dns.promises.lookup(hostname, { all: true });
+    for (const addr of addresses) {
+        if (isIpPrivateOrLoopback(addr.address)) {
+            throw new Error('Host not allowed');
+        }
+    }
+}
+
 export async function GET(request: NextRequest) {
     try {
         if (process.env.NEXT_PHASE === 'phase-production-build') {
@@ -67,19 +117,59 @@ export async function GET(request: NextRequest) {
         }
 
         const allowedHosts = getAllowedHosts();
-        if (
-            allowedHosts.size > 0 &&
-            !allowedHosts.has(targetUrl.hostname.toLowerCase())
-        ) {
+
+        try {
+            await ensureSafeHost(targetUrl, allowedHosts);
+        } catch {
             return NextResponse.json(
                 { error: 'Host not allowed' },
                 { status: 403 },
             );
         }
 
-        const upstreamResponse = await fetch(targetUrl.toString(), {
+        // Build a safe base URL using one of the allowed hosts or MINIO endpoint.
+        let baseOrigin: string | null = null;
+        if (process.env.MINIO_ENDPOINT) {
+            try {
+                const envUrl = new URL(process.env.MINIO_ENDPOINT);
+                baseOrigin = envUrl.origin;
+            } catch {
+                // ignore invalid MINIO_ENDPOINT, will fall back to allowedHosts
+            }
+        }
+
+        if (!baseOrigin && allowedHosts.size > 0) {
+            const firstAllowedHost = Array.from(allowedHosts)[0];
+            const protocol =
+                targetUrl.protocol === 'https:' ? 'https:' : 'http:';
+            baseOrigin = `${protocol}//${firstAllowedHost}`;
+        }
+
+        if (!baseOrigin) {
+            return NextResponse.json(
+                { error: 'No configured upstream host' },
+                { status: 500 },
+            );
+        }
+
+        const baseUrl = new URL(baseOrigin);
+        const finalUrl = new URL(
+            targetUrl.pathname + targetUrl.search + targetUrl.hash,
+            baseUrl,
+        );
+
+        try {
+            await ensureSafeHost(finalUrl, allowedHosts);
+        } catch {
+            return NextResponse.json(
+                { error: 'Host not allowed' },
+                { status: 403 },
+            );
+        }
+
+        const upstreamResponse = await fetch(finalUrl.toString(), {
             method: 'GET',
-            redirect: 'follow',
+            redirect: 'manual',
             cache: 'no-store',
         });
 
