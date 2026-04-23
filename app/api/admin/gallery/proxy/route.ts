@@ -174,8 +174,17 @@ export async function GET(request: NextRequest) {
         });
 
         if (!upstreamResponse.ok) {
+            console.error('Upstream image request failed:', {
+                status: upstreamResponse.status,
+                url: finalUrl.toString(),
+                statusText: upstreamResponse.statusText,
+            });
             return NextResponse.json(
-                { error: 'Upstream image request failed' },
+                {
+                    error: 'Upstream image request failed',
+                    status: upstreamResponse.status,
+                    url: finalUrl.toString(),
+                },
                 { status: upstreamResponse.status },
             );
         }

@@ -2,45 +2,24 @@ import EventCard from "./EventCard";
 import { getUpcomingEvents, CalendarEvent } from "@/lib/database";
 
 export default async function EventsSection() {
-    let events: CalendarEvent[];
+    let events: CalendarEvent[] = [];
+    let hasError = false;
     try {
         events = await getUpcomingEvents(3); // Get next 3 upcoming events
     } catch (error) {
         console.error("Error fetching events:", error);
+        hasError = true;
+    }
 
-        // Fallback to hardcoded events if database fails
-        events = [
-            {
-                id: "fallback-1",
-                title: "Ortsratssitzung",
-                location: "Dorfgemeinschaftshaus",
-                start: new Date("2025-10-15T19:00:00Z"),
-                end: new Date("2025-10-15T21:00:00Z"),
-                imageUrl: "/images/wendessen-luftaufnahme.jpg",
-                isCancelled: false,
-                category: "sitzung",
-            },
-            {
-                id: "fallback-2",
-                title: "Herbstfest",
-                location: "Dorfplatz",
-                start: new Date("2025-10-25T14:00:00Z"),
-                end: new Date("2025-10-25T18:00:00Z"),
-                imageUrl: "/images/banner.jpg",
-                isCancelled: false,
-                category: "veranstaltung",
-            },
-            {
-                id: "fallback-3",
-                title: "Bücherbus",
-                location: "Bushaltestelle Dorfmitte",
-                start: new Date("2025-10-30T15:00:00Z"),
-                end: new Date("2025-10-30T16:30:00Z"),
-                imageUrl: "/images/Features/spielplatz.jpg",
-                isCancelled: false,
-                category: "kultur",
-            },
-        ] as CalendarEvent[];
+    if (hasError) {
+        return (
+            <div className="mb-32 mt-auto">
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-5 text-red-800">
+                    Veranstaltungen konnten aktuell nicht geladen werden. Bitte
+                    versuchen Sie es später erneut.
+                </div>
+            </div>
+        );
     }
 
     return (
