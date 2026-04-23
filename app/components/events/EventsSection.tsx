@@ -1,6 +1,21 @@
 import EventCard from "./EventCard";
 import { getUpcomingEvents, CalendarEvent } from "@/lib/database";
 
+const GERMANY_TIME_ZONE = "Europe/Berlin";
+
+const timeFormatter = new Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: GERMANY_TIME_ZONE,
+});
+
+const dateFormatter = new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: GERMANY_TIME_ZONE,
+});
+
 export default async function EventsSection() {
     let events: CalendarEvent[] = [];
     let hasError = false;
@@ -33,19 +48,10 @@ export default async function EventsSection() {
 
                     let timeDisplay = "";
                     if (startDate) {
-                        timeDisplay = startDate.toLocaleTimeString("de-DE", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                        });
+                        timeDisplay = timeFormatter.format(startDate);
 
                         if (endDate) {
-                            const endTime = endDate.toLocaleTimeString(
-                                "de-DE",
-                                {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                }
-                            );
+                            const endTime = timeFormatter.format(endDate);
                             if (endTime !== timeDisplay) {
                                 timeDisplay += ` - ${endTime}`;
                             }
@@ -61,11 +67,7 @@ export default async function EventsSection() {
                             time={timeDisplay}
                             date={
                                 startDate
-                                    ? startDate.toLocaleDateString("de-DE", {
-                                          day: "2-digit",
-                                          month: "2-digit",
-                                          year: "numeric",
-                                      })
+                                    ? dateFormatter.format(startDate)
                                     : ""
                             }
                             imageSrc={event.imageUrl}
