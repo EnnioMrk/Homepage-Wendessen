@@ -143,10 +143,10 @@ export default async function SchuetzenvereinsPage() {
                                     <Clock className="w-8 h-8 text-white" />
                                 </div>
                                 <h4 className="text-xl font-bold text-emerald-700 mb-2">
-                                    Freitags
+                                    Sonntags
                                 </h4>
                                 <p className="text-emerald-600 text-lg font-semibold">
-                                    18:00 - 21:00 Uhr
+                                    Jugendtraining 10:00 - 13:00 Uhr
                                 </p>
                             </div>
                         </div>
@@ -304,11 +304,16 @@ export default async function SchuetzenvereinsPage() {
                                     Aktueller Hinweis:
                                 </h4>
                                 <p className="text-red-800">
-                                    Leider kann derzeit{" "}
-                                    <strong>
-                                        kein Training für Jugendliche
-                                    </strong>{" "}
-                                    angeboten werden.
+                                    Jugendtraining immer{" "}
+                                    <strong>sonntags von 10-13 Uhr</strong>.
+                                    <br />
+                                    Ab 10 Uhr{" "}
+                                    <strong>Laser</strong> für Kinder{" "}
+                                    <strong>6-12 Jahre</strong>.
+                                    <br />
+                                    Ab ca. 11 Uhr{" "}
+                                    <strong>Luftgewehr</strong> für Kinder und
+                                    Jugendliche <strong>12-18 Jahre</strong>.
                                 </p>
                             </div>
                         </div>
