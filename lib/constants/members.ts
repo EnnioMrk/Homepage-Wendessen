@@ -126,12 +126,13 @@ export const ORTSRAT_MEMBERS: TeamMember[] = [
             email: "rink@wendessen.de",
         },
     },
-    // Noch ohne Foto und Kontaktdaten. Nachreichen, sobald bekannt.
     {
         name: "Julian Stache",
         position: "Ortsratsmitglied",
         party: "AfD",
         role: "Ortsrat",
+        imageSrc: "/images/Ortsrat/julian-stache.png",
+        imageAlt: "Julian Stache - Ortsratsmitglied (Platzhalterbild)",
     },
 ];
 
