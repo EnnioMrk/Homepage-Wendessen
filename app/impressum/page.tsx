@@ -46,15 +46,15 @@ function LegalContent() {
                     <div>
                         <p>
                             <strong className="font-semibold">Name:</strong>{' '}
-                            Andreas M. Rink
+                            Christina Balder
                         </p>
                         <p>
                             <strong className="font-semibold">Position:</strong>{' '}
-                            Ortsbürgermeister / Vorsitzender
+                            Ortsbürgermeisterin
                         </p>
                         <p>
                             <strong className="font-semibold">Adresse:</strong>{' '}
-                            Am Gute 2 R, 38300 Wolfenbüttel - Wendessen
+                            Lindenblick 12, 38300 Wolfenbüttel - Wendessen
                         </p>
                     </div>
                     <div>
@@ -88,7 +88,7 @@ function LegalContent() {
                 <div className="pl-4 border-l-4 border-gray-200">
                     <p>
                         <strong className="font-semibold">Telefon:</strong>{' '}
-                        05331 - 7107733
+                        05331 - 859860
                     </p>
                     <p>
                         <strong className="font-semibold">
@@ -112,7 +112,7 @@ function LegalContent() {
                     Inhaltlich Verantwortlicher (gemäß § 10 Absatz 3 MDStV)
                 </h3>
                 <p className="pl-4 border-l-4 border-gray-200">
-                    Der Ortsrat Wendessen, vertreten durch Andreas M. Rink
+                    Der Ortsrat Wendessen, vertreten durch Christina Balder
                     (Adresse wie oben).
                 </p>
             </div>

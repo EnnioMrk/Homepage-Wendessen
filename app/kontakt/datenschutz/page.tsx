@@ -181,17 +181,17 @@ export default function DatenschutzPage() {
                                     Ortsrat Wendessen
                                 </div>
                                 <div className="space-y-1 text-gray-700">
-                                    <p>Andreas M. Rink (Ortsbürgermeister)</p>
-                                    <p>Am Gute 2 R</p>
+                                    <p>Christina Balder (Ortsbürgermeisterin)</p>
+                                    <p>Lindenblick 12</p>
                                     <p>38300 Wolfenbüttel - Wendessen</p>
                                     <div className="mt-3 space-y-1">
                                         <p>
                                             <strong>Telefon:</strong>{' '}
                                             <a
-                                                href="tel:053317107733"
+                                                href="tel:05331859860"
                                                 className="text-indigo-600 hover:text-indigo-800"
                                             >
-                                                05331 - 7107733
+                                                05331 - 859860
                                             </a>
                                         </p>
                                         <p>

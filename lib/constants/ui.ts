@@ -138,6 +138,7 @@ export const PARTY_GRADIENTS: Record<string, string> = {
     SPD: 'from-red-600 to-red-700',
     FDP: 'from-yellow-500 to-yellow-600',
     CDU: 'from-blue-600 to-blue-700',
+    AfD: 'from-sky-500 to-cyan-600',
     parteilos: 'from-gray-500 to-gray-600',
     "parteilos (aufgestellt für B'90)": 'from-green-600 to-green-700',
     'parteilos (aufgestellt für CDU)': 'from-blue-600 to-blue-700',

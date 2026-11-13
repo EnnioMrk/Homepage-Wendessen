@@ -5,7 +5,7 @@ import PageHeader from '@/app/components/layout/PageHeader';
 export const metadata = {
     title: 'Impressum - Wendessen',
     description:
-        'Impressum der offiziellen Website des Ortsteils Wendessen, vertreten durch Ortsbürgermeister Andreas M. Rink.',
+        'Impressum der offiziellen Website des Ortsteils Wendessen, vertreten durch Ortsbürgermeisterin Christina Balder.',
 };
 
 export default function ImpressumPage() {
@@ -38,25 +38,25 @@ export default function ImpressumPage() {
                                 </h3>
                                 <p className="text-gray-700 mb-4">
                                     Herausgeber dieses Webangebot ist der
-                                    Ortsrat Wendessen, vertreten durch den
-                                    Ortsbürgermeister:
+                                    Ortsrat Wendessen, vertreten durch die
+                                    Ortsbürgermeisterin:
                                 </p>
 
                                 <div className="bg-white p-4 rounded-xl shadow-sm">
                                     <div className="text-lg font-semibold text-gray-800 mb-2">
-                                        Andreas M. Rink
+                                        Christina Balder
                                     </div>
                                     <div className="space-y-1 text-gray-700">
-                                        <p>Am Gute 2 R</p>
+                                        <p>Lindenblick 12</p>
                                         <p>38300 Wolfenbüttel - Wendessen</p>
                                         <div className="mt-3 space-y-1">
                                             <p>
                                                 <strong>Telefon:</strong>{' '}
                                                 <a
-                                                    href="tel:053317107733"
+                                                    href="tel:05331859860"
                                                     className="text-blue-600 hover:text-blue-800"
                                                 >
-                                                    05331 - 7107733
+                                                    05331 - 859860
                                                 </a>
                                             </p>
                                             <p>
@@ -89,8 +89,8 @@ export default function ImpressumPage() {
                                 <p className="text-gray-700">
                                     Der Ortsteil Wolfenbüttel - Wendessen ist
                                     eine Körperschaft des Öffentlichen Rechts.
-                                    Sie wird vertreten durch den
-                                    Ortsbürgermeister Andreas M. Rink.
+                                    Sie wird vertreten durch die
+                                    Ortsbürgermeisterin Christina Balder.
                                 </p>
                             </div>
 
@@ -101,8 +101,8 @@ export default function ImpressumPage() {
                                 <p className="text-gray-700">
                                     Inhaltlich Verantwortlicher gemäß § 10
                                     Absatz 3 MDStV ist der Ortsrat, vertreten
-                                    durch den Ortsbürgermeister: Andreas M. Rink
-                                    (Anschrift wie oben)
+                                    durch die Ortsbürgermeisterin: Christina
+                                    Balder (Anschrift wie oben)
                                 </p>
                             </div>
                         </div>

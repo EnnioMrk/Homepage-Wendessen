@@ -20,11 +20,11 @@ export const contactData: ContactData[] = [
     {
         slug: "andreas-rink",
         name: "Andreas Rink",
-        title: "Ortsbürgermeister",
+        title: "Ortsratsmitglied",
         birthYear: 1956,
         profession: "Marketingberater",
         imageSrc: "/images/Ortsrat/andreas-rink.jpg",
-        imageAlt: "Andreas Rink - Ortsbürgermeister von Wendessen",
+        imageAlt: "Andreas Rink - Ortsratsmitglied",
         contactInfo: {
             address: "Am Gute 2R, 38300 Wendessen",
             phone: "05331/7107733",
@@ -35,31 +35,16 @@ export const contactData: ContactData[] = [
     {
         slug: "christina-balder",
         name: "Christina Balder",
-        title: "stellv. Ortsbürgermeisterin",
+        title: "Ortsbürgermeisterin",
         birthYear: 1984,
         profession: "Fraktionsgeschäftsführerin",
         imageSrc: "/images/Ortsrat/christina-balder.jpg",
-        imageAlt:
-            "Christina Balder - stellvertretende Ortsbürgermeisterin von Wendessen",
+        imageAlt: "Christina Balder - Ortsbürgermeisterin von Wendessen",
         contactInfo: {
             address: "Lindenblick 12, 38300 Wendessen",
             phone: "05331/859860",
             mobile: "0176/23589921",
             email: "christina.balder@fdp-wf.de",
-        },
-    },
-    {
-        slug: "renate-huebner",
-        name: "Renate Hübner",
-        title: "Ortsratsmitglied",
-        birthYear: 1955,
-        profession: "Geschäftsführende Gesellschafterin Ing.-Büro",
-        imageSrc: "/images/Ortsrat/renate-hubner.jpg",
-        imageAlt: "Renate Hübner - Ortsratsmitglied",
-        contactInfo: {
-            address: "Am Gute 2M, 38300 Wendessen",
-            mobile: "0173/2157758",
-            email: "renate.huebner@bub-umwelt.de",
         },
     },
     {
@@ -80,11 +65,11 @@ export const contactData: ContactData[] = [
     {
         slug: "reiner-asche",
         name: "Reiner Asche",
-        title: "Ortsratsmitglied",
+        title: "stellv. Ortsbürgermeister",
         birthYear: 1956,
         profession: "Beamter im Ruhestand",
         imageSrc: "/images/Ortsrat/reiner-asche.jpg",
-        imageAlt: "Reiner Asche - Ortsratsmitglied",
+        imageAlt: "Reiner Asche - stellvertretender Ortsbürgermeister",
         contactInfo: {
             address: "Vor den Wiesen 12, 38300 Wendessen",
             phone: "05331/9969400",

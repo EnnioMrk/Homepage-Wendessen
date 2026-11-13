@@ -532,10 +532,10 @@ export default function ContactDirectory({
                 <p className="mt-1">
                     Bei Änderungen oder Ergänzungen wenden Sie sich bitte an den{' '}
                     <Link
-                        href="/kontakt/andreas-rink"
+                        href="/kontakt/christina-balder"
                         className="text-emerald-600 hover:text-emerald-700 underline"
                     >
-                        Ortsbürgermeister
+                        Ortsbürgermeisterin
                     </Link>
                     .
                 </p>

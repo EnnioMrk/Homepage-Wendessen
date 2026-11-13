@@ -19,7 +19,7 @@ import PageHeader from "@/app/components/layout/PageHeader";
 export const metadata = {
     title: "Bürgermeister berichtet 2026 | Wendessen",
     description:
-        "Das passiert im Jahr 2026 in Wendessen – aktuelles Grußwort des Ortsbürgermeisters Andreas M. Rink.",
+        "Das passierte im Jahr 2026 in Wendessen – Grußwort des damaligen Ortsbürgermeisters Andreas M. Rink.",
 };
 
 export default function BuergermeisterBerichtetPage() {
@@ -52,7 +52,7 @@ export default function BuergermeisterBerichtetPage() {
                             <div className="w-32 h-32 md:w-40 md:h-40 relative overflow-hidden rounded-2xl shadow-lg ring-4 ring-primary/20">
                                 <Image
                                     src="/images/Ortsrat/andreas-rink.jpg"
-                                    alt="Andreas Rink - Ortsbürgermeister"
+                                    alt="Andreas Rink - ehemaliger Ortsbürgermeister"
                                     fill
                                     className="object-cover object-center"
                                 />
@@ -63,7 +63,7 @@ export default function BuergermeisterBerichtetPage() {
                                 Andreas M. Rink
                             </h2>
                             <p className="text-xl text-primary font-semibold mb-4">
-                                Ortsbürgermeister
+                                Ortsbürgermeister bis 2026
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 text-gray-600 justify-center md:justify-start">
                                 <div className="flex items-center space-x-2">
@@ -331,7 +331,7 @@ export default function BuergermeisterBerichtetPage() {
                                             Andreas M. Rink
                                         </p>
                                         <p className="text-primary font-medium">
-                                            Ortsbürgermeister
+                                            Ortsbürgermeister bis 2026
                                         </p>
                                     </div>
                                 </div>

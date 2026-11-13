@@ -59,7 +59,7 @@ export async function Footer() {
                             Datenschutz
                         </Link>
                         <Link
-                            href="/kontakt/andreas-rink"
+                            href="/kontakt/christina-balder"
                             className="text-foreground hover:text-gray-600 transition-colors"
                         >
                             Kontakt
