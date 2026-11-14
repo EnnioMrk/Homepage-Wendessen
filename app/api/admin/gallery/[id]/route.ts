@@ -4,6 +4,7 @@ import { deleteFromBlob } from '../../../../../lib/utils/blob-utils';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 // using shared `sql` helper imported above
 
@@ -64,6 +65,8 @@ export async function PUT(
 
         return NextResponse.json({ image: updatedImage });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error updating image:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
@@ -126,6 +129,8 @@ export async function DELETE(
 
         return NextResponse.json({ success: true });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error deleting image:', error);
         return NextResponse.json(
             { error: 'Internal server error' },

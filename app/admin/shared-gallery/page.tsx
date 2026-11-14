@@ -1,13 +1,18 @@
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
-import AdminSharedGallery from './AdminSharedGalleryNew';
-import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import Link from 'next/link';
 import { Suspense } from 'react';
+import AdminSharedGallery from './AdminSharedGalleryNew';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
 
 export default function AdminSharedGalleryPage() {
     return (
-        <Suspense fallback={<div>Laden...</div>}>
+        <Suspense
+            fallback={
+                <p className="admin-empty">Einreichungen werden geladen …</p>
+            }
+        >
             <AdminSharedGalleryAuthWrapper />
         </Suspense>
     );
@@ -20,36 +25,25 @@ async function AdminSharedGalleryAuthWrapper() {
         redirect('/admin/login');
     }
 
-    // Check permissions
     const currentUser = await getCurrentAdminUser();
-    const canViewSharedGallery = hasPermission(
-        currentUser,
-        'shared_gallery.view'
-    );
+    const canView = hasPermission(currentUser, 'shared_gallery.view');
     const canEdit = hasPermission(currentUser, 'shared_gallery.edit');
     const canDelete = hasPermission(currentUser, 'shared_gallery.delete');
 
-    if (!canViewSharedGallery) {
+    if (!canView) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
+            <div>
+                <AdminHead title="Impressionen" />
+                <Panel title="Keine Berechtigung">
+                    <p className="admin-empty">
                         Sie haben keine Berechtigung, Impressionen zu verwalten.
                     </p>
-                    <a
-                        href="/admin/dashboard"
-                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        <ArrowLeft className="w-4 h-4 inline mr-2" />
-                        Zurück zum Dashboard
-                    </a>
-                </div>
+                    <p style={{ marginTop: 'var(--s4)' }}>
+                        <Link className="btn" href="/admin/dashboard">
+                            Zum Schreibtisch
+                        </Link>
+                    </p>
+                </Panel>
             </div>
         );
     }

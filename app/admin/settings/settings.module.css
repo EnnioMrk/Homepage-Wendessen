@@ -1,0 +1,82 @@
+.form {
+    display: grid;
+    gap: var(--s5);
+}
+
+.form :global(input.input),
+.form :global(select.select),
+.form :global(textarea.textarea) {
+    min-height: 44px;
+}
+
+.form :global(.check) {
+    font-size: var(--label);
+    letter-spacing: normal;
+    text-transform: none;
+    font-weight: 400;
+    color: var(--ink);
+}
+
+.form :global(.check) input[type='checkbox'] {
+    min-height: 0;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+}
+
+.catNote {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    margin-bottom: var(--s4);
+}
+
+.fieldList {
+    display: grid;
+    gap: var(--s5);
+}
+
+.fieldHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2) var(--s3);
+}
+
+.key {
+    font-size: var(--tally);
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.panelNote {
+    font-size: var(--tally);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+}
+
+.saveBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    margin-top: var(--s5);
+    padding-top: var(--s4);
+    border-top: 2px solid var(--ink);
+}
+
+.saveNote {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.noticeRow {
+    margin-bottom: var(--s4);
+}
+
+.noticeRow button {
+    justify-self: start;
+}

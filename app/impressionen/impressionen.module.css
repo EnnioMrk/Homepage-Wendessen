@@ -1,0 +1,424 @@
+/* Impressionen: plates, dialogs, lightbox additions, form rows.
+   Rules only — no radius, no shadow, no gradient. */
+
+/* --- Gallery plates ---------------------------------------- */
+.plates {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    background: transparent;
+    border-top: var(--border) solid var(--rule);
+    border-left: var(--border) solid var(--rule);
+    margin: var(--s3) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+@media (min-width: 640px) {
+    .plates {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1000px) {
+    .plates {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.plate {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 0;
+    border-right: var(--border) solid var(--rule);
+    border-bottom: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: zoom-in;
+}
+
+.plate:hover {
+    background: var(--paper);
+}
+
+.plate:hover .plateImage {
+    border-bottom-color: var(--ledger);
+}
+
+.plateImage {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--paper-sunken);
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.plateImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.plateCaption {
+    display: grid;
+    gap: 2px;
+    padding: 6px 8px 8px;
+}
+
+.plateDate {
+    font-size: var(--tally);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.plateText {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: var(--small);
+    line-height: 1.4;
+    color: var(--ink-secondary);
+    overflow-wrap: anywhere;
+}
+
+/* --- Group meta line -------------------------------------- */
+.metaRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.metaItem + .metaItem::before {
+    content: '·';
+    margin: 0 6px;
+    color: var(--ink-faint);
+}
+
+.moreNames {
+    padding: 0;
+    border: 0;
+    border-bottom: var(--border) solid var(--ledger);
+    background: none;
+    color: var(--ledger);
+    font: inherit;
+    font-size: var(--small);
+    cursor: pointer;
+}
+
+.moreNames:hover {
+    border-bottom-width: 2px;
+}
+
+/* --- Dialog (authors, add photos) ------------------------- */
+.dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 210;
+    display: grid;
+    place-items: center;
+    padding: var(--s4);
+    background: rgba(20, 36, 32, 0.78);
+}
+
+.dialogPanel {
+    width: min(560px, 100%);
+    max-height: calc(100dvh - 2 * var(--s4));
+    overflow-y: auto;
+    padding: var(--s5);
+    background: var(--paper);
+    color: var(--ink);
+    border: var(--border) solid var(--ink);
+}
+
+.dialogWide {
+    width: min(760px, 100%);
+}
+
+.dialogHead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s4);
+    padding-bottom: var(--s2);
+    border-bottom: var(--border) solid var(--ink);
+    margin-bottom: var(--s4);
+}
+
+.dialogHead h2 {
+    font-size: var(--lead);
+    line-height: 1.25;
+}
+
+.dialogSub {
+    margin-top: 4px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+}
+
+.nameList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: var(--border) solid var(--rule);
+}
+
+.nameList li {
+    padding: 8px 0;
+    border-bottom: var(--border) solid var(--rule);
+    font-size: var(--label);
+    overflow-wrap: anywhere;
+}
+
+/* --- Form rows -------------------------------------------- */
+.formStack {
+    display: grid;
+    gap: var(--s5);
+}
+
+.fileRow {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    gap: var(--s3);
+    align-items: start;
+    padding: var(--s2);
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+    list-style: none;
+}
+
+.fileThumb {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border: var(--border) solid var(--rule);
+    background: var(--paper-sunken);
+    overflow: hidden;
+}
+
+.fileThumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fileBody {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.fileBody .desc {
+    min-height: 72px;
+}
+
+.fileName {
+    font-size: var(--small);
+    font-weight: 620;
+    overflow-wrap: anywhere;
+}
+
+.fileMeta {
+    font-size: var(--tally);
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.fileRemove {
+    align-self: start;
+}
+
+.dropTitle {
+    display: block;
+    font-size: var(--label);
+    font-weight: 620;
+    color: var(--ink);
+}
+
+.dropHint {
+    display: block;
+    margin-top: 4px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.dropLink {
+    display: block;
+    margin-top: var(--s2);
+    font-size: var(--small);
+    font-weight: 620;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ledger);
+}
+
+.dz {
+    display: block;
+    margin-top: 6px;
+}
+
+.dz:focus-within {
+    outline: 2px solid var(--ledger);
+    outline-offset: 2px;
+}
+
+.hintBlock {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.req {
+    color: var(--rubric);
+}
+
+/* --- Lightbox additions ----------------------------------- */
+.viewer {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-x: hidden;
+}
+
+.viewer > * {
+    min-width: 0;
+}
+
+.bar {
+    flex-wrap: wrap;
+}
+
+.barLead {
+    flex: 1 1 140px;
+    min-width: 0;
+}
+
+.barTitle {
+    min-width: 0;
+    font-size: var(--label);
+    font-weight: 620;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .bar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--s2);
+    }
+
+    .barLead {
+        flex: none;
+    }
+
+    .barActions {
+        justify-content: flex-start;
+    }
+
+    .barTitle {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+}
+
+.counter {
+    font-variant-numeric: tabular-nums;
+    color: #c9d2c9;
+}
+
+.barActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    align-items: center;
+}
+
+.stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.stageImage {
+    object-fit: contain;
+}
+
+.footMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px var(--s4);
+    min-width: 0;
+}
+
+.footActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    align-items: center;
+}
+
+/* Report sheet — paper on the dark plate. */
+.report {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    display: grid;
+    place-items: center;
+    padding: var(--s4);
+    background: rgba(20, 36, 32, 0.82);
+}
+
+.reportPanel {
+    width: min(520px, 100%);
+    max-height: calc(100dvh - 2 * var(--s4));
+    overflow-y: auto;
+    padding: var(--s5);
+    background: var(--paper);
+    color: var(--ink);
+    border: var(--border) solid var(--ink);
+}
+
+.reportPanel h2 {
+    font-size: var(--lead);
+    padding-bottom: var(--s2);
+    border-bottom: var(--border) solid var(--ink);
+    margin-bottom: var(--s3);
+}
+
+.reportText {
+    font-size: var(--label);
+    color: var(--ink-secondary);
+    margin-bottom: var(--s3);
+}
+
+@media (max-width: 640px) {
+    .fileRow {
+        grid-template-columns: 48px minmax(0, 1fr);
+    }
+
+    .fileThumb {
+        width: 48px;
+        height: 48px;
+    }
+
+    .fileRemove {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+
+    .dialogPanel {
+        padding: var(--s4);
+    }
+}

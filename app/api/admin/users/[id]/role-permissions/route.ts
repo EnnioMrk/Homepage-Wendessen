@@ -4,6 +4,7 @@ import {
     getRoleDefaultPermissions,
 } from '@/lib/permissions';
 import { getAdminUserById } from '@/lib/database';
+import { apiAuthResponse } from '@/lib/api-error';
 
 export async function GET(
     _request: NextRequest,
@@ -39,6 +40,8 @@ export async function GET(
             roleDisplayName: user.roleDisplayName,
         });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error fetching role permissions:', error);
         return NextResponse.json(
             { error: 'Failed to fetch role permissions' },

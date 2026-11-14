@@ -1,0 +1,110 @@
+/* Register tokens — the village chronicle, opened.
+   Palette: buckram pine shell, bone paper, iron ink, ledger ruling blue,
+   one rubric red reserved for state. No radius, no shadow, one-pixel rules. */
+
+:root {
+    /* ground */
+    --paper: #e9ebe6;
+    --paper-raised: #f1f2ee;
+    --paper-sunken: #dfe2dc;
+    --paper-inset: #e3e6e0;
+
+    /* ink */
+    --ink: #161a17;
+    --ink-secondary: #39423b;
+    --ink-muted: #5d665f;
+    --ink-faint: #59615a;
+
+    /* shell */
+    --pine: #1b2f27;
+    --pine-deep: #142420;
+    --pine-raised: #243b31;
+    --pine-ink: #e6e9e2;
+    --pine-ink-muted: #a9b6ac;
+    --pine-ink-faint: #8fa094;
+    --pine-label: #7d8f82;
+    --pine-text-strong: #f2f3ef;
+    --foil: #c2a24b;
+    --foil-dim: #8f7530;
+
+    /* functional */
+    --ledger: #23476b;
+    --ledger-soft: #dbe3ea;
+    --rubric: #9e2b25;
+    --rubric-ink: #7e211c;
+    --rubric-soft: #f0dcd8;
+    --ok: #2c6444;
+    --ok-soft: #d9e6dc;
+    --amber: #8a5a12;
+    --amber-soft: #efe4cd;
+
+    /* rules */
+    --rule: #c4c8c0;
+    --rule-strong: #969d94;
+    --rule-ink: #161a17;
+    --pine-line: #3a5446;
+    --pine-line-soft: #2c4438;
+
+    /* type */
+    --font-ui: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --font-read: 'Literata', Georgia, 'Times New Roman', serif;
+
+    --micro: 0.625rem; /* 10 — the smallest label, still readable */
+    --tally: 0.6875rem; /* 11 */
+    --small: 0.8125rem; /* 13 */
+    --label: 0.9375rem; /* 15 */
+    --body: 1.0625rem; /* 17 */
+    --body-lg: 1.1875rem; /* 19 */
+    --lead: 1.375rem; /* 22 */
+    --h3: 1.5rem; /* 24 */
+    --h2: 2.125rem; /* 34 */
+    --h1: 3.5rem; /* 56 */
+    --monument: 5.5rem; /* 88 */
+    --stat-lg: 4rem; /* 64 — a single measured value */
+    --stat: 2.25rem; /* 36 — desk counters */
+    --day-xl: 2rem; /* 32 — phone date strip */
+    --day-lg: 1.75rem; /* 28 — entry date */
+    --day-sm: 1.125rem; /* 18 — compact date */
+    --input-text: 1rem; /* 16 — never smaller, avoids iOS zoom */
+    --close: 1.125rem; /* 18 — dialog close glyph */
+
+    /* space */
+    --s1: 4px;
+    --s2: 8px;
+    --s3: 12px;
+    --s4: 16px;
+    --s5: 24px;
+    --s6: 32px;
+    --s7: 48px;
+    --s8: 64px;
+    --s9: 96px;
+
+    /* structure */
+    --margin-col: 168px;
+    --wrap: 1200px;
+    --spine-h: 60px;
+    --border: 1px;
+
+    --focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--ledger);
+
+    color-scheme: light;
+}
+
+@media (max-width: 900px) {
+    :root {
+        --margin-col: 104px;
+        --monument: 3.5rem;
+        --h1: 2.5rem;
+        --h2: 1.75rem;
+    }
+}
+
+@media (max-width: 640px) {
+    :root {
+        --margin-col: 0px;
+        --monument: 3rem;
+        --h1: 2rem;
+        --h2: 1.5rem;
+        --body: 1.0625rem;
+    }
+}

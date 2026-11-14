@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T01:35:24.393Z",
+  "title": "Design System: Wendessen",
+  "extensions": {
+    "colorMeta": {
+      "buckram-pine": {
+        "role": "primary",
+        "displayName": "Buckram Pine",
+        "canonical": "#1B2F27",
+        "tonalRamp": [
+          "#1a2d26",
+          "#2d4e41",
+          "#3f6e5b",
+          "#528f76",
+          "#6dab92",
+          "#97c3b2",
+          "#c5ded4",
+          "#ecf4f1"
+        ]
+      },
+      "pine-deep": {
+        "role": "primary",
+        "displayName": "Pine Deep",
+        "canonical": "#142420",
+        "tonalRamp": [
+          "#1a2e29",
+          "#2c4f46",
+          "#3e6f63",
+          "#509080",
+          "#6bad9d",
+          "#96c5b9",
+          "#c4ded8",
+          "#ebf4f2"
+        ]
+      },
+      "pine-raised": {
+        "role": "primary",
+        "displayName": "Pine Raised",
+        "canonical": "#243B31",
+        "tonalRamp": [
+          "#1b2c25",
+          "#2e4c3f",
+          "#426c59",
+          "#558b74",
+          "#70a890",
+          "#9ac1b0",
+          "#c6dcd3",
+          "#ecf3f0"
+        ]
+      },
+      "foil": {
+        "role": "primary",
+        "displayName": "Foil Stamping",
+        "canonical": "#C2A24B",
+        "tonalRamp": [
+          "#352c12",
+          "#5b4b1f",
+          "#826a2c",
+          "#a88a39",
+          "#c5a654",
+          "#d6c085",
+          "#e8dcba",
+          "#f7f3e8"
+        ]
+      },
+      "bone-paper": {
+        "role": "neutral",
+        "displayName": "Bone Paper",
+        "canonical": "#E9EBE6",
+        "tonalRamp": [
+          "#242820",
+          "#3f4436",
+          "#59604d",
+          "#737d64",
+          "#8f9980",
+          "#afb6a4",
+          "#d2d6cc",
+          "#f0f1ee"
+        ]
+      },
+      "paper-raised": {
+        "role": "neutral",
+        "displayName": "Raised Paper",
+        "canonical": "#F1F2EE",
+        "tonalRamp": [
+          "#26281f",
+          "#414535",
+          "#5c624b",
+          "#787f61",
+          "#949c7d",
+          "#b3b8a3",
+          "#d4d7cb",
+          "#f1f2ee"
+        ]
+      },
+      "paper-sunken": {
+        "role": "neutral",
+        "displayName": "Sunken Paper",
+        "canonical": "#DFE2DC",
+        "tonalRamp": [
+          "#242720",
+          "#3d4337",
+          "#575f4f",
+          "#707b66",
+          "#8c9781",
+          "#adb5a6",
+          "#d1d5cd",
+          "#f0f1ee"
+        ]
+      },
+      "iron-ink": {
+        "role": "neutral",
+        "displayName": "Iron Gall Ink",
+        "canonical": "#161A17",
+        "tonalRamp": [
+          "#212722",
+          "#38423b",
+          "#4f5e53",
+          "#677a6c",
+          "#839687",
+          "#a7b4aa",
+          "#cdd5cf",
+          "#eef1ef"
+        ]
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Ink",
+        "canonical": "#39423B",
+        "tonalRamp": [
+          "#212622",
+          "#39423b",
+          "#505d53",
+          "#68786c",
+          "#849588",
+          "#a7b3aa",
+          "#ced4cf",
+          "#eff1ef"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#5D665F",
+        "tonalRamp": [
+          "#222623",
+          "#3a413b",
+          "#515c54",
+          "#69776c",
+          "#859388",
+          "#a9b2ab",
+          "#ced4d0",
+          "#eff1ef"
+        ]
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Faint Ink",
+        "canonical": "#59615A",
+        "tonalRamp": [
+          "#222622",
+          "#3a413a",
+          "#515c53",
+          "#69776b",
+          "#859387",
+          "#a9b2aa",
+          "#ced4cf",
+          "#eff1ef"
+        ]
+      },
+      "ledger-blue": {
+        "role": "secondary",
+        "displayName": "Ledger Ruling Blue",
+        "canonical": "#23476B",
+        "tonalRamp": [
+          "#122436",
+          "#1e3d5c",
+          "#2b5783",
+          "#3770a9",
+          "#528cc6",
+          "#84add7",
+          "#bad1e8",
+          "#e8f0f7"
+        ]
+      },
+      "rubric-red": {
+        "role": "tertiary",
+        "displayName": "Rubric Red",
+        "canonical": "#9E2B25",
+        "tonalRamp": [
+          "#3a100e",
+          "#631b17",
+          "#8c2621",
+          "#b6322b",
+          "#d34c45",
+          "#e0807b",
+          "#eeb7b5",
+          "#f9e7e6"
+        ]
+      },
+      "field-ok": {
+        "role": "tertiary",
+        "displayName": "Field Green",
+        "canonical": "#2C6444",
+        "tonalRamp": [
+          "#163222",
+          "#25553a",
+          "#357852",
+          "#459c6a",
+          "#60b986",
+          "#8ecda9",
+          "#bfe3cf",
+          "#eaf6ef"
+        ]
+      },
+      "field-warn": {
+        "role": "tertiary",
+        "displayName": "Field Ochre",
+        "canonical": "#8A5A12",
+        "tonalRamp": [
+          "#3a280e",
+          "#634517",
+          "#8c6121",
+          "#b67e2b",
+          "#d39a45",
+          "#e0b87b",
+          "#eed7b5",
+          "#f9f2e6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "monument": {
+        "displayName": "Monument",
+        "purpose": "Today’s day number in the register margin."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page h1 only."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Entry titles and section heads."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Interface text and table cells."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "Article, club and legal prose only."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Buttons, tabs, table heads, tallies."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "state",
+        "value": "120ms linear",
+        "purpose": "Background and border changes on hover and focus."
+      },
+      {
+        "name": "menu",
+        "value": "180ms ease-out",
+        "purpose": "Mobile menu and dialog appearance."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "640px"
+      },
+      {
+        "name": "tablet",
+        "value": "900px"
+      },
+      {
+        "name": "nav-collapse",
+        "value": "1180px"
+      },
+      {
+        "name": "wrap",
+        "value": "1200px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The register’s affirmative action: pine ground, bone text, square, uppercase.",
+      "html": "<button class=\"ds-btn-primary\">Termin anlegen</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;background:#1B2F27;color:#E9EBE6;border:1px solid #1B2F27;border-radius:0;font-family:Archivo,Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background 120ms linear;} .ds-btn-primary:hover{background:#142420;} .ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px #E9EBE6,0 0 0 4px #23476B;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A quiet action on paper; inverts to ink on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Abbrechen</button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;background:#E9EBE6;color:#161A17;border:1px solid #161A17;border-radius:0;font-family:Archivo,Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background 120ms linear,color 120ms linear;} .ds-btn-secondary:hover{background:#161A17;color:#E9EBE6;}"
+    },
+    {
+      "name": "Cancelled Stamp",
+      "kind": "custom",
+      "refersTo": "entry-row",
+      "description": "The product’s most important state: a printed mark that stays in place.",
+      "html": "<span class=\"ds-stamp\">Abgesagt</span>",
+      "css": ".ds-stamp{display:inline-block;padding:2px 6px 3px;font-family:Archivo,Arial,sans-serif;font-size:10px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:#9E2B25;border:1px solid #9E2B25;box-shadow:inset 0 0 0 2px #E9EBE6,inset 0 0 0 3px #9E2B25;transform:rotate(-1.6deg);white-space:nowrap;}"
+    },
+    {
+      "name": "Register Entry",
+      "kind": "card",
+      "refersTo": "entry-row",
+      "description": "One dated row: date block, title and facts, register number or stamp.",
+      "html": "<a class=\"ds-entry\" href=\"#\"><span class=\"ds-entry-date\"><b>04</b><i>DEZ</i><em>Fr</em><small>09:30 – 11:30</small></span><span class=\"ds-entry-body\"><b>Adventsfrühstück</b><small>Hans-Meves-Hof · Evang. Frauenhilfe</small></span><span class=\"ds-entry-nr\">Nr. 042</span></a>",
+      "css": ".ds-entry{display:grid;grid-template-columns:84px 1fr auto;gap:16px;align-items:start;padding:16px 0 16px 8px;border-bottom:1px solid #C4C8C0;background:#E9EBE6;color:#161A17;text-decoration:none;font-family:Archivo,Arial,sans-serif;} .ds-entry:hover{background:#F1F2EE;} .ds-entry-date{display:flex;flex-direction:column;line-height:1;} .ds-entry-date b{font-size:28px;font-weight:640;letter-spacing:-.03em;font-variant-numeric:tabular-nums;} .ds-entry-date i{margin-top:3px;font-style:normal;font-size:11px;font-weight:600;letter-spacing:.14em;color:#9E2B25;} .ds-entry-date em{margin-top:2px;font-style:normal;font-size:11px;letter-spacing:.08em;color:#59615A;text-transform:uppercase;} .ds-entry-date small{margin-top:6px;font-size:13px;color:#39423B;font-variant-numeric:tabular-nums;} .ds-entry-body b{display:block;font-size:22px;font-weight:620;letter-spacing:-.012em;line-height:1.22;} .ds-entry-body small{display:block;margin-top:5px;font-size:13px;color:#39423B;} .ds-entry-nr{font-size:11px;color:#59615A;font-variant-numeric:tabular-nums;}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Square field on raised paper with a ledger focus ring.",
+      "html": "<label class=\"ds-field\"><span>Titel</span><input class=\"ds-input\" value=\"Adventsfrühstück\" /></label>",
+      "css": ".ds-field{display:grid;gap:6px;font-family:Archivo,Arial,sans-serif;} .ds-field>span{font-size:11px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:#39423B;} .ds-input{width:100%;min-height:44px;padding:10px 12px;background:#F1F2EE;border:1px solid #969D94;border-radius:0;color:#161A17;font-size:17px;} .ds-input:focus-visible{outline:none;border-color:#23476B;box-shadow:inset 0 0 0 1px #23476B;}"
+    },
+    {
+      "name": "Spine Navigation",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "The book’s binding: pine bar, foil rule, uppercase tabs with a foil underline on the current one.",
+      "html": "<nav class=\"ds-spine\"><a class=\"ds-spine-mark\" href=\"#\">WENDESSEN <small>DORFCHRONIK SEIT 1170</small></a><a class=\"ds-spine-tab is-current\" href=\"#\">Termine</a><a class=\"ds-spine-tab\" href=\"#\">Nachrichten</a><a class=\"ds-spine-tab\" href=\"#\">Dorfleben</a><a class=\"ds-spine-tab\" href=\"#\">Kontakt</a></nav>",
+      "css": ".ds-spine{display:flex;align-items:stretch;gap:16px;min-height:60px;background:#1B2F27;border-bottom:1px solid #C2A24B;font-family:Archivo,Arial,sans-serif;} .ds-spine-mark{display:flex;flex-direction:column;justify-content:center;padding:0 16px;color:#E6E9E2;text-decoration:none;font-size:17px;font-weight:700;letter-spacing:.14em;} .ds-spine-mark small{margin-top:5px;font-size:9px;font-weight:500;letter-spacing:.16em;color:#C2A24B;} .ds-spine-tab{display:flex;align-items:center;padding:0 8px;color:#A9B6AC;text-decoration:none;font-size:13px;font-weight:550;letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid transparent;border-top:2px solid transparent;} .ds-spine-tab:hover,.ds-spine-tab.is-current{color:#E6E9E2;border-bottom-color:#C2A24B;}"
+    },
+    {
+      "name": "Notice",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "Inline state strip: a full one-pixel frame in the state colour with an uppercase label.",
+      "html": "<div class=\"ds-notice\"><strong>Hinweis</strong><span>Die Veranstaltung findet nicht statt.</span></div>",
+      "css": ".ds-notice{display:grid;gap:4px;padding:12px 16px;background:#F1F2EE;border:1px solid #23476B;font-family:Archivo,Arial,sans-serif;font-size:15px;line-height:1.45;color:#161A17;} .ds-notice strong{font-size:11px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:#23476B;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Village Chronicle, Open at Today’s Leaf",
+    "overview": "Wendessen keeps one register, and the website is that register: a ruled margin with today’s date and tallies, numbered dated entries, and a stamp for every state. The shell is the binding — pine buckram with a foil rule — and the body is iron ink on cool bone paper with one rubric red that only ever means state. The system is flat, ruled and quiet; it refuses the illustrated hero, gradient bands, white cards and carousels of the village-portal default it replaced.",
+    "keyCharacteristics": [
+      "Pine buckram shell with a foil hairline, bone paper body",
+      "One-pixel rules, zero radius, zero shadow",
+      "A 168 px register margin that becomes a date strip on phones",
+      "One rubric red reserved for state and attention",
+      "Tabular numerals on a fixed integer ramp",
+      "States as printed marks: open, new, decided, draft, pinned, cancelled"
+    ],
+    "rules": [
+      {
+        "name": "The One Red Rule",
+        "body": "Rubric red marks state or attention, nothing else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper Rule",
+        "body": "No colour outside the tokens; a new hue means the direction drifted.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Any figure that can be compared is set in tabular numerals.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two-Voice Rule",
+        "body": "Literata never appears in a control, label, table or heading above 24 px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "No shadow anywhere; depth comes from paper tones and one-pixel rules.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Let the margin carry live data: the date, the counts, the next entry.",
+      "Keep a cancelled entry in place, struck through and stamped.",
+      "Use one-pixel rules to separate and paper tones to group.",
+      "Set every comparable number in tabular figures.",
+      "Show loading, empty, error and success in the register’s own language."
+    ],
+    "donts": [
+      "No radius, shadow, gradient, glass, icon tiles or emoji.",
+      "No hue outside the tokens.",
+      "No state signalled by colour alone.",
+      "No thick coloured bar on the side of a card, row or notice.",
+      "No list turned into cards, and no card inside a card.",
+      "No entrance animations; motion is state feedback only."
+    ]
+  }
+}

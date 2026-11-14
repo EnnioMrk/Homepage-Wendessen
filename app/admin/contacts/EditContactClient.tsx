@@ -1,26 +1,28 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import ContactForm, { ContactData } from './components/ContactForm';
-import { ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import { useRouter } from 'next/navigation';
+import { AdminHead } from '@/app/components/admin/AdminPage';
+import ContactForm, { ContactData } from './components/ContactForm';
 
-export default function EditContactClient({ contactId }: { contactId?: string }) {
+export default function EditContactClient({
+    contactId,
+}: {
+    contactId?: string;
+}) {
     const router = useRouter();
-    const [initialData, setInitialData] = useState<ContactData | undefined>(undefined);
+    const [initialData, setInitialData] = useState<ContactData | undefined>(
+        undefined,
+    );
     const [loading, setLoading] = useState(!!contactId);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (contactId) {
-            fetchContact(contactId);
-        }
-    }, [contactId]);
-
-    const fetchContact = async (id: string) => {
+    const fetchContact = useCallback(async (id: string) => {
+        setLoading(true);
+        setError(null);
         try {
             const response = await fetch(`/api/admin/contacts/${id}`);
             if (response.ok) {
@@ -28,23 +30,32 @@ export default function EditContactClient({ contactId }: { contactId?: string })
                 if (data.contact) {
                     setInitialData(data.contact);
                 } else {
-                    setError('Kontakt nicht gefunden');
+                    setError('Der Kontakt wurde nicht gefunden.');
                 }
             } else {
-                setError('Fehler beim Laden des Kontakts');
+                setError('Der Kontakt konnte nicht geladen werden.');
             }
-        } catch (error) {
-            console.error('Error fetching contact:', error);
-            setError('Fehler beim Laden des Kontakts');
+        } catch (fetchError) {
+            console.error('Error fetching contact:', fetchError);
+            setError('Der Kontakt konnte nicht geladen werden.');
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (contactId) {
+            fetchContact(contactId);
+        }
+    }, [contactId, fetchContact]);
 
     const handleSubmit = async (data: ContactData) => {
         setIsSubmitting(true);
+        setSubmitError(null);
         try {
-            const url = contactId ? `/api/admin/contacts/${contactId}` : '/api/admin/contacts';
+            const url = contactId
+                ? `/api/admin/contacts/${contactId}`
+                : '/api/admin/contacts';
             const method = contactId ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -54,31 +65,97 @@ export default function EditContactClient({ contactId }: { contactId?: string })
             });
 
             if (response.ok) {
-                router.push('/admin/contacts');
+                router.push('/admin/contacts?hinweis=gespeichert');
                 router.refresh();
             } else {
-                const resData = await response.json();
-                alert(resData.error || 'Fehler beim Speichern');
+                const resData = await response.json().catch(() => ({}));
+                setSubmitError(
+                    resData.error ||
+                        'Der Kontakt konnte nicht gespeichert werden.',
+                );
             }
-        } catch (error) {
-            console.error(error);
-            alert('Fehler beim Speichern');
+        } catch (saveError) {
+            console.error(saveError);
+            setSubmitError('Der Kontakt konnte nicht gespeichert werden.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    if (loading) return <LoadingSpinner centered />;
-    if (error) return <div className="text-red-600 p-6">{error}</div>;
+    const title = contactId ? 'Kontakt bearbeiten' : 'Neuer Kontakt';
+    const sub = contactId
+        ? 'Eintrag im Kontaktverzeichnis ändern'
+        : 'Eintrag im Kontaktverzeichnis anlegen';
+
+    if (loading) {
+        return (
+            <div>
+                <AdminHead title={title} sub={sub} />
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">Kontakt wird geladen …</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div>
+                <AdminHead title={title} sub={sub} />
+                <div className="notice notice--error" role="alert">
+                    <strong>Kontakt nicht geladen</strong>
+                    <span>{error}</span>
+                </div>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 'var(--s2)',
+                        marginTop: 'var(--s4)',
+                    }}
+                >
+                    {contactId && (
+                        <button
+                            type="button"
+                            className="btn btn--primary"
+                            onClick={() => fetchContact(contactId)}
+                        >
+                            Erneut laden
+                        </button>
+                    )}
+                    <Link className="btn btn--quiet" href="/admin/contacts">
+                        Zurück zum Verzeichnis
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="bg-gray-50">
-            <div className="mb-6">
-                <Link href="/admin/contacts" className="flex items-center text-gray-600 hover:text-gray-900 mb-4 px-1">
-                    <ArrowLeft size={16} className="mr-2" />
-                    Zurück
-                </Link>
-            </div>
+        <div>
+            <AdminHead
+                title={title}
+                sub={sub}
+                actions={
+                    <Link className="btn btn--sm" href="/admin/contacts">
+                        Zurück zum Verzeichnis
+                    </Link>
+                }
+            />
+
+            {submitError && (
+                <div
+                    className="notice notice--error"
+                    role="alert"
+                    style={{ marginBottom: 'var(--s4)' }}
+                >
+                    <strong>Nicht gespeichert</strong>
+                    <span>{submitError}</span>
+                </div>
+            )}
+
             <ContactForm
                 initialData={initialData}
                 onSubmit={handleSubmit}

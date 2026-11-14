@@ -1,0 +1,81 @@
+.tableWrap {
+    overflow-x: auto;
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+}
+
+.tableWrap table {
+    min-width: 880px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.time {
+    display: grid;
+    gap: 1px;
+    font-variant-numeric: tabular-nums;
+}
+
+.time span:last-child {
+    color: var(--ink-muted);
+    font-size: var(--small);
+}
+
+.user {
+    font-weight: 600;
+}
+
+.target {
+    display: grid;
+    gap: 2px;
+    max-width: 26ch;
+}
+
+.targetType {
+    font-size: var(--tally);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.details {
+    max-width: 52ch;
+    color: var(--ink-secondary);
+}
+
+.ip {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-muted);
+    white-space: nowrap;
+}
+
+.filterHint {
+    flex-basis: 100%;
+    font-size: var(--tally);
+    color: var(--ink-muted);
+    margin-top: calc(var(--s2) * -1);
+}
+
+.pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    margin-top: var(--s3);
+    padding-top: var(--s3);
+    border-top: var(--border) solid var(--rule);
+}
+
+.pagerInfo {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.pagerButtons {
+    display: flex;
+    gap: var(--s2);
+}

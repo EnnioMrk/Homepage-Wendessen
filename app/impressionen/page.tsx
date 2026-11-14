@@ -1,85 +1,114 @@
-import { getApprovedSharedGalleryGroups } from '@/lib/database';
-import { Camera } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { getApprovedSharedGalleryGroups } from '@/lib/database';
+import {
+    Empty,
+    Leaf,
+    Margin,
+    Notice,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
 import GalleryGrid from '@/app/components/GalleryGrid';
+import { pageToday } from '@/app/lib/page-today';
 
-export const metadata = {
-    title: 'Impressionen - Wendessen',
+export const metadata: Metadata = {
+    title: 'Impressionen',
     description:
-        'Fotos und Eindrücke aus Wendessen - von Wendessenern für Wendessener',
+        'Die Bildergalerie aus Wendessen: freigegebene Fotosammlungen, nach Sammlung, Einsendenden und Datum geordnet.',
+    alternates: { canonical: '/impressionen' },
+    openGraph: {
+        type: 'website',
+        title: 'Impressionen · Wendessen',
+        description:
+            'Bilder aus Wendessen, wie sie ins Register eingetragen wurden.',
+    },
 };
 
-export default async function ImpessionenPage() {
-    let approvedGroups: Awaited<
+export default async function ImpressionenPage() {
+    let groups: Awaited<
         ReturnType<typeof getApprovedSharedGalleryGroups>
-    > = [];
+    > | null = null;
 
     try {
-        approvedGroups = await getApprovedSharedGalleryGroups();
+        groups = await getApprovedSharedGalleryGroups();
     } catch (error) {
         console.error('Failed to fetch approved photo groups:', error);
-        approvedGroups = [];
     }
 
+    const photoCount =
+        groups?.reduce((total, group) => total + group.totalCount, 0) ?? 0;
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            <PageHeader
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Bilder"
+                    tallies={
+                        groups
+                            ? [
+                                  {
+                                      label: 'Sammlungen',
+                                      value: groups.length,
+                                      href: '/impressionen',
+                                  },
+                                  { label: 'Fotos', value: photoCount },
+                              ]
+                            : undefined
+                    }
+                    note={
+                        <>
+                            Jede Sammlung ist ein Eintrag mit Titel, Datum und
+                            Einsendenden. Einzelne Fotos lassen sich in der
+                            Bildansicht groß ansehen.
+                        </>
+                    }
+                />
+            }
+        >
+            <PageHead
+                kicker="Register · Bilder"
                 title="Impressionen"
-                subtitle="Wendessen durch die Augen unserer Gemeinschaft"
-                icon={<Camera />}
-                color="purple"
+                lede="Fotos aus Wendessen, nach Sammlungen geordnet — so, wie sie eingereicht und freigegeben wurden."
+                actions={
+                    <Link
+                        className="btn btn--primary"
+                        href="/impressionen/einreichen"
+                    >
+                        Foto einreichen
+                    </Link>
+                }
             />
 
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-12">
-                {/* Submit Photo CTA */}
-                <div className="max-w-4xl mx-auto mb-12">
-                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg p-8 text-center">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                            Teilen Sie Ihre Momente
-                        </h2>
-                        <p className="text-gray-700 mb-6">
-                            Haben Sie schöne Fotos aus Wendessen? Teilen Sie sie
-                            mit der Gemeinschaft!
-                        </p>
-                        <Link
-                            href="/impressionen/einreichen"
-                            className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
-                        >
-                            <Camera className="w-5 h-5 mr-2" />
-                            Foto einreichen
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Gallery */}
-                {approvedGroups.length > 0 ? (
-                    <GalleryGrid groups={approvedGroups} />
-                ) : (
-                    <div className="max-w-4xl mx-auto">
-                        <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-                            <div className="text-gray-400 mb-4">
-                                <Camera className="w-16 h-16 mx-auto" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                Noch keine Fotos
-                            </h3>
-                            <p className="text-gray-600 mb-6">
-                                Seien Sie der Erste, der ein Foto mit der
-                                Gemeinschaft teilt!
-                            </p>
+            {groups === null ? (
+                <Notice tone="error" title="Bilder konnten nicht geladen werden">
+                    Das Register ist gerade nicht erreichbar.{' '}
+                    <Link className="link" href="/impressionen">
+                        Erneut laden
+                    </Link>
+                </Notice>
+            ) : groups.length > 0 ? (
+                <GalleryGrid groups={groups} />
+            ) : (
+                <section aria-labelledby="sammlungen">
+                    <SectionHead title="Sammlungen" id="sammlungen" />
+                    <Empty
+                        title="Noch keine Bilder im Register"
+                        action={
                             <Link
+                                className="btn btn--primary"
                                 href="/impressionen/einreichen"
-                                className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
                             >
-                                <Camera className="w-5 h-5 mr-2" />
                                 Erstes Foto einreichen
                             </Link>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
+                        }
+                    >
+                        Für die Galerie liegt noch keine freigegebene Sammlung
+                        vor.
+                    </Empty>
+                </section>
+            )}
+        </Leaf>
     );
 }

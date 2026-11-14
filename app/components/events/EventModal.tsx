@@ -1,11 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-    X,
-    ImageSquare as ImageIcon,
-    Crop,
-} from '@phosphor-icons/react/dist/ssr';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 import { usePermissions } from '@/lib/usePermissions';
@@ -37,11 +32,20 @@ const VEREINE_OPTIONS = [
     ...GLOBAL_VEREINE_OPTIONS,
 ];
 
+const CATEGORY_OPTIONS = [
+    { id: 'sonstiges', label: 'Sonstiges' },
+    { id: 'sitzung', label: 'Sitzung' },
+    { id: 'veranstaltung', label: 'Veranstaltung' },
+    { id: 'sport', label: 'Sport' },
+    { id: 'kultur', label: 'Kultur' },
+    { id: 'notfall', label: 'Notfall' },
+];
+
 export default function EventModal({
     isOpen,
     onClose,
     onSuccess,
-    title = 'Neuen Termin hinzufügen',
+    title = 'Neuer Termin',
     initialValues,
 }: EventModalProps) {
     const {
@@ -57,14 +61,14 @@ export default function EventModal({
         ImageCropConfig | undefined
     >(undefined);
     const [selectedVereinId, setSelectedVereinId] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const childOverlayRef = useRef(false);
 
-    // Determine permissions
     const hasGeneralCreatePermission = hasPermission('events.create');
     const hasVereinCreatePermission = hasPermission('verein.events.create');
     const canSelectVerein = hasGeneralCreatePermission;
 
-    // Update selectedVereinId when user data is available
-    // For users with only verein permissions, lock to their verein
     useEffect(() => {
         if (!permissionsLoading && user) {
             if (
@@ -82,40 +86,99 @@ export default function EventModal({
         hasVereinCreatePermission,
     ]);
 
+    const closeRef = useRef(onClose);
+
+    useEffect(() => {
+        closeRef.current = onClose;
+    }, [onClose]);
+
+    useEffect(() => {
+        childOverlayRef.current = showImagePicker || showCropper;
+    }, [showImagePicker, showCropper]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const element = dialogRef.current;
+        if (!element) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+        const focusable = () =>
+            Array.from(
+                element.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                ),
+            ).filter((node) => node.offsetParent !== null);
+
+        focusable()[0]?.focus();
+
+        const handleKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                if (childOverlayRef.current) return;
+                event.stopPropagation();
+                closeRef.current();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const items = focusable();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKey);
+        return () => {
+            document.removeEventListener('keydown', handleKey);
+            previouslyFocused?.focus();
+        };
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
+        setError(null);
 
-        const formData = new FormData(e.currentTarget);
+        const form = e.currentTarget;
+        const formData = new FormData(form);
 
-        // Get form values
         const startDate = formData.get('startDate') as string;
         const startTime = formData.get('startTime') as string;
         const endDate = formData.get('endDate') as string;
         const endTime = formData.get('endTime') as string;
 
-        // Determine if this is an all-day event (no times specified)
         const isAllDay = !startTime && !endTime;
 
         let startDateTime: string;
         let endDateTime: string;
 
         if (isAllDay) {
-            // All-day event: create proper Date objects for the full day in local timezone
-            const startDate_obj = new Date(startDate + 'T00:00:00');
-            const endDate_obj = new Date(endDate + 'T23:59:59');
-            startDateTime = startDate_obj.toISOString();
-            endDateTime = endDate_obj.toISOString();
+            const startDateObject = new Date(startDate + 'T00:00:00');
+            const endDateObject = new Date(endDate + 'T23:59:59');
+            startDateTime = startDateObject.toISOString();
+            endDateTime = endDateObject.toISOString();
         } else {
-            // Timed event: create proper Date objects with specified times
             const startTimeValue = startTime || '00:00';
             const endTimeValue = endTime || '23:59';
-            const startDate_obj = new Date(`${startDate}T${startTimeValue}:00`);
-            const endDate_obj = new Date(`${endDate}T${endTimeValue}:00`);
-            startDateTime = startDate_obj.toISOString();
-            endDateTime = endDate_obj.toISOString();
+            const startDateObject = new Date(
+                `${startDate}T${startTimeValue}:00`,
+            );
+            const endDateObject = new Date(`${endDate}T${endTimeValue}:00`);
+            startDateTime = startDateObject.toISOString();
+            endDateTime = endDateObject.toISOString();
+        }
+
+        if (new Date(endDateTime) < new Date(startDateTime)) {
+            setError('Das Ende darf nicht vor dem Start liegen.');
+            setIsLoading(false);
+            return;
         }
 
         const eventData = {
@@ -143,310 +206,430 @@ export default function EventModal({
                 if (onSuccess) {
                     onSuccess();
                 }
-                // Reset form and image
-                (e.target as HTMLFormElement).reset();
+                form.reset();
                 setImageUrl('');
                 setImageCropData(undefined);
             } else {
-                console.error('Failed to create event');
+                const data = await response.json().catch(() => null);
+                setError(
+                    data?.error ||
+                        'Der Termin konnte nicht angelegt werden. Prüfen Sie die Angaben.',
+                );
             }
-        } catch (error) {
-            console.error('Error creating event:', error);
+        } catch (requestError) {
+            console.error('Error creating event:', requestError);
+            setError(
+                'Netzwerkfehler beim Anlegen des Termins. Versuchen Sie es erneut.',
+            );
         } finally {
             setIsLoading(false);
         }
     };
 
+    const datePart = (value?: string) =>
+        value ? value.split('T')[0] : undefined;
+    const timePart = (value?: string) =>
+        value && value.includes('T')
+            ? value.split('T')[1]?.substring(0, 5)
+            : '';
+
     return (
-        <div className="fixed inset-0 z-[60] overflow-y-auto pt-[50px] md:pt-[52px] lg:pt-[54px]">
-            <div className="flex items-center justify-center min-h-[calc(100vh-50px)] md:min-h-[calc(100vh-52px)] lg:min-h-[calc(100vh-54px)] px-4 py-4 text-center">
-                <div
-                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                    onClick={onClose}
-                ></div>
+        <div
+            style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 60,
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                padding: 'var(--s5) var(--s4)',
+                overflowY: 'auto',
+                background: 'rgba(20, 36, 32, 0.62)',
+            }}
+            onMouseDown={(event) => {
+                if (event.target === event.currentTarget) onClose();
+            }}
+        >
+            <div
+                ref={dialogRef}
+                className="dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="create-event-title"
+            >
+                <form onSubmit={handleSubmit}>
+                    <div className="dialog-head">
+                        <div>
+                            <h2 id="create-event-title">{title}</h2>
+                            <p className="small muted">
+                                Eintrag im Register der Termine
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            className="dialog-close"
+                            onClick={onClose}
+                            aria-label="Dialog schließen"
+                        >
+                            ×
+                        </button>
+                    </div>
 
-                <div className="relative inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full mx-4">
-                    <form onSubmit={handleSubmit}>
-                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                {title}
-                            </h3>
+                    <div className="dialog-body">
+                        {error && (
+                            <div
+                                className="notice notice--error"
+                                role="alert"
+                                style={{ marginBottom: 'var(--s4)' }}
+                            >
+                                <strong>Nicht angelegt</strong>
+                                <span>{error}</span>
+                            </div>
+                        )}
 
-                            <div className="space-y-4">
+                        <div
+                            style={{
+                                display: 'grid',
+                                gap: 'var(--s4)',
+                            }}
+                        >
+                            <div className="field">
+                                <label htmlFor="create-event-title-field">
+                                    Titel *
+                                </label>
                                 <input
+                                    id="create-event-title-field"
                                     name="title"
                                     type="text"
-                                    placeholder="Titel"
                                     required
                                     disabled={isLoading}
                                     defaultValue={initialValues?.title || ''}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
+                                    className="input"
                                 />
+                            </div>
+
+                            <div className="field">
+                                <label htmlFor="create-event-description">
+                                    Beschreibung
+                                </label>
                                 <textarea
+                                    id="create-event-description"
                                     name="description"
-                                    placeholder="Beschreibung"
                                     rows={3}
                                     disabled={isLoading}
                                     defaultValue={
                                         initialValues?.description || ''
                                     }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
-                                />{' '}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Startdatum
+                                    className="textarea"
+                                    style={{ minHeight: '96px' }}
+                                />
+                            </div>
+
+                            <div
+                                style={{
+                                    display: 'grid',
+                                    gridTemplateColumns:
+                                        'repeat(2, minmax(0, 1fr))',
+                                    gap: 'var(--s4)',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        display: 'grid',
+                                        gap: 'var(--s3)',
+                                    }}
+                                >
+                                    <div className="field">
+                                        <label htmlFor="create-event-start-date">
+                                            Startdatum *
                                         </label>
                                         <input
+                                            id="create-event-start-date"
                                             name="startDate"
                                             type="date"
                                             required
                                             disabled={isLoading}
-                                            defaultValue={
-                                                initialValues?.start
-                                                    ? initialValues.start.split(
-                                                          'T',
-                                                      )[0]
-                                                    : ''
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900 placeholder-gray-500"
+                                            defaultValue={datePart(
+                                                initialValues?.start,
+                                            )}
+                                            className="input"
                                         />
-                                        <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">
-                                            Startzeit (optional)
+                                    </div>
+                                    <div className="field">
+                                        <label htmlFor="create-event-start-time">
+                                            Startzeit
                                         </label>
                                         <input
+                                            id="create-event-start-time"
                                             name="startTime"
                                             type="time"
                                             disabled={isLoading}
-                                            defaultValue={
-                                                initialValues?.start
-                                                    ? initialValues.start.includes(
-                                                          'T',
-                                                      )
-                                                        ? initialValues.start
-                                                              .split('T')[1]
-                                                              ?.substring(0, 5)
-                                                        : ''
-                                                    : ''
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900 placeholder-gray-500"
+                                            defaultValue={timePart(
+                                                initialValues?.start,
+                                            )}
+                                            className="input"
                                         />
+                                        <span className="hint">
+                                            Leer lassen für einen ganztägigen
+                                            Termin.
+                                        </span>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Enddatum
+                                </div>
+                                <div
+                                    style={{
+                                        display: 'grid',
+                                        gap: 'var(--s3)',
+                                    }}
+                                >
+                                    <div className="field">
+                                        <label htmlFor="create-event-end-date">
+                                            Enddatum *
                                         </label>
                                         <input
+                                            id="create-event-end-date"
                                             name="endDate"
                                             type="date"
                                             required
                                             disabled={isLoading}
-                                            defaultValue={
-                                                initialValues?.end
-                                                    ? initialValues.end.split(
-                                                          'T',
-                                                      )[0]
-                                                    : ''
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900 placeholder-gray-500"
+                                            defaultValue={datePart(
+                                                initialValues?.end,
+                                            )}
+                                            className="input"
                                         />
-                                        <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">
-                                            Endzeit (optional)
+                                    </div>
+                                    <div className="field">
+                                        <label htmlFor="create-event-end-time">
+                                            Endzeit
                                         </label>
                                         <input
+                                            id="create-event-end-time"
                                             name="endTime"
                                             type="time"
                                             disabled={isLoading}
-                                            defaultValue={
-                                                initialValues?.end
-                                                    ? initialValues.end.includes(
-                                                          'T',
-                                                      )
-                                                        ? initialValues.end
-                                                              .split('T')[1]
-                                                              ?.substring(0, 5)
-                                                        : ''
-                                                    : ''
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900 placeholder-gray-500"
+                                            defaultValue={timePart(
+                                                initialValues?.end,
+                                            )}
+                                            className="input"
                                         />
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="field">
+                                <label htmlFor="create-event-location">
+                                    Ort
+                                </label>
                                 <input
+                                    id="create-event-location"
                                     name="location"
                                     type="text"
-                                    placeholder="Ort"
                                     disabled={isLoading}
                                     defaultValue={initialValues?.location || ''}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
+                                    className="input"
                                 />
-                                {/* Verein Selection */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Verein
-                                    </label>
-                                    {permissionsLoading ? (
-                                        <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500">
-                                            Lade...
-                                        </div>
-                                    ) : (
-                                        <select
-                                            name="vereinId"
-                                            disabled={
-                                                isLoading || !canSelectVerein
-                                            }
-                                            value={selectedVereinId}
-                                            onChange={(e) =>
-                                                setSelectedVereinId(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
-                                        >
-                                            {VEREINE_OPTIONS.map((verein) => (
-                                                <option
-                                                    key={verein.id}
-                                                    value={verein.id}
-                                                >
-                                                    {verein.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                            </div>
+
+                            <div className="field">
+                                <label htmlFor="create-event-verein">
+                                    Verein
+                                </label>
+                                {permissionsLoading ? (
+                                    <p className="muted small">
+                                        Berechtigungen werden geladen …
+                                    </p>
+                                ) : (
+                                    <select
+                                        id="create-event-verein"
+                                        name="vereinId"
+                                        disabled={isLoading || !canSelectVerein}
+                                        value={selectedVereinId}
+                                        onChange={(event) =>
+                                            setSelectedVereinId(
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="select"
+                                    >
+                                        {VEREINE_OPTIONS.map((verein) => (
+                                            <option
+                                                key={verein.id}
+                                                value={verein.id}
+                                            >
+                                                {verein.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                                {!canSelectVerein &&
+                                    hasVereinCreatePermission && (
+                                        <span className="hint">
+                                            Als Vereinsverwalter legen Sie
+                                            Termine nur für Ihren eigenen Verein
+                                            an.
+                                        </span>
                                     )}
-                                    {!canSelectVerein &&
-                                        hasVereinCreatePermission && (
-                                            <p className="mt-1 text-xs text-gray-500">
-                                                Als Vereinsverwalter können Sie
-                                                nur Events für Ihren Verein
-                                                erstellen.
-                                            </p>
-                                        )}
-                                </div>
+                            </div>
+
+                            <div className="field">
+                                <label htmlFor="create-event-category">
+                                    Rubrik
+                                </label>
                                 <select
+                                    id="create-event-category"
                                     name="category"
                                     disabled={isLoading}
                                     defaultValue={
                                         initialValues?.category || 'sonstiges'
                                     }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 text-gray-900"
+                                    className="select"
                                 >
-                                    <option value="sonstiges">Sonstiges</option>
-                                    <option value="sitzung">Sitzung</option>
-                                    <option value="veranstaltung">
-                                        Veranstaltung
-                                    </option>
-                                    <option value="sport">Sport</option>
-                                    <option value="kultur">Kultur</option>
+                                    {CATEGORY_OPTIONS.map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.label}
+                                        </option>
+                                    ))}
                                 </select>
+                            </div>
+
+                            <div className="field">
+                                <label htmlFor="create-event-organizer">
+                                    Veranstalter
+                                </label>
                                 <input
+                                    id="create-event-organizer"
                                     name="organizer"
                                     type="text"
-                                    placeholder="Veranstalter"
                                     disabled={isLoading}
                                     defaultValue={
                                         initialValues?.organizer || ''
                                     }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 text-gray-900"
+                                    className="input"
                                 />
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Bild (optional)
-                                    </label>
-                                    <div className="space-y-2">
-                                        {imageUrl ? (
-                                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className="w-12 h-12 rounded-lg overflow-hidden relative">
-                                                    <Image
-                                                        src={imageUrl}
-                                                        alt="Ausgewähltes Bild"
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                                <div className="flex-1 flex items-stretch justify-between gap-3">
-                                                    <div>
-                                                        <p className="text-sm font-medium text-gray-900">
-                                                            Bild ausgewählt
-                                                        </p>
-                                                        <p className="mt-1 text-xs text-gray-700">
-                                                            Wird in der
-                                                            Terminübersicht
-                                                            angezeigt
-                                                        </p>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setShowCropper(
-                                                                true,
-                                                            )
-                                                        }
-                                                        className="inline-flex items-center justify-center self-stretch rounded-md border border-indigo-200 bg-indigo-50 px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300"
-                                                    >
-                                                        <Crop className="w-4 h-4 mr-1.5" />
-                                                        Bild zuschneiden
-                                                    </button>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setImageUrl('');
-                                                        setImageCropData(
-                                                            undefined,
-                                                        );
-                                                    }}
-                                                    disabled={isLoading}
-                                                    className="text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setShowImagePicker(true)
-                                                }
-                                                disabled={isLoading}
-                                                className="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                            >
-                                                <ImageIcon className="w-5 h-5 text-gray-500 mr-2" />
-                                                <span className="text-gray-700">
-                                                    Bild aus Galerie wählen
-                                                </span>
-                                            </button>
-                                        )}
+                            </div>
+
+                            <div className="field">
+                                <span className="field-label">
+                                    Bild (optional)
+                                </span>
+                                {imageUrl ? (
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                            alignItems: 'center',
+                                            gap: 'var(--s3)',
+                                            padding: 'var(--s3)',
+                                            border: 'var(--border) solid var(--rule)',
+                                            background: 'var(--paper-sunken)',
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                position: 'relative',
+                                                display: 'block',
+                                                width: '64px',
+                                                height: '64px',
+                                                flex: 'none',
+                                                border: 'var(--border) solid var(--rule-strong)',
+                                                overflow: 'hidden',
+                                            }}
+                                        >
+                                            <Image
+                                                src={imageUrl}
+                                                alt="Ausgewähltes Bild"
+                                                fill
+                                                style={{
+                                                    objectFit: 'cover',
+                                                }}
+                                            />
+                                        </span>
+                                        <span
+                                            style={{
+                                                flex: '1 1 160px',
+                                                fontSize: 'var(--small)',
+                                                color: 'var(--ink-secondary)',
+                                            }}
+                                        >
+                                            Das Bild erscheint in der
+                                            Terminübersicht.
+                                        </span>
+                                        <button
+                                            type="button"
+                                            className="btn btn--sm btn--quiet"
+                                            onClick={() => setShowCropper(true)}
+                                            disabled={isLoading}
+                                        >
+                                            Zuschneiden
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn--sm btn--quiet"
+                                            onClick={() => {
+                                                setImageUrl('');
+                                                setImageCropData(undefined);
+                                            }}
+                                            disabled={isLoading}
+                                        >
+                                            Entfernen
+                                        </button>
                                     </div>
-                                </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowImagePicker(true)
+                                        }
+                                        disabled={isLoading}
+                                        style={{
+                                            display: 'block',
+                                            width: '100%',
+                                            border: 'var(--border) dashed var(--rule-strong)',
+                                            background: 'var(--paper-raised)',
+                                            padding: 'var(--s4)',
+                                            textAlign: 'center',
+                                            font: 'inherit',
+                                            fontSize: 'var(--label)',
+                                            color: 'var(--ink-secondary)',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        Bild aus der Galerie wählen
+                                    </button>
+                                )}
                             </div>
                         </div>
+                    </div>
 
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                {isLoading ? 'Erstelle...' : 'Erstellen'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                disabled={isLoading}
-                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                            >
-                                Abbrechen
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div
+                        className="dialog-foot"
+                        style={{ position: 'sticky', bottom: 0, zIndex: 1 }}
+                    >
+                        <button
+                            type="button"
+                            className="btn btn--quiet"
+                            onClick={onClose}
+                            disabled={isLoading}
+                        >
+                            Abbrechen
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn btn--primary"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Wird angelegt …' : 'Termin anlegen'}
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            {/* Image Picker Modal */}
             {showImagePicker && (
                 <GalleryImagePicker
-                    onSelect={(img) => {
-                        setImageUrl(img.url || '');
+                    onSelect={(image) => {
+                        setImageUrl(image.url || '');
                         setShowImagePicker(false);
                     }}
                     onClose={() => setShowImagePicker(false)}
@@ -454,11 +637,10 @@ export default function EventModal({
                 />
             )}
 
-            {/* Image Cropper Modal */}
             {showCropper && imageUrl && (
                 <ImageCropper
                     imageUrl={imageUrl}
-                    initialCrops={imageCropData || {}} // Use existing or empty
+                    initialCrops={imageCropData || {}}
                     onSave={(crops) => {
                         setImageCropData(crops);
                         setShowCropper(false);

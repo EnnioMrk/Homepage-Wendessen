@@ -1,23 +1,18 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useId, useMemo, useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
+import { usePermissions } from '@/lib/usePermissions';
 import {
-    ArrowLeft,
-    FloppyDisk,
-    ImageSquare,
-    Trash,
-    PencilSimple,
-} from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
-import GalleryImagePicker from "@/app/admin/components/GalleryImagePicker";
-import { usePermissions } from "@/lib/usePermissions";
-import FeatureCard from "@/app/components/FeatureCard";
-import TailwindColorPicker from "@/app/admin/components/TailwindColorPicker";
-import PageSelector from "@/app/admin/components/PageSelector";
-import Modal from "@/app/components/ui/Modal";
-
-// ... (existing imports)
+    DORFLEBEN_NAV,
+    WOHNEN_BAUEN_NAV,
+    KONTAKT_NAV,
+    type NavItem,
+} from '@/lib/constants/navigation';
+import WendessenImagePicker from './WendessenImagePicker';
+import s from './wendessen.module.css';
 
 interface CardTheme {
     highlight: string;
@@ -37,7 +32,6 @@ interface CardData {
 }
 
 interface LayoutData {
-    id?: number;
     name: string;
     is_active: boolean;
     card_1: CardData;
@@ -45,740 +39,841 @@ interface LayoutData {
     card_3: CardData;
 }
 
+type CardKey = 'card_1' | 'card_2' | 'card_3';
+type ThemeSlot = keyof CardTheme;
+
 const DEFAULT_THEME: CardTheme = {
-    highlight: "green",
-    background: "green",
-    button: "green",
+    highlight: 'green',
+    background: 'green',
+    button: 'green',
 };
 
-const THEME_PRESETS: Record<string, CardTheme> = {
-    Green: { highlight: "green", background: "green", button: "green" },
-    Blue: { highlight: "blue", background: "blue", button: "blue" },
-    Warm: { highlight: "amber", background: "orange", button: "red" },
-    Slate: { highlight: "slate", background: "gray", button: "gray" },
-    Purple: { highlight: "violet", background: "purple", button: "purple" },
-};
+const COLOR_NAMES = [
+    'slate',
+    'gray',
+    'zinc',
+    'neutral',
+    'stone',
+    'red',
+    'orange',
+    'amber',
+    'yellow',
+    'lime',
+    'green',
+    'emerald',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'rose',
+];
 
-const PRESET_BG: Record<string, string> = {
-    Green: "#16a34a", // green-600
-    Blue: "#2563eb", // blue-600
-    Warm: "#f97316", // orange-500
-    Slate: "#64748b", // slate-500
-    Purple: "#7c3aed", // violet-600
-};
+const THEME_PRESETS: { label: string; theme: CardTheme }[] = [
+    { label: 'Grün', theme: { highlight: 'green', background: 'green', button: 'green' } },
+    { label: 'Blau', theme: { highlight: 'blue', background: 'blue', button: 'blue' } },
+    { label: 'Warm', theme: { highlight: 'amber', background: 'orange', button: 'red' } },
+    { label: 'Grau', theme: { highlight: 'slate', background: 'gray', button: 'gray' } },
+    { label: 'Violett', theme: { highlight: 'violet', background: 'purple', button: 'purple' } },
+];
 
-const PRESET_LABEL_DE: Record<string, string> = {
-    Green: "Grün",
-    Blue: "Blau",
-    Warm: "Warm",
-    Slate: "Grau",
-    Purple: "Violett",
-};
+const EMPTY_CARD = (index: number): CardData => ({
+    title: `Karte ${index}`,
+    subtitle: '',
+    description: '',
+    button_text: 'Mehr erfahren',
+    button_href: '#',
+    theme: { ...DEFAULT_THEME },
+});
 
-const EMPTY_CARD: CardData = {
-    title: "",
-    subtitle: "",
-    description: "",
-    button_text: "Mehr erfahren",
-    button_href: "#",
-    theme: DEFAULT_THEME,
-};
+function normalizeCard(value: unknown, index: number): CardData {
+    const card = (value ?? {}) as Partial<CardData>;
+    const theme = (card.theme ?? {}) as Partial<CardTheme>;
+    return {
+        title: typeof card.title === 'string' ? card.title : `Karte ${index}`,
+        subtitle: typeof card.subtitle === 'string' ? card.subtitle : '',
+        description:
+            typeof card.description === 'string' ? card.description : '',
+        image_id:
+            typeof card.image_id === 'string' ? card.image_id : undefined,
+        image_url:
+            typeof card.image_url === 'string' && card.image_url
+                ? card.image_url
+                : undefined,
+        button_text:
+            typeof card.button_text === 'string' ? card.button_text : '',
+        button_href:
+            typeof card.button_href === 'string' ? card.button_href : '',
+        theme: {
+            highlight:
+                typeof theme.highlight === 'string'
+                    ? theme.highlight
+                    : DEFAULT_THEME.highlight,
+            background:
+                typeof theme.background === 'string'
+                    ? theme.background
+                    : DEFAULT_THEME.background,
+            button:
+                typeof theme.button === 'string'
+                    ? theme.button
+                    : DEFAULT_THEME.button,
+        },
+    };
+}
 
-export default function EditLayoutClient({ layoutId }: { layoutId?: string }) {
-    const router = useRouter();
-    const { hasPermission } = usePermissions();
-    const canUpload = hasPermission("gallery.upload");
-
-    const [loading, setLoading] = useState(!!layoutId);
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [showImagePicker, setShowImagePicker] = useState<
-        "card_1" | "card_2" | "card_3" | null
-    >(null);
-    const [editingThemeFor, setEditingThemeFor] = useState<
-        null | "card_1" | "card_2" | "card_3"
-    >(null);
-    const [tempTheme, setTempTheme] = useState<CardTheme>(DEFAULT_THEME);
-
-    const [formData, setFormData] = useState<LayoutData>({
-        name: "",
-        is_active: false,
-        card_1: { ...EMPTY_CARD, title: "Karte 1" },
-        card_2: { ...EMPTY_CARD, title: "Karte 2" },
-        card_3: { ...EMPTY_CARD, title: "Karte 3" },
+function flattenNav(items: NavItem[]): { title: string; href: string }[] {
+    const links: { title: string; href: string }[] = [];
+    items.forEach((item) => {
+        if (item.href) links.push({ title: item.title, href: item.href });
+        if (item.items) links.push(...flattenNav(item.items));
     });
+    return links;
+}
+
+const PAGE_GROUPS = [
+    {
+        label: 'Hauptseiten',
+        items: [
+            { title: 'Startseite', href: '/' },
+            { title: 'Was steht an?', href: '/was-steht-an' },
+            { title: 'Geschichte', href: '/geschichte' },
+            { title: 'Impressionen', href: '/impressionen' },
+        ],
+    },
+    { label: 'Dorfleben', items: flattenNav(DORFLEBEN_NAV) },
+    { label: 'Wohnen & Bauen', items: flattenNav(WOHNEN_BAUEN_NAV) },
+    { label: 'Kontakt', items: flattenNav(KONTAKT_NAV) },
+];
+
+const CARD_INFO: Record<CardKey, { number: number; kind: string }> = {
+    card_1: { number: 1, kind: 'Hauptkarte, nimmt viel Platz ein' },
+    card_2: { number: 2, kind: 'Kleinere Karte an der Seite' },
+    card_3: { number: 3, kind: 'Kleinere Karte an der Seite' },
+};
+
+const EMPTY_LAYOUT: LayoutData = {
+    name: '',
+    is_active: false,
+    card_1: EMPTY_CARD(1),
+    card_2: EMPTY_CARD(2),
+    card_3: EMPTY_CARD(3),
+};
+
+export default function EditLayoutClient({
+    layoutId: initialLayoutId,
+}: {
+    layoutId?: string;
+}) {
+    const { hasPermission } = usePermissions();
+    const canUpload = hasPermission('gallery.upload');
+    const fieldsetId = useId();
+
+    const [layoutId, setLayoutId] = useState<string | undefined>(
+        initialLayoutId
+    );
+    const [formData, setFormData] = useState<LayoutData>(EMPTY_LAYOUT);
+    const [loading, setLoading] = useState(Boolean(initialLayoutId));
+    const [loadError, setLoadError] = useState<string | null>(null);
+    const [formError, setFormError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [reloadKey, setReloadKey] = useState(0);
+    const [pickerFor, setPickerFor] = useState<CardKey | null>(null);
 
     useEffect(() => {
-        if (layoutId) {
-            fetchLayout(layoutId);
-        }
-    }, [layoutId]);
+        if (!initialLayoutId) return;
+        let cancelled = false;
 
-    const fetchLayout = async (id: string) => {
-        try {
-            // Since we don't have a specific get-by-id API that returns just one (GET /admin/wendessen returns list)
-            // Wait, I didn't implement GET /admin/wendessen/[id]. I implemented PUT and DELETE.
-            // I should have implemented GET as well in that route.
-            // Let's check my route implementation.
-            // Ah, I missed GET in [id]/route.ts! I only did PUT and DELETE.
-            // I need to fix that or use the list endpoint and find it.
-            // Using list endpoint is inefficient but works for now.
-            // Better: I will fetch list and find it client side for now, or just implement GET in next step.
-            // I'll assume I'll fix the API to support GET /api/admin/wendessen/[id] or just use list for now to save a step.
-            // Let's use list for now.
-            const response = await fetch("/api/admin/wendessen");
-            if (response.ok) {
-                const data = (await response.json()) as {
-                    layouts: Array<LayoutData & { id: number }>;
-                };
-                const found = data.layouts.find(
-                    (l) => l.id != null && l.id.toString() === id,
-                );
-                if (found) {
-                    setFormData(found);
-                } else {
-                    setError("Layout nicht gefunden");
+        async function load() {
+            setLoading(true);
+            setLoadError(null);
+            try {
+                const response = await fetch('/api/admin/wendessen');
+                if (!response.ok) {
+                    throw new Error(`Status ${response.status}`);
                 }
-            } else {
-                setError("Fehler beim Laden");
+                const data = (await response.json()) as {
+                    layouts?: Array<LayoutData & { id: number }>;
+                };
+                const found = (data.layouts ?? []).find(
+                    (layout) => String(layout.id) === String(initialLayoutId)
+                );
+                if (!found) {
+                    throw new Error('Layout nicht gefunden.');
+                }
+                if (cancelled) return;
+                setFormData({
+                    name: found.name ?? '',
+                    is_active: Boolean(found.is_active),
+                    card_1: normalizeCard(found.card_1, 1),
+                    card_2: normalizeCard(found.card_2, 2),
+                    card_3: normalizeCard(found.card_3, 3),
+                });
+            } catch (error) {
+                console.error('Error loading layout:', error);
+                if (!cancelled) {
+                    setLoadError(
+                        error instanceof Error
+                            ? error.message
+                            : 'Das Layout konnte nicht geladen werden.'
+                    );
+                }
+            } finally {
+                if (!cancelled) setLoading(false);
             }
-        } catch (error) {
-            console.error(error);
-            setError("Fehler beim Laden");
-        } finally {
-            setLoading(false);
         }
-    };
 
-    const handleSave = async () => {
-        if (!formData.name) {
-            setError("Bitte geben Sie einen Namen für das Layout ein.");
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, [initialLayoutId, reloadKey]);
+
+    const allPageLinks = useMemo(
+        () => PAGE_GROUPS.flatMap((group) => group.items),
+        []
+    );
+
+    function updateCard<K extends keyof CardData>(
+        cardKey: CardKey,
+        field: K,
+        value: CardData[K]
+    ) {
+        setSuccess(null);
+        setFormData((prev) => ({
+            ...prev,
+            [cardKey]: { ...prev[cardKey], [field]: value },
+        }));
+    }
+
+    function updateTheme(cardKey: CardKey, slot: ThemeSlot, value: string) {
+        setSuccess(null);
+        setFormData((prev) => ({
+            ...prev,
+            [cardKey]: {
+                ...prev[cardKey],
+                theme: { ...prev[cardKey].theme, [slot]: value },
+            },
+        }));
+    }
+
+    async function save() {
+        if (saving) return;
+        if (!formData.name.trim()) {
+            setFormError('Bitte einen Namen für das Layout eintragen.');
             return;
         }
 
         setSaving(true);
-        setError(null);
+        setFormError(null);
+        setSuccess(null);
 
         try {
-            const url = layoutId
-                ? `/api/admin/wendessen/${layoutId}`
-                : "/api/admin/wendessen";
+            const response = await fetch(
+                layoutId
+                    ? `/api/admin/wendessen/${layoutId}`
+                    : '/api/admin/wendessen',
+                {
+                    method: layoutId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.name.trim(),
+                        card_1: formData.card_1,
+                        card_2: formData.card_2,
+                        card_3: formData.card_3,
+                    }),
+                }
+            );
 
-            const method = layoutId ? "PUT" : "POST";
-
-            const response = await fetch(url, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                router.push("/admin/wendessen");
-                router.refresh();
-            } else {
-                const data = await response.json();
-                setError(data.error || "Fehler beim Speichern");
+            if (!response.ok) {
+                let message = 'Das Layout konnte nicht gespeichert werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
+
+            const data = (await response.json()) as {
+                layout?: { id: number; is_active?: boolean };
+            };
+
+            if (!layoutId && data.layout?.id) {
+                setLayoutId(String(data.layout.id));
+            }
+            if (typeof data.layout?.is_active === 'boolean') {
+                setFormData((prev) => ({
+                    ...prev,
+                    is_active: data.layout?.is_active ?? prev.is_active,
+                }));
+            }
+
+            setSuccess(
+                layoutId
+                    ? 'Layout gespeichert.'
+                    : 'Layout angelegt. Weitere Speicherungen ändern dieses Layout.'
+            );
         } catch (error) {
-            console.error(error);
-            setError("Fehler beim Speichern");
+            setFormError(
+                error instanceof Error
+                    ? error.message
+                    : 'Das Layout konnte nicht gespeichert werden.'
+            );
         } finally {
             setSaving(false);
         }
-    };
+    }
 
-    const updateCard = <K extends keyof CardData>(
-        cardKey: "card_1" | "card_2" | "card_3",
-        field: K,
-        value: CardData[K],
-    ) => {
-        setFormData((prev) => ({
-            ...prev,
-            [cardKey]: {
-                ...prev[cardKey],
-                [field]: value,
-            },
-        }));
-    };
+    if (loading) {
+        return (
+            <div>
+                <AdminHead title="Layout bearbeiten" />
+                <p className="admin-empty" role="status">
+                    Layout wird geladen …
+                </p>
+            </div>
+        );
+    }
 
-    const updateCardTheme = (
-        cardKey: "card_1" | "card_2" | "card_3",
-        theme: CardTheme,
-    ) => {
-        setFormData((prev) => ({
-            ...prev,
-            [cardKey]: {
-                ...prev[cardKey],
-                theme,
-            },
-        }));
-    };
-
-    const handleImageSelect = (image: { id: string; url: string }) => {
-        if (showImagePicker) {
-            setFormData((prev) => ({
-                ...prev,
-                [showImagePicker]: {
-                    ...prev[showImagePicker],
-                    image_id: image.id,
-                    image_url: image.url,
-                },
-            }));
-            setShowImagePicker(null);
-        }
-    };
-
-    if (loading) return <LoadingSpinner centered />;
+    if (loadError) {
+        return (
+            <div>
+                <AdminHead title="Layout bearbeiten" />
+                <div className="notice notice--error" role="alert">
+                    <strong>Nicht geladen</strong>
+                    <span>{loadError}</span>
+                    <button
+                        type="button"
+                        className="btn btn--sm"
+                        onClick={() => setReloadKey((key) => key + 1)}
+                    >
+                        Erneut laden
+                    </button>
+                </div>
+                <p style={{ marginTop: 'var(--s4)' }}>
+                    <Link className="btn btn--quiet" href="/admin/wendessen">
+                        Zur Übersicht
+                    </Link>
+                </p>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-6 pb-20">
-            <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow sticky top-0 z-10">
-                <div className="flex items-center">
-                    <button
-                        onClick={() => router.back()}
-                        className="mr-4 text-gray-600 hover:text-gray-900"
-                    >
-                        <ArrowLeft size={24} />
-                    </button>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        {layoutId ? "Layout bearbeiten" : "Neues Layout"}
-                    </h1>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center disabled:opacity-50"
-                    >
-                        {saving ? (
-                            <LoadingSpinner
-                                size="sm"
-                                color="white"
-                                className="mr-2"
-                            />
-                        ) : (
-                            <FloppyDisk size={20} className="mr-2" />
-                        )}
-                        Speichern
-                    </button>
-                </div>
-            </div>
+        <div className={s.form}>
+            <AdminHead
+                title={layoutId ? 'Layout bearbeiten' : 'Neues Layout'}
+                sub="Drei Karten für „Aus dem Dorf“ · Änderungen werden erst mit dem Speichern übernommen"
+                actions={
+                    <>
+                        <Link
+                            className="btn btn--quiet btn--sm"
+                            href="/admin/wendessen"
+                        >
+                            Zur Übersicht
+                        </Link>
+                        <button
+                            type="button"
+                            className="btn btn--primary btn--sm"
+                            onClick={save}
+                            disabled={saving}
+                        >
+                            {saving ? 'Speichern …' : 'Speichern'}
+                        </button>
+                    </>
+                }
+            />
 
-            {error && (
-                <div className="bg-red-50 text-red-700 p-4 rounded-md border border-red-200">
-                    {error}
+            {success && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Gespeichert</strong>
+                    <span>{success}</span>
+                    {layoutId && (
+                        <span className="admin-actions">
+                            <Link
+                                className="btn btn--quiet btn--sm"
+                                href="/admin/wendessen"
+                            >
+                                Zur Übersicht
+                            </Link>
+                        </span>
+                    )}
                 </div>
             )}
 
-            {/* General Settings */}
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                    Allgemein
-                </h2>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Layout Name
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
-                        }
-                        className="w-full px-3 py-2 border rounded-md"
-                        placeholder="z.B. Sommer 2025"
-                    />
+            {formError && (
+                <div className="notice notice--error" role="alert">
+                    <strong>Nicht gespeichert</strong>
+                    <span>{formError}</span>
                 </div>
-            </div>
+            )}
 
-            {/* Cards Editor */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {(["card_1", "card_2", "card_3"] as const).map(
-                    (cardKey, index) => (
-                        <div
-                            key={cardKey}
-                            className={`bg-white p-6 rounded-lg shadow ${
-                                index === 0 ? "lg:col-span-2" : ""
-                            }`}
-                        >
-                            <div className="flex justify-between items-start mb-6 border-b pb-4">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">
-                                        {index === 0
-                                            ? "Karte 1"
-                                            : index === 1
-                                              ? "Karte 2"
-                                              : "Karte 3"}
-                                    </h3>
-                                    <p className="text-sm text-gray-500">
-                                        {index === 0
-                                            ? "Die Hauptkarte, nimmt viel Platz ein."
-                                            : "Kleinere Karte an der Seite."}
+            <Panel title="Allgemein">
+                <div className="form-row">
+                    <div className="field">
+                        <label htmlFor="layout-name">Layout-Name</label>
+                        <input
+                            id="layout-name"
+                            className="input"
+                            type="text"
+                            value={formData.name}
+                            onChange={(event) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    name: event.target.value,
+                                }))
+                            }
+                            placeholder="z. B. Sommer 2026"
+                            maxLength={120}
+                            required
+                        />
+                        <p className="hint">
+                            Nur für die Redaktion sichtbar, nicht auf der
+                            Startseite.
+                        </p>
+                    </div>
+                    <div className="field">
+                        <span className="field-label">Status</span>
+                        <p>
+                            {formData.is_active ? (
+                                <span className="stamp stamp--decided">
+                                    Aktives Layout
+                                </span>
+                            ) : (
+                                <span className="stamp stamp--draft">
+                                    Inaktiv
+                                </span>
+                            )}
+                        </p>
+                        <p className="hint">
+                            Aktiviert wird ein Layout in der Übersicht. Es kann
+                            immer nur eines aktiv sein.
+                        </p>
+                    </div>
+                </div>
+            </Panel>
+
+            {(['card_1', 'card_2', 'card_3'] as const).map((cardKey) => {
+                const card = formData[cardKey];
+                const info = CARD_INFO[cardKey];
+                const base = `${fieldsetId}-${cardKey}`;
+                const knownHref = allPageLinks.some(
+                    (link) => link.href === card.button_href
+                );
+
+                return (
+                    <fieldset key={cardKey} className={s.card}>
+                        <legend>
+                            Karte {info.number} — {info.kind}
+                        </legend>
+
+                        <div className={s.cardGrid}>
+                            <div className={s.fields}>
+                                <div className="field">
+                                    <label htmlFor={`${base}-title`}>
+                                        Titel
+                                    </label>
+                                    <input
+                                        id={`${base}-title`}
+                                        className="input"
+                                        type="text"
+                                        value={card.title}
+                                        onChange={(event) =>
+                                            updateCard(
+                                                cardKey,
+                                                'title',
+                                                event.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+
+                                <div className="field">
+                                    <label htmlFor={`${base}-subtitle`}>
+                                        Untertitel
+                                    </label>
+                                    <input
+                                        id={`${base}-subtitle`}
+                                        className="input"
+                                        type="text"
+                                        value={card.subtitle}
+                                        onChange={(event) =>
+                                            updateCard(
+                                                cardKey,
+                                                'subtitle',
+                                                event.target.value
+                                            )
+                                        }
+                                    />
+                                </div>
+
+                                <div className="field">
+                                    <label htmlFor={`${base}-description`}>
+                                        Beschreibung
+                                    </label>
+                                    <textarea
+                                        id={`${base}-description`}
+                                        className="textarea"
+                                        value={card.description}
+                                        onChange={(event) =>
+                                            updateCard(
+                                                cardKey,
+                                                'description',
+                                                event.target.value
+                                            )
+                                        }
+                                        maxLength={350}
+                                        rows={5}
+                                    />
+                                    <p className={s.counter}>
+                                        {card.description.length} / 350 Zeichen
                                     </p>
                                 </div>
-                            </div>
 
-                            {/* Design & Farben moved above inputs and preview so it spans full width */}
-                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-6">
-                                <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                                    Design & Farben
-                                </h4>
-                                <div className="mb-3">
-                                    <div className="text-xs text-gray-500 mb-2">
-                                        Vorgaben
-                                    </div>
-                                    <div
-                                        className="grid gap-2"
-                                        style={{
-                                            gridTemplateColumns:
-                                                "repeat(auto-fit, minmax(140px, 1fr))",
-                                        }}
-                                    >
-                                        {Object.entries(THEME_PRESETS).map(
-                                            ([name, theme]) => (
-                                                <button
-                                                    key={name}
-                                                    type="button"
-                                                    onClick={() =>
-                                                        updateCardTheme(
-                                                            cardKey,
-                                                            theme,
-                                                        )
-                                                    }
-                                                    className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
-                                                >
-                                                    <span
-                                                        style={{
-                                                            width: 18,
-                                                            height: 18,
-                                                            borderRadius: 4,
-                                                            backgroundColor:
-                                                                PRESET_BG[
-                                                                    name
-                                                                ] || "#ddd",
-                                                            display:
-                                                                "inline-block",
-                                                            border: "1px solid rgba(0,0,0,0.08)",
-                                                        }}
-                                                    />
-                                                    <span className="text-sm text-gray-700">
-                                                        {PRESET_LABEL_DE[
-                                                            name
-                                                        ] || name}
-                                                    </span>
-                                                </button>
-                                            ),
-                                        )}
-
-                                        {/* Anpassen included as a grid item so total tiles (presets + Anpassen) = 6 */}
+                                <div className={s.buttonBlock}>
+                                    <div className={s.buttonHead}>
+                                        <h4>Schaltfläche</h4>
                                         <button
                                             type="button"
+                                            className="btn btn--quiet btn--sm"
                                             onClick={() => {
-                                                setTempTheme(
-                                                    formData[cardKey].theme,
+                                                updateCard(
+                                                    cardKey,
+                                                    'button_text',
+                                                    ''
                                                 );
-                                                setEditingThemeFor(cardKey);
+                                                updateCard(
+                                                    cardKey,
+                                                    'button_href',
+                                                    ''
+                                                );
                                             }}
-                                            className="flex items-center gap-2 px-2 py-1 border rounded-md bg-white hover:shadow-sm justify-center"
                                         >
-                                            <PencilSimple className="h-4 w-4 text-gray-600" />
-                                            <span className="text-sm text-gray-700">
-                                                Anpassen
-                                            </span>
+                                            Kein Button
                                         </button>
                                     </div>
+
+                                    <div className="form-row">
+                                        <div className="field">
+                                            <label htmlFor={`${base}-button-text`}>
+                                                Button-Text
+                                            </label>
+                                            <input
+                                                id={`${base}-button-text`}
+                                                className="input"
+                                                type="text"
+                                                value={card.button_text}
+                                                onChange={(event) =>
+                                                    updateCard(
+                                                        cardKey,
+                                                        'button_text',
+                                                        event.target.value
+                                                    )
+                                                }
+                                                placeholder="Mehr erfahren"
+                                            />
+                                        </div>
+
+                                        <div className="field">
+                                            <label htmlFor={`${base}-button-page`}>
+                                                Seite verlinken
+                                            </label>
+                                            <select
+                                                id={`${base}-button-page`}
+                                                className="select"
+                                                value={
+                                                    knownHref
+                                                        ? card.button_href
+                                                        : ''
+                                                }
+                                                onChange={(event) => {
+                                                    if (event.target.value) {
+                                                        updateCard(
+                                                            cardKey,
+                                                            'button_href',
+                                                            event.target.value
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                <option value="">
+                                                    — eigener Link darunter —
+                                                </option>
+                                                {PAGE_GROUPS.map((group) => (
+                                                    <optgroup
+                                                        key={group.label}
+                                                        label={group.label}
+                                                    >
+                                                        {group.items.map(
+                                                            (link) => (
+                                                                <option
+                                                                    key={
+                                                                        link.href
+                                                                    }
+                                                                    value={
+                                                                        link.href
+                                                                    }
+                                                                >
+                                                                    {link.title}
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </optgroup>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="field">
+                                        <label htmlFor={`${base}-button-href`}>
+                                            Oder eigener Link
+                                        </label>
+                                        <input
+                                            id={`${base}-button-href`}
+                                            className="input"
+                                            type="text"
+                                            value={card.button_href}
+                                            onChange={(event) =>
+                                                updateCard(
+                                                    cardKey,
+                                                    'button_href',
+                                                    event.target.value
+                                                )
+                                            }
+                                            placeholder="/pfad/zur/seite"
+                                        />
+                                        <p className="hint">
+                                            Wenn Text oder Link leer sind, wird
+                                            keine Schaltfläche angezeigt.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className={s.themeBlock}>
+                                    <div className={s.buttonHead}>
+                                        <h4>Farben · Altbestand</h4>
+                                        <span className="stamp stamp--draft">
+                                            wird nicht dargestellt
+                                        </span>
+                                    </div>
+                                    <p>
+                                        Die aktuelle Gestaltung der Startseite
+                                        liest diese Farbwerte nicht mehr. Die
+                                        gespeicherten Werte bleiben erhalten,
+                                        damit ältere Layouts nicht verändert
+                                        werden. Änderungen hier haben keine
+                                        sichtbare Wirkung.
+                                    </p>
+
+                                    <div className={s.presets}>
+                                        {THEME_PRESETS.map((preset) => (
+                                            <button
+                                                key={preset.label}
+                                                type="button"
+                                                className="btn btn--quiet btn--sm"
+                                                onClick={() => {
+                                                    setSuccess(null);
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        [cardKey]: {
+                                                            ...prev[cardKey],
+                                                            theme: {
+                                                                ...preset.theme,
+                                                            },
+                                                        },
+                                                    }));
+                                                }}
+                                            >
+                                                {preset.label}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className={s.themeGrid}>
+                                        {(
+                                            [
+                                                ['highlight', 'Primär'],
+                                                ['background', 'Hintergrund'],
+                                                ['button', 'Button'],
+                                            ] as const
+                                        ).map(([slot, label]) => {
+                                            const value = card.theme[slot];
+                                            const options =
+                                                COLOR_NAMES.includes(value)
+                                                    ? COLOR_NAMES
+                                                    : [value, ...COLOR_NAMES];
+
+                                            return (
+                                                <div
+                                                    className="field"
+                                                    key={slot}
+                                                >
+                                                    <label
+                                                        htmlFor={`${base}-theme-${slot}`}
+                                                    >
+                                                        {label}
+                                                    </label>
+                                                    <select
+                                                        id={`${base}-theme-${slot}`}
+                                                        className="select"
+                                                        value={value}
+                                                        onChange={(event) =>
+                                                            updateTheme(
+                                                                cardKey,
+                                                                slot,
+                                                                event.target
+                                                                    .value
+                                                            )
+                                                        }
+                                                    >
+                                                        {options.map(
+                                                            (option) => (
+                                                                <option
+                                                                    key={option}
+                                                                    value={
+                                                                        option
+                                                                    }
+                                                                >
+                                                                    {option}
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div
-                                className={`grid grid-cols-1 gap-6 ${
-                                    index === 0
-                                        ? "md:grid-cols-2"
-                                        : "min-[1400px]:grid-cols-2"
-                                }`}
-                            >
-                                {/* Editor Column */}
-                                <div className="space-y-6">
-                                    {/* Text Inputs */}
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Titel
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData[cardKey].title}
-                                                onChange={(e) =>
-                                                    updateCard(
-                                                        cardKey,
-                                                        "title",
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                className="w-full px-3 py-2 border rounded-md mt-2"
+                            <div className={s.previewCol}>
+                                <h3 className={s.previewLabel}>
+                                    Vorschau der Startseite
+                                </h3>
+                                <div className={s.previewCard}>
+                                    <div className="dossier dossier--card">
+                                        {card.image_url && (
+                                            <Image
+                                                src={card.image_url}
+                                                alt=""
+                                                width={640}
+                                                height={360}
+                                                unoptimized
                                             />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Untertitel
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={
-                                                    formData[cardKey].subtitle
-                                                }
-                                                onChange={(e) =>
-                                                    updateCard(
-                                                        cardKey,
-                                                        "subtitle",
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                className="w-full px-3 py-2 border rounded-md mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Beschreibung
-                                            </label>
-                                            <div className="relative">
-                                                <textarea
-                                                    value={
-                                                        formData[cardKey]
-                                                            .description
-                                                    }
-                                                    onChange={(e) =>
-                                                        updateCard(
-                                                            cardKey,
-                                                            "description",
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    maxLength={350}
-                                                    rows={5}
-                                                    className="w-full px-3 py-2 border rounded-md mt-1 mb-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                />
-                                                <div className="text-right text-xs text-gray-500">
-                                                    {formData[cardKey]
-                                                        .description?.length ||
-                                                        0}{" "}
-                                                    / 350 Zeichen
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* Button Configuration */}
-                                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <h5 className="text-sm font-medium text-gray-900">
-                                                    Button Einstellungen
-                                                </h5>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        updateCard(
-                                                            cardKey,
-                                                            "button_text",
-                                                            "",
-                                                        );
-                                                        updateCard(
-                                                            cardKey,
-                                                            "button_href",
-                                                            "",
-                                                        );
-                                                    }}
-                                                    className="text-xs font-medium text-gray-600 hover:text-gray-900"
-                                                >
-                                                    Kein Button
-                                                </button>
-                                            </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                {/* Button Text */}
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                                                        Button Text
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={
-                                                            formData[cardKey]
-                                                                .button_text
-                                                        }
-                                                        onChange={(e) =>
-                                                            updateCard(
-                                                                cardKey,
-                                                                "button_text",
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        placeholder="Mehr erfahren"
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    />
-                                                </div>
-
-                                                {/* Page Selector */}
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                                                        Seite verlinken
-                                                    </label>
-                                                    <PageSelector
-                                                        value={
-                                                            formData[cardKey]
-                                                                .button_href
-                                                        }
-                                                        onChange={(href) =>
-                                                            updateCard(
-                                                                cardKey,
-                                                                "button_href",
-                                                                href,
-                                                            )
-                                                        }
-                                                        placeholder="Seite wählen..."
-                                                    />
-                                                </div>
-
-                                                {/* Custom Link */}
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                                                        Oder eigener Link
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={
-                                                            formData[cardKey]
-                                                                .button_href
-                                                        }
-                                                        onChange={(e) =>
-                                                            updateCard(
-                                                                cardKey,
-                                                                "button_href",
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        placeholder="/pfad/zur/seite"
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-3">
-                                                Wenn Text oder Link leer ist,
-                                                wird kein Button angezeigt.
-                                            </p>
-                                        </div>
+                                        )}
+                                        <span className="dossier-kicker">
+                                            {card.subtitle || 'Dorfwissen'}
+                                        </span>
+                                        <span className="dossier-title">
+                                            {card.title || 'Ohne Titel'}
+                                        </span>
+                                        {card.description && (
+                                            <span className="dossier-note">
+                                                {card.description}
+                                            </span>
+                                        )}
+                                        {card.button_text &&
+                                            card.button_href && (
+                                                <span className="arrow-link">
+                                                    {card.button_text}
+                                                </span>
+                                            )}
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col h-full">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            Vorschau
-                                        </label>
-                                        <div className="text-xs text-gray-500">
-                                            {formData[cardKey].image_url
-                                                ? "Mit Bild"
-                                                : "Nur Text"}
-                                        </div>
-                                    </div>
-
-                                    {/* Component Preview */}
-                                    <div className="border rounded-xl p-4 bg-gray-50 flex-1 flex flex-col">
-                                        <div className="flex-1 flex flex-col">
-                                            <FeatureCard
-                                                title={
-                                                    formData[cardKey].title ||
-                                                    "Titel"
-                                                }
-                                                subtitle={
-                                                    formData[cardKey].subtitle
-                                                }
-                                                description={
-                                                    formData[cardKey]
-                                                        .description ||
-                                                    "Beschreibungstext..."
-                                                }
-                                                buttonText={
-                                                    formData[cardKey]
-                                                        .button_text
-                                                }
-                                                buttonHref={
-                                                    formData[cardKey]
-                                                        .button_href
-                                                }
-                                                buttonColor={
-                                                    formData[cardKey].theme
-                                                        .button
-                                                }
-                                                highlightColor={
-                                                    formData[cardKey].theme
-                                                        .highlight
-                                                }
-                                                backgroundColor={
-                                                    formData[cardKey].theme
-                                                        .background
-                                                }
-                                                imageSrc={
-                                                    formData[cardKey].image_url
-                                                }
-                                                isTextOnly={
-                                                    !formData[cardKey].image_url
-                                                }
-                                                variant={
-                                                    cardKey === "card_1"
-                                                        ? "hero"
-                                                        : "centered"
-                                                }
-                                                className="h-full min-h-[300px]"
-                                                compact={true}
+                                <div className={s.imageBlock}>
+                                    <div className={s.imageFrame}>
+                                        {card.image_url ? (
+                                            <Image
+                                                src={card.image_url}
+                                                alt={`Bild der Karte ${info.number}`}
+                                                width={640}
+                                                height={360}
+                                                unoptimized
                                             />
-                                        </div>
-
-                                        {/* Image Controls */}
-                                        <div className="flex gap-2 mt-4">
+                                        ) : (
+                                            <span>Kein Bild gewählt</span>
+                                        )}
+                                    </div>
+                                    <div className="admin-actions">
+                                        <button
+                                            type="button"
+                                            className="btn btn--quiet btn--sm"
+                                            onClick={() => setPickerFor(cardKey)}
+                                        >
+                                            {card.image_url
+                                                ? 'Bild ändern'
+                                                : 'Bild wählen'}
+                                        </button>
+                                        {card.image_url && (
                                             <button
-                                                onClick={() =>
-                                                    setShowImagePicker(cardKey)
-                                                }
-                                                className="flex-1 flex items-center justify-center px-4 py-2 border border-blue-300 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100"
+                                                type="button"
+                                                className="btn btn--danger btn--sm"
+                                                onClick={() => {
+                                                    updateCard(
+                                                        cardKey,
+                                                        'image_url',
+                                                        undefined
+                                                    );
+                                                    updateCard(
+                                                        cardKey,
+                                                        'image_id',
+                                                        undefined
+                                                    );
+                                                }}
                                             >
-                                                {formData[cardKey].image_url ? (
-                                                    <>
-                                                        <PencilSimple className="mr-2 h-4 w-4" />
-                                                        Bild ändern
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <ImageSquare className="mr-2 h-4 w-4" />
-                                                        Bild auswählen
-                                                    </>
-                                                )}
+                                                Bild entfernen
                                             </button>
-                                            {formData[cardKey].image_url && (
-                                                <button
-                                                    onClick={() =>
-                                                        updateCard(
-                                                            cardKey,
-                                                            "image_url",
-                                                            "",
-                                                        )
-                                                    }
-                                                    className="flex items-center justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100"
-                                                    title="Bild entfernen"
-                                                >
-                                                    <Trash className="h-4 w-4" />
-                                                </button>
-                                            )}
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ),
-                )}
+                    </fieldset>
+                );
+            })}
+
+            <div className={s.saveBar}>
+                <p className="hint">
+                    {layoutId
+                        ? 'Änderungen an diesem Layout werden nach dem Speichern für die Startseite übernommen.'
+                        : 'Das neue Layout ist zunächst inaktiv.'}
+                </p>
+                <span className="admin-actions">
+                    <Link
+                        className="btn btn--quiet"
+                        href="/admin/wendessen"
+                    >
+                        Zur Übersicht
+                    </Link>
+                    <button
+                        type="button"
+                        className="btn btn--primary"
+                        onClick={save}
+                        disabled={saving}
+                    >
+                        {saving ? 'Speichern …' : 'Speichern'}
+                    </button>
+                </span>
             </div>
 
-            {showImagePicker && (
-                <GalleryImagePicker
-                    onSelect={handleImageSelect}
-                    onClose={() => setShowImagePicker(null)}
+            {pickerFor && (
+                <WendessenImagePicker
                     canUpload={canUpload}
+                    onClose={() => setPickerFor(null)}
+                    onSelect={(image) => {
+                        updateCard(pickerFor, 'image_id', image.id);
+                        updateCard(pickerFor, 'image_url', image.url);
+                        setPickerFor(null);
+                    }}
                 />
             )}
-
-            {/* Theme customization modal */}
-            <Modal
-                isOpen={!!editingThemeFor}
-                onClose={() => setEditingThemeFor(null)}
-                maxWidth="md"
-                showCloseButton
-                className="p-3"
-            >
-                <div>
-                    <div className="flex items-start justify-between gap-4">
-                        <h3 className="text-base font-semibold text-gray-900">
-                            Theme anpassen
-                        </h3>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                            <div className="w-28 text-right">
-                                <span className="text-sm text-gray-600">
-                                    Primär
-                                </span>
-                            </div>
-                            <div>
-                                <TailwindColorPicker
-                                    value={tempTheme.highlight}
-                                    onChange={(c) =>
-                                        setTempTheme((t) => ({
-                                            ...t,
-                                            highlight: c,
-                                        }))
-                                    }
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                            <div className="w-28 text-right">
-                                <span className="text-sm text-gray-600">
-                                    Hintergrund
-                                </span>
-                            </div>
-                            <div>
-                                <TailwindColorPicker
-                                    value={tempTheme.background}
-                                    onChange={(c) =>
-                                        setTempTheme((t) => ({
-                                            ...t,
-                                            background: c,
-                                        }))
-                                    }
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 p-2 rounded-md bg-white">
-                            <div className="w-28 text-right">
-                                <span className="text-sm text-gray-600">
-                                    Button
-                                </span>
-                            </div>
-                            <div>
-                                <TailwindColorPicker
-                                    value={tempTheme.button}
-                                    onChange={(c) =>
-                                        setTempTheme((t) => ({
-                                            ...t,
-                                            button: c,
-                                        }))
-                                    }
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-col gap-2">
-                        <button
-                            type="button"
-                            onClick={() => setEditingThemeFor(null)}
-                            className="w-full px-3 py-1 rounded-md border bg-white text-gray-700 text-sm text-center"
-                        >
-                            Abbrechen
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                if (editingThemeFor)
-                                    updateCardTheme(editingThemeFor, tempTheme);
-                                setEditingThemeFor(null);
-                            }}
-                            className="w-full px-3 py-1 rounded-md bg-blue-600 text-white text-sm text-center"
-                        >
-                            Speichern
-                        </button>
-                    </div>
-                </div>
-            </Modal>
         </div>
     );
 }

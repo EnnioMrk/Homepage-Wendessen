@@ -1,124 +1,146 @@
-import PageHeader from '@/app/components/layout/PageHeader';
-import { Users, UserCircle } from '@phosphor-icons/react/dist/ssr';
+import Link from 'next/link';
+import {
+    Leaf,
+    Margin,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import {
+    REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE,
+    REDAKTIONSTEAM_KERNTEAM,
+} from '@/lib/constants/members';
+import { pageToday } from '@/app/lib/page-today';
 
-import { REDAKTIONSTEAM_KERNTEAM, REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE, TeamMember } from '@/lib/constants/members';
+export const metadata = {
+    title: 'Redaktionsteam',
+    description:
+        'Kernteam und Bereichsverantwortliche, die die Seiten von Wendessen pflegen.',
+};
 
 const kernteam = REDAKTIONSTEAM_KERNTEAM;
-const bereichsverantwortliche = REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE;
+const bereich = REDAKTIONSTEAM_BEREICHSVERANTWORTLICHE;
+const offeneBereiche = bereich.filter((member) => member.name === 'N.N.');
 
-function TeamCard({ member }: { member: TeamMember }) {
-    const isPlaceholder = member.name === 'N.N.';
-
+export default async function RedaktionsteamPage() {
     return (
-        <div
-            className={`bg-white rounded-lg shadow-md p-4 border ${
-                isPlaceholder
-                    ? 'border-dashed border-gray-300'
-                    : 'border-gray-200'
-            }`}
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Redaktion"
+                    tallies={[
+                        { label: 'Kernteam', value: kernteam.length },
+                        { label: 'Bereiche', value: bereich.length },
+                        { label: 'Offen', value: offeneBereiche.length },
+                    ]}
+                    note={
+                        <>
+                            Die Bereichsverantwortlichen tragen Termine und
+                            Nachrichten ihrer Vereine selbst ein. Das Kernteam
+                            prüft Gestaltung und Inhalte.
+                        </>
+                    }
+                />
+            }
         >
-            <div className="flex items-center gap-3">
-                <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isPlaceholder ? 'bg-gray-100' : 'bg-primary/10'
-                    }`}
-                >
-                    <UserCircle
-                        size={24}
-                        className={
-                            isPlaceholder ? 'text-gray-400' : 'text-primary'
-                        }
-                        weight="fill"
-                    />
-                </div>
-                <div>
-                    <p
-                        className={`font-medium ${
-                            isPlaceholder
-                                ? 'text-gray-400 italic'
-                                : 'text-gray-900'
-                        }`}
-                    >
-                        {member.name}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                        {member.area ? `${member.area}` : member.role}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export default function RedaktionsteamPage() {
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-background to-background-secondary">
-            <PageHeader
+            <PageHead
+                kicker="Kontakt · Redaktion"
                 title="Redaktionsteam"
-                subtitle="Die Menschen hinter der Website"
-                icon={<Users size={48} />}
+                lede="Die Seiten des Dorfes werden von Wendesserinnen und Wendessern gepflegt. Das Kernteam kümmert sich um Gestaltung und Inhalte, die Bereichsverantwortlichen um Termine und Nachrichten ihrer Vereine und Institutionen."
             />
 
-            <div className="container mx-auto px-4 py-12">
-                {/* Introduction */}
-                <div className="max-w-3xl mx-auto mb-12">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                        Unsere Website wird von einem engagierten Team aus
-                        Wendesser Bürgerinnen und Bürgern gepflegt. Das Kernteam
-                        kümmert sich um die allgemeine Gestaltung und Inhalte,
-                        während die Bereichsverantwortlichen die Termine und
-                        Neuigkeiten für ihre jeweiligen Vereine und
-                        Institutionen eigenständig eintragen.
-                    </p>
+            <section aria-labelledby="kernteam">
+                <SectionHead title="Kernteam" id="kernteam" />
+                <div className="dir">
+                    {kernteam.map((member) => (
+                        <div key={member.name} className="dir-person">
+                            <div>
+                                <p className="dir-name">
+                                    {member.contactSlug ? (
+                                        <Link
+                                            href={`/kontakt/${member.contactSlug}`}
+                                        >
+                                            {member.name}
+                                        </Link>
+                                    ) : (
+                                        member.name
+                                    )}
+                                </p>
+                                <p className="dir-affil">{member.role}</p>
+                            </div>
+                            <div className="dir-contacts">
+                                <span>
+                                    {member.contactSlug
+                                        ? 'Kontaktseite im Ortsrat'
+                                        : 'Keine eigene Kontaktseite'}
+                                </span>
+                            </div>
+                            <p className="dir-importance">Kernteam</p>
+                        </div>
+                    ))}
                 </div>
+            </section>
 
-                {/* Kernteam */}
-                <div className="max-w-4xl mx-auto mb-12">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <span className="w-1 h-6 bg-primary rounded-full"></span>
-                        Kernteam
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {kernteam.map((member) => (
-                            <TeamCard key={member.name} member={member} />
-                        ))}
-                    </div>
+            <section className="block" aria-labelledby="bereiche">
+                <SectionHead title="Bereichsverantwortliche" id="bereiche" />
+                <p className="muted small" style={{ marginTop: 'var(--s3)' }}>
+                    Die Bereichsverantwortlichen pflegen eigenständig die Termine
+                    und Nachrichten für ihre Vereine und Institutionen.
+                </p>
+                <div style={{ marginTop: 'var(--s4)' }}>
+                    <table className="data">
+                        <thead>
+                            <tr>
+                                <th scope="col">Bereich</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Aufgabe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bereich.map((member, index) => (
+                                <tr key={`${member.area}-${member.name}-${index}`}>
+                                    <td>{member.area ?? 'Ohne Bereich'}</td>
+                                    <td
+                                        className={
+                                            member.name === 'N.N.'
+                                                ? 'muted'
+                                                : undefined
+                                        }
+                                    >
+                                        {member.name}
+                                    </td>
+                                    <td className="muted">{member.role}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-
-                {/* Bereichsverantwortliche */}
-                <div className="max-w-4xl mx-auto">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <span className="w-1 h-6 bg-primary rounded-full"></span>
-                        Bereichsverantwortliche
-                    </h2>
-                    <p className="text-gray-600 mb-6">
-                        Die Bereichsverantwortlichen pflegen eigenständig die
-                        Termine und Nachrichten für ihre Vereine und
-                        Institutionen.
+                {offeneBereiche.length > 0 ? (
+                    <p className="muted small" style={{ marginTop: 'var(--s3)' }}>
+                        N.N. steht für eine noch nicht benannte Person.
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {bereichsverantwortliche.map((member, index) => (
-                            <TeamCard
-                                key={`${member.area}-${index}`}
-                                member={member}
-                            />
-                        ))}
-                    </div>
-                </div>
+                ) : null}
+            </section>
 
-                {/* Call to Action */}
-                <div className="max-w-3xl mx-auto mt-12 p-6 bg-primary/5 rounded-lg border border-primary/20">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Möchten Sie mithelfen?
-                    </h3>
-                    <p className="text-gray-700">
-                        Wenn Sie Interesse haben, als Verantwortliche/r für
-                        Ihren Verein oder Ihre Institution Termine und
-                        Neuigkeiten auf unserer Website zu veröffentlichen,
-                        melden Sie sich gerne bei einem Mitglied des Kernteams.
-                    </p>
+            <section className="block" aria-labelledby="mitmachen">
+                <SectionHead title="Mitmachen" id="mitmachen" />
+                <p className="lede" style={{ marginTop: 'var(--s3)' }}>
+                    Wer Termine und Nachrichten für einen Verein oder eine
+                    Institution veröffentlichen möchte, meldet sich beim
+                    Kernteam.
+                </p>
+                <div className="pill-row" style={{ marginTop: 'var(--s4)' }}>
+                    <Link className="btn btn--primary" href="/kontakt/formular">
+                        Beim Ortsrat melden
+                    </Link>
+                    <Link
+                        className="btn btn--quiet"
+                        href="/kontakt/verzeichnis"
+                    >
+                        Ansprechpartner suchen
+                    </Link>
                 </div>
-            </div>
-        </div>
+            </section>
+        </Leaf>
     );
 }

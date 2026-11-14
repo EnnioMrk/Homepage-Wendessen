@@ -1,0 +1,351 @@
+/* Events — register skin over react-big-calendar plus the agenda table. */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s3);
+}
+
+.navRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2);
+    padding: var(--s3) 0;
+    border-bottom: var(--border) solid var(--rule);
+    margin-bottom: var(--s4);
+}
+
+.rangeLabel {
+    margin-left: auto;
+    font-size: var(--lead);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+}
+
+.surface {
+    border: var(--border) solid var(--ink);
+    background: var(--paper-raised);
+    padding: var(--s3);
+    overflow-x: auto;
+}
+
+.surface :global(.rbc-calendar) {
+    min-width: 520px;
+    height: 600px;
+}
+
+.surface :global(.rbc-month-view),
+.surface :global(.rbc-time-view),
+.surface :global(.rbc-agenda-view) {
+    border: var(--border) solid var(--rule);
+    border-radius: 0;
+}
+
+.surface :global(.rbc-event) {
+    background: var(--pine);
+    border-left: 3px solid var(--foil);
+    color: var(--pine-ink);
+}
+
+.calEventCancelled {
+    text-decoration: line-through;
+    opacity: 0.72;
+}
+
+/* Agenda table */
+.agenda {
+    background: var(--paper-raised);
+}
+
+.agenda td {
+    vertical-align: top;
+}
+
+.agendaTitle {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-weight: 620;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.agendaTitle:hover {
+    color: var(--ledger);
+    text-decoration-color: var(--ledger);
+}
+
+.agendaTitleCancelled {
+    color: var(--ink-muted);
+    text-decoration: line-through;
+}
+
+.dateCell {
+    display: inline-flex;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.dow {
+    color: var(--ink-faint);
+    font-size: var(--tally);
+    letter-spacing: 0.08em;
+    padding-top: 3px;
+}
+
+.category {
+    display: block;
+    margin-top: 6px;
+    padding-left: var(--s2);
+    border-left: 2px solid var(--ledger);
+    font-size: var(--tally);
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.place,
+.club {
+    color: var(--ink-secondary);
+    overflow-wrap: anywhere;
+}
+
+.stateOpen {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+/* Detail and edit dialog */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--s5) var(--s4);
+    overflow-y: auto;
+    background: rgba(20, 36, 32, 0.62);
+}
+
+.dialogWide {
+    width: min(760px, calc(100vw - 32px));
+}
+
+.footSticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+
+.detailState {
+    display: grid;
+    gap: var(--s2);
+    margin-bottom: var(--s4);
+}
+
+.figure {
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+    margin-bottom: var(--s4);
+}
+
+.figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.figureCaption {
+    padding: 6px var(--s3);
+    border-top: var(--border) solid var(--rule);
+    font-size: var(--tally);
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+}
+
+.kicker {
+    font-size: var(--tally);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: var(--s4);
+}
+
+.description {
+    white-space: pre-wrap;
+    color: var(--ink-secondary);
+    margin-top: var(--s2);
+    line-height: 1.6;
+}
+
+.imageTray {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s3);
+    padding: var(--s3);
+    border: var(--border) solid var(--rule);
+    background: var(--paper-sunken);
+}
+
+.imageTray img {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border: var(--border) solid var(--rule-strong);
+    background: var(--paper);
+}
+
+.trayThumb {
+    position: relative;
+    display: block;
+    width: 64px;
+    height: 64px;
+    flex: none;
+    border: var(--border) solid var(--rule-strong);
+    background: var(--paper);
+    overflow: hidden;
+}
+
+.imageTrayText {
+    flex: 1 1 160px;
+    font-size: var(--small);
+    color: var(--ink-secondary);
+}
+
+.picker {
+    display: block;
+    width: 100%;
+    border: var(--border) dashed var(--rule-strong);
+    background: var(--paper-raised);
+    padding: var(--s4);
+    text-align: center;
+    font: inherit;
+    font-size: var(--label);
+    color: var(--ink-secondary);
+    cursor: pointer;
+}
+
+.picker:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+.confirmBlock {
+    display: grid;
+    gap: var(--s2);
+    margin-top: var(--s3);
+}
+
+.confirmActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+}
+
+.formSection {
+    border-top: var(--border) solid var(--rule);
+    padding-top: var(--s4);
+    margin-top: var(--s4);
+}
+
+.formSection:first-child {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.formSectionTitle {
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+    margin-bottom: var(--s3);
+}
+
+.formGrid {
+    display: grid;
+    gap: var(--s4);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s4);
+}
+
+@media (max-width: 640px) {
+    .formRow {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 720px) {
+    .agenda thead {
+        display: none;
+    }
+
+    .agenda,
+    .agenda tbody,
+    .agenda tr,
+    .agenda td {
+        display: block;
+        width: 100%;
+    }
+
+    .agenda tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'title state'
+            'date time';
+        gap: 4px var(--s3);
+        padding: var(--s3) 0;
+        border-bottom: var(--border) solid var(--rule);
+    }
+
+    .agenda td {
+        border-bottom: 0;
+        padding: 0;
+    }
+
+    .agenda .cellTitle {
+        grid-area: title;
+    }
+
+    .agenda .cellState {
+        grid-area: state;
+        text-align: right;
+    }
+
+    .agenda .cellDate {
+        grid-area: date;
+    }
+
+    .agenda .cellTime {
+        grid-area: time;
+        text-align: right;
+    }
+
+    .agenda .colPlace,
+    .agenda .colClub {
+        display: none;
+    }
+}

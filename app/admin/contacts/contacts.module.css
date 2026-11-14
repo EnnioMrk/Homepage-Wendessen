@@ -1,0 +1,258 @@
+/* Contacts — the directory leaf: ruled table, ruled form rows. */
+
+.scroll {
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 100%;
+}
+
+.nameCell {
+    display: grid;
+    gap: 2px;
+    min-width: 170px;
+}
+
+.nameMain {
+    font-weight: 620;
+    font-size: var(--label);
+    overflow-wrap: anywhere;
+}
+
+.sub {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.contactCell {
+    display: grid;
+    gap: 3px;
+    font-size: var(--small);
+    color: var(--ink-secondary);
+    min-width: 190px;
+}
+
+.contactLine {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+    overflow-wrap: anywhere;
+}
+
+.contactType {
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.orgCell {
+    display: grid;
+    gap: 2px;
+    font-size: var(--small);
+    color: var(--ink-secondary);
+    min-width: 150px;
+    overflow-wrap: anywhere;
+}
+
+.orgRole {
+    color: var(--ink-muted);
+}
+
+.prio {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+    white-space: nowrap;
+}
+
+.num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+    font-size: var(--label);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    justify-content: flex-end;
+}
+
+.actions a,
+.actions button {
+    white-space: nowrap;
+}
+
+.cellEmpty {
+    color: var(--ink-faint);
+}
+
+.inlineMeta {
+    display: none;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    gap: 2px;
+}
+
+.inlineMeta span {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1080px) {
+    .colOrg {
+        display: none;
+    }
+
+    .orgInline {
+        display: grid;
+    }
+}
+
+@media (max-width: 780px) {
+    .colContact {
+        display: none;
+    }
+
+    .contactInline {
+        display: grid;
+    }
+
+    .colPrio {
+        display: none;
+    }
+}
+
+/* --- Ruled form ------------------------------------------------ */
+
+.formGrid {
+    display: grid;
+    gap: var(--s5);
+}
+
+.group {
+    display: grid;
+    gap: var(--s2);
+}
+
+.groupHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s2);
+    padding-bottom: 5px;
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.groupTitle {
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.rows {
+    display: grid;
+    gap: var(--s2);
+}
+
+.row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--s3);
+    align-items: end;
+    padding: var(--s3);
+    border: var(--border) solid var(--rule);
+    background: var(--paper);
+}
+
+.rowPhones {
+    grid-template-columns: 190px minmax(0, 1fr) auto;
+}
+
+.rowAff {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
+.emptyRow {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    padding: 2px 0;
+}
+
+.priority {
+    display: grid;
+    gap: var(--s2);
+}
+
+.priorityHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2);
+    padding: var(--s3);
+    border: var(--border) solid var(--rule);
+    background: var(--paper);
+}
+
+.priorityValue {
+    font-size: var(--small);
+    color: var(--ink-secondary);
+}
+
+.priorityValue strong {
+    font-size: var(--label);
+    font-variant-numeric: tabular-nums;
+}
+
+.slice {
+    display: grid;
+    gap: var(--s2);
+    padding: var(--s3);
+    border: var(--border) solid var(--rule);
+    border-top: 0;
+}
+
+.ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--micro);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-faint);
+}
+
+.formFoot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--s2);
+    padding: var(--s4);
+    border-top: var(--border) solid var(--rule);
+    background: var(--paper-sunken);
+}
+
+.hintList {
+    display: grid;
+    gap: 2px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+@media (max-width: 720px) {
+    .row,
+    .rowPhones,
+    .rowAff {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+}

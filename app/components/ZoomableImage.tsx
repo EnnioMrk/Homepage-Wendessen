@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Modal from '@/app/components/ui/Modal';
 
+
 interface ZoomableImageProps {
     src: string;
     alt: string;
@@ -212,38 +213,39 @@ export default function ZoomableImage({
 
     return (
         <>
-            <div className={`my-8 ${className}`}>
+            <figure
+                className={`${framed === false ? '' : 'figure'} ${className ?? ''}`}
+                style={{ marginBlock: 'var(--s5)' }}
+            >
                 <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className="block w-full text-left"
+                    style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: 0,
+                        border: 0,
+                        background: 'none',
+                        cursor: 'zoom-in',
+                    }}
+                    aria-label={`${alt} — vergrößern`}
                 >
-                    {framed ? (
-                        <div className="relative rounded-2xl overflow-hidden shadow-lg">
-                            <Image
-                                src={src}
-                                alt={alt}
-                                width={1200}
-                                height={800}
-                                className={`w-full h-auto object-cover cursor-zoom-in hover:opacity-95 transition-opacity ${imageClassName}`}
-                            />
-                        </div>
-                    ) : (
-                        <Image
-                            src={src}
-                            alt={alt}
-                            width={1200}
-                            height={800}
-                            className={`w-full h-auto cursor-zoom-in hover:opacity-95 transition-opacity ${imageClassName}`}
-                        />
-                    )}
+                    <Image
+                        src={src}
+                        alt={alt}
+                        width={1200}
+                        height={800}
+                        className={`w-full h-auto ${imageClassName ?? ''}`}
+                        style={{ width: '100%', height: 'auto' }}
+                    />
                 </button>
                 {caption && (
-                    <p className="mt-3 text-center text-sm text-gray-500 italic">
-                        {caption}
-                    </p>
+                    <figcaption>
+                        <span>{caption}</span>
+                        <span>Vergrößern</span>
+                    </figcaption>
                 )}
-            </div>
+            </figure>
 
             {isOpen && (
                 <ImagePreview

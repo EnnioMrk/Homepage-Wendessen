@@ -7,6 +7,7 @@ import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 // Generate a random 6-digit number
 function generateInitialPassword(): string {
@@ -120,6 +121,8 @@ export async function POST(request: NextRequest) {
             initialPassword, // Return this only once for the admin to share with the new user
         });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error creating admin user:', error);
         return NextResponse.json(
             { error: 'Failed to create admin user' },

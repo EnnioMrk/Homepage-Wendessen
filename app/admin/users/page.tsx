@@ -1,13 +1,28 @@
+import Link from 'next/link';
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
+import { AdminHead } from '@/app/components/admin/AdminPage';
 import AdminUsersClient from './AdminUsersClient';
-import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
-import { Suspense } from 'react';
 
 export default function AdminUsersPage() {
     return (
-        <Suspense fallback={<div>Laden...</div>}>
+        <Suspense
+            fallback={
+                <div>
+                    <AdminHead
+                        title="Benutzer"
+                        sub="Zugänge, Rollen und Berechtigungen der Redaktion"
+                    />
+                    <div className="panel">
+                        <div className="panel-body">
+                            <p className="muted">Benutzer werden geladen …</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        >
             <AdminUsersContent />
         </Suspense>
     );
@@ -20,30 +35,25 @@ async function AdminUsersContent() {
         redirect('/admin/login');
     }
 
-    // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canViewUsers = hasPermission(currentUser, 'users.view');
 
     if (!canViewUsers) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
-                        Sie haben keine Berechtigung, Benutzer zu verwalten.
+            <div>
+                <AdminHead
+                    title="Benutzer"
+                    sub="Zugänge, Rollen und Berechtigungen der Redaktion"
+                />
+                <div className="empty">
+                    <h3>Keine Berechtigung</h3>
+                    <p>
+                        Sie haben keine Berechtigung, Benutzer und Rechte zu
+                        verwalten. Wenden Sie sich an die Redaktionsleitung.
                     </p>
-                    <a
-                        href="/admin/dashboard"
-                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        <ArrowLeft className="w-4 h-4 inline mr-2" />
-                        Zurück zum Dashboard
-                    </a>
+                    <Link className="btn btn--quiet" href="/admin/dashboard">
+                        Zurück zum Schreibtisch
+                    </Link>
                 </div>
             </div>
         );

@@ -1,54 +1,75 @@
-import { notFound } from 'next/navigation';
-import { sql } from '@/lib/sql';
-import { ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import ArticleRenderer from '@/app/components/news/ArticleRenderer';
-import { Descendant } from 'slate';
+import { notFound } from 'next/navigation';
+import { ArticleBody } from '@/app/components/news/ArticleBody';
+import { excerptOf } from '@/app/components/news/content';
+import { loadNews } from '@/app/components/news/news-data';
+import {
+    Leaf,
+    Margin,
+    Notice,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import { Entry } from '@/app/components/register/Entry';
+import { dateLong, yearOf } from '@/app/lib/register-format';
+import type { NewsItem } from '@/lib/database';
+import styles from '../news.module.css';
+import { pageToday } from '@/app/lib/page-today';
 
-interface NewsArticle {
-    id: string;
-    title: string;
-    content: string;
-    category: string;
-    published_date: string;
+function findArticle(news: NewsItem[], articleId: string): NewsItem | null {
+    return news.find((item) => item.articleId === articleId) ?? null;
 }
 
-async function getArticle(articleId: string): Promise<NewsArticle | null> {
-    try {
-        const result = await sql`
-            SELECT id, title, content, category, published_date
-            FROM news
-            WHERE article_id = ${articleId}
-        `;
+function descriptionOf(article: NewsItem): string {
+    return (
+        excerptOf(article.content, 160) ||
+        `Nachricht aus Wendessen, Rubrik ${article.category}.`
+    );
+}
 
-        if (result.length === 0) {
-            return null;
-        }
-
-        return result[0] as NewsArticle;
-    } catch (error) {
-        console.error('Error fetching article:', error);
-        return null;
-    }
+export async function generateStaticParams() {
+    const news = await loadNews();
+    if (!news) return [];
+    return news.map((item) => ({ id: item.articleId }));
 }
 
 export async function generateMetadata({
     params,
 }: {
     params: Promise<{ id: string }>;
-}) {
+}): Promise<Metadata> {
     const { id } = await params;
-    const article = await getArticle(id);
+    const news = await loadNews();
 
-    if (!article) {
+    if (!news) {
         return {
-            title: 'Artikel nicht gefunden',
+            title: 'Nachricht nicht erreichbar',
+            robots: { index: false, follow: false },
         };
     }
 
+    const article = findArticle(news, id);
+
+    if (!article) {
+        return {
+            title: 'Eintrag nicht gefunden',
+            robots: { index: false, follow: false },
+        };
+    }
+
+    const description = descriptionOf(article);
+
     return {
-        title: `${article.title} - Wendessen`,
-        description: article.content || 'Neuigkeiten aus Wendessen',
+        title: article.title,
+        description,
+        alternates: { canonical: `/neuigkeiten/${article.articleId}` },
+        openGraph: {
+            type: 'article',
+            title: article.title,
+            description,
+            publishedTime: article.publishedDate.toISOString(),
+        },
     };
 }
 
@@ -58,91 +79,126 @@ export default async function ArticlePage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const article = await getArticle(id);
+    const news = await loadNews();
 
-    if (!article) {
-        notFound();
+    if (!news) {
+        return (
+            <Leaf
+                margin={
+                    <Margin
+                    date={await pageToday()}
+                        label="Register"
+                        note={
+                            <>
+                                Nachrichten tragen Datum und Rubrik. Sobald das
+                                Register antwortet, steht der Eintrag wieder da.
+                            </>
+                        }
+                    />
+                }
+            >
+                <PageHead
+                    kicker="Register · Nachrichten"
+                    title="Nachricht nicht erreichbar"
+                />
+                <Notice
+                    tone="error"
+                    title="Das Register antwortet nicht"
+                >
+                    Die Nachricht konnte nicht geladen werden.{' '}
+                    <Link className="link" href={`/neuigkeiten/${id}`}>
+                        Erneut laden
+                    </Link>
+                </Notice>
+            </Leaf>
+        );
     }
 
-    let contentJson: Descendant[];
+    const article = findArticle(news, id);
+    if (!article) notFound();
 
-    // Parse content (which is now JSON)
-    const contentString =
-        typeof article.content === 'string'
-            ? article.content
-            : JSON.stringify(article.content);
-
-    if (
-        !contentString ||
-        contentString === 'null' ||
-        contentString === 'object' ||
-        contentString.trim() === ''
-    ) {
-        contentJson = [
-            {
-                type: 'paragraph',
-                children: [{ text: 'Dieser Artikel hat noch keinen Inhalt.' }],
-            },
-        ];
-    } else {
-        try {
-            contentJson =
-                typeof article.content === 'string'
-                    ? JSON.parse(article.content)
-                    : (article.content as Descendant[]);
-        } catch (error) {
-            console.error('Error parsing article content:', error);
-            contentJson = [
-                {
-                    type: 'paragraph',
-                    children: [{ text: 'Fehler beim Laden des Artikels.' }],
-                },
-            ];
-        }
-    }
-
-    const publishedDate = new Date(article.published_date);
+    const publishedDate = article.publishedDate;
+    const pinnedCount = news.filter((item) => item.isPinned).length;
+    const others = news
+        .filter((item) => item.articleId !== article.articleId)
+        .slice(0, 3);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            <div className="container mx-auto px-4 py-12">
-                <div className="max-w-4xl mx-auto">
-                    {/* Back Button */}
-                    <Link
-                        href="/"
-                        className="inline-flex items-center text-gray-600 hover:text-primary mb-8 transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5 mr-2" />
-                        Zurück zur Startseite
-                    </Link>
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Nachrichten"
+                    tallies={[
+                        {
+                            label: 'Einträge',
+                            value: news.length,
+                            href: '/neuigkeiten',
+                        },
+                        { label: 'Angeheftet', value: pinnedCount },
+                    ]}
+                    note={
+                        <>
+                            Diese Nachricht steht im Register bei den Meldungen
+                            aus Wendessen. Angeheftete Einträge bleiben oben.
+                        </>
+                    }
+                />
+            }
+        >
+            <nav className={styles.back} aria-label="Zurück">
+                <Link className={styles.backLink} href="/neuigkeiten">
+                    ← Alle Nachrichten
+                </Link>
+            </nav>
 
-                    {/* Article Header */}
-                    <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                        <div className="bg-gradient-to-r from-primary to-primary-dark p-8 md:p-12">
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white">
-                                    {article.category}
-                                </span>
-                                <span className="text-white/80 text-sm">
-                                    {publishedDate.toLocaleDateString('de-DE', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric',
-                                    })}
-                                </span>
-                            </div>
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-                                {article.title}
-                            </h1>
-                        </div>
+            <article>
+                <header className="article-head">
+                    <p className="kicker">
+                        {article.category} · {dateLong(publishedDate)}
+                    </p>
+                    <h1>{article.title}</h1>
+                    {article.isPinned && (
+                        <p className={styles.pinned}>
+                            <span className="stamp stamp--pinned">
+                                Angeheftet
+                            </span>
+                        </p>
+                    )}
+                </header>
 
-                        {/* Article Content */}
-                        <div className="p-8 md:p-12">
-                            <ArticleRenderer content={contentJson} />
-                        </div>
-                    </article>
+                <div className="article-body">
+                    <ArticleBody content={article.content} />
                 </div>
-            </div>
-        </div>
+            </article>
+
+            {others.length > 0 && (
+                <section className="block" aria-labelledby="weitere">
+                    <SectionHead
+                        title="Weitere Nachrichten"
+                        id="weitere"
+                        more="/neuigkeiten"
+                        moreLabel="Alle Nachrichten"
+                    />
+                    <div className="entries">
+                        {others.map((item) => (
+                            <Entry
+                                key={item.id}
+                                date={item.publishedDate}
+                                title={item.title}
+                                href={`/neuigkeiten/${item.articleId}`}
+                                meta={[item.category]}
+                                description={excerptOf(item.content)}
+                                state={item.isPinned ? 'decided' : 'open'}
+                                stamp={item.isPinned ? 'Angeheftet' : undefined}
+                                number={item.id}
+                                showClock={false}
+                                timeText={String(yearOf(item.publishedDate))}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
+        </Leaf>
     );
 }

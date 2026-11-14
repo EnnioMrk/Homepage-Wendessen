@@ -1,0 +1,13 @@
+/* The fact list carries long labels ("Zukunftsorientiert", "Zuständigkeiten").
+   The shared .kv column is 120px; these pages need a wider label column, and
+   the same single-column collapse on phones. */
+
+:global(.kv).facts {
+    grid-template-columns: 160px minmax(0, 1fr);
+}
+
+@media (max-width: 560px) {
+    :global(.kv).facts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

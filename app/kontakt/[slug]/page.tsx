@@ -1,6 +1,18 @@
+import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import ContactPersonCard from '../../components/ContactPersonCard';
-import { getMemberBySlug, getAllMemberSlugs } from '@/lib/constants/members';
+import {
+    Leaf,
+    Margin,
+    Notice,
+    PageHead,
+} from '@/app/components/register/Layout';
+import {
+    ORTSRAT_MEMBERS,
+    getMemberBySlug,
+    getAllMemberSlugs,
+} from '@/lib/constants/members';
+import { pageToday } from '@/app/lib/page-today';
 
 export async function generateStaticParams() {
     const slugs = getAllMemberSlugs();
@@ -25,9 +37,15 @@ export async function generateMetadata({
     }
 
     return {
-        title: `Kontakt ${contact.name} - ${contact.position || contact.role} Wendessen`,
-        description: `Kontaktinformationen von ${contact.name}, ${contact.position || contact.role} von Wendessen. Telefon, E-Mail und Adresse.`,
+        title: `${contact.name} · ${contact.position || contact.role}`,
+        description: `Kontaktinformationen von ${contact.name}, ${
+            contact.position || contact.role
+        } in Wendessen. Telefon, E-Mail und Anschrift.`,
     };
+}
+
+function telHref(value: string): string {
+    return `tel:${value.replace(/[^\d+]/g, '')}`;
 }
 
 export default async function ContactPage({
@@ -42,17 +60,147 @@ export default async function ContactPage({
         notFound();
     }
 
+    const position = contact.position || contact.role;
+
     return (
-        <ContactPersonCard
-            name={contact.name}
-            title={contact.position || contact.role}
-            subtitle={contact.subtitle}
-            birthYear={contact.birthYear || 0}
-            profession={contact.profession || ''}
-            imageSrc={contact.imageSrc || ''}
-            imageAlt={contact.imageAlt || contact.name}
-            contactInfo={contact.contactInfo}
-        />
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Ortsrat"
+                    tallies={[
+                        {
+                            label: 'Mitglieder',
+                            value: ORTSRAT_MEMBERS.length,
+                            href: '/dorfleben/ortsrat/mitglieder',
+                        },
+                        {
+                            label: 'Kontaktseiten',
+                            value: getAllMemberSlugs().length,
+                            href: '/kontakt/verzeichnis',
+                        },
+                    ]}
+                    note={
+                        <>
+                            Die Kontaktseite nennt die Angaben, die für die
+                            Ortsratsarbeit veröffentlicht sind.
+                        </>
+                    }
+                />
+            }
+        >
+            <PageHead
+                kicker="Kontakt · Ortsrat"
+                title={contact.name}
+                lede={position}
+            />
+
+            <div className="person-card person-card--plate">
+                {contact.imageSrc ? (
+                    <Image
+                        src={contact.imageSrc}
+                        alt={contact.imageAlt || contact.name}
+                        width={320}
+                        height={320}
+                        sizes="(max-width: 640px) 200px, 160px"
+                    />
+                ) : (
+                    <div
+                        aria-hidden="true"
+                        style={{
+                            aspectRatio: '1 / 1',
+                            border: 'var(--border) solid var(--rule)',
+                            background: 'var(--paper-sunken)',
+                        }}
+                    />
+                )}
+
+                <div>
+                    {contact.subtitle ? (
+                        <p
+                            className="muted"
+                            style={{ marginTop: 'var(--s2)', maxWidth: '52ch' }}
+                        >
+                            {contact.subtitle}
+                        </p>
+                    ) : null}
+
+                    <dl className="kv" style={{ marginTop: 'var(--s4)' }}>
+                        {contact.party ? (
+                            <>
+                                <dt>Aufgestellt für</dt>
+                                <dd>{contact.party}</dd>
+                            </>
+                        ) : null}
+                        {contact.profession ? (
+                            <>
+                                <dt>Beruf</dt>
+                                <dd>{contact.profession}</dd>
+                            </>
+                        ) : null}
+                        {contact.birthYear ? (
+                            <>
+                                <dt>Geburtsjahr</dt>
+                                <dd className="num">{contact.birthYear}</dd>
+                            </>
+                        ) : null}
+                        <dt>Anschrift</dt>
+                        <dd>{contact.contactInfo.address}</dd>
+                        {contact.contactInfo.phone ? (
+                            <>
+                                <dt>Telefon</dt>
+                                <dd>
+                                    <a
+                                        className="link"
+                                        href={telHref(contact.contactInfo.phone)}
+                                    >
+                                        {contact.contactInfo.phone}
+                                    </a>
+                                </dd>
+                            </>
+                        ) : null}
+                        <dt>Mobil</dt>
+                        <dd>
+                            <a
+                                className="link"
+                                href={telHref(contact.contactInfo.mobile)}
+                            >
+                                {contact.contactInfo.mobile}
+                            </a>
+                        </dd>
+                        <dt>E-Mail</dt>
+                        <dd>
+                            <a
+                                className="link"
+                                href={`mailto:${contact.contactInfo.email}`}
+                            >
+                                {contact.contactInfo.email}
+                            </a>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <Notice tone="info" title="So erreichen Sie mich">
+                Telefon und E-Mail führen direkt zu {contact.name}. Für Anfragen
+                an den ganzen Ortsrat ist das{' '}
+                <Link className="link" href="/kontakt/formular">
+                    Kontaktformular
+                </Link>{' '}
+                der passende Weg.
+            </Notice>
+
+            <div className="pill-row" style={{ marginTop: 'var(--s5)' }}>
+                <Link className="btn btn--quiet" href="/kontakt/verzeichnis">
+                    Zurück zum Verzeichnis
+                </Link>
+                <Link
+                    className="btn btn--quiet"
+                    href="/dorfleben/ortsrat/mitglieder"
+                >
+                    Alle Ortsratsmitglieder
+                </Link>
+            </div>
+        </Leaf>
     );
 }
-

@@ -1,274 +1,198 @@
-import Image from "next/image";
+import Image from 'next/image';
+import Link from 'next/link';
 import {
-    Flower,
-    ArrowsOutSimple,
-    Lightning,
-    Smiley,
-    Plant,
-    UsersThree,
-    FileText,
-    Shield,
-    Buildings,
-    Heart,
-} from "@phosphor-icons/react/dist/ssr";
-import PageHeader from "@/app/components/layout/PageHeader";
-import OrganizationContacts from "@/app/components/OrganizationContacts";
+    Leaf,
+    Margin,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import { pageToday } from '@/app/lib/page-today';
+import { ClubContacts } from '../_components/ClubContacts';
 
 export const metadata = {
-    title: "Kleingärtner Wendessen - Dorfleben",
+    title: 'Kleingärtnerverein Wendessen',
     description:
-        "Kleingärtner Wendessen - 58 Gärten mit je 500 m² für Arbeit und Erholung. Sozialverträgliche Kosten mit Wasser- und Stromanschluss.",
+        'Kleingärtner Wendessen – 58 Gärten mit je rund 500 m² für Arbeit und Erholung. Wasser- und Stromanschluss in jedem Garten, sozialverträgliche Kosten.',
 };
 
+const ANGEBOTE = [
+    {
+        titel: '58 Gärten',
+        text: 'Je ca. 500 m² Grundstücksfläche',
+    },
+    {
+        titel: 'Vollausstattung',
+        text: 'Wasser- und Stromanschluss in jedem Garten',
+    },
+    {
+        titel: 'Sozialverträglich',
+        text: 'Faire Pacht- und Beitragskosten',
+    },
+    {
+        titel: 'Körperliche Betätigung',
+        text: 'Gesunde Bewegung an der frischen Luft',
+    },
+    {
+        titel: 'Eigene Ernte',
+        text: 'Freude am selbst angebauten Obst und Gemüse',
+    },
+    {
+        titel: 'Gemeinschaft',
+        text: 'Zusammenhalt unter Gartenfreunden',
+    },
+];
+
 export default async function KleingaertnerPage() {
+    const today = await pageToday();
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            <PageHeader
+        <Leaf
+            margin={
+                <Margin
+                    date={today}
+                    label="Kleingärtner"
+                    tallies={[
+                        { label: 'Gärten', value: 58 },
+                        { label: 'Fläche je Garten', value: 'ca. 500 m²' },
+                    ]}
+                    note={
+                        <>
+                            Die Kosten (Pacht und Beitrag) sind sozialverträglich
+                            und beinhalten unter anderem die Gartenzeitung und
+                            eine Unfallversicherung.
+                        </>
+                    }
+                />
+            }
+        >
+            <p className="small" style={{ marginBottom: 'var(--s4)' }}>
+                <Link className="link-quiet" href="/dorfleben">
+                    Dorfleben
+                </Link>{' '}
+                <span className="muted">/ Vereine / Kleingärtner</span>
+            </p>
+
+            <PageHead
                 title="Kleingärtnerverein"
-                icon={<Plant />}
-                backgroundImage="/images/Vereinsleben/kleingarten.jpeg"
-                color="green"
+                lede="58 Gärten mit je rund 500 m² – Freude am eigenen Obst und Gemüse für jung und alt."
             />
 
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="max-w-5xl mx-auto">
-                    {/* Hero Image Section */}
-                    <div className="text-center mb-16">
-                        <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-green-100">
-                            <Image
-                                src="/images/Vereinsleben/kleingarten.jpeg"
-                                alt="Kleingärten Wendessen - Gartenanlage für Erholung und Arbeit"
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                <h2 className="text-3xl font-bold mb-2">
-                                    58 Kleingärten in Wendessen
-                                </h2>
-                                <p className="text-lg">
-                                    Je ca. 500 m² für Ihre ganz persönliche
-                                    Erholung
-                                </p>
-                            </div>
+            <div className="club-head">
+                <div>
+                    <p className="feature-lead">
+                        Unsere 58 Gärten haben jeweils eine Größe von ca. 500 m².
+                        Die Gärten haben durchweg Wasser- und Stromanschluss. Die
+                        Kosten (Pacht und Beitrag) sind sozialverträglich und
+                        beinhalten u.a. unsere Gartenzeitung und eine
+                        Unfallversicherung.
+                    </p>
+                    <dl className="club-facts">
+                        <div className="club-fact">
+                            <dt>Gärten</dt>
+                            <dd>58</dd>
                         </div>
-                    </div>
-
-                    {/* Introduction */}
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Willkommen bei den Kleingärtnern
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-green-600 to-emerald-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Freude am eigenen Obst und Gemüse für jung und alt
-                        </p>
-                    </div>
-
-                    {/* Garden Information */}
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="space-y-8">
-                            {/* Garden Details */}
-                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-semibold text-green-800 mb-3 flex items-center">
-                                    <Buildings className="w-6 h-6 mr-2" />
-                                    Unsere Gartenanlage
-                                </h3>
-                                <p className="text-lg text-green-800">
-                                    Unsere <strong>58 Gärten</strong> haben
-                                    jeweils eine Größe von ca.{" "}
-                                    <strong>500 m²</strong>. Die Gärten haben
-                                    durchweg{" "}
-                                    <strong>Wasser- und Stromanschluss</strong>.
-                                    Die Kosten (Pacht und Beitrag) sind{" "}
-                                    <strong>sozialverträglich</strong> und
-                                    beinhalten u.a. unsere Gartenzeitung und
-                                    eine Unfallversicherung.
-                                </p>
-                            </div>
-
-                            {/* Benefits */}
-                            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-semibold text-blue-800 mb-3 flex items-center">
-                                    <Heart className="w-6 h-6 mr-2" />
-                                    Vorteile für jung und alt
-                                </h3>
-                                <p className="text-blue-800">
-                                    Die Arbeit und Erholung im Kleingarten
-                                    bietet viele Vorteile für jung und alt.
-                                    Neben der{" "}
-                                    <strong>körperlichen Betätigung</strong> ist
-                                    es vor allem die{" "}
-                                    <strong>
-                                        Freude am eigenen Obst und Gemüse
-                                    </strong>
-                                    .
-                                </p>
-                            </div>
+                        <div className="club-fact">
+                            <dt>Größe</dt>
+                            <dd>je ca. 500 m²</dd>
                         </div>
-                    </div>
-
-                    {/* Features Grid */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                                Was wir bieten
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6"></div>
+                        <div className="club-fact">
+                            <dt>Anschlüsse</dt>
+                            <dd>Wasser und Strom in jedem Garten</dd>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {/* Garden Size */}
-                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <ArrowsOutSimple className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-green-700 mb-3">
-                                    58 Gärten
-                                </h3>
-                                <p className="text-gray-700">
-                                    Je ca. 500 m² Grundstücksfläche
-                                </p>
-                            </div>
-                            {/* Utilities */}
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Lightning className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-700 mb-3">
-                                    Vollausstattung
-                                </h3>
-                                <p className="text-gray-700">
-                                    Wasser- und Stromanschluss in jedem Garten
-                                </p>
-                            </div>{" "}
-                            {/* Costs */}
-                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Plant className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-purple-700 mb-3">
-                                    Sozialverträglich
-                                </h3>
-                                <p className="text-gray-700">
-                                    Faire Pacht- und Beitragskosten
-                                </p>
-                            </div>
-                            {/* Activities */}
-                            <div className="bg-gradient-to-br from-orange-50 to-red-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Smiley className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-orange-700 mb-3">
-                                    Körperliche Betätigung
-                                </h3>
-                                <p className="text-gray-700">
-                                    Gesunde Bewegung an der frischen Luft
-                                </p>
-                            </div>
-                            {/* Harvest */}
-                            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-yellow-600 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Plant className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-yellow-700 mb-3">
-                                    Eigene Ernte
-                                </h3>
-                                <p className="text-gray-700">
-                                    Freude am selbst angebauten Obst und Gemüse
-                                </p>
-                            </div>
-                            {/* Community */}
-                            <div className="bg-gradient-to-br from-teal-50 to-green-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-teal-600 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <UsersThree className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-teal-700 mb-3">
-                                    Gemeinschaft
-                                </h3>
-                                <p className="text-gray-700">
-                                    Zusammenhalt unter Gartenfreunden
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Included Services */}
-                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="text-center mb-8">
-                            <h3 className="text-3xl font-bold text-foreground mb-4">
-                                Im Beitrag enthalten
-                            </h3>
-                            <div className="w-20 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto"></div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-2xl shadow-lg">
-                                <h4 className="font-semibold text-emerald-800 mb-3 flex items-center">
-                                    <FileText className="w-5 h-5 mr-2" />
-                                    Gartenzeitung
-                                </h4>
-                                <p className="text-gray-700">
-                                    Regelmäßige Informationen rund um Garten und
-                                    Verein
-                                </p>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-2xl shadow-lg">
-                                <h4 className="font-semibold text-emerald-800 mb-3 flex items-center">
-                                    <Shield className="w-5 h-5 mr-2" />
-                                    Unfallversicherung
-                                </h4>
-                                <p className="text-gray-700">
-                                    Schutz bei Unfällen während der Gartenarbeit
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Contact Section */}
-                    <div className="mt-16 sm:mt-24 md:mt-32">
-                        <div className="text-center mb-12 md:mb-20">
-                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-                                Ihre Ansprechpartner
-                            </h2>
-                            <div className="w-20 h-1 bg-green-600 mx-auto mb-8"></div>
-                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Interesse an einem Kleingarten oder Fragen zum
-                                Verein? Unser Vorstand ist gerne für Sie da.
-                            </p>
-                        </div>
-
-                        <div className="max-w-xl mx-auto px-4">
-                            <OrganizationContacts
-                                organizationId="kleingartnerverein-wendessen"
-                                colorClassName="text-green-600"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Closing Statement */}
-                    <div className="text-center mt-16 bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 shadow-lg">
-                        <h3 className="text-3xl font-bold text-green-700 mb-6">
-                            Interesse an einem Kleingarten?
-                        </h3>
-                        <p className="text-xl text-gray-700 font-medium mb-4">
-                            Kontaktieren Sie uns für weitere Informationen!
-                        </p>
-                        <div className="flex justify-center">
-                            <div className="flex items-center space-x-2 text-green-600">
-                                <Plant className="w-6 h-6" />
-                                <span className="font-semibold">
-                                    Gärtnern in Wendessen
-                                </span>
-                                <Flower className="w-6 h-6" />
-                            </div>
-                        </div>
-                    </div>
+                    </dl>
                 </div>
+                <figure className="figure">
+                    <Image
+                        src="/images/Vereinsleben/kleingarten.jpeg"
+                        alt="Kleingärten Wendessen - Gartenanlage für Erholung und Arbeit"
+                        width={520}
+                        height={360}
+                        sizes="260px"
+                    />
+                    <figcaption>
+                        <span>Gartenanlage</span>
+                        <span>Wendessen</span>
+                    </figcaption>
+                </figure>
             </div>
-        </div>
+
+            <section aria-labelledby="vorteile">
+                <SectionHead title="Vorteile für jung und alt" id="vorteile" />
+                <div className="prose" style={{ marginTop: 'var(--s4)' }}>
+                    <p>
+                        Die Arbeit und Erholung im Kleingarten bietet viele
+                        Vorteile für jung und alt. Neben der körperlichen
+                        Betätigung ist es vor allem die Freude am eigenen Obst und
+                        Gemüse.
+                    </p>
+                </div>
+            </section>
+
+            <section className="block" aria-labelledby="angebot">
+                <SectionHead title="Was wir bieten" id="angebot" />
+                <table className="data">
+                    <thead>
+                        <tr>
+                            <th scope="col">Angebot</th>
+                            <th scope="col">Im Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {ANGEBOTE.map((eintrag) => (
+                            <tr key={eintrag.titel}>
+                                <td>
+                                    <strong>{eintrag.titel}</strong>
+                                </td>
+                                <td>{eintrag.text}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </section>
+
+            <section className="block" aria-labelledby="beitrag">
+                <SectionHead title="Im Beitrag enthalten" id="beitrag" />
+                <table className="data">
+                    <thead>
+                        <tr>
+                            <th scope="col">Leistung</th>
+                            <th scope="col">Beschreibung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Gartenzeitung</strong>
+                            </td>
+                            <td>
+                                Regelmäßige Informationen rund um Garten und
+                                Verein
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Unfallversicherung</strong>
+                            </td>
+                            <td>
+                                Schutz bei Unfällen während der Gartenarbeit
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <ClubContacts organizationId="kleingartnerverein-wendessen" />
+
+            <p className="block">
+                Interesse an einem Kleingarten? Kontaktieren Sie uns für weitere
+                Informationen!
+            </p>
+
+            <p>
+                <Link className="arrow-link" href="/dorfleben">
+                    Zurück zum Dorfleben
+                </Link>
+            </p>
+        </Leaf>
     );
 }

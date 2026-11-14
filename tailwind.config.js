@@ -9,67 +9,97 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // Primary colors (from BackgroundElements)
                 primary: {
-                    DEFAULT: '#5FA87B', // Lighter, more muted green
-                    light: '#7DBB96',
-                    dark: '#4A8A66',
-                    darker: '#3A6F52',
-                    foreground: '#FFFFFF',
+                    DEFAULT: '#23476b',
+                    light: '#3b6288',
+                    dark: '#1a3550',
+                    darker: '#142a40',
+                    foreground: '#f1f2ee',
                 },
-                // Secondary colors (was accent)
                 secondary: {
-                    DEFAULT: '#2B5F75', // Deep blue-gray
-                    light: '#3D7A94',
-                    dark: '#1A4A5C',
-                    foreground: '#FFFFFF',
+                    DEFAULT: '#1b2f27',
+                    light: '#243b31',
+                    dark: '#142420',
+                    foreground: '#e6e9e2',
                 },
-                // Accent colors (was secondary)
                 accent: {
-                    DEFAULT: '#E8B96C', // Warm gold
-                    light: '#F5D4A3',
-                    dark: '#D4A04A',
-                    foreground: '#1A1A1A',
+                    DEFAULT: '#c2a24b',
+                    light: '#d4b969',
+                    dark: '#8f7530',
+                    foreground: '#161a17',
                 },
-                // Background colors
                 background: {
-                    DEFAULT: '#FFFFFF',
-                    secondary: '#F8F9FA',
-                    muted: '#F3F4F6',
+                    DEFAULT: '#e9ebe6',
+                    secondary: '#f1f2ee',
+                    muted: '#dfe2dc',
                 },
-                // Text colors
                 foreground: {
-                    DEFAULT: '#1A1A1A',
-                    muted: '#4B5563',
-                    subtle: '#6B7280',
+                    DEFAULT: '#161a17',
+                    muted: '#39423b',
+                    subtle: '#5d665f',
                 },
-                // Border colors
                 border: {
-                    DEFAULT: '#E5E7EB',
-                    strong: '#D1D5DB',
-                    subtle: '#F3F4F6',
+                    DEFAULT: '#c4c8c0',
+                    strong: '#969d94',
+                    subtle: '#dfe2dc',
                 },
-                // Success, warning, error colors
                 success: {
-                    DEFAULT: '#4CAF50',
-                    light: '#81C784',
-                    dark: '#388E3C',
+                    DEFAULT: '#2c6444',
+                    light: '#d9e6dc',
+                    dark: '#1f4a31',
                 },
                 warning: {
-                    DEFAULT: '#FFC107',
-                    light: '#FFD54F',
-                    dark: '#FFA000',
+                    DEFAULT: '#8a5a12',
+                    light: '#efe4cd',
+                    dark: '#6b460c',
                 },
                 error: {
-                    DEFAULT: '#F44336',
-                    light: '#E57373',
-                    dark: '#D32F2F',
+                    DEFAULT: '#9e2b25',
+                    light: '#f0dcd8',
+                    dark: '#7e211c',
                 },
+                destructive: {
+                    DEFAULT: '#9e2b25',
+                    foreground: '#ffffff',
+                },
+                card: {
+                    DEFAULT: '#f1f2ee',
+                    foreground: '#161a17',
+                },
+                popover: {
+                    DEFAULT: '#f1f2ee',
+                    foreground: '#161a17',
+                },
+                muted: {
+                    DEFAULT: '#dfe2dc',
+                    foreground: '#5d665f',
+                },
+                input: '#969d94',
+                ring: '#23476b',
             },
             borderRadius: {
-                lg: 'var(--radius)',
-                md: 'calc(var(--radius) - 2px)',
-                sm: 'calc(var(--radius) - 4px)',
+                none: '0',
+                sm: '0',
+                DEFAULT: '0',
+                md: '0',
+                lg: '0',
+                xl: '0',
+                '2xl': '0',
+                '3xl': '0',
+                full: '0',
+            },
+            boxShadow: {
+                sm: 'none',
+                DEFAULT: 'none',
+                md: 'none',
+                lg: 'none',
+                xl: 'none',
+                '2xl': 'none',
+                inner: 'none',
+            },
+            fontFamily: {
+                sans: ['Archivo', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                serif: ['Literata', 'Georgia', 'serif'],
             },
         },
     },

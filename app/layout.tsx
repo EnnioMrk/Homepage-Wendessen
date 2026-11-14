@@ -1,108 +1,153 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Link from "next/link";
-import Image from "next/image";
-import { MenubarDemo } from "@/app/components/layout/menubar";
-import MobileNavbar from "@/app/components/layout/mobile-navbar";
-import { Footer } from "@/app/components/layout/footer";
-import { AdminAuthProvider } from "@/lib/admin-auth-context";
-import { Suspense } from "react";
+import type { Metadata, Viewport } from 'next';
+import Link from 'next/link';
+import './globals.css';
+import './design/tokens.css';
+import './design/base.css';
+import './design/components.css';
+import './design/admin.css';
+import './design/pages.css';
+import { Suspense } from 'react';
+import { SpineNav } from './components/register/SpineNav';
+import { NavMarkup } from './components/register/nav-markup';
+import { MobileMenu } from './components/register/MobileMenu';
+import { Colophon } from './components/register/Colophon';
+import { getSiteSettings } from '@/lib/database';
 
-const inter = Inter({ subsets: ["latin"] });
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://wendessen.de';
 
-export const metadata: Metadata = {
-    title: "Wendessen.de - Unser Dorf im Netz",
-    description:
-        "Willkommen auf der offiziellen Webseite von Wendessen. Neuigkeiten, Termine, Vereine und mehr.",
+export async function generateMetadata(): Promise<Metadata> {
+    // Editors own the site's name, tagline and description in Einstellungen.
+    // The defaults below only apply while those settings are empty.
+    const settings = await getSiteSettings().catch(() => ({}) as Record<string, string>);
+    const siteName = settings.site_name || 'Wendessen';
+    const tagline = settings.site_tagline || 'Dorfchronik und Register';
+    const description =
+        settings.meta_description ||
+        'Das Register des Dorfes Wendessen: Termine, Nachrichten, Vereine, Menschen, Bilder und Geschichte. Geführt von Ortsrat und Vereinen.';
+    const keywords = settings.meta_keywords
+        ? settings.meta_keywords.split(',').map((k) => k.trim()).filter(Boolean)
+        : undefined;
+
+    return {
+    metadataBase: new URL(siteUrl),
+    title: {
+        default: `${siteName} — ${tagline}`,
+        template: `%s · ${siteName}`,
+    },
+    description,
+    keywords,
+    applicationName: siteName,
+    alternates: { canonical: '/' },
     icons: {
         icon: [
-            { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-            { url: "/favicon.svg", type: "image/svg+xml" },
+            { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+            { url: '/favicon.svg', type: 'image/svg+xml' },
         ],
-        shortcut: "/favicon.ico",
+        shortcut: '/favicon.ico',
         apple: [
             {
-                url: "/apple-touch-icon.png",
-                sizes: "180x180",
-                type: "image/png",
+                url: '/apple-touch-icon.png',
+                sizes: '180x180',
+                type: 'image/png',
             },
         ],
     },
-    manifest: "/site.webmanifest",
-    appleWebApp: {
-        title: "Wendessen",
+    manifest: '/site.webmanifest',
+    appleWebApp: { title: siteName },
+    openGraph: {
+        type: 'website',
+        locale: 'de_DE',
+        siteName,
+        title: `${siteName} — ${tagline}`,
+        description,
+        images: [{ url: '/images/wendessen-luftaufnahme.jpg' }],
     },
+    robots: { index: true, follow: true },
+    };
+}
+
+export const viewport: Viewport = {
+    themeColor: '#1b2f27',
+    colorScheme: 'light',
+    width: 'device-width',
+    initialScale: 1,
 };
 
 export default function RootLayout({
     children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
-    // NOTE: Do not run startup initialization here. Initialization (MinIO,
-    // default admin user) should run from a controlled startup script so it
-    // only executes once, not per Next/Turbopack build worker.
+}: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="de" className="h-full" suppressHydrationWarning={true}>
-            <body
-                className={`${inter.className} min-h-full bg-background-secondary`}
-                suppressHydrationWarning={true}
-            >
-                <Suspense
-                    fallback={
-                        <div className="h-screen flex items-center justify-center">
-                            Laden...
-                        </div>
-                    }
-                >
-                    <AdminAuthProvider>
-                        <div className="flex min-h-screen flex-col">
-                            {/* Navigation with Wappen icon */}
-                            <header className="sticky top-0 z-[70] w-full border-b border-border bg-background">
-                                <div className="container mx-auto flex items-center justify-between py-1">
-                                    {/* Logo on the left */}
-                                    <div className="flex items-center px-4">
-                                        <Link
-                                            href="/"
-                                            className="cursor-pointer"
-                                        >
-                                            <Image
-                                                src="/images/wappen.png"
-                                                alt="Wappen Wendessen"
-                                                width={48}
-                                                height={48}
-                                                className="h-10 w-10 md:h-12 md:w-12 object-contain drop-shadow hover:scale-105 transition-transform duration-200"
-                                                priority
-                                            />
-                                        </Link>
-                                    </div>
-                                    {/* Centered menubar (desktop only) */}
-                                    <div className="hidden lg:flex flex-1 justify-center">
-                                        <MenubarDemo />
-                                    </div>
-                                    {/* Mobile: Centered heading */}
-                                    <div className="flex-1 flex justify-center lg:hidden">
-                                        <span className="font-bold text-lg text-foreground">
-                                            Willkommen in Wendessen
-                                        </span>
-                                    </div>
-                                    {/* Mobile navbar (mobile only) */}
-                                    <div className="flex lg:hidden">
-                                        <MobileNavbar />
-                                    </div>
-                                </div>
-                            </header>
-                            <main
-                                className="flex-1 relative"
-                                style={{ zIndex: 20 }}
+        <html lang="de">
+            <head>
+                <link
+                    rel="preload"
+                    href="/fonts/archivo-latin.woff2"
+                    as="font"
+                    type="font/woff2"
+                    crossOrigin="anonymous"
+                />
+                <link
+                    rel="preload"
+                    href="/fonts/literata-latin.woff2"
+                    as="font"
+                    type="font/woff2"
+                    crossOrigin="anonymous"
+                />
+            </head>
+            <body>
+                <a className="skip-link" href="#inhalt">
+                    Zum Inhalt springen
+                </a>
+                <header className="spine">
+                    <div className="spine-inner wrap">
+                        <Link href="/" className="spine-mark">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src="/images/wappen.png"
+                                alt="Wappen der Gemeinde Wendessen"
+                                width={34}
+                                height={34}
+                            />
+                            <span className="spine-word">
+                                Wendessen
+                                <span className="spine-sub">
+                                    Dorfchronik seit 1170
+                                </span>
+                            </span>
+                        </Link>
+                        <Suspense fallback={<NavMarkup />}>
+                            <SpineNav />
+                        </Suspense>
+                        <div className="spine-tools">
+                            <form
+                                className="spine-search"
+                                action="/suche"
+                                method="get"
+                                role="search"
                             >
-                                {children}
-                            </main>
-                            <Footer />
+                                <label
+                                    className="visually-hidden"
+                                    htmlFor="q"
+                                >
+                                    Im Register suchen
+                                </label>
+                                <input
+                                    id="q"
+                                    name="q"
+                                    type="search"
+                                    placeholder="Suchen …"
+                                    autoComplete="off"
+                                />
+                            </form>
+                            <Link href="/admin" className="spine-admin">
+                                Redaktion
+                            </Link>
                         </div>
-                    </AdminAuthProvider>
-                </Suspense>
+                        <MobileMenu />
+                    </div>
+                </header>
+                <main id="inhalt">{children}</main>
+                <Colophon />
             </body>
         </html>
     );

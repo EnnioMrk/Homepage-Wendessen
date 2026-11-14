@@ -1,15 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import PromptDialog from '@/app/components/ui/PromptDialog';
-import Modal from '@/app/components/ui/Modal';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
 import LazySharedGalleryImage from '@/app/components/LazySharedGalleryImage';
 import { SharedGalleryImageProvider } from '@/app/components/SharedGalleryImageContext';
-import { ArrowLeft, Check, X, Warning, Trash, ArrowsCounterClockwise } from '@phosphor-icons/react';
 import { useHasPermission } from '@/lib/usePermissions';
+import { dateShort } from '@/app/lib/register-format';
+import s from '../shared-gallery.module.css';
 
 interface GalleryReport {
     id: string;
@@ -25,775 +24,763 @@ interface GalleryReport {
     submitterName?: string;
 }
 
-export default function AdminSharedGalleryReports() {
-    const router = useRouter();
-    const [reports, setReports] = useState<GalleryReport[]>([]);
-    const [allReports, setAllReports] = useState<GalleryReport[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<'pending' | 'all'>('pending');
-    const [processing, setProcessing] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [viewingImage, setViewingImage] = useState<GalleryReport | null>(
-        null
-    );
-    const [disapproving, setDisapproving] = useState(false);
-    const [imageToDisapprove, setImageToDisapprove] = useState<string | null>(null);
-    const [imageToDelete, setImageToDelete] = useState<{ submissionId: string, reportId: string } | null>(null);
-    const [reportToDelete, setReportToDelete] = useState<string | null>(null);
-    const [deleting, setDeleting] = useState(false);
+const STATUS_LABEL: Record<GalleryReport['status'], string> = {
+    pending: 'Ausstehend',
+    reviewed: 'Geprüft',
+    dismissed: 'Abgewiesen',
+};
 
+type Filter = 'pending' | 'all';
+
+interface ConfirmState {
+    kind: 'disapprove' | 'delete-both' | 'delete-report';
+    report: GalleryReport;
+}
+
+function safeDate(value?: string): string {
+    if (!value) return '—';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : dateShort(date);
+}
+
+function statusClass(status: GalleryReport['status']): string {
+    if (status === 'reviewed') return `stamp ${s.approved}`;
+    if (status === 'dismissed') return 'stamp stamp--draft';
+    return `stamp ${s.waiting}`;
+}
+
+export default function AdminSharedGalleryReports() {
     const canEdit = useHasPermission('shared_gallery.edit');
     const canDelete = useHasPermission('shared_gallery.delete');
 
-    const fetchReports = useCallback(async () => {
+    const [allReports, setAllReports] = useState<GalleryReport[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState<Filter>('pending');
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    const [processingId, setProcessingId] = useState<string | null>(null);
+    const [confirm, setConfirm] = useState<ConfirmState | null>(null);
+    const [detail, setDetail] = useState<GalleryReport | null>(null);
+    const [detailUrl, setDetailUrl] = useState<string | null>(null);
+    const dialogRef = useRef<HTMLDialogElement>(null);
+
+    const loadReports = useCallback(async () => {
+        setLoading(true);
         try {
-            setLoading(true);
-
-            // Always fetch all reports for accurate counts
-            const allResponse = await fetch(
-                '/api/admin/shared-gallery/reports'
-            );
-            if (allResponse.ok) {
-                const allData = await allResponse.json();
-                setAllReports(allData.reports || []);
+            const response = await fetch('/api/admin/shared-gallery/reports');
+            if (!response.ok) {
+                throw new Error(`Status ${response.status}`);
             }
-
-            // Fetch filtered reports
-            const url =
-                filter === 'all'
-                    ? '/api/admin/shared-gallery/reports'
-                    : `/api/admin/shared-gallery/reports?status=pending`;
-
-            const response = await fetch(url);
-            if (response.ok) {
-                const data = await response.json();
-                setReports(data.reports || []);
-            } else {
-                setError('Fehler beim Laden der Meldungen');
-            }
-        } catch (error) {
-            console.error('Error fetching reports:', error);
-            setError('Fehler beim Laden der Meldungen');
+            const data = (await response.json()) as {
+                reports?: GalleryReport[];
+            };
+            setAllReports(data.reports ?? []);
+            setError(null);
+        } catch (loadError) {
+            console.error('Error fetching reports:', loadError);
+            setError('Die Meldungen konnten nicht geladen werden.');
         } finally {
             setLoading(false);
         }
-    }, [filter]);
+    }, []);
 
     useEffect(() => {
-        fetchReports();
-    }, [fetchReports]);
+        loadReports();
+    }, [loadReports]);
 
-    const handleUpdateStatus = async (
-        reportId: string,
-        status: 'reviewed' | 'dismissed' | 'pending'
-    ) => {
-        setProcessing(reportId);
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        if (detail && !dialog.open) dialog.showModal();
+        if (!detail && dialog.open) dialog.close();
+    }, [detail]);
+
+    const reports = allReports.filter((report) =>
+        filter === 'pending' ? report.status === 'pending' : true
+    );
+
+    const pendingCount = allReports.filter(
+        (report) => report.status === 'pending'
+    ).length;
+
+    function openDetail(report: GalleryReport) {
+        setDetailUrl(report.imageUrl ?? null);
+        setDetail(report);
+    }
+
+    async function updateStatus(
+        report: GalleryReport,
+        status: GalleryReport['status']
+    ) {
+        setProcessingId(report.id);
         setError(null);
-
+        setSuccess(null);
         try {
-            const response = await fetch('/api/admin/shared-gallery/reports', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reportId, status }),
-            });
-
-            if (response.ok) {
-                await fetchReports();
-            } else {
-                const data = await response.json();
-                setError(data.error || 'Fehler beim Aktualisieren');
+            const response = await fetch(
+                '/api/admin/shared-gallery/reports',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reportId: report.id, status }),
+                }
+            );
+            if (!response.ok) {
+                let message = 'Der Status konnte nicht geändert werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
-        } catch (error) {
-            console.error('Error updating report:', error);
-            setError('Fehler beim Aktualisieren');
+            setSuccess(
+                status === 'pending'
+                    ? 'Die Meldung ist wieder ausstehend.'
+                    : `Die Meldung wurde als „${STATUS_LABEL[status]}“ verzeichnet.`
+            );
+            await loadReports();
+        } catch (statusError) {
+            setError(
+                statusError instanceof Error
+                    ? statusError.message
+                    : 'Der Status konnte nicht geändert werden.'
+            );
         } finally {
-            setProcessing(null);
+            setProcessingId(null);
         }
-    };
+    }
 
-    const handleDisapprove = async (submissionId: string) => {
-        setDisapproving(true);
+    async function disapprove(report: GalleryReport) {
+        setProcessingId(report.id);
         setError(null);
-
+        setSuccess(null);
         try {
             const response = await fetch('/api/admin/shared-gallery', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'reject',
-                    id: submissionId,
+                    id: report.submissionId,
                     reason: 'Aufgrund einer Meldung entfernt',
                 }),
             });
-
-            if (response.ok) {
-                setViewingImage(null);
-                await fetchReports();
-            } else {
-                const data = await response.json();
-                setError(data.error || 'Fehler beim Ablehnen');
+            if (!response.ok) {
+                let message = 'Das Foto konnte nicht abgelehnt werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
-        } catch (error) {
-            console.error('Error disapproving image:', error);
-            setError('Fehler beim Ablehnen');
+            setSuccess('Das Foto wurde abgelehnt.');
+            setConfirm(null);
+            setDetail(null);
+            await loadReports();
+        } catch (deleteError) {
+            setError(
+                deleteError instanceof Error
+                    ? deleteError.message
+                    : 'Das Foto konnte nicht abgelehnt werden.'
+            );
         } finally {
-            setDisapproving(false);
+            setProcessingId(null);
         }
-    };
+    }
 
-    const handleDelete = async (submissionId: string, reportId: string) => {
-        setDeleting(true);
+    async function deleteBoth(report: GalleryReport) {
+        setProcessingId(report.id);
         setError(null);
-
+        setSuccess(null);
         try {
-            // 1. Delete the submission
-            const subResponse = await fetch('/api/admin/shared-gallery', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'delete',
-                    id: submissionId,
-                }),
-            });
-
-            if (subResponse.ok) {
-                // 2. Also delete the report since we handled it by deleting the photo
-                await fetch(`/api/admin/shared-gallery/reports?reportId=${reportId}`, {
-                    method: 'DELETE',
-                });
-
-                setViewingImage(null);
-                await fetchReports();
-            } else {
-                const data = await subResponse.json();
-                setError(data.error || 'Fehler beim Löschen des Fotos');
+            const submissionResponse = await fetch(
+                '/api/admin/shared-gallery',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        id: report.submissionId,
+                    }),
+                }
+            );
+            if (!submissionResponse.ok) {
+                let message = 'Das Foto konnte nicht gelöscht werden.';
+                try {
+                    const data = (await submissionResponse.json()) as {
+                        error?: string;
+                    };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
-        } catch (error) {
-            console.error('Error deleting image:', error);
-            setError('Fehler beim Löschen des Fotos');
-        } finally {
-            setDeleting(false);
-        }
-    };
 
-    const handleDeleteReport = async (reportId: string) => {
-        setProcessing(reportId);
+            await fetch(
+                `/api/admin/shared-gallery/reports?reportId=${report.id}`,
+                { method: 'DELETE' }
+            );
+
+            setSuccess('Foto und Meldung wurden gelöscht.');
+            setConfirm(null);
+            setDetail(null);
+            await loadReports();
+        } catch (deleteError) {
+            setError(
+                deleteError instanceof Error
+                    ? deleteError.message
+                    : 'Foto und Meldung konnten nicht gelöscht werden.'
+            );
+        } finally {
+            setProcessingId(null);
+        }
+    }
+
+    async function deleteReport(report: GalleryReport) {
+        setProcessingId(report.id);
         setError(null);
-
+        setSuccess(null);
         try {
-            const response = await fetch(`/api/admin/shared-gallery/reports?reportId=${reportId}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                await fetchReports();
-            } else {
-                const data = await response.json();
-                setError(data.error || 'Fehler beim Löschen der Meldung');
+            const response = await fetch(
+                `/api/admin/shared-gallery/reports?reportId=${report.id}`,
+                { method: 'DELETE' }
+            );
+            if (!response.ok) {
+                let message = 'Die Meldung konnte nicht gelöscht werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
-        } catch (error) {
-            console.error('Error deleting report:', error);
-            setError('Fehler beim Löschen der Meldung');
+            setSuccess('Die Meldung wurde gelöscht. Das Foto bleibt erhalten.');
+            setConfirm(null);
+            await loadReports();
+        } catch (deleteError) {
+            setError(
+                deleteError instanceof Error
+                    ? deleteError.message
+                    : 'Die Meldung konnte nicht gelöscht werden.'
+            );
         } finally {
-            setProcessing(null);
+            setProcessingId(null);
         }
-    };
+    }
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Ausstehend
-                    </span>
-                );
-            case 'reviewed':
-                return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Geprüft
-                    </span>
-                );
-            case 'dismissed':
-                return (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        Abgewiesen
-                    </span>
-                );
-            default:
-                return null;
-        }
-    };
+    function confirmAction() {
+        if (!confirm) return;
+        if (confirm.kind === 'disapprove') disapprove(confirm.report);
+        else if (confirm.kind === 'delete-both') deleteBoth(confirm.report);
+        else deleteReport(confirm.report);
+    }
+
+    const confirmText =
+        confirm?.kind === 'disapprove'
+            ? {
+                  head: 'Foto ablehnen',
+                  text: 'Soll das gemeldete Foto abgelehnt und aus der Impressionen-Galerie entfernt werden?',
+                  action: 'Ablehnen',
+              }
+            : confirm?.kind === 'delete-both'
+              ? {
+                    head: 'Foto und Meldung löschen',
+                    text: 'Sollen das Foto und die zugehörige Meldung endgültig gelöscht werden? Das lässt sich nicht rückgängig machen.',
+                    action: 'Beides löschen',
+                }
+              : {
+                    head: 'Meldung löschen',
+                    text: 'Soll nur diese Meldung gelöscht werden? Das Foto bleibt erhalten.',
+                    action: 'Meldung löschen',
+                };
 
     return (
         <SharedGalleryImageProvider>
-            <div className="min-h-screen bg-gray-50">
-                {/* Header */}
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between items-center py-6">
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() =>
-                                        router.push('/admin/shared-gallery')
-                                    }
-                                    className="mr-4 p-2 text-gray-600 hover:text-gray-900"
-                                >
-                                    <ArrowLeft size={20} />
-                                </button>
-                                <div>
-                                    <h1 className="text-3xl font-bold text-gray-900">
-                                        Foto-Meldungen
-                                    </h1>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        Gemeldete Fotos prüfen und bearbeiten
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+            <div>
+                <AdminHead
+                    title="Meldungen"
+                    sub="Gemeldete Fotos prüfen · eine Meldung bleibt als Vorgang erhalten, bis sie entschieden ist"
+                    actions={
+                        <Link
+                            className="btn btn--sm"
+                            href="/admin/shared-gallery"
+                        >
+                            Zu den Impressionen
+                        </Link>
+                    }
+                />
 
-                {/* Filter Tabs */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-                    <div className="bg-white shadow rounded-lg p-4 mb-6">
-                        <div className="flex flex-wrap gap-2">
+                {success && (
+                    <div className="notice notice--ok" role="status">
+                        <strong>Ausgeführt</strong>
+                        <span>{success}</span>
+                        <button
+                            type="button"
+                            className="btn btn--quiet btn--sm"
+                            onClick={() => setSuccess(null)}
+                        >
+                            Schließen
+                        </button>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="notice notice--error" role="alert">
+                        <strong>Fehler</strong>
+                        <span>{error}</span>
+                        <button
+                            type="button"
+                            className="btn btn--sm"
+                            onClick={loadReports}
+                        >
+                            Erneut laden
+                        </button>
+                    </div>
+                )}
+
+                {confirm && (
+                    <div className={s.confirm}>
+                        <p className={s.confirmHead}>{confirmText.head}</p>
+                        <p>{confirmText.text}</p>
+                        <p className={s.meta}>
+                            <span>
+                                Foto: {confirm.report.title || 'Ohne Titel'}
+                            </span>
+                            <span>Grund: {confirm.report.reason}</span>
+                        </p>
+                        <div className={s.actions}>
                             <button
-                                onClick={() => setFilter('pending')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
+                                type="button"
+                                className="btn btn--quiet btn--sm"
+                                onClick={() => setConfirm(null)}
+                                disabled={processingId === confirm.report.id}
                             >
-                                Ausstehend (
-                                {
-                                    allReports.filter((r) => r.status === 'pending')
-                                        .length
-                                }
-                                )
+                                Abbrechen
                             </button>
                             <button
-                                onClick={() => setFilter('all')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === 'all'
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
+                                type="button"
+                                className="btn btn--danger btn--sm"
+                                onClick={confirmAction}
+                                disabled={processingId === confirm.report.id}
                             >
+                                {processingId === confirm.report.id
+                                    ? 'Ausführen …'
+                                    : confirmText.action}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                <div className="admin-filter">
+                    <div className="field">
+                        <label htmlFor="report-status">Status</label>
+                        <select
+                            id="report-status"
+                            className="select"
+                            value={filter}
+                            onChange={(event) =>
+                                setFilter(event.target.value as Filter)
+                            }
+                        >
+                            <option value="pending">
+                                Ausstehend ({pendingCount})
+                            </option>
+                            <option value="all">
                                 Alle ({allReports.length})
-                            </button>
-                        </div>
-
-                        {error && (
-                            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md flex items-center">
-                                <Warning size={16} className="mr-2" />
-                                {error}
-                                <button
-                                    onClick={() => setError(null)}
-                                    className="ml-auto"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        )}
+                            </option>
+                        </select>
                     </div>
+                    <p className={s.filterCounts}>
+                        {reports.length}{' '}
+                        {reports.length === 1 ? 'Meldung' : 'Meldungen'} in
+                        dieser Auswahl
+                    </p>
                 </div>
 
-                {/* Reports List */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-                    {loading ? (
-                        <div className="bg-white shadow rounded-lg p-12 text-center">
-                            <LoadingSpinner
-                                size="lg"
-                                text="Lade Meldungen..."
-                                centered
-                            />
-                        </div>
-                    ) : reports.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-6">
-                            {reports.map((report) => (
-                                <div
-                                    key={report.id}
-                                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                                >
-                                    <div className="p-6">
-                                        <div className="flex gap-6">
-                                            {/* Image Thumbnail */}
-                                            <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                                                <LazySharedGalleryImage
-                                                    imageId={report.submissionId}
-                                                    alt="Gemeldetes Foto"
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="128px"
-                                                    onLoad={(imageUrl) => {
-                                                        report.imageUrl = imageUrl;
-                                                    }}
-                                                />
-                                            </div>
-
-                                            {/* Report Details */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <div>
-                                                        <div className="flex items-center gap-3 mb-2">
-                                                            <h3 className="text-lg font-bold text-gray-900">
-                                                                {report.title ||
-                                                                    'Unbekannter Titel'}
-                                                            </h3>
-                                                            {getStatusBadge(
-                                                                report.status
-                                                            )}
-                                                        </div>
+                {loading ? (
+                    <p className="admin-empty" role="status">
+                        Meldungen werden geladen …
+                    </p>
+                ) : reports.length === 0 ? (
+                    <div className="admin-empty">
+                        <h2>Keine Meldungen</h2>
+                        <p>
+                            {filter === 'pending'
+                                ? 'Es gibt keine ausstehenden Meldungen.'
+                                : 'Es wurde noch kein Foto gemeldet.'}
+                        </p>
+                    </div>
+                ) : (
+                    <Panel
+                        title="Gemeldete Fotos"
+                        flush
+                        actions={
+                            <span className="tally">
+                                {pendingCount} ausstehend ·{' '}
+                                {allReports.length - pendingCount} entschieden
+                            </span>
+                        }
+                    >
+                        <div className={s.tableWrap}>
+                            <table className="data">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Foto und Meldung</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Gemeldet</th>
+                                        <th scope="col">Bearbeitet</th>
+                                        <th scope="col" className="right">
+                                            Aktionen
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {reports.map((report) => (
+                                        <tr key={report.id}>
+                                            <td>
+                                                <div className={s.reportCell}>
+                                                    <button
+                                                        type="button"
+                                                        className={s.reportThumb}
+                                                        onClick={() =>
+                                                            openDetail(report)
+                                                        }
+                                                        aria-label="Gemeldetes Foto öffnen"
+                                                    >
+                                                        <LazySharedGalleryImage
+                                                            imageId={
+                                                                report.submissionId
+                                                            }
+                                                            alt=""
+                                                            fill
+                                                            sizes="84px"
+                                                        />
+                                                    </button>
+                                                    <div
+                                                        className={
+                                                            s.reportText
+                                                        }
+                                                    >
+                                                        <strong>
+                                                            {report.title ||
+                                                                'Unbekannter Titel'}
+                                                        </strong>
+                                                        <p>
+                                                            Grund:{' '}
+                                                            {report.reason}
+                                                        </p>
                                                         {report.submitterName && (
-                                                            <p className="text-sm text-gray-600 mb-1">
-                                                                Foto von:{' '}
-                                                                <strong>
-                                                                    {
-                                                                        report.submitterName
-                                                                    }
-                                                                </strong>
+                                                            <p className="small muted">
+                                                                Foto von{' '}
+                                                                {
+                                                                    report.submitterName
+                                                                }
                                                             </p>
                                                         )}
                                                     </div>
                                                 </div>
-
-                                                <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-3">
-                                                    <p className="text-sm font-medium text-red-900 mb-1">
-                                                        Grund der Meldung:
-                                                    </p>
-                                                    <p className="text-sm text-red-800">
-                                                        {report.reason}
-                                                    </p>
-                                                </div>
-
-                                                <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                                                    <span>
-                                                        Gemeldet am{' '}
-                                                        {new Date(
-                                                            report.createdAt
-                                                        ).toLocaleDateString(
-                                                            'de-DE'
-                                                        )}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    className={statusClass(
+                                                        report.status
+                                                    )}
+                                                >
+                                                    {
+                                                        STATUS_LABEL[
+                                                            report.status
+                                                        ]
+                                                    }
+                                                </span>
+                                            </td>
+                                            <td className="num">
+                                                {safeDate(report.createdAt)}
+                                            </td>
+                                            <td className="num">
+                                                {report.reviewedAt
+                                                    ? safeDate(
+                                                          report.reviewedAt
+                                                      )
+                                                    : '—'}
+                                                {report.reviewedBy && (
+                                                    <span className="small muted">
+                                                        {' '}
+                                                        · {report.reviewedBy}
                                                     </span>
-                                                    {report.reviewedAt && (
-                                                        <>
-                                                            <span>•</span>
-                                                            <span>
-                                                                Bearbeitet am{' '}
-                                                                {new Date(
-                                                                    report.reviewedAt
-                                                                ).toLocaleDateString(
-                                                                    'de-DE'
-                                                                )}
-                                                            </span>
-                                                        </>
-                                                    )}
-                                                </div>
-
-                                                {/* Action Buttons */}
-                                                <div className="flex flex-wrap gap-3">
-                                                    {report.status === 'pending' && canEdit && (
-                                                        <button
-                                                            onClick={() =>
-                                                                handleUpdateStatus(
-                                                                    report.id,
-                                                                    'reviewed'
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                processing ===
-                                                                report.id
-                                                            }
-                                                            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors disabled:bg-gray-400"
-                                                        >
-                                                            {processing ===
-                                                                report.id ? (
-                                                                <LoadingSpinner
-                                                                    size="sm"
-                                                                    color="white"
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                    <Check
-                                                                        size={18}
-                                                                    />
-                                                                    Als geprüft
-                                                                    markieren
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                    )}
-
-                                                    {report.status === 'pending' && canEdit && (
-                                                        <button
-                                                            onClick={() =>
-                                                                setImageToDisapprove(
-                                                                    report.submissionId
-                                                                )
-                                                            }
-                                                            className="flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm font-medium transition-colors"
-                                                        >
-                                                            <X size={18} />
-                                                            Foto ablehnen
-                                                        </button>
-                                                    )}
-
-                                                    {report.status === 'pending' && canDelete && (
-                                                        <button
-                                                            onClick={() =>
-                                                                setImageToDelete({
-                                                                    submissionId: report.submissionId,
-                                                                    reportId: report.id
-                                                                })
-                                                            }
-                                                            disabled={deleting}
-                                                            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors disabled:bg-gray-400"
-                                                        >
-                                                            {deleting ? (
-                                                                <LoadingSpinner
-                                                                    size="sm"
-                                                                    color="white"
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                    <Trash
-                                                                        size={18}
-                                                                    />
-                                                                    Foto & Meldung löschen
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                    )}
-
-                                                    {canDelete && (
-                                                        <button
-                                                            onClick={() =>
-                                                                setReportToDelete(report.id)
-                                                            }
-                                                            className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors"
-                                                        >
-                                                            <Trash size={18} />
-                                                            Nur Meldung löschen
-                                                        </button>
-                                                    )}
-
-                                                    {report.status !== 'pending' && canEdit && (
-                                                        <button
-                                                            onClick={() =>
-                                                                handleUpdateStatus(
-                                                                    report.id,
-                                                                    'pending'
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                processing ===
-                                                                report.id
-                                                            }
-                                                            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors disabled:bg-gray-400"
-                                                        >
-                                                            {processing ===
-                                                                report.id ? (
-                                                                <LoadingSpinner
-                                                                    size="sm"
-                                                                    color="white"
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                    <ArrowsCounterClockwise
-                                                                        size={18}
-                                                                    />
-                                                                    Meldung zurücksetzen
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                    )}
-
+                                                )}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    className={s.rowActions}
+                                                >
                                                     <button
+                                                        type="button"
+                                                        className="btn btn--quiet btn--sm"
                                                         onClick={() =>
-                                                            setViewingImage(
-                                                                report
-                                                            )
+                                                            openDetail(report)
                                                         }
-                                                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
                                                     >
                                                         Foto ansehen
                                                     </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                                                    {canEdit &&
+                                                        report.status ===
+                                                            'pending' && (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn--sm"
+                                                                    onClick={() =>
+                                                                        updateStatus(
+                                                                            report,
+                                                                            'reviewed'
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        processingId ===
+                                                                        report.id
+                                                                    }
+                                                                >
+                                                                    Als geprüft
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn--danger btn--sm"
+                                                                    onClick={() =>
+                                                                        setConfirm(
+                                                                            {
+                                                                                kind: 'disapprove',
+                                                                                report,
+                                                                            }
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Foto ablehnen
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    {canDelete &&
+                                                        report.status ===
+                                                            'pending' && (
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn--danger btn--sm"
+                                                                onClick={() =>
+                                                                    setConfirm({
+                                                                        kind: 'delete-both',
+                                                                        report,
+                                                                    })
+                                                                }
+                                                            >
+                                                                Foto &amp;
+                                                                Meldung löschen
+                                                            </button>
+                                                        )}
+                                                    {canEdit &&
+                                                        report.status !==
+                                                            'pending' && (
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn--quiet btn--sm"
+                                                                onClick={() =>
+                                                                    updateStatus(
+                                                                        report,
+                                                                        'pending'
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    processingId ===
+                                                                    report.id
+                                                                }
+                                                            >
+                                                                Zurücksetzen
+                                                            </button>
+                                                        )}
+                                                    {canDelete && (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn--quiet btn--sm"
+                                                            onClick={() =>
+                                                                setConfirm({
+                                                                    kind: 'delete-report',
+                                                                    report,
+                                                                })
+                                                            }
+                                                        >
+                                                            Nur Meldung löschen
+                                                        </button>
+                                                    )}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    ) : (
-                        <div className="bg-white shadow rounded-lg p-12 text-center">
-                            <Warning className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                Keine Meldungen
-                            </h3>
-                            <p className="text-gray-600">
-                                {filter === 'pending'
-                                    ? 'Es gibt keine ausstehenden Meldungen.'
-                                    : 'Es wurden noch keine Fotos gemeldet.'}
-                            </p>
-                        </div>
-                    )}
-                </div>
+                    </Panel>
+                )}
 
-                {/* Image View Modal */}
-                <Modal
-                    isOpen={Boolean(viewingImage)}
-                    onClose={() => setViewingImage(null)}
-                    maxWidth="4xl"
-                    backdropBlur
+                <p style={{ marginTop: 'var(--s4)' }}>
+                    <Link
+                        className="btn btn--quiet btn--sm"
+                        href="/admin/shared-gallery"
+                    >
+                        Zurück zu den Impressionen
+                    </Link>
+                </p>
+
+                <dialog
+                    ref={dialogRef}
+                    className="dialog"
+                    aria-labelledby="report-detail-title"
+                    onClose={() => setDetail(null)}
+                    onClick={(event) => {
+                        if (event.target === dialogRef.current) {
+                            setDetail(null);
+                        }
+                    }}
                 >
-                    <div className="p-6 md:p-8">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                            <div>
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    Gemeldetes Foto
-                                </h3>
-                                {viewingImage && (
-                                    <div className="mt-1">
-                                        {getStatusBadge(viewingImage.status)}
+                    {detail && (
+                        <>
+                            <div className="dialog-head">
+                                <div>
+                                    <p className="tally">Gemeldetes Foto</p>
+                                    <h2 id="report-detail-title">
+                                        {detail.title || 'Unbekannter Titel'}
+                                    </h2>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="dialog-close"
+                                    onClick={() => setDetail(null)}
+                                    aria-label="Meldung schließen"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            <div className="dialog-body">
+                                <div className={s.dialogGrid}>
+                                    <div className={s.dialogImage}>
+                                        {detailUrl ? (
+                                            <Image
+                                                src={detailUrl}
+                                                alt="Gemeldetes Foto"
+                                                fill
+                                                unoptimized
+                                            />
+                                        ) : (
+                                            <LazySharedGalleryImage
+                                                imageId={detail.submissionId}
+                                                alt="Gemeldetes Foto"
+                                                fill
+                                                onLoad={(url) =>
+                                                    setDetailUrl(url)
+                                                }
+                                            />
+                                        )}
                                     </div>
+
+                                    <dl className={s.metaList}>
+                                        <div>
+                                            <dt>Status</dt>
+                                            <dd>
+                                                <span
+                                                    className={statusClass(
+                                                        detail.status
+                                                    )}
+                                                >
+                                                    {
+                                                        STATUS_LABEL[
+                                                            detail.status
+                                                        ]
+                                                    }
+                                                </span>
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt>Grund der Meldung</dt>
+                                            <dd className={s.reason}>
+                                                {detail.reason}
+                                            </dd>
+                                        </div>
+                                        {detail.reporterInfo && (
+                                            <div>
+                                                <dt>Zusatzinfo</dt>
+                                                <dd>{detail.reporterInfo}</dd>
+                                            </div>
+                                        )}
+                                        {detail.submitterName && (
+                                            <div>
+                                                <dt>Foto von</dt>
+                                                <dd>
+                                                    {detail.submitterName}
+                                                </dd>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <dt>Gemeldet am</dt>
+                                            <dd>
+                                                {safeDate(detail.createdAt)}
+                                            </dd>
+                                        </div>
+                                        {detail.reviewedAt && (
+                                            <div>
+                                                <dt>Bearbeitet</dt>
+                                                <dd>
+                                                    {safeDate(
+                                                        detail.reviewedAt
+                                                    )}
+                                                    {detail.reviewedBy
+                                                        ? ` · ${detail.reviewedBy}`
+                                                        : ''}
+                                                </dd>
+                                            </div>
+                                        )}
+                                    </dl>
+                                </div>
+                            </div>
+                            <div className="dialog-foot">
+                                <button
+                                    type="button"
+                                    className="btn btn--quiet"
+                                    onClick={() => setDetail(null)}
+                                >
+                                    Schließen
+                                </button>
+                                {canEdit && detail.status === 'pending' && (
+                                    <button
+                                        type="button"
+                                        className="btn"
+                                        onClick={() => {
+                                            updateStatus(detail, 'reviewed');
+                                            setDetail(null);
+                                        }}
+                                    >
+                                        Als geprüft
+                                    </button>
+                                )}
+                                {canEdit && (
+                                    <button
+                                        type="button"
+                                        className="btn btn--danger"
+                                        onClick={() => {
+                                            setConfirm({
+                                                kind: 'disapprove',
+                                                report: detail,
+                                            });
+                                            setDetail(null);
+                                        }}
+                                    >
+                                        Foto ablehnen
+                                    </button>
                                 )}
                             </div>
-
-                            {canDelete && viewingImage && (
-                                <button
-                                    onClick={() =>
-                                        setImageToDelete({
-                                            submissionId: viewingImage.submissionId,
-                                            reportId: viewingImage.id
-                                        })
-                                    }
-                                    className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors text-sm font-medium border border-red-100"
-                                    title="Foto & Meldung löschen"
-                                >
-                                    <Trash size={18} />
-                                    Beides löschen
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Image Preview */}
-                        <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-gray-100 mb-8 shadow-inner border border-gray-100">
-                            {viewingImage?.imageUrl ? (
-                                <Image
-                                    src={viewingImage.imageUrl}
-                                    alt="Gemeldetes Foto"
-                                    fill
-                                    className="object-contain"
-                                    unoptimized
-                                />
-                            ) : viewingImage ? (
-                                <LazySharedGalleryImage
-                                    imageId={viewingImage.submissionId}
-                                    alt="Gemeldetes Foto"
-                                    fill
-                                    className="object-contain"
-                                    onLoad={(imageUrl) => {
-                                        viewingImage.imageUrl = imageUrl;
-                                    }}
-                                />
-                            ) : null}
-                        </div>
-
-                        {/* Report Details & Metadata */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                            <div className="space-y-6">
-                                <div className="bg-red-50 border border-red-100 p-5 rounded-2xl">
-                                    <h4 className="text-xs font-bold text-red-900 uppercase tracking-wider mb-2 flex items-center gap-2">
-                                        <Warning size={16} />
-                                        Grund der Meldung
-                                    </h4>
-                                    <p className="text-gray-900 font-medium bg-white/50 p-3 rounded-lg border border-red-50 italic">
-                                        &quot;{viewingImage?.reason}&quot;
-                                    </p>
-                                    {viewingImage?.reporterInfo && (
-                                        <div className="mt-4 pt-4 border-t border-red-100">
-                                            <h4 className="text-xs font-bold text-red-900 uppercase tracking-wider mb-1">
-                                                Zusatzinfo vom Melder:
-                                            </h4>
-                                            <p className="text-sm text-red-800 italic">
-                                                &quot;{viewingImage.reporterInfo}&quot;
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
-                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b border-gray-200 pb-2">
-                                    Foto-Metadaten
-                                </h4>
-
-                                <div className="grid grid-cols-1 gap-4">
-                                    <div>
-                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-0.5">
-                                            Titel
-                                        </span>
-                                        <span className="text-gray-900 font-medium">
-                                            {viewingImage?.title ||
-                                                'Unbekannter Titel'}
-                                        </span>
-                                    </div>
-
-                                    {viewingImage?.submitterName && (
-                                        <div>
-                                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-0.5">
-                                                Eingereicht von
-                                            </span>
-                                            <span className="text-gray-900 font-medium">
-                                                {viewingImage.submitterName}
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-0.5">
-                                            Gemeldet am
-                                        </span>
-                                        <span className="text-gray-900 font-medium">
-                                            {viewingImage &&
-                                                new Date(
-                                                    viewingImage.createdAt
-                                                ).toLocaleDateString('de-DE', {
-                                                    day: '2-digit',
-                                                    month: 'long',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-100">
-                            <button
-                                onClick={() => setViewingImage(null)}
-                                className="flex-1 min-w-[140px] px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                            >
-                                <X size={20} weight="bold" />
-                                Schließen
-                            </button>
-
-                            {canEdit && viewingImage && viewingImage.status === 'pending' && (
-                                <button
-                                    onClick={() =>
-                                        handleUpdateStatus(
-                                            viewingImage.id,
-                                            'reviewed'
-                                        )
-                                    }
-                                    disabled={
-                                        processing === viewingImage.id
-                                    }
-                                    className="flex-1 min-w-[200px] px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400 flex items-center justify-center gap-2"
-                                >
-                                    {processing === viewingImage.id ? (
-                                        <LoadingSpinner
-                                            size="sm"
-                                            color="white"
-                                        />
-                                    ) : (
-                                        <>
-                                            <Check
-                                                size={20}
-                                                weight="bold"
-                                            />
-                                            Als geprüft markieren
-                                        </>
-                                    )}
-                                </button>
-                            )}
-
-                            {canEdit && viewingImage && (
-                                <button
-                                    onClick={() =>
-                                        setImageToDisapprove(
-                                            viewingImage.submissionId
-                                        )
-                                    }
-                                    disabled={disapproving}
-                                    className="flex-1 min-w-[200px] px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md disabled:bg-gray-400 flex items-center justify-center gap-2"
-                                >
-                                    {disapproving ? (
-                                        <>
-                                            <LoadingSpinner
-                                                size="sm"
-                                                color="white"
-                                            />
-                                            Wird abgelehnt...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Trash
-                                                size={20}
-                                                weight="bold"
-                                            />
-                                            Foto ablehnen
-                                        </>
-                                    )}
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </Modal>
-
-                <PromptDialog
-                    isOpen={imageToDisapprove !== null}
-                    onCancel={() => setImageToDisapprove(null)}
-                    onConfirm={async () => {
-                        if (imageToDisapprove) {
-                            await handleDisapprove(imageToDisapprove);
-                            setImageToDisapprove(null);
-                        }
-                    }}
-                    title="Foto ablehnen"
-                    description="Möchten Sie dieses Foto wirklich ablehnen und entfernen?"
-                    confirmText="Ablehnen"
-                    cancelText="Abbrechen"
-                    icon={<Trash className="h-12 w-12" />}
-                    accentColor="red"
-                />
-
-                <PromptDialog
-                    isOpen={imageToDelete !== null}
-                    onCancel={() => setImageToDelete(null)}
-                    onConfirm={async () => {
-                        if (imageToDelete) {
-                            await handleDelete(imageToDelete.submissionId, imageToDelete.reportId);
-                            setImageToDelete(null);
-                        }
-                    }}
-                    title="Foto & Meldung unwiderruflich löschen"
-                    description="Möchten Sie dieses Foto und die zugehörige Meldung wirklich unwiderruflich löschen? Dies kann nicht rückgängig gemacht werden."
-                    confirmText="Beides löschen"
-                    cancelText="Abbrechen"
-                    icon={<Trash className="h-12 w-12" />}
-                    accentColor="red"
-                />
-
-                <PromptDialog
-                    isOpen={reportToDelete !== null}
-                    onCancel={() => setReportToDelete(null)}
-                    onConfirm={async () => {
-                        if (reportToDelete) {
-                            await handleDeleteReport(reportToDelete);
-                            setReportToDelete(null);
-                        }
-                    }}
-                    title="Meldung löschen"
-                    description="Möchten Sie diese Meldung wirklich löschen? Das Foto bleibt dabei erhalten."
-                    confirmText="Meldung löschen"
-                    cancelText="Abbrechen"
-                    icon={<Trash className="h-12 w-12" />}
-                    accentColor="gray"
-                />
+                        </>
+                    )}
+                </dialog>
             </div>
         </SharedGalleryImageProvider>
     );

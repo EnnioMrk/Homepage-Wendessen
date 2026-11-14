@@ -1,325 +1,272 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import ZoomableImage from '@/app/components/ZoomableImage';
+import styles from './facts.module.css';
 import {
-    Buildings,
-    MapPin,
-    House,
-    Lightning,
-    Train,
-    Shield,
-    Phone,
-    EnvelopeIcon,
-    FileText,
-    Calendar,
-} from "@phosphor-icons/react/dist/ssr";
-import PageHeader from "@/app/components/layout/PageHeader";
-import ZoomableImage from "@/app/components/ZoomableImage";
+    Leaf,
+    Margin,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import { pageToday } from '@/app/lib/page-today';
 
-export const metadata = {
-    title: "Neubaugebiet Leipziger Allee - Wohnen & Bauen in Wendessen",
+export const metadata: Metadata = {
+    title: 'Neubaugebiet Leipziger Allee – Wohnen & Bauen',
     description:
-        "Neues Baugebiet in Wendessen auf dem Gelände der ehemaligen Zuckerfabrik. Moderne Wohnkonzepte am künftigen Bahnhaltepunkt.",
+        'Das Neubaugebiet in Wendessen auf dem Gelände der ehemaligen Zuckerfabrik: rund 29.000 m², etwa 30 Häuser und 35 Wohnungen, Zuckerring, Regio-Bahn 2028/29 sowie P+R und B+R.',
 };
 
-export default function NeubaugebietPage() {
+const FACTS: [string, React.ReactNode][] = [
+    ['Fläche', 'rund 29.000 m², unterteilt in Allgemeine Wohngebiete und Verkehrsflächen'],
+    [
+        'Wohnen',
+        'etwa 30 Wohneinheiten in Einzel- oder Doppelhäusern und um die 35 Geschosswohnungen',
+    ],
+    [
+        'Erschließung',
+        'über die Leipziger Allee und eine Ringstraße, die den Namen „Zuckerring“ erhalten hat; fußläufig und für den Radverkehr über den „Lindenblick“',
+    ],
+    [
+        'Lage',
+        'im Westen an die offene Landschaft grenzend, entlang der südlichen Grenze verläuft die Bahntrasse Wolfenbüttel – Schöppenstedt',
+    ],
+    [
+        'Bahn',
+        'Haltepunkt der geplanten Regio-Bahn im Rahmen der Stationsoffensive des Regionalverbands Großraum Braunschweig, nach den aktuellen Planungen der Deutschen Bahn voraussichtlich 2028/29',
+    ],
+    [
+        'Mobilität',
+        'Park+Ride und Bike+Ride unmittelbar am künftigen Bahnhaltepunkt; Bushaltebucht auf der Westseite und Bushaltestelle auf der Ostseite im Zuge des Umbaus der B79 und des ÖPNV-Knotenpunkts, ergänzt um eine Querungshilfe',
+    ],
+];
+
+const TIMELINE: [string, string][] = [
+    ['Planungsphase', 'aktuell laufend durch die Stadt Wolfenbüttel'],
+    ['Baubeginn', 'Ende 2026'],
+    ['Status', 'planungsrechtliche Schritte in Bearbeitung'],
+];
+
+const FEATURES: [string, string][] = [
+    [
+        'Zukunftsorientiert',
+        'Entwicklung auf dem Gelände der ehemaligen Zuckerfabrik mit modernen Wohnkonzepten.',
+    ],
+    [
+        'Verkehrsanbindung',
+        'Optimale Lage am künftigen Bahnhaltepunkt für beste Erreichbarkeit.',
+    ],
+    [
+        'Professionell geplant',
+        'Planungsrechtliche Betreuung durch die Stadt Wolfenbüttel.',
+    ],
+];
+
+export default async function NeubaugebietPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            {/* Hero Section */}
-            <PageHeader
-                title="Neubaugebiet"
-                subtitle="Leipziger Allee - Zukunft des Wohnens"
-                icon={<Buildings />}
-                backgroundImage="/images/wendessen-luftaufnahme.jpg"
-                color="emerald"
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Baugebiet"
+                    tallies={[
+                        { label: 'Fläche', value: '29.000 m²' },
+                        { label: 'Häuser', value: '~30' },
+                        { label: 'Wohnungen', value: '~35' },
+                    ]}
+                    note={
+                        <>
+                            Die Flächenangaben sind gerundet; verbindlich ist
+                            der Bebauungsplan der Stadt Wolfenbüttel.
+                        </>
+                    }
+                />
+            }
+        >
+            <PageHead
+                kicker="Wohnen & Bauen · Baugebiet"
+                title="Neubaugebiet Leipziger Allee"
+                lede="Auf dem Gelände der ehemaligen Zuckerfabrik entsteht Raum für modernes Wohnen am künftigen Bahnhaltepunkt. Wendessen wächst."
             />
 
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="max-w-5xl mx-auto">
-                    {/* Introduction Section */}
-                    <div className="text-center mb-16">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                            Wendessen wächst
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6"></div>
-                        <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-                            Auf dem Gelände der ehemaligen Zuckerfabrik entsteht
-                            Raum für modernes Wohnen
+            <div className="prose">
+                <p>
+                    In Wendessen entsteht auf dem Gelände der ehemaligen
+                    Zuckerfabrik am künftigen Bahnhaltepunkt ein neues
+                    Baugebiet. Das Gelände wurde von einem privaten Investor
+                    erworben; im Sommer 2022 erfolgte der Beschluss zur
+                    Aufstellung eines Bebauungsplanes.
+                </p>
+            </div>
+
+            <section className="block" aria-labelledby="vorhaben">
+                <SectionHead title="Das Vorhaben" id="vorhaben" />
+                <dl className={`kv ${styles.facts}`} style={{ marginTop: 'var(--s3)' }}>
+                    {FACTS.map(([label, value]) => (
+                        <div key={label} style={{ display: 'contents' }}>
+                            <dt>{label}</dt>
+                            <dd>{value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </section>
+
+            <section className="block" aria-labelledby="zeitplan">
+                <SectionHead title="Zeitplan" id="zeitplan" />
+                <dl className={`kv ${styles.facts}`} style={{ marginTop: 'var(--s3)' }}>
+                    {TIMELINE.map(([label, value]) => (
+                        <div key={label} style={{ display: 'contents' }}>
+                            <dt>{label}</dt>
+                            <dd>{value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </section>
+
+            <section className="block" aria-labelledby="bebauungsplan">
+                <SectionHead title="Bebauungsplan" id="bebauungsplan" />
+                <div className="prose" style={{ marginTop: 'var(--s3)' }}>
+                    <p>
+                        Erste Eindrücke der möglichen künftigen Gestaltung des
+                        Geländes.
+                    </p>
+                </div>
+
+                <figure className="figure" style={{ marginTop: 'var(--s4)' }}>
+                    <ZoomableImage
+                        src="/images/bebauungsvorschlag-leiziger-allee.jpg"
+                        alt="Bebauungsvorschlag Leipziger Allee – Neubaugebiet Wendessen"
+                        framed={false}
+                    />
+                    <figcaption>
+                        <span>Bebauungsvorschlag Leipziger Allee</span>
+                    </figcaption>
+                </figure>
+
+                <figure className="figure" style={{ marginTop: 'var(--s4)' }}>
+                    <ZoomableImage
+                        src="/images/baugebiet-leiziger-allee-wendessen-mai-2024.jpg"
+                        alt="Baugebiet Leipziger Allee in Wendessen im Mai 2024, Fläche für den geplanten Hausbau"
+                        framed={false}
+                    />
+                    <figcaption>
+                        <span>
+                            Baugebiet Leipziger Allee (Mai 2024): Hier entstehen
+                            die geplanten Häuser
+                        </span>
+                    </figcaption>
+                </figure>
+
+                <div className="notice notice--warn" style={{ marginTop: 'var(--s4)' }}>
+                    <strong>Wichtiger Hinweis</strong>
+                    <span>
+                        Die dargestellten Grafiken zeigen erste Eindrücke der
+                        möglichen künftigen Gestaltung des Geländes und sind
+                        aktuell noch nicht rechtsverbindlich.
+                    </span>
+                </div>
+            </section>
+
+            <section className="block" aria-labelledby="merkmale">
+                <SectionHead title="Projektmerkmale" id="merkmale" />
+                <dl className={`kv ${styles.facts}`} style={{ marginTop: 'var(--s3)' }}>
+                    {FEATURES.map(([label, value]) => (
+                        <div key={label} style={{ display: 'contents' }}>
+                            <dt>{label}</dt>
+                            <dd>{value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </section>
+
+            <section className="block" aria-labelledby="ansprechpartner">
+                <SectionHead title="Ansprechpartner" id="ansprechpartner" />
+                <div className="grid-2" style={{ marginTop: 'var(--s3)' }}>
+                    <div>
+                        <h3>Investor &amp; Eigentümer</h3>
+                        <p style={{ marginTop: 'var(--s1)' }}>
+                            <strong>MGM Management GbR</strong>
                         </p>
+                        <dl className={`kv ${styles.facts}`} style={{ marginTop: 'var(--s3)' }}>
+                            <div style={{ display: 'contents' }}>
+                                <dt>Ansprechpartner</dt>
+                                <dd>Stephan Malonnek</dd>
+                            </div>
+                            <div style={{ display: 'contents' }}>
+                                <dt>Telefon</dt>
+                                <dd>
+                                    <a
+                                        className="link"
+                                        href="tel:051137359373"
+                                    >
+                                        0511-37359373
+                                    </a>
+                                </dd>
+                            </div>
+                            <div style={{ display: 'contents' }}>
+                                <dt>E-Mail</dt>
+                                <dd>
+                                    <a
+                                        className="link"
+                                        href="mailto:stephan.malonnek@mgm-management.de"
+                                    >
+                                        stephan.malonnek@mgm-management.de
+                                    </a>
+                                </dd>
+                            </div>
+                        </dl>
                     </div>
 
-                    {/* Project Overview */}
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="space-y-6 text-gray-700 leading-relaxed">
-                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-bold text-emerald-800 mb-3 flex items-center">
-                                    <MapPin className="w-6 h-6 mr-3" />
-                                    Neues Baugebiet am Bahnhaltepunkt
-                                </h3>
-                                <p className="text-lg">
-                                    In Wendessen entsteht auf dem Gelände der
-                                    ehemaligen Zuckerfabrik am künftigen
-                                    Bahnhaltepunkt ein neues Baugebiet.
-                                </p>
-                            </div>
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-500 p-6 rounded-2xl">
-                                <h4 className="text-xl font-bold text-blue-700 mb-3 flex items-center">
-                                    <Calendar className="w-6 h-6 mr-2" />
-                                    Zeitplan
-                                </h4>
-                                <p>
-                                    <strong>Planungsphase:</strong> Aktuell
-                                    laufend durch die Stadt Wolfenbüttel
-                                    <br />
-                                    <strong>Baubeginn:</strong> Ende
-                                    2026
-                                    <br />
-                                    <strong>Status:</strong> Planungsrechtliche
-                                    Schritte in Bearbeitung
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Development Plans */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                                Bebauungsplan
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-teal-600 to-emerald-600 mx-auto mb-6"></div>
-                            <p className="text-base sm:text-lg text-gray-600">
-                                Erste Eindrücke der möglichen künftigen
-                                Gestaltung
-                            </p>
-                        </div>
-
-                        <div className="bg-white rounded-3xl p-8 shadow-xl">
-                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-emerald-500 p-6 rounded-r-2xl mb-8">
-                                <h3 className="text-xl font-bold text-emerald-800 mb-4">
-                                    Aktueller Planungsstand
-                                </h3>
-                                <div className="space-y-4 text-gray-700 leading-relaxed">
-                                    <p>
-                                        Das Gelände der ehemaligen Zuckerfabrik in Wendessen wurde von einem privaten
-                                        Investor erworben, im <strong>Sommer 2022</strong> erfolgte der Beschluss zur Aufstellung eines
-                                        Bebauungsplanes.
-                                    </p>
-                                    <p>
-                                        Das Plangebiet umfasst rund <strong>29.000 Quadratmeter</strong> und unterteilt sich in Flächen für
-                                        Allgemeine Wohngebiete und Verkehrsflächen. Durch den Bebauungsplan wird ein Wohngebiet für etwa
-                                        <strong> 30 Wohneinheiten</strong> in Einzel- oder Doppelhäusern und um die <strong>35 Geschosswohnungen</strong> vorbereitet.
-                                        Die Haupterschließung des Wohngebietes erfolgt von der „Leipziger Allee“ aus mittels einer Ringstraße,
-                                        die inzwischen bereits den Namen „Zuckerring“ erhalten hat. Zusätzlich soll das geplante Wohngebiet
-                                        fußläufig und für den Radverkehr über den „Lindenblick“ angebunden werden.
-                                    </p>
-                                    <p>
-                                        Im Westen grenzt das Baugebiet an die offene Landschaft. Entlang der südlichen Grenze verläuft die Bahntrasse
-                                        Wolfenbüttel - Schöppenstedt. Im Rahmen der Stationsoffensive des Regionalverbands
-                                        Großraum Braunschweig ist dort ein Haltepunkt der geplanten Regio-Bahn vorgesehen, der gemäß den
-                                        aktuellen Planungen der Deutschen Bahn voraussichtlich im Jahr <strong>2028/29</strong> umgesetzt werden soll.
-                                    </p>
-                                    <p>
-                                        In unmittelbarer Nähe zum künftigen Bahnhaltepunkt ist ein Park+Ride sowie ein
-                                        Bike+Ride-Platz geplant. Zur Anbindung des Baugebietes werden im Zuge des Umbaus der
-                                        B79 und der Erstellung eines „ÖPNV-Knotenpunktes“ eine Bushaltebucht auf der Westseite
-                                        und eine Bushaltestelle auf der Ostseite gebaut. Ergänzend dazu entsteht eine Querungshilfe.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <ZoomableImage
-                                src="/images/bebauungsvorschlag-leiziger-allee.jpg"
-                                alt="Bebauungsvorschlag Leipziger Allee - Neubaugebiet Wendessen"
-                                caption="Bebauungsvorschlag Leipziger Allee"
-                                className="mb-8"
-                            />
-
-                            <ZoomableImage
-                                src="/images/baugebiet-leiziger-allee-wendessen-mai-2024.jpg"
-                                alt="Baugebiet Leipziger Allee in Wendessen (Mai 2024) - Fläche für den geplanten Hausbau"
-                                caption="Baugebiet Leipziger Allee (Mai 2024): Hier entstehen die geplanten Häuser"
-                                className="mb-8"
-                            />
-
-                            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-6 rounded-r-2xl">
-                                <div className="flex items-start space-x-3">
-                                    <Shield className="w-6 h-6 text-yellow-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <h4 className="font-bold text-yellow-800 mb-2">
-                                            Wichtiger Hinweis
-                                        </h4>
-                                        <p className="text-gray-700">
-                                            Die dargestellten Grafiken zeigen
-                                            erste Eindrücke der möglichen
-                                            künftigen Gestaltung des Geländes
-                                            und sind aktuell{" "}
-                                            <strong>
-                                                noch nicht rechtsverbindlich
-                                            </strong>
-                                            .
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Project Features */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                                Projektmerkmale
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6"></div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Lightning className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-emerald-800 mb-3">
-                                    Zukunftsorientiert
-                                </h3>
-                                <p className="text-gray-700">
-                                    Entwicklung auf dem Gelände der ehemaligen
-                                    Zuckerfabrik mit modernen Wohnkonzepten
-                                </p>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Train className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-800 mb-3">
-                                    Verkehrsanbindung
-                                </h3>
-                                <p className="text-gray-700">
-                                    Optimale Lage am künftigen Bahnhaltepunkt
-                                    für beste Erreichbarkeit
-                                </p>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Shield className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-purple-800 mb-3">
-                                    Professionell geplant
-                                </h3>
-                                <p className="text-gray-700">
-                                    Planungsrechtliche Betreuung durch die Stadt
-                                    Wolfenbüttel
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Contact Information */}
-                    <div className="text-center mb-12">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                            Ansprechpartner
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6"></div>
-                        <p className="text-base sm:text-lg text-gray-600">
-                            Ihr Kontakt für Rückfragen zum Projekt
+                    <div>
+                        <h3>Planungsrechtliche Betreuung</h3>
+                        <p style={{ marginTop: 'var(--s1)' }}>
+                            <strong>Stadt Wolfenbüttel</strong>
                         </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        {/* Investor Contact */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-emerald-500">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <House className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-foreground mb-2">
-                                    Investor & Eigentümer
-                                </h3>
-                                <p className="text-lg font-semibold text-emerald-600 mb-4">
-                                    MGM Management GbR
-                                </p>
-                                <div className="space-y-3 text-gray-600">
-                                    <div>
-                                        <p className="font-semibold text-gray-800">
-                                            Stephan Malonnek
-                                        </p>
-                                        <p className="text-sm">
-                                            Ansprechpartner
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center justify-center space-x-2">
-                                        <Phone className="w-5 h-5 text-emerald-500" />
-                                        <a
-                                            href="tel:051137359373"
-                                            className="text-emerald-600 hover:text-emerald-800 transition-colors"
-                                        >
-                                            0511-37359373
-                                        </a>
-                                    </div>
-                                    <div className="flex items-center justify-center space-x-2">
-                                        <EnvelopeIcon className="w-5 h-5 text-emerald-500" />
-                                        <a
-                                            href="mailto:stephan.malonnek@mgm-management.de"
-                                            className="text-emerald-600 hover:text-emerald-800 transition-colors"
-                                        >
-                                            stephan.malonnek@mgm-management.de
-                                        </a>
-                                    </div>
-                                </div>
+                        <dl className={`kv ${styles.facts}`} style={{ marginTop: 'var(--s3)' }}>
+                            <div style={{ display: 'contents' }}>
+                                <dt>Zuständigkeiten</dt>
+                                <dd>
+                                    Erschließungsplanung, Bebauungsplan,
+                                    Genehmigungsverfahren und rechtliche
+                                    Rahmenbedingungen.
+                                </dd>
                             </div>
-                        </div>
-
-                        {/* Planning Authority */}
-                        <div className="bg-white rounded-3xl p-8 shadow-xl border-l-4 border-blue-500">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <FileText className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-foreground mb-2">
-                                    Planungsrechtliche Betreuung
-                                </h3>
-                                <p className="text-lg font-semibold text-blue-600 mb-4">
-                                    Stadt Wolfenbüttel
-                                </p>
-                                <div className="space-y-3 text-gray-600">
-                                    <div className="bg-blue-50 p-4 rounded-xl">
-                                        <p className="font-semibold text-blue-800">
-                                            Zuständigkeiten:
-                                        </p>
-                                        <ul className="text-sm mt-2 space-y-1 text-left">
-                                            <li>• Erschließungsplanung</li>
-                                            <li>• Bebauungsplan</li>
-                                            <li>• Genehmigungsverfahren</li>
-                                            <li>
-                                                • Rechtliche Rahmenbedingungen
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                            <div style={{ display: 'contents' }}>
+                                <dt>Kontakt</dt>
+                                <dd>
+                                    Fragen zu Grundstücken und Bauanträgen
+                                    beantwortet die Stadt Wolfenbüttel. Für
+                                    Hinweise an die Dorfseite steht das{' '}
+                                    <Link
+                                        className="link"
+                                        href="/kontakt/formular"
+                                    >
+                                        Kontaktformular
+                                    </Link>{' '}
+                                    bereit.
+                                </dd>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Closing Statement */}
-                    <div className="text-center mt-16 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-8 shadow-lg">
-                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-emerald-700 mb-6">
-                            Wendessen wächst weiter!
-                        </h3>
-                        <p className="text-lg sm:text-xl text-gray-700 font-medium mb-4">
-                            Neues Wohnen am Bahnhaltepunkt - Modern, nachhaltig,
-                            zukunftsorientiert
-                        </p>
-                        <div className="flex justify-center mt-6">
-                            <div className="flex items-center space-x-2 text-emerald-600">
-                                <Lightning className="w-6 h-6" />
-                                <span className="font-semibold">
-                                    Die Zukunft des Wohnens in Wendessen
-                                </span>
-                            </div>
-                        </div>
+                        </dl>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            <section className="block" aria-labelledby="ausblick">
+                <SectionHead title="Wendessen wächst weiter" id="ausblick" />
+                <div className="prose" style={{ marginTop: 'var(--s3)' }}>
+                    <p>
+                        Neues Wohnen am Bahnhaltepunkt – modern, nachhaltig,
+                        zukunftsorientiert. Die Zukunft des Wohnens in
+                        Wendessen.
+                    </p>
+                    <p>
+                        Zurück zur Übersicht:{' '}
+                        <Link className="link" href="/wohnen-bauen">
+                            Wohnen &amp; Bauen
+                        </Link>
+                        .
+                    </p>
+                </div>
+            </section>
+        </Leaf>
     );
 }

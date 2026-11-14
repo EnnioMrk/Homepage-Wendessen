@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Descendant } from 'slate';
-import { ArrowLeft, Eye, Check, X } from '@phosphor-icons/react';
 import Link from 'next/link';
 import EnhancedRichTextEditor from '@/app/components/EnhancedRichTextEditor';
 import ArticleRenderer from '@/app/components/news/ArticleRenderer';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
+import { dateLong, dateShort } from '@/app/lib/register-format';
+import styles from '../../news.module.css';
 
 const initialEditorValue: Descendant[] = [
     {
@@ -26,23 +27,32 @@ interface NewsArticle {
     articleId: string;
 }
 
-interface EditNewsFormProps {
-    id: string;
-}
+const CATEGORY_OPTIONS = [
+    'Bildung',
+    'Gemeinschaft',
+    'Feuerwehr',
+    'Digital',
+    'Sport',
+    'Kultur',
+    'Verwaltung',
+];
 
-export default function EditNewsForm({ id }: EditNewsFormProps) {
+export default function EditNewsForm() {
     const router = useRouter();
-    const [step, setStep] = useState<'editing' | 'preview'>('editing');
+    const routeParams = useParams<{ id: string }>();
+    const id = routeParams?.id;
+    const [mode, setMode] = useState<'edit' | 'preview'>('edit');
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const [newsArticle, setNewsArticle] = useState<NewsArticle | null>(null);
 
-    // Form data
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
     const [articleContent, setArticleContent] =
         useState<Descendant[]>(initialEditorValue);
+    const [reloadToken, setReloadToken] = useState(0);
 
     useEffect(() => {
         let mounted = true;
@@ -52,6 +62,8 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
 
         (async () => {
             try {
+                setIsLoading(true);
+                setLoadError(null);
                 const response = await fetch(`/api/admin/news/${id}`);
                 if (response.ok) {
                     const data = await response.json();
@@ -64,8 +76,6 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
                     setCategory(article.category);
 
                     if (article.contentJson) {
-                        // contentJson is already parsed from the database (JSON column)
-                        // Handle both cases: already an object or needs parsing
                         const content =
                             typeof article.contentJson === 'string'
                                 ? JSON.parse(article.contentJson)
@@ -74,12 +84,12 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
                             setArticleContent(content);
                         }
                     }
-                } else {
-                    if (mounted) setError('Artikel nicht gefunden');
+                } else if (mounted) {
+                    setLoadError('Artikel nicht gefunden');
                 }
-            } catch (err) {
-                console.error('Fetch error:', err);
-                if (mounted) setError('Fehler beim Laden des Artikels');
+            } catch (fetchError) {
+                console.error('Fetch error:', fetchError);
+                if (mounted) setLoadError('Fehler beim Laden des Artikels');
             } finally {
                 if (mounted) setIsLoading(false);
             }
@@ -88,9 +98,13 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
         return () => {
             mounted = false;
         };
-    }, [id]);
+    }, [id, reloadToken]);
 
     const handleUpdate = async () => {
+        if (!title.trim() || !category) {
+            setError('Bitte Titel und Rubrik angeben.');
+            return;
+        }
         setIsSaving(true);
         setError(null);
 
@@ -109,11 +123,11 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
                 router.push('/admin/news');
                 router.refresh();
             } else {
-                const data = await response.json();
-                setError(data.error || 'Fehler beim Aktualisieren');
+                const data = await response.json().catch(() => null);
+                setError(data?.error || 'Fehler beim Aktualisieren');
             }
-        } catch (err) {
-            console.error('Update error:', err);
+        } catch (updateError) {
+            console.error('Update error:', updateError);
             setError('Netzwerkfehler beim Aktualisieren');
         } finally {
             setIsSaving(false);
@@ -122,21 +136,47 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <LoadingSpinner size="lg" text="Lade Artikel..." />
+            <div>
+                <AdminHead
+                    title="Nachricht bearbeiten"
+                    sub="Register der Nachrichten"
+                />
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">Lade Artikel …</p>
+                    </div>
+                </div>
             </div>
         );
     }
 
-    if (error && !newsArticle) {
+    if (loadError && !newsArticle) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-red-600 mb-4">{error}</p>
-                    <Link
-                        href="/admin/news"
-                        className="text-primary hover:text-primary-dark"
+            <div>
+                <AdminHead
+                    title="Nachricht bearbeiten"
+                    sub="Register der Nachrichten"
+                />
+                <div className="notice notice--error" role="alert">
+                    <strong>Artikel nicht geladen</strong>
+                    <span>{loadError}</span>
+                </div>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 'var(--s2)',
+                        marginTop: 'var(--s4)',
+                    }}
+                >
+                    <button
+                        type="button"
+                        className="btn btn--primary"
+                        onClick={() => setReloadToken((value) => value + 1)}
                     >
+                        Erneut laden
+                    </button>
+                    <Link className="btn btn--quiet" href="/admin/news">
                         Zurück zur Übersicht
                     </Link>
                 </div>
@@ -144,245 +184,160 @@ export default function EditNewsForm({ id }: EditNewsFormProps) {
         );
     }
 
-    // Editor View
-    if (step === 'editing') {
-        return (
-            <div className="min-h-screen bg-gray-50">
-                {/* Sticky Header */}
-                <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4 flex-1 min-w-0">
-                                <Link
-                                    href="/admin/news"
-                                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                                >
-                                    <ArrowLeft className="w-6 h-6" />
-                                </Link>
-                                <div className="min-w-0 flex-1">
-                                    <h1 className="text-xl font-bold text-gray-900">
-                                        Nachricht bearbeiten
-                                    </h1>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={() => setStep('preview')}
-                                    className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
-                                >
-                                    <Eye className="w-5 h-5" />
-                                    Vorschau
-                                </button>
-                                <button
-                                    onClick={handleUpdate}
-                                    disabled={isSaving}
-                                    className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:bg-gray-400"
-                                >
-                                    {isSaving ? (
-                                        <>
-                                            <LoadingSpinner
-                                                size="sm"
-                                                color="white"
-                                            />
-                                            Speichern...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Check className="w-5 h-5" />
-                                            Speichern
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+    return (
+        <div>
+            <AdminHead
+                title="Nachricht bearbeiten"
+                sub={
+                    newsArticle
+                        ? `${dateShort(new Date(newsArticle.publishedDate))} · ${newsArticle.category}`
+                        : 'Register der Nachrichten'
+                }
+                actions={
+                    <>
+                        <Link className="btn btn--quiet" href="/admin/news">
+                            Abbrechen
+                        </Link>
+                        <button
+                            type="button"
+                            className="btn btn--quiet"
+                            onClick={() =>
+                                setMode(mode === 'preview' ? 'edit' : 'preview')
+                            }
+                        >
+                            {mode === 'preview'
+                                ? 'Zurück zum Schreiben'
+                                : 'Vorschau'}
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn--primary"
+                            onClick={handleUpdate}
+                            disabled={
+                                isSaving || !title.trim() || !category
+                            }
+                        >
+                            {isSaving ? 'Speichern …' : 'Speichern'}
+                        </button>
+                    </>
+                }
+            />
+
+            {error && (
+                <div
+                    className="notice notice--error"
+                    role="alert"
+                    style={{ marginBottom: 'var(--s4)' }}
+                >
+                    <strong>Nicht gespeichert</strong>
+                    <span>{error}</span>
                 </div>
+            )}
 
-                {error && (
-                    <div className="max-w-7xl mx-auto px-4 py-4">
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-                            <X className="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                                <p className="text-red-800">{error}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Form Content */}
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-                        <div className="space-y-6">
-                            <div>
-                                <label
-                                    htmlFor="title"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
+            <form
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    handleUpdate();
+                }}
+            >
+                <div hidden={mode === 'preview'}>
+                    <Panel title="Eintrag">
+                        <div className="form-grid">
+                            <div className="field">
+                                <label htmlFor="edit-news-title">
                                     Titel *
                                 </label>
                                 <input
+                                    id="edit-news-title"
+                                    className="input"
                                     type="text"
-                                    id="title"
                                     value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="z.B. Neues Feuerwehrhaus geplant"
-                                    required
+                                    onChange={(event) =>
+                                        setTitle(event.target.value)
+                                    }
                                     maxLength={255}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                                    required
                                 />
                             </div>
-
-                            <div>
-                                <label
-                                    htmlFor="category"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Kategorie *
+                            <div className="field">
+                                <label htmlFor="edit-news-category">
+                                    Rubrik *
                                 </label>
                                 <select
-                                    id="category"
+                                    id="edit-news-category"
+                                    className="select"
                                     value={category}
-                                    onChange={(e) =>
-                                        setCategory(e.target.value)
+                                    onChange={(event) =>
+                                        setCategory(event.target.value)
                                     }
                                     required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-900"
                                 >
-                                    <option value="">Kategorie wählen</option>
-                                    <option value="Bildung">Bildung</option>
-                                    <option value="Gemeinschaft">
-                                        Gemeinschaft
-                                    </option>
-                                    <option value="Feuerwehr">Feuerwehr</option>
-                                    <option value="Digital">Digital</option>
-                                    <option value="Sport">Sport</option>
-                                    <option value="Kultur">Kultur</option>
-                                    <option value="Verwaltung">
-                                        Verwaltung
-                                    </option>
+                                    <option value="">Rubrik wählen</option>
+                                    {CATEGORY_OPTIONS.map((option) => (
+                                        <option key={option} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </Panel>
 
-                    {/* Article Editor */}
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div className="p-6 border-b border-gray-200">
-                            <h2 className="text-lg font-semibold text-gray-900">
-                                Artikel-Inhalt
-                            </h2>
-                            <p className="text-sm text-gray-600 mt-1">
-                                Erstellen Sie hier den vollständigen
-                                Artikel-Inhalt
+                    <div style={{ marginTop: 'var(--s5)' }}>
+                        <Panel title="Artikel">
+                            <p className="small muted">
+                                Der vollständige Text mit Überschriften,
+                                Listen und Bildern.
                             </p>
-                        </div>
-                        <div className="h-[500px]">
-                            <EnhancedRichTextEditor
-                                value={articleContent}
-                                onChange={setArticleContent}
-                                placeholder="Schreiben Sie hier Ihren vollständigen Artikel..."
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Preview View
-    if (step === 'preview') {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-                {/* Preview Header */}
-                <div className="bg-white border-b border-gray-200 shadow-sm">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                                <button
-                                    onClick={() => setStep('editing')}
-                                    className="text-gray-500 hover:text-gray-700 transition-colors"
-                                >
-                                    <ArrowLeft className="w-6 h-6" />
-                                </button>
-                                <div>
-                                    <h1 className="text-xl font-bold text-gray-900">
-                                        Vorschau
-                                    </h1>
-                                    <p className="text-sm text-gray-600">
-                                        Überprüfen Sie Ihren Artikel vor dem
-                                        Speichern
-                                    </p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={handleUpdate}
-                                disabled={isSaving}
-                                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            <div
+                                className={styles.editorFrame}
+                                style={{ marginTop: 'var(--s3)' }}
                             >
-                                {isSaving ? (
-                                    <>
-                                        <LoadingSpinner
-                                            size="sm"
-                                            color="white"
-                                        />
-                                        Wird gespeichert...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Check className="w-5 h-5" />
-                                        Änderungen speichern
-                                    </>
-                                )}
-                            </button>
+                                <EnhancedRichTextEditor
+                                    value={articleContent}
+                                    onChange={setArticleContent}
+                                    placeholder="Schreiben Sie hier Ihren vollständigen Artikel …"
+                                />
+                            </div>
+                        </Panel>
+                    </div>
+                </div>
+            </form>
+
+            {mode === 'preview' && (
+                <div className="panel">
+                    <div className="panel-head">
+                        <h2>Vorschau</h2>
+                        <span className="small muted">
+                            {newsArticle
+                                ? dateLong(
+                                      new Date(newsArticle.publishedDate),
+                                  )
+                                : dateLong(new Date())}
+                        </span>
+                    </div>
+                    <div className="panel-body">
+                        <div className={styles.articleHead}>
+                            <span className={styles.rubric}>{category}</span>
+                            <h2 className={styles.articleTitle}>{title}</h2>
+                            <div className={styles.articleMeta}>
+                                <span>
+                                    {newsArticle
+                                        ? dateLong(
+                                              new Date(
+                                                  newsArticle.publishedDate,
+                                              ),
+                                          )
+                                        : dateLong(new Date())}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="prose">
+                            <ArticleRenderer content={articleContent} />
                         </div>
                     </div>
                 </div>
-
-                {error && (
-                    <div className="max-w-4xl mx-auto px-4 py-4">
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-                            <X className="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                                <p className="text-red-800">{error}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Preview Content */}
-                <div className="container mx-auto px-4 py-12">
-                    <div className="max-w-4xl mx-auto">
-                        <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                            <div className="bg-gradient-to-r from-primary to-primary-dark p-8 md:p-12">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium text-white">
-                                        {category}
-                                    </span>
-                                    <span className="text-white/80 text-sm">
-                                        {new Date().toLocaleDateString(
-                                            'de-DE',
-                                            {
-                                                day: '2-digit',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            }
-                                        )}
-                                    </span>
-                                </div>
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-                                    {title}
-                                </h1>
-                            </div>
-
-                            <div className="p-8 md:p-12">
-                                <ArticleRenderer content={articleContent} />
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return null;
+            )}
+        </div>
+    );
 }

@@ -1,295 +1,197 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import {
-    Users,
-    Cross,
-    Presentation,
-    Brain,
-    Scissors,
-    MapTrifold,
-    ShieldCheck,
-    Heart,
-    CalendarBlank,
-    HandHeart,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
-import OrganizationContacts from '@/app/components/OrganizationContacts';
+    Leaf,
+    Margin,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import { pageToday } from '@/app/lib/page-today';
+import { ClubContacts } from '../_components/ClubContacts';
 
 export const metadata = {
-    title: 'Evang. Frauenhilfe Wendessen - Dorfleben',
+    title: 'Evang. Frauenhilfe Wendessen',
     description:
-        'Evangelische Frauenhilfe Wendessen - Gegründet 1917. Frauen auf dem Boden christlichen Glaubens zusammenführen. Treffen jeden 3. Mittwoch im Monat.',
+        'Evangelische Frauenhilfe Wendessen – gegründet am 28. Mai 1917. Frauen auf dem Boden christlichen Glaubens zusammenführen. Treffen jeden 3. Mittwoch im Monat um 15:00 Uhr.',
 };
 
-export default function FrauenhilfePage() {
+const THEMEN = [
+    {
+        titel: 'Vorträge',
+        text: 'Vorträge zu christlichen und sozialen Themen',
+    },
+    {
+        titel: 'Gedächtnistraining',
+        text: 'Geistig fit bleiben durch regelmäßiges Training',
+    },
+    {
+        titel: 'Basteln',
+        text: 'Kreative Aktivitäten und handwerkliche Arbeiten',
+    },
+    {
+        titel: 'Fahrten & Reiseberichte',
+        text: 'Gemeinsame Ausflüge und spannende Reiseberichte',
+    },
+    {
+        titel: 'Sicherheit im Alltag',
+        text: 'Praktische Tipps für ein sicheres Leben',
+    },
+    {
+        titel: 'Geselliges Beisammensein',
+        text: 'Gemeinschaft und Austausch in netter Atmosphäre',
+    },
+];
+
+export default async function FrauenhilfePage() {
+    const today = await pageToday();
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            <PageHeader
+        <Leaf
+            margin={
+                <Margin
+                    date={today}
+                    label="Frauenhilfe"
+                    tallies={[
+                        { label: 'Mitglieder', value: 23 },
+                        { label: 'Beitrag', value: '20 €' },
+                        { label: 'Gegründet', value: 1917 },
+                    ]}
+                    note={
+                        <>
+                            Die Treffen finden auf dem „Hans-Meves-Hof“,
+                            Dorfstr. 19, statt: jeden 3. Mittwoch im Monat um
+                            15:00 Uhr.
+                        </>
+                    }
+                />
+            }
+        >
+            <p className="small" style={{ marginBottom: 'var(--s4)' }}>
+                <Link className="link-quiet" href="/dorfleben">
+                    Dorfleben
+                </Link>{' '}
+                <span className="muted">/ Vereine / Frauenhilfe</span>
+            </p>
+
+            <PageHead
                 title="Evang. Frauenhilfe"
-                icon={<Cross />}
-                backgroundImage="/images/Vereinsleben/frauenhilfe.jpg"
-                color="pink"
+                lede="Gegründet am 28. Mai 1917 – über 100 Jahre christliche Frauengemeinschaft in Wendessen."
             />
 
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="max-w-5xl mx-auto">
-                    {/* Hero Image Section */}
-                    <div className="text-center mb-16">
-                        <div className="relative w-full h-96 md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-pink-100">
-                            <Image
-                                src="/images/Vereinsleben/frauenhilfe.jpg"
-                                alt="Evangelische Frauenhilfe Wendessen"
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                <h2 className="text-3xl font-bold mb-2">
-                                    Gegründet 28. Mai 1917
-                                </h2>
-                                <p className="text-lg">
-                                    Über 100 Jahre christliche
-                                    Frauengemeinschaft
-                                </p>
-                            </div>
+            <div className="club-head">
+                <div>
+                    <p className="feature-lead">
+                        Der Verein will Frauen auf dem Boden christlichen
+                        Glaubens zusammenführen, sie in der Nachfolge Jesu Christi
+                        stärken und ihnen bei der Wahrnehmung ihrer Verantwortung
+                        in Familie, Gemeinde und Gesellschaft helfen.
+                    </p>
+                    <dl className="club-facts">
+                        <div className="club-fact">
+                            <dt>Gegründet</dt>
+                            <dd>28. Mai 1917</dd>
                         </div>
-                    </div>
-
-                    {/* Introduction */}
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                            Herzlich willkommen!
-                        </h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-pink-600 to-fuchsia-600 mx-auto mb-6"></div>
-                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Frauen auf dem Boden christlichen Glaubens
-                            zusammenführen
-                        </p>
-                    </div>
-
-                    {/* About Us */}
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="space-y-8">
-                            {/* Membership */}
-                            <div className="bg-gradient-to-r from-pink-50 to-rose-50 border-l-4 border-pink-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-semibold text-pink-800 mb-3 flex items-center">
-                                    <Users className="w-6 h-6 mr-2" />
-                                    Unsere Gemeinschaft
-                                </h3>
-                                <p className="text-lg text-pink-800 mb-3">
-                                    Zur Zeit haben wir{' '}
-                                    <strong>23 Mitglieder</strong>. Der Beitrag
-                                    beträgt <strong>20,00 EUR jährlich</strong>,
-                                    davon werden Beiträge an den Kreis- und
-                                    Landesverband geleistet.
-                                </p>
-                                <p className="text-lg text-pink-800">
-                                    Außerdem wird ein{' '}
-                                    <strong>Patenkind in Indien</strong>{' '}
-                                    unterstützt.
-                                </p>
-                            </div>
-
-                            {/* Meeting Information */}
-                            <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 border-l-4 border-purple-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-semibold text-purple-800 mb-3 flex items-center">
-                                    <CalendarBlank className="w-6 h-6 mr-2" />
-                                    Unsere Treffen
-                                </h3>
-                                <p className="text-lg text-purple-800 mb-3">
-                                    Monatliche Treffen finden auf dem{' '}
-                                    <strong>&quot;Hans-Meves-Hof&quot;</strong>,
-                                    Dorfstr. 19, 38300 WF-Wendessen statt.
-                                </p>
-                                <p className="text-lg text-purple-800 font-semibold">
-                                    Jeden 3. Mittwoch im Monat um 15:00 Uhr
-                                </p>
-                            </div>
-
-                            {/* Mission Statement */}
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-2xl">
-                                <h3 className="text-xl font-semibold text-blue-800 mb-3 flex items-center">
-                                    <Heart className="w-6 h-6 mr-2" />
-                                    Aus unserer Satzung
-                                </h3>
-                                <p className="text-lg text-blue-800 italic">
-                                    &quot;Der Verein will Frauen auf dem Boden
-                                    christlichen Glaubens zusammenführen, sie in
-                                    der Nachfolge Jesu Christi stärken und ihnen
-                                    bei der Wahrnehmung ihrer Verantwortung in
-                                    Familie, Gemeinde und Gesellschaft
-                                    helfen.&quot;
-                                </p>
-                            </div>
+                        <div className="club-fact">
+                            <dt>Mitglieder</dt>
+                            <dd>23</dd>
                         </div>
-                    </div>
-
-                    {/* Activities Section */}
-                    <div className="mb-16">
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                                Unsere Themen
-                            </h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-rose-600 to-pink-600 mx-auto mb-6"></div>
+                        <div className="club-fact">
+                            <dt>Beitrag</dt>
+                            <dd>
+                                20,00 EUR jährlich, davon werden Beiträge an den
+                                Kreis- und Landesverband geleistet
+                            </dd>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {/* Christian Presentations */}
-                            <div className="bg-gradient-to-br from-pink-50 to-rose-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-pink-600 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Presentation className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-pink-700 mb-3">
-                                    Vorträge
-                                </h3>
-                                <p className="text-gray-700">
-                                    Vorträge zu christlichen und sozialen Themen
-                                </p>
-                            </div>
-
-                            {/* Memory Training */}
-                            <div className="bg-gradient-to-br from-purple-50 to-fuchsia-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Brain className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-purple-700 mb-3">
-                                    Gedächtnistraining
-                                </h3>
-                                <p className="text-gray-700">
-                                    Geistig fit bleiben durch regelmäßiges
-                                    Training
-                                </p>
-                            </div>
-
-                            {/* Crafts */}
-                            <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Scissors className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-rose-700 mb-3">
-                                    Basteln
-                                </h3>
-                                <p className="text-gray-700">
-                                    Kreative Aktivitäten und handwerkliche
-                                    Arbeiten
-                                </p>
-                            </div>
-
-                            {/* Trips */}
-                            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <MapTrifold className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-indigo-700 mb-3">
-                                    Fahrten & Reiseberichte
-                                </h3>
-                                <p className="text-gray-700">
-                                    Gemeinsame Ausflüge und spannende
-                                    Reiseberichte
-                                </p>
-                            </div>
-
-                            {/* Safety */}
-                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <ShieldCheck className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-700 mb-3">
-                                    Sicherheit im Alltag
-                                </h3>
-                                <p className="text-gray-700">
-                                    Praktische Tipps für ein sicheres Leben
-                                </p>
-                            </div>
-
-                            {/* Social Gathering */}
-                            <div className="bg-gradient-to-br from-fuchsia-50 to-pink-50 p-8 rounded-3xl shadow-lg text-center">
-                                <div className="w-16 h-16 bg-gradient-to-r from-fuchsia-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <Heart className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-fuchsia-700 mb-3">
-                                    Geselliges Beisammensein
-                                </h3>
-                                <p className="text-gray-700">
-                                    Gemeinschaft und Austausch in netter
-                                    Atmosphäre
-                                </p>
-                            </div>
+                        <div className="club-fact">
+                            <dt>Treffen</dt>
+                            <dd>jeden 3. Mittwoch im Monat um 15:00 Uhr</dd>
                         </div>
-                    </div>
-
-                    {/* Social Commitment */}
-                    <div className="bg-gradient-to-r from-rose-50 to-pink-50 rounded-3xl p-8 md:p-12 shadow-xl mb-16">
-                        <div className="text-center mb-8">
-                            <h3 className="text-3xl font-bold text-foreground mb-4">
-                                Soziales Engagement
-                            </h3>
-                            <div className="w-20 h-1 bg-gradient-to-r from-rose-600 to-pink-600 mx-auto mb-6"></div>
+                        <div className="club-fact">
+                            <dt>Ort</dt>
+                            <dd>
+                                „Hans-Meves-Hof“, Dorfstr. 19, 38300 WF-Wendessen
+                            </dd>
                         </div>
-
-                        <div className="max-w-2xl mx-auto">
-                            <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
-                                <div className="w-20 h-20 bg-gradient-to-r from-rose-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 flex-shrink-0">
-                                    <HandHeart className="w-10 h-10 text-white" />
-                                </div>
-                                <h4 className="text-2xl font-semibold text-pink-800 mb-4">
-                                    Patenschaft in Indien
-                                </h4>
-                                <p className="text-lg text-gray-700">
-                                    Mit einem Teil unserer Beiträge unterstützen
-                                    wir ein <strong>Patenkind in Indien</strong>
-                                    . So leisten wir einen wertvollen Beitrag
-                                    für eine bessere Zukunft.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Contact Section */}
-                    <div className="mt-16 sm:mt-24">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-                                Ansprechpartnerin
-                            </h2>
-                            <div className="w-20 h-1 bg-pink-600 mx-auto mb-8"></div>
-                            <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                                Haben Sie Fragen zu unseren Treffen oder möchten Sie Mitglied werden?
-                                Unsere Vorsitzende ist gerne für Sie da.
-                            </p>
-                        </div>
-
-                        <div className="max-w-md mx-auto px-4">
-                            <OrganizationContacts
-                                organizationId="frauenhilfe-wendessen"
-                                colorClassName="text-pink-600"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Closing Statement */}
-                    <div className="text-center mt-16 bg-gradient-to-r from-pink-50 to-rose-50 rounded-3xl p-8 shadow-lg">
-                        <h3 className="text-3xl font-bold text-pink-700 mb-6">
-                            Werden Sie Teil unserer Gemeinschaft!
-                        </h3>
-                        <p className="text-xl text-gray-700 font-medium mb-4">
-                            Wir freuen uns über neue Mitglieder!
-                        </p>
-                        <div className="flex justify-center">
-                            <div className="flex items-center space-x-2 text-pink-600">
-                                <Cross className="w-6 h-6" />
-                                <span className="font-semibold">
-                                    Jeden 3. Mittwoch im Monat, 15:00 Uhr
-                                </span>
-                                <Heart className="w-6 h-6" />
-                            </div>
-                        </div>
-                        <p className="text-gray-600 mt-4 text-sm">
-                            Hans-Meves-Hof, Dorfstr. 19, 38300 WF-Wendessen
-                        </p>
-                    </div>
+                    </dl>
                 </div>
+                <Image
+                    src="/images/Vereinsleben/frauenhilfe.jpg"
+                    alt="Evangelische Frauenhilfe Wendessen"
+                    width={520}
+                    height={360}
+                    sizes="260px"
+                />
             </div>
-        </div>
+
+            <section aria-labelledby="gemeinschaft">
+                <SectionHead title="Unsere Gemeinschaft" id="gemeinschaft" />
+                <div className="prose" style={{ marginTop: 'var(--s4)' }}>
+                    <p>
+                        Zur Zeit haben wir 23 Mitglieder. Der Beitrag beträgt
+                        20,00 EUR jährlich, davon werden Beiträge an den Kreis-
+                        und Landesverband geleistet.
+                    </p>
+                    <p>
+                        Außerdem wird ein Patenkind in Indien unterstützt. Mit
+                        einem Teil unserer Beiträge leisten wir so einen
+                        wertvollen Beitrag für eine bessere Zukunft.
+                    </p>
+                    <p>
+                        Haben Sie Fragen zu unseren Treffen oder möchten Sie
+                        Mitglied werden? Unsere Vorsitzende ist gerne für Sie da.
+                    </p>
+                </div>
+            </section>
+
+            <section className="block" aria-labelledby="satzung">
+                <SectionHead title="Aus unserer Satzung" id="satzung" />
+                <div className="prose" style={{ marginTop: 'var(--s4)' }}>
+                    <blockquote>
+                        „Der Verein will Frauen auf dem Boden christlichen
+                        Glaubens zusammenführen, sie in der Nachfolge Jesu Christi
+                        stärken und ihnen bei der Wahrnehmung ihrer Verantwortung
+                        in Familie, Gemeinde und Gesellschaft helfen.“
+                    </blockquote>
+                </div>
+            </section>
+
+            <section className="block" aria-labelledby="themen">
+                <SectionHead title="Unsere Themen" id="themen" />
+                <table className="data">
+                    <thead>
+                        <tr>
+                            <th scope="col">Thema</th>
+                            <th scope="col">Was passiert</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {THEMEN.map((eintrag) => (
+                            <tr key={eintrag.titel}>
+                                <td>
+                                    <strong>{eintrag.titel}</strong>
+                                </td>
+                                <td>{eintrag.text}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </section>
+
+            <ClubContacts
+                organizationId="frauenhilfe-wendessen"
+                title="Ansprechpartnerin"
+            />
+
+            <p className="block">
+                Werden Sie Teil unserer Gemeinschaft! Wir freuen uns über neue
+                Mitglieder.
+            </p>
+
+            <p>
+                <Link className="arrow-link" href="/dorfleben">
+                    Zurück zum Dorfleben
+                </Link>
+            </p>
+        </Leaf>
     );
 }

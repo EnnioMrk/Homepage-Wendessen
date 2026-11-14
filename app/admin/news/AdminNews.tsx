@@ -1,32 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import PromptDialog from '@/app/components/ui/PromptDialog';
-import ArticleRenderer from '@/app/components/news/ArticleRenderer';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import {
-    Plus,
-    MagnifyingGlass,
-    ArrowsDownUp,
-    PencilSimple,
-    Trash,
-    Eye,
-    ArrowLeft,
-    X,
-    Check,
-    WarningCircle,
-    Calendar,
-    Tag,
-    PushPin,
-    PushPinSlash,
-    CaretUp,
-    CaretDown,
-    ListNumbers,
-    // Article icon removed (unused)
-} from '@phosphor-icons/react/dist/ssr';
+import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import { usePermissions } from '@/lib/usePermissions';
+import { AdminHead } from '@/app/components/admin/AdminPage';
+import { dateShort } from '@/app/lib/register-format';
+import styles from './news.module.css';
 
 interface NewsItem {
     id: string;
@@ -40,13 +20,107 @@ interface NewsItem {
     pinnedOrder?: number;
 }
 
-import { NEWS_CATEGORIES, NEWS_CATEGORY_MAP } from '@/lib/constants/categories';
+import { NEWS_CATEGORY_MAP } from '@/lib/constants/categories';
+
+const categoryLabel = (categoryId: string) =>
+    NEWS_CATEGORY_MAP[categoryId]?.label || categoryId;
+
+const extractPreview = (content: unknown): string => {
+    try {
+        const parsed = typeof content === 'string' ? JSON.parse(content) : content;
+
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            const first = parsed[0] as unknown;
+            if (
+                typeof first === 'object' &&
+                first !== null &&
+                'children' in (first as Record<string, unknown>) &&
+                Array.isArray((first as Record<string, unknown>).children)
+            ) {
+                const children = (first as Record<string, unknown>)
+                    .children as unknown[];
+                const texts = children
+                    .map((child) => {
+                        if (
+                            typeof child === 'object' &&
+                            child !== null &&
+                            'text' in (child as Record<string, unknown>)
+                        ) {
+                            const maybe = (child as Record<string, unknown>).text;
+                            return typeof maybe === 'string' ? maybe : '';
+                        }
+                        return '';
+                    })
+                    .filter(Boolean)
+                    .join(' ');
+                return texts.substring(0, 200);
+            }
+        }
+
+        return 'Vorschau nicht verfügbar';
+    } catch {
+        return typeof content === 'string'
+            ? content.substring(0, 200)
+            : 'Vorschau nicht verfügbar';
+    }
+};
+
+function useOverlay(open: boolean, onClose: () => void) {
+    const ref = useRef<HTMLDivElement>(null);
+    const closeRef = useRef(onClose);
+
+    useEffect(() => {
+        closeRef.current = onClose;
+    }, [onClose]);
+
+    useEffect(() => {
+        if (!open) return;
+        const element = ref.current;
+        if (!element) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+        const focusable = () =>
+            Array.from(
+                element.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                ),
+            ).filter((node) => node.offsetParent !== null);
+
+        focusable()[0]?.focus();
+
+        const handleKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.stopPropagation();
+                closeRef.current();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const items = focusable();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKey);
+        return () => {
+            document.removeEventListener('keydown', handleKey);
+            previouslyFocused?.focus();
+        };
+    }, [open]);
+
+    return ref;
+}
 
 export default function AdminNews() {
-    const router = useRouter();
     const { hasPermission } = usePermissions();
 
-    // Permission checks
     const canCreate = hasPermission('news.create');
     const canEdit = hasPermission('news.edit');
     const canDelete = hasPermission('news.delete');
@@ -57,27 +131,26 @@ export default function AdminNews() {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState<string>('date');
     const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [flash, setFlash] = useState<string | null>(null);
     const [pinnedCount, setPinnedCount] = useState(0);
     const [pinLoading, setPinLoading] = useState<string | null>(null);
     const [isReordering, setIsReordering] = useState(false);
     const [reorderLoading, setReorderLoading] = useState(false);
     const [newsToDelete, setNewsToDelete] = useState<NewsItem | null>(null);
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        category: '',
-    });
-
-    const categories = NEWS_CATEGORIES;
 
     useEffect(() => {
         fetchNews();
     }, []);
 
-    const fetchNews = async () => {
+    useEffect(() => {
+        if (!flash) return;
+        const timer = window.setTimeout(() => setFlash(null), 4000);
+        return () => window.clearTimeout(timer);
+    }, [flash]);
+
+    const fetchNews = async (showLoading = false) => {
+        if (showLoading) setLoading(true);
         try {
             const response = await fetch('/api/admin/news');
             if (response.ok) {
@@ -85,13 +158,14 @@ export default function AdminNews() {
                 const newsItems = data.news || [];
                 setNews(newsItems);
                 setPinnedCount(
-                    newsItems.filter((n: NewsItem) => n.isPinned).length
+                    newsItems.filter((n: NewsItem) => n.isPinned).length,
                 );
+                setError(null);
             } else {
                 setError('Fehler beim Laden der Nachrichten');
             }
-        } catch (error) {
-            console.error('Error fetching news:', error);
+        } catch (fetchError) {
+            console.error('Error fetching news:', fetchError);
             setError('Fehler beim Laden der Nachrichten');
         } finally {
             setLoading(false);
@@ -115,12 +189,12 @@ export default function AdminNews() {
 
             if (response.ok) {
                 await fetchNews();
-                setIsReordering(false);
+                setFlash('Reihenfolge gespeichert.');
             } else {
                 setError('Fehler beim Speichern der Reihenfolge');
             }
-        } catch (error) {
-            console.error('Reorder error:', error);
+        } catch (reorderError) {
+            console.error('Reorder error:', reorderError);
             setError('Fehler beim Speichern der Reihenfolge');
         } finally {
             setReorderLoading(false);
@@ -140,77 +214,6 @@ export default function AdminNews() {
         }
     };
 
-    const handleCreate = async () => {
-        if (!formData.title.trim() || !formData.category) {
-            setError('Titel und Kategorie sind erforderlich');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/admin/news', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setNews((prev) => [data.news, ...prev]);
-                setIsCreating(false);
-                setFormData({ title: '', content: '', category: '' });
-                setError(null);
-            } else {
-                const errorData = await response.json();
-                setError(
-                    errorData.error || 'Fehler beim Erstellen der Nachricht'
-                );
-            }
-        } catch (error) {
-            console.error('Create error:', error);
-            setError('Fehler beim Erstellen der Nachricht');
-        }
-    };
-
-    const handleUpdate = async () => {
-        if (!selectedNews || !formData.title.trim() || !formData.category) {
-            setError('Titel und Kategorie sind erforderlich');
-            return;
-        }
-
-        try {
-            const response = await fetch(`/api/admin/news/${selectedNews.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setNews((prev) =>
-                    prev.map((item) =>
-                        item.id === selectedNews.id ? data.news : item
-                    )
-                );
-                setIsEditing(false);
-                setSelectedNews(null);
-                setFormData({ title: '', content: '', category: '' });
-                setError(null);
-            } else {
-                const errorData = await response.json();
-                setError(
-                    errorData.error || 'Fehler beim Aktualisieren der Nachricht'
-                );
-            }
-        } catch (error) {
-            console.error('Update error:', error);
-            setError('Fehler beim Aktualisieren der Nachricht');
-        }
-    };
-
     const handleDelete = async (id: string) => {
         try {
             const response = await fetch(`/api/admin/news/${id}`, {
@@ -224,14 +227,15 @@ export default function AdminNews() {
                     return item?.isPinned ? prev - 1 : prev;
                 });
                 setError(null);
+                setFlash('Nachricht gelöscht.');
             } else {
                 const errorData = await response.json();
                 setError(
-                    errorData.error || 'Fehler beim Löschen der Nachricht'
+                    errorData.error || 'Fehler beim Löschen der Nachricht',
                 );
             }
-        } catch (error) {
-            console.error('Delete error:', error);
+        } catch (deleteError) {
+            console.error('Delete error:', deleteError);
             setError('Fehler beim Löschen der Nachricht');
         }
     };
@@ -249,25 +253,32 @@ export default function AdminNews() {
                     prev.map((item) =>
                         item.id === id
                             ? {
-                                ...item,
-                                isPinned:
-                                    data.news.isPinned || data.news.is_pinned,
-                                pinnedAt:
-                                    data.news.pinnedAt || data.news.pinned_at,
-                            }
-                            : item
-                    )
+                                  ...item,
+                                  isPinned:
+                                      data.news.isPinned ||
+                                      data.news.is_pinned,
+                                  pinnedAt:
+                                      data.news.pinnedAt ||
+                                      data.news.pinned_at,
+                              }
+                            : item,
+                    ),
                 );
                 setPinnedCount((prev) => (isPinned ? prev - 1 : prev + 1));
                 setError(null);
+                setFlash(
+                    isPinned
+                        ? 'Anheftung gelöst.'
+                        : 'Nachricht angeheftet. Sie erscheint oben auf der Startseite.',
+                );
             } else {
                 const errorData = await response.json();
                 setError(
-                    errorData.error || 'Fehler beim Ändern des Pin-Status'
+                    errorData.error || 'Fehler beim Ändern des Pin-Status',
                 );
             }
-        } catch (error) {
-            console.error('Pin toggle error:', error);
+        } catch (pinError) {
+            console.error('Pin toggle error:', pinError);
             setError('Fehler beim Ändern des Pin-Status');
         } finally {
             setPinLoading(null);
@@ -307,714 +318,497 @@ export default function AdminNews() {
             }
         });
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('de-DE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+    const previewContent = (item: NewsItem) => {
+        if (typeof item.content !== 'string') return item.content || [];
+        try {
+            return JSON.parse(item.content);
+        } catch {
+            return [];
+        }
     };
 
-    const getCategoryStyles = (categoryId: string) => {
-        const config = NEWS_CATEGORY_MAP[categoryId];
-        return config ? `${config.bgLight} ${config.text}` : 'bg-gray-100 text-gray-800';
-    };
-
-    const getCategoryLabel = (categoryId: string) => {
-        return NEWS_CATEGORY_MAP[categoryId]?.label || categoryId;
-    };
+    const previewRef = useOverlay(selectedNews !== null, () =>
+        setSelectedNews(null),
+    );
+    const deleteRef = useOverlay(newsToDelete !== null, () =>
+        setNewsToDelete(null),
+    );
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
+        <div>
+            <AdminHead
+                title="Nachrichten"
+                sub={
+                    loading
+                        ? 'Register der Nachrichten'
+                        : `${news.length} ${
+                              news.length === 1 ? 'Eintrag' : 'Einträge'
+                          } · ${pinnedCount}/3 angeheftet`
+                }
+                actions={
+                    <>
+                        {canPin && pinnedCount > 1 && (
                             <button
-                                onClick={() => router.push('/admin/dashboard')}
-                                className="mr-4 p-2 text-gray-600 hover:text-gray-900"
+                                type="button"
+                                className="btn btn--quiet btn--sm"
+                                onClick={() => setIsReordering(!isReordering)}
+                                aria-pressed={isReordering}
                             >
-                                <ArrowLeft size={24} />
+                                {isReordering
+                                    ? 'Reihenfolge schließen'
+                                    : 'Reihenfolge ändern'}
                             </button>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">
-                                    Nachrichten Verwaltung
-                                </h1>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Nachrichten erstellen, bearbeiten und
-                                    verwalten
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            {canPin && (
-                                <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full text-sm">
-                                    <PushPin
-                                        size={16}
-                                        className="text-amber-600"
-                                        weight="fill"
-                                    />
-                                    <span className="text-amber-800 font-medium">
-                                        {pinnedCount}/3 angepinnt
-                                    </span>
-                                    {pinnedCount > 1 && (
-                                        <button
-                                            onClick={() =>
-                                                setIsReordering(!isReordering)
-                                            }
-                                            className={`ml-2 p-1 rounded hover:bg-amber-200 text-amber-700 transition-colors ${isReordering
-                                                    ? 'bg-amber-200'
-                                                    : ''
-                                                }`}
-                                            title="Reihenfolge ändern"
-                                        >
-                                            <ListNumbers size={18} />
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                            {canCreate && (
-                                <Link
-                                    href="/admin/news/erstellen"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
-                                >
-                                    <Plus size={16} className="mr-2" />
-                                    Nachricht erstellen
-                                </Link>
-                            )}
-                        </div>
+                        )}
+                        {canCreate && (
+                            <Link
+                                className="btn btn--primary"
+                                href="/admin/news/erstellen"
+                            >
+                                Nachricht schreiben
+                            </Link>
+                        )}
+                    </>
+                }
+            />
+
+            {flash && (
+                <div
+                    className="notice notice--ok"
+                    role="status"
+                    style={{ marginBottom: 'var(--s4)' }}
+                >
+                    <strong>Gespeichert</strong>
+                    <span>{flash}</span>
+                </div>
+            )}
+
+            {error && (
+                <div
+                    className="notice notice--error"
+                    role="alert"
+                    style={{ marginBottom: 'var(--s4)' }}
+                >
+                    <strong>Nicht abgeschlossen</strong>
+                    <span>{error}</span>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: 'var(--s2)',
+                            marginTop: 'var(--s2)',
+                        }}
+                    >
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => fetchNews(true)}
+                        >
+                            Erneut laden
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => setError(null)}
+                        >
+                            Hinweis schließen
+                        </button>
                     </div>
                 </div>
-            </header>
+            )}
 
-            {/* Search and Sort Bar */}
-            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="px-4 py-6 sm:px-0">
-                    <div className="bg-white shadow rounded-lg p-6 mb-6">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="flex-1 relative">
-                                <MagnifyingGlass
-                                    size={20}
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Nachrichten durchsuchen..."
-                                    value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                />
-                            </div>
-                            <div className="relative">
-                                <ArrowsDownUp
-                                    size={20}
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                />
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    className="pl-10 pr-8 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                >
-                                    <option value="date">Nach Datum</option>
-                                    <option value="title">Nach Titel</option>
-                                    <option value="category">
-                                        Nach Kategorie
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
+            {isReordering && pinnedNewsItems.length > 1 && (
+                <div className={`panel ${styles.reorderPanel}`}>
+                    <div className="panel-head">
+                        <h2>Reihenfolge der angehefteten Nachrichten</h2>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => setIsReordering(false)}
+                        >
+                            Schließen
+                        </button>
                     </div>
-
-                    {/* Error Message */}
-                    {error && (
-                        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-                            <div className="flex">
-                                <WarningCircle className="h-5 w-5 text-red-400" />
-                                <div className="ml-3">
-                                    <p className="text-sm text-red-800">
-                                        {error}
+                    <div className="panel-body">
+                        {pinnedNewsItems.map((item, index) => (
+                            <div
+                                key={item.id}
+                                className={styles.reorderRow}
+                            >
+                                <span className={styles.position}>
+                                    {String(index + 1).padStart(2, '0')}
+                                </span>
+                                <div>
+                                    <p className={styles.reorderTitle}>
+                                        {item.title}
+                                    </p>
+                                    <p className={styles.reorderMeta}>
+                                        {categoryLabel(item.category)}
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() => setError(null)}
-                                    className="ml-auto"
-                                >
-                                    <X className="h-5 w-5 text-red-400" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Pinned Reordering UI */}
-                    {isReordering && pinnedNewsItems.length > 1 && (
-                        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-6 shadow-sm">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-bold text-amber-900 flex items-center gap-2">
-                                    <ListNumbers size={20} />
-                                    Reihenfolge der angepinnten Nachrichten
-                                </h3>
-                                <button
-                                    onClick={() => setIsReordering(false)}
-                                    className="text-amber-600 hover:text-amber-800"
-                                >
-                                    <X size={20} />
-                                </button>
-                            </div>
-                            <div className="space-y-2">
-                                {pinnedNewsItems.map((item, index) => (
-                                    <div
-                                        key={item.id}
-                                        className="flex items-center gap-3 bg-white p-3 rounded-md border border-amber-100 shadow-sm"
+                                <div className={styles.reorderButtons}>
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--quiet"
+                                        onClick={() =>
+                                            moveItem(index, 'up')
+                                        }
+                                        disabled={
+                                            index === 0 || reorderLoading
+                                        }
+                                        aria-label={`${item.title} nach oben`}
                                     >
-                                        <div className="flex flex-col gap-1">
-                                            <button
-                                                onClick={() =>
-                                                    moveItem(index, 'up')
-                                                }
-                                                disabled={
-                                                    index === 0 ||
-                                                    reorderLoading
-                                                }
-                                                className="p-1 text-gray-400 hover:text-amber-600 disabled:opacity-30"
-                                            >
-                                                <CaretUp
-                                                    size={16}
-                                                    weight="bold"
-                                                />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    moveItem(index, 'down')
-                                                }
-                                                disabled={
-                                                    index ===
-                                                    pinnedNewsItems.length -
-                                                    1 || reorderLoading
-                                                }
-                                                className="p-1 text-gray-400 hover:text-amber-600 disabled:opacity-30"
-                                            >
-                                                <CaretDown
-                                                    size={16}
-                                                    weight="bold"
-                                                />
-                                            </button>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="font-medium text-gray-900 truncate">
-                                                {item.title}
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                {item.category}
-                                            </div>
-                                        </div>
-                                        <div className="text-amber-600 font-mono font-bold px-3 py-1 bg-amber-50 rounded text-sm">
-                                            Pos. {index + 1}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-4 text-xs text-amber-700 italic">
-                                Die Reihenfolge bestimmt, welche Nachrichten in
-                                welcher Folge auf der Startseite oben
-                                erscheinen.
-                            </div>
-                        </div>
-                    )}
-
-                    {/* News List */}
-                    <div className="bg-white shadow rounded-lg">
-                        {loading ? (
-                            <LoadingSpinner
-                                size="md"
-                                text="Lade Nachrichten..."
-                                centered
-                                className="my-12"
-                            />
-                        ) : sortedAndFilteredNews.length > 0 ? (
-                            <div className="divide-y divide-gray-200">
-                                {sortedAndFilteredNews.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className={`p-6 hover:bg-gray-50 ${item.isPinned
-                                                ? 'bg-amber-50/50 border-l-4 border-amber-400'
-                                                : ''
-                                            }`}
+                                        Nach oben
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--quiet"
+                                        onClick={() =>
+                                            moveItem(index, 'down')
+                                        }
+                                        disabled={
+                                            index ===
+                                                pinnedNewsItems.length - 1 ||
+                                            reorderLoading
+                                        }
+                                        aria-label={`${item.title} nach unten`}
                                     >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                                    {item.isPinned && (
-                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                                            <PushPin
-                                                                size={12}
-                                                                className="mr-1"
-                                                                weight="fill"
-                                                            />
-                                                            Angepinnt
-                                                        </span>
-                                                    )}
-                                                    <h3 className="text-lg font-medium text-gray-900">
-                                                        {item.title}
-                                                    </h3>
-                                                    <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryStyles(
-                                                            item.category
-                                                        )}`}
-                                                    >
-                                                        {getCategoryLabel(item.category)}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center text-sm text-gray-500 mb-2">
-                                                    <Calendar
-                                                        size={14}
-                                                        className="mr-1"
-                                                    />
-                                                    {formatDate(
-                                                        item.publishedDate
-                                                    )}
-                                                </div>
-                                                {item.content && (
-                                                    <p className="text-gray-600 text-sm line-clamp-2">
-                                                        {(() => {
-                                                            const extractPreview =
-                                                                (
-                                                                    content: unknown
-                                                                ): string => {
-                                                                    try {
-                                                                        const parsed =
-                                                                            typeof content ===
-                                                                                'string'
-                                                                                ? JSON.parse(
-                                                                                    content
-                                                                                )
-                                                                                : content;
-
-                                                                        if (
-                                                                            Array.isArray(
-                                                                                parsed
-                                                                            ) &&
-                                                                            parsed.length >
-                                                                            0
-                                                                        ) {
-                                                                            const first =
-                                                                                parsed[0] as unknown;
-                                                                            if (
-                                                                                typeof first ===
-                                                                                'object' &&
-                                                                                first !==
-                                                                                null &&
-                                                                                'children' in
-                                                                                (first as Record<
-                                                                                    string,
-                                                                                    unknown
-                                                                                >) &&
-                                                                                Array.isArray(
-                                                                                    (
-                                                                                        first as Record<
-                                                                                            string,
-                                                                                            unknown
-                                                                                        >
-                                                                                    )
-                                                                                        .children
-                                                                                )
-                                                                            ) {
-                                                                                const children =
-                                                                                    (
-                                                                                        first as Record<
-                                                                                            string,
-                                                                                            unknown
-                                                                                        >
-                                                                                    )
-                                                                                        .children as unknown[];
-                                                                                const texts =
-                                                                                    children
-                                                                                        .map(
-                                                                                            (
-                                                                                                c
-                                                                                            ) => {
-                                                                                                if (
-                                                                                                    typeof c ===
-                                                                                                    'object' &&
-                                                                                                    c !==
-                                                                                                    null &&
-                                                                                                    'text' in
-                                                                                                    (c as Record<
-                                                                                                        string,
-                                                                                                        unknown
-                                                                                                    >)
-                                                                                                ) {
-                                                                                                    const maybe =
-                                                                                                        (
-                                                                                                            c as Record<
-                                                                                                                string,
-                                                                                                                unknown
-                                                                                                            >
-                                                                                                        )
-                                                                                                            .text;
-                                                                                                    return typeof maybe ===
-                                                                                                        'string'
-                                                                                                        ? maybe
-                                                                                                        : '';
-                                                                                                }
-                                                                                                return '';
-                                                                                            }
-                                                                                        )
-                                                                                        .filter(
-                                                                                            Boolean
-                                                                                        )
-                                                                                        .join(
-                                                                                            ' '
-                                                                                        );
-                                                                                return texts.substring(
-                                                                                    0,
-                                                                                    200
-                                                                                );
-                                                                            }
-                                                                        }
-
-                                                                        return 'Vorschau nicht verfügbar';
-                                                                    } catch {
-                                                                        return typeof content ===
-                                                                            'string'
-                                                                            ? content.substring(
-                                                                                0,
-                                                                                200
-                                                                            )
-                                                                            : 'Vorschau nicht verfügbar';
-                                                                    }
-                                                                };
-
-                                                            return extractPreview(
-                                                                item.content
-                                                            );
-                                                        })()}
-                                                        ...
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="flex items-center space-x-2 ml-4">
-                                                {canPin && (
-                                                    <button
-                                                        onClick={() =>
-                                                            handleTogglePin(
-                                                                item.id,
-                                                                !!item.isPinned
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            pinLoading ===
-                                                            item.id ||
-                                                            (!item.isPinned &&
-                                                                pinnedCount >=
-                                                                3)
-                                                        }
-                                                        title={
-                                                            item.isPinned
-                                                                ? 'Nicht mehr anpinnen'
-                                                                : pinnedCount >=
-                                                                    3
-                                                                    ? 'Maximal 3 angepinnte Nachrichten erlaubt'
-                                                                    : 'Auf der Startseite anpinnen'
-                                                        }
-                                                        className={`p-2 rounded-full transition-colors ${item.isPinned
-                                                                ? 'text-amber-600 hover:text-amber-700 hover:bg-amber-100'
-                                                                : pinnedCount >=
-                                                                    3
-                                                                    ? 'text-gray-300 cursor-not-allowed'
-                                                                    : 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                                                            } ${pinLoading ===
-                                                                item.id
-                                                                ? 'opacity-50'
-                                                                : ''
-                                                            }`}
-                                                    >
-                                                        {item.isPinned ? (
-                                                            <PushPinSlash
-                                                                size={16}
-                                                                weight="fill"
-                                                            />
-                                                        ) : (
-                                                            <PushPin
-                                                                size={16}
-                                                            />
-                                                        )}
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() =>
-                                                        setSelectedNews(item)
-                                                    }
-                                                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full"
-                                                >
-                                                    <Eye size={16} />
-                                                </button>
-                                                {canEdit && (
-                                                    <Link
-                                                        href={`/admin/news/bearbeiten/${item.id}`}
-                                                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full inline-block"
-                                                        title="Bearbeiten"
-                                                    >
-                                                        <PencilSimple
-                                                            size={16}
-                                                        />
-                                                    </Link>
-                                                )}
-                                                {canDelete && (
-                                                    <button
-                                                        onClick={() =>
-                                                            setNewsToDelete(
-                                                                item
-                                                            )
-                                                        }
-                                                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
-                                                    >
-                                                        <Trash size={16} />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-12">
-                                <div className="text-gray-400 mb-4">
-                                    Keine Nachrichten
+                                        Nach unten
+                                    </button>
                                 </div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    Keine Nachrichten gefunden
-                                </h3>
-                                <p className="text-gray-600 mb-4">
-                                    Es wurden noch keine Nachrichten erstellt
-                                    oder Ihre Suche ergab keine Treffer.
-                                </p>
-                                {canCreate && (
-                                    <Link
-                                        href="/admin/news/erstellen"
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center mx-auto"
-                                    >
-                                        <Plus size={16} className="mr-2" />
-                                        Erste Nachricht erstellen
-                                    </Link>
-                                )}
                             </div>
-                        )}
+                        ))}
+                        <p className={styles.reorderHint}>
+                            Die Reihenfolge bestimmt, welche Nachrichten in
+                            welcher Folge auf der Startseite oben erscheinen.
+                        </p>
                     </div>
                 </div>
+            )}
+
+            <div className="filterbar">
+                <div className="field grow">
+                    <label htmlFor="news-search">Suche</label>
+                    <input
+                        id="news-search"
+                        className="input"
+                        type="search"
+                        value={searchTerm}
+                        onChange={(event) =>
+                            setSearchTerm(event.target.value)
+                        }
+                        placeholder="Titel, Rubrik oder Inhalt …"
+                    />
+                </div>
+                <div className="field">
+                    <label htmlFor="news-sort">Sortierung</label>
+                    <select
+                        id="news-sort"
+                        className="select"
+                        value={sortBy}
+                        onChange={(event) => setSortBy(event.target.value)}
+                    >
+                        <option value="date">Nach Datum</option>
+                        <option value="title">Nach Titel</option>
+                        <option value="category">Nach Rubrik</option>
+                    </select>
+                </div>
+                <p className="count">
+                    {sortedAndFilteredNews.length} von {news.length} Einträgen
+                </p>
             </div>
 
-            {/* View Modal */}
-            {selectedNews && !isEditing && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">
-                                Nachricht anzeigen
-                            </h3>
+            {loading ? (
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">Lade Nachrichten …</p>
+                    </div>
+                </div>
+            ) : sortedAndFilteredNews.length === 0 ? (
+                <div className="empty">
+                    <h3>
+                        {news.length === 0
+                            ? 'Noch keine Nachricht verzeichnet'
+                            : 'Keine Nachricht gefunden'}
+                    </h3>
+                    <p>
+                        {news.length === 0
+                            ? 'Das Register der Nachrichten ist leer. Der erste Artikel lässt sich mit dem Editor schreiben und erscheint danach auf der Startseite.'
+                            : 'Die Suche ergab keinen Treffer. Setzen Sie den Suchbegriff zurück oder wählen Sie eine andere Sortierung.'}
+                    </p>
+                    {news.length === 0 && canCreate && (
+                        <Link
+                            className="btn btn--primary"
+                            href="/admin/news/erstellen"
+                        >
+                            Erste Nachricht schreiben
+                        </Link>
+                    )}
+                </div>
+            ) : (
+                <table className={`data ${styles.table}`}>
+                    <thead>
+                        <tr>
+                            <th scope="col">Datum</th>
+                            <th scope="col">Titel</th>
+                            <th scope="col" className={styles.colRubric}>
+                                Rubrik
+                            </th>
+                            <th scope="col">Zustand</th>
+                            <th scope="col" className="right">
+                                Aktionen
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedAndFilteredNews.map((item) => (
+                            <tr key={item.id}>
+                                <td
+                                    className={styles.cellDate}
+                                    style={{
+                                        whiteSpace: 'nowrap',
+                                        fontSize: 'var(--small)',
+                                    }}
+                                >
+                                    {dateShort(new Date(item.publishedDate))}
+                                </td>
+                                <td className={styles.cellTitle}>
+                                    <button
+                                        type="button"
+                                        className={styles.titleBtn}
+                                        onClick={() => setSelectedNews(item)}
+                                    >
+                                        {item.title}
+                                    </button>
+                                    {item.content && (
+                                        <p className={styles.excerpt}>
+                                            {extractPreview(item.content)} …
+                                        </p>
+                                    )}
+                                </td>
+                                <td className={styles.colRubric}>
+                                    <span className={styles.rubric}>
+                                        {categoryLabel(item.category)}
+                                    </span>
+                                </td>
+                                <td className={styles.cellState}>
+                                    {item.isPinned ? (
+                                        <span className="stamp stamp--pinned">
+                                            Angeheftet
+                                        </span>
+                                    ) : (
+                                        <span className={styles.stateOpen}>
+                                            Veröffentlicht
+                                        </span>
+                                    )}
+                                </td>
+                                <td className={`right ${styles.cellActions}`}>
+                                    <div className={styles.actions}>
+                                        <button
+                                            type="button"
+                                            className="btn btn--sm btn--quiet"
+                                            onClick={() => setSelectedNews(item)}
+                                        >
+                                            Vorschau
+                                        </button>
+                                        {canPin && (
+                                            <button
+                                                type="button"
+                                                className="btn btn--sm btn--quiet"
+                                                onClick={() =>
+                                                    handleTogglePin(
+                                                        item.id,
+                                                        Boolean(item.isPinned),
+                                                    )
+                                                }
+                                                disabled={
+                                                    pinLoading === item.id ||
+                                                    (!item.isPinned &&
+                                                        pinnedCount >= 3)
+                                                }
+                                                title={
+                                                    item.isPinned
+                                                        ? 'Nicht mehr anpinnen'
+                                                        : pinnedCount >= 3
+                                                          ? 'Maximal 3 angepinnte Nachrichten erlaubt'
+                                                          : 'Auf der Startseite anpinnen'
+                                                }
+                                            >
+                                                {item.isPinned
+                                                    ? 'Ablösen'
+                                                    : 'Anpinnen'}
+                                            </button>
+                                        )}
+                                        {canEdit && (
+                                            <Link
+                                                className="btn btn--sm btn--quiet"
+                                                href={`/admin/news/bearbeiten/${item.id}`}
+                                            >
+                                                Bearbeiten
+                                            </Link>
+                                        )}
+                                        {canDelete && (
+                                            <button
+                                                type="button"
+                                                className="btn btn--sm btn--danger"
+                                                onClick={() =>
+                                                    setNewsToDelete(item)
+                                                }
+                                            >
+                                                Löschen
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+
+            {selectedNews && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            setSelectedNews(null);
+                    }}
+                >
+                    <div
+                        ref={previewRef}
+                        className={`dialog ${styles.dialogWide}`}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="news-preview-title"
+                    >
+                        <div className="dialog-head">
+                            <div>
+                                <p className="small muted">Vorschau</p>
+                                <h2 id="news-preview-title">
+                                    {selectedNews.title}
+                                </h2>
+                            </div>
                             <button
+                                type="button"
+                                className="dialog-close"
                                 onClick={() => setSelectedNews(null)}
-                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Vorschau schließen"
                             >
-                                <X size={20} />
+                                ×
                             </button>
                         </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                    {selectedNews.title}
-                                </h4>
-                                <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                                    <div className="flex items-center">
-                                        <Calendar size={14} className="mr-1" />
-                                        {formatDate(selectedNews.publishedDate)}
-                                    </div>
-                                    <span
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryStyles(
-                                            selectedNews.category
-                                        )}`}
-                                    >
-                                        <Tag size={12} className="mr-1" />
-                                        {getCategoryLabel(selectedNews.category)}
+                        <div className="dialog-body">
+                            <div className={styles.articleHead}>
+                                <span className={styles.rubric}>
+                                    {categoryLabel(selectedNews.category)}
+                                </span>
+                                <div className={styles.articleMeta}>
+                                    <span>
+                                        {dateShort(
+                                            new Date(
+                                                selectedNews.publishedDate,
+                                            ),
+                                        )}
                                     </span>
+                                    {selectedNews.isPinned && (
+                                        <span className="stamp stamp--pinned">
+                                            Angeheftet
+                                        </span>
+                                    )}
                                 </div>
                             </div>
-                            {selectedNews.content && (
-                                <div className="prose prose-sm max-w-none">
+                            {selectedNews.content ? (
+                                <div className="prose">
                                     <ArticleRenderer
-                                        content={
-                                            typeof selectedNews.content ===
-                                                'string'
-                                                ? JSON.parse(
-                                                    selectedNews.content
-                                                )
-                                                : selectedNews.content
-                                        }
+                                        content={previewContent(selectedNews)}
                                     />
                                 </div>
+                            ) : (
+                                <p className="muted">
+                                    Für diesen Eintrag ist kein Inhalt
+                                    verzeichnet.
+                                </p>
                             )}
                         </div>
-
-                        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                        <div className={`dialog-foot ${styles.footSticky}`}>
                             {canEdit && (
                                 <Link
+                                    className="btn btn--primary"
                                     href={`/admin/news/bearbeiten/${selectedNews.id}`}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
                                 >
-                                    <PencilSimple size={16} className="mr-2" />
                                     Bearbeiten
                                 </Link>
                             )}
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => setSelectedNews(null)}
+                            >
+                                Schließen
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Create/Edit Modal */}
-            {(isCreating || isEditing) && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">
-                                {isCreating
-                                    ? 'Nachricht erstellen'
-                                    : 'Nachricht bearbeiten'}
-                            </h3>
+            {newsToDelete && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            setNewsToDelete(null);
+                    }}
+                >
+                    <div
+                        ref={deleteRef}
+                        className="dialog"
+                        role="alertdialog"
+                        aria-modal="true"
+                        aria-labelledby="news-delete-title"
+                    >
+                        <div className="dialog-head">
+                            <h2 id="news-delete-title">Nachricht löschen</h2>
                             <button
-                                onClick={() => {
-                                    setIsCreating(false);
-                                    setIsEditing(false);
-                                    setSelectedNews(null);
-                                    setFormData({
-                                        title: '',
-                                        content: '',
-                                        category: '',
-                                    });
-                                }}
-                                className="text-gray-400 hover:text-gray-600"
+                                type="button"
+                                className="dialog-close"
+                                onClick={() => setNewsToDelete(null)}
+                                aria-label="Dialog schließen"
                             >
-                                <X size={20} />
+                                ×
                             </button>
                         </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Titel *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            title: e.target.value,
-                                        }))
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                    placeholder="Titel der Nachricht..."
-                                    autoFocus
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Kategorie *
-                                </label>
-                                <select
-                                    value={formData.category}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            category: e.target.value,
-                                        }))
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                >
-                                    <option value="">
-                                        Kategorie wählen...
-                                    </option>
-                                    {categories.map((cat) => (
-                                        <option key={cat.id} value={cat.id}>
-                                            {cat.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Inhalt
-                                </label>
-                                <textarea
-                                    value={formData.content}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            content: e.target.value,
-                                        }))
-                                    }
-                                    rows={8}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                    placeholder="Inhalt der Nachricht..."
-                                />
+                        <div className="dialog-body">
+                            <div className="notice notice--warn">
+                                <strong>{newsToDelete.title}</strong>
+                                <span>
+                                    Der Eintrag wird dauerhaft aus dem Register
+                                    entfernt. Diese Aktion kann nicht
+                                    rückgängig gemacht werden.
+                                </span>
                             </div>
                         </div>
-
-                        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                        <div className={`dialog-foot ${styles.footSticky}`}>
                             <button
-                                onClick={() => {
-                                    setIsCreating(false);
-                                    setIsEditing(false);
-                                    setSelectedNews(null);
-                                    setFormData({
-                                        title: '',
-                                        content: '',
-                                        category: '',
-                                    });
-                                }}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => setNewsToDelete(null)}
                             >
                                 Abbrechen
                             </button>
                             <button
-                                onClick={
-                                    isCreating ? handleCreate : handleUpdate
-                                }
-                                disabled={
-                                    !formData.title.trim() || !formData.category
-                                }
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 rounded-md flex items-center"
+                                type="button"
+                                className="btn btn--danger"
+                                onClick={async () => {
+                                    const target = newsToDelete;
+                                    setNewsToDelete(null);
+                                    await handleDelete(target.id);
+                                }}
                             >
-                                <Check size={16} className="mr-2" />
-                                {isCreating ? 'Erstellen' : 'Speichern'}
+                                Endgültig löschen
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-
-            <PromptDialog
-                isOpen={newsToDelete !== null}
-                onCancel={() => setNewsToDelete(null)}
-                onConfirm={async () => {
-                    if (newsToDelete) {
-                        await handleDelete(newsToDelete.id);
-                        setNewsToDelete(null);
-                    }
-                }}
-                title="Nachricht löschen"
-                description="Sind Sie sicher, dass Sie diese Nachricht löschen möchten?"
-                confirmText="Löschen"
-                cancelText="Abbrechen"
-                icon={<Trash className="h-12 w-12" />}
-                accentColor="red"
-            />
         </div>
     );
 }

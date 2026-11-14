@@ -1,50 +1,141 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 import { isMinioUrl } from '@/lib/utils/blob-utils-client';
-import {
-    X,
-    DownloadSimple,
-    Warning,
-    Calendar,
-    User,
-    MapPin,
-} from '@phosphor-icons/react';
+import { dateLong } from '@/app/lib/register-format';
+import { useDialog } from '@/app/impressionen/dialog';
+import styles from '@/app/impressionen/impressionen.module.css';
 
-interface ImageLightboxProps {
-    submissionId: string;
+export interface LightboxImage {
+    id: string;
     imageUrl: string;
-    title: string;
     description?: string;
-    submitterName?: string;
-    submittedAt: Date;
     dateTaken?: Date;
     location?: string;
+}
+
+interface ImageLightboxProps {
+    images: LightboxImage[];
+    index: number;
+    title: string;
+    submitterName?: string;
+    submittedAt: Date;
     filename?: string;
+    onIndexChange: (index: number) => void;
     onClose: () => void;
 }
 
+function imageAlt(
+    image: LightboxImage,
+    title: string,
+    index: number,
+    total: number,
+): string {
+    const description = image.description?.trim();
+    if (description) return description;
+    return `${title} — Foto ${index + 1} von ${total}`;
+}
+
+/**
+ * The register's plate viewer: one photo on the dark plate, no chrome but
+ * rules. Escape and the arrow keys work, the report is a paper sheet on top.
+ */
 export default function ImageLightbox({
-    submissionId,
-    imageUrl,
+    images,
+    index,
     title,
-    description,
     submitterName,
     submittedAt,
-    dateTaken,
-    location,
     filename,
+    onIndexChange,
     onClose,
 }: ImageLightboxProps) {
-    const [showReportModal, setShowReportModal] = useState(false);
+    const safeIndex = Math.min(Math.max(index, 0), Math.max(images.length - 1, 0));
+    const image = images[safeIndex];
+
+    const [reportOpen, setReportOpen] = useState(false);
     const [reportReason, setReportReason] = useState('');
     const [reportSubmitting, setReportSubmitting] = useState(false);
-    const [reportSuccess, setReportSuccess] = useState(false);
+    const [reportSent, setReportSent] = useState(false);
+    const [reportError, setReportError] = useState('');
+
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const reasonRef = useRef<HTMLTextAreaElement>(null);
+    const reportButtonRef = useRef<HTMLButtonElement>(null);
+
+    const goTo = useCallback(
+        (nextIndex: number) => {
+            if (nextIndex < 0 || nextIndex >= images.length) return;
+            setReportOpen(false);
+            setReportReason('');
+            setReportError('');
+            setReportSent(false);
+            onIndexChange(nextIndex);
+        },
+        [images.length, onIndexChange],
+    );
+
+    const closeDialog = () => {
+        if (reportOpen) {
+            closeReport();
+            return;
+        }
+        onClose();
+    };
+
+    useDialog(dialogRef, closeDialog);
+
+    function closeReport() {
+        setReportOpen(false);
+        setReportReason('');
+        setReportError('');
+        setReportSent(false);
+        window.setTimeout(() => reportButtonRef.current?.focus(), 0);
+    }
+
+    function openReport() {
+        setReportError('');
+        setReportSent(false);
+        setReportOpen(true);
+    }
+
+    // Arrow keys step through the group; they stay out of the way while the
+    // report is open or the caret sits in a text field.
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (reportOpen) return;
+            const target = event.target as HTMLElement | null;
+            if (target?.tagName === 'TEXTAREA' || target?.tagName === 'INPUT') {
+                return;
+            }
+
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                goTo(safeIndex + 1);
+            } else if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                goTo(safeIndex - 1);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [goTo, reportOpen, safeIndex]);
+
+    useEffect(() => {
+        if (reportOpen) reasonRef.current?.focus();
+    }, [reportOpen]);
+
+    if (!image) return null;
+
+    const alt = imageAlt(image, title, safeIndex, images.length);
+    const hasMany = images.length > 1;
 
     const handleDownload = () => {
         const link = document.createElement('a');
-        link.href = imageUrl;
+        link.href = image.imageUrl;
         link.download = filename || `wendessen-${Date.now()}.jpg`;
         document.body.appendChild(link);
         link.click();
@@ -52,250 +143,220 @@ export default function ImageLightbox({
     };
 
     const handleReport = async () => {
-        if (!reportReason.trim()) {
-            alert('Bitte geben Sie einen Grund für die Meldung an.');
+        const reason = reportReason.trim();
+        if (!reason) {
+            setReportError('Bitte geben Sie einen Grund für die Meldung an.');
             return;
         }
 
+        setReportError('');
         setReportSubmitting(true);
 
         try {
             const response = await fetch('/api/shared-gallery/report', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    submissionId,
-                    reason: reportReason.trim(),
-                }),
+                body: JSON.stringify({ submissionId: image.id, reason }),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to submit report');
-            }
+            if (!response.ok) throw new Error('report failed');
 
-            setReportSuccess(true);
-            setTimeout(() => {
-                setShowReportModal(false);
-                setReportSuccess(false);
-                setReportReason('');
-            }, 2000);
+            setReportSent(true);
         } catch (error) {
             console.error('Error submitting report:', error);
-            alert(
-                'Fehler beim Senden der Meldung. Bitte versuchen Sie es später erneut.'
+            setReportError(
+                'Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.',
             );
         } finally {
             setReportSubmitting(false);
         }
     };
 
-    return (
+    return createPortal(
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm pt-16"
-            onClick={onClose}
+            ref={dialogRef}
+            className={`lightbox ${styles.viewer}`}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Bildansicht: ${title}`}
         >
             <div
-                className="relative w-full max-w-5xl h-[calc(100vh-5rem)] p-4 md:p-6 flex flex-col"
-                onClick={(e) => e.stopPropagation()}
+                className={`lightbox-bar ${styles.bar}`}
+                inert={reportOpen || undefined}
             >
-                {/* Header */}
-                <div className="flex items-center justify-between mb-3 text-white flex-shrink-0">
-                    <div className="flex-1 pr-4">
-                        <h3 className="text-lg md:text-xl font-bold mb-1 line-clamp-1">
-                            {title}
-                        </h3>
-                        {description && (
-                            <p className="text-xs md:text-sm text-gray-300 line-clamp-1">
-                                {description}
-                            </p>
-                        )}
-                    </div>
+                <div className={styles.barLead}>
+                    <p className={styles.barTitle}>{title}</p>
+                    {hasMany && (
+                        <p className={styles.counter}>
+                            Foto {safeIndex + 1} von {images.length}
+                        </p>
+                    )}
+                </div>
+                <div className={styles.barActions}>
+                    {hasMany && (
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => goTo(safeIndex - 1)}
+                                disabled={safeIndex === 0}
+                                aria-label="Vorheriges Foto"
+                            >
+                                Zurück
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => goTo(safeIndex + 1)}
+                                disabled={safeIndex === images.length - 1}
+                                aria-label="Nächstes Foto"
+                            >
+                                Weiter
+                            </button>
+                        </>
+                    )}
                     <button
+                        type="button"
                         onClick={onClose}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors flex-shrink-0"
                         aria-label="Schließen"
+                        data-autofocus
                     >
-                        <X size={24} className="text-white" />
+                        Schließen
                     </button>
-                </div>
-
-                {/* Image Container */}
-                <div className="flex-1 relative mb-3 rounded-lg overflow-hidden bg-black/50">
-                    <Image
-                        src={imageUrl}
-                        alt={description || title}
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 1280px) 100vw, 1280px"
-                        priority
-                        unoptimized={isMinioUrl(imageUrl)}
-                    />
-                </div>
-
-                {/* Footer with Metadata and Actions */}
-                <div className="bg-white/10 backdrop-blur-md rounded-lg p-3 md:p-4 text-white">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                        {/* Metadata */}
-                        <div className="flex flex-wrap items-center gap-3 text-xs md:text-sm">
-                            {submitterName && (
-                                <div className="flex items-center gap-2">
-                                    <User
-                                        size={18}
-                                        weight="duotone"
-                                        className="text-gray-300"
-                                    />
-                                    <span>{submitterName}</span>
-                                </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                                <Calendar
-                                    size={18}
-                                    weight="duotone"
-                                    className="text-gray-300"
-                                />
-                                <span>
-                                    {dateTaken ? (
-                                        <>
-                                            Aufgenommen:{' '}
-                                            {new Date(
-                                                dateTaken
-                                            ).toLocaleDateString('de-DE', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}
-                                        </>
-                                    ) : (
-                                        <>
-                                            Hochgeladen:{' '}
-                                            {new Date(
-                                                submittedAt
-                                            ).toLocaleDateString('de-DE', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}
-                                        </>
-                                    )}
-                                </span>
-                            </div>
-                            {location && (
-                                <div className="flex items-center gap-2">
-                                    <MapPin
-                                        size={18}
-                                        weight="duotone"
-                                        className="text-gray-300"
-                                    />
-                                    <span>{location}</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={handleDownload}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
-                            >
-                                <DownloadSimple size={18} />
-                                <span className="hidden sm:inline">
-                                    Herunterladen
-                                </span>
-                            </button>
-                            <button
-                                onClick={() => setShowReportModal(true)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors"
-                            >
-                                <Warning size={18} />
-                                <span className="hidden sm:inline">Melden</span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            {/* Report Modal */}
-            {showReportModal && (
-                <div
-                    className="fixed inset-0 z-60 flex items-center justify-center bg-black/80"
-                    onClick={() => setShowReportModal(false)}
-                >
-                    <div
-                        className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
-                        onClick={(e) => e.stopPropagation()}
+            <div className="lightbox-stage" inert={reportOpen || undefined}>
+                <div className={styles.stage}>
+                    <Image
+                        src={image.imageUrl}
+                        alt={alt}
+                        fill
+                        sizes="100vw"
+                        className={styles.stageImage}
+                        priority
+                        unoptimized={isMinioUrl(image.imageUrl)}
+                    />
+                </div>
+            </div>
+
+            <div className="lightbox-foot" inert={reportOpen || undefined}>
+                <div className={styles.footMeta}>
+                    {submitterName && <span>Eingereicht von {submitterName}</span>}
+                    <span>
+                        {image.dateTaken
+                            ? `Aufgenommen: ${dateLong(new Date(image.dateTaken))}`
+                            : `Hochgeladen: ${dateLong(new Date(submittedAt))}`}
+                    </span>
+                    {image.location && <span>Ort: {image.location}</span>}
+                </div>
+                <div className={styles.footActions}>
+                    <button
+                        type="button"
+                        onClick={handleDownload}
+                        className="btn btn--sm"
                     >
-                        {reportSuccess ? (
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg
-                                        className="w-8 h-8 text-green-600"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M5 13l4 4L19 7"
-                                        />
-                                    </svg>
+                        Herunterladen
+                    </button>
+                    <button
+                        ref={reportButtonRef}
+                        type="button"
+                        onClick={openReport}
+                        className="btn btn--sm btn--danger"
+                        aria-haspopup="dialog"
+                    >
+                        Melden
+                    </button>
+                </div>
+            </div>
+
+            {reportOpen && (
+                <div className={styles.report}>
+                    <div
+                        className={styles.reportPanel}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Foto melden"
+                    >
+                        <h2>Foto melden</h2>
+                        {reportSent ? (
+                            <>
+                                <div
+                                    className="notice notice--ok"
+                                    role="status"
+                                >
+                                    <strong>Meldung eingegangen</strong>
+                                    <span>
+                                        Vielen Dank. Die Redaktion prüft das
+                                        Foto.
+                                    </span>
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                    Vielen Dank!
-                                </h3>
-                                <p className="text-gray-600">
-                                    Ihre Meldung wurde erfolgreich übermittelt.
-                                </p>
-                            </div>
+                                <div className="form-actions">
+                                    <button
+                                        type="button"
+                                        className="btn btn--primary"
+                                        onClick={closeReport}
+                                    >
+                                        Fertig
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <>
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900">
-                                        Foto melden
-                                    </h3>
-                                    <button
-                                        onClick={() =>
-                                            setShowReportModal(false)
-                                        }
-                                        className="text-gray-400 hover:text-gray-600"
-                                    >
-                                        <X size={24} />
-                                    </button>
-                                </div>
-                                <p className="text-gray-700 mb-4">
-                                    Warum möchten Sie dieses Foto melden?
+                                <p className={styles.reportText}>
+                                    Warum soll dieses Foto geprüft werden?
                                 </p>
-                                <textarea
-                                    value={reportReason}
-                                    onChange={(e) =>
-                                        setReportReason(e.target.value)
-                                    }
-                                    placeholder="Bitte beschreiben Sie das Problem..."
-                                    rows={4}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 mb-4"
-                                />
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={() =>
-                                            setShowReportModal(false)
+                                <div className="field">
+                                    <label htmlFor="report-reason">
+                                        Grund der Meldung *
+                                    </label>
+                                    <textarea
+                                        ref={reasonRef}
+                                        id="report-reason"
+                                        className="textarea"
+                                        rows={4}
+                                        value={reportReason}
+                                        onChange={(event) =>
+                                            setReportReason(event.target.value)
                                         }
-                                        disabled={reportSubmitting}
-                                        className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors disabled:opacity-50"
+                                        aria-invalid={reportError ? 'true' : undefined}
+                                        aria-describedby={
+                                            reportError
+                                                ? 'report-reason-error'
+                                                : undefined
+                                        }
+                                    />
+                                </div>
+                                {reportError && (
+                                    <p
+                                        id="report-reason-error"
+                                        className="error-text"
+                                        role="alert"
+                                        style={{ marginTop: 'var(--s2)' }}
                                     >
-                                        Abbrechen
-                                    </button>
+                                        {reportError}
+                                    </p>
+                                )}
+                                <div className="form-actions">
                                     <button
+                                        type="button"
+                                        className="btn btn--primary"
                                         onClick={handleReport}
                                         disabled={
                                             reportSubmitting ||
                                             !reportReason.trim()
                                         }
-                                        className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        aria-busy={reportSubmitting}
                                     >
                                         {reportSubmitting
-                                            ? 'Wird gesendet...'
-                                            : 'Melden'}
+                                            ? 'Wird gesendet …'
+                                            : 'Meldung senden'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn"
+                                        onClick={closeReport}
+                                        disabled={reportSubmitting}
+                                    >
+                                        Abbrechen
                                     </button>
                                 </div>
                             </>
@@ -303,6 +364,7 @@ export default function ImageLightbox({
                     </div>
                 </div>
             )}
-        </div>
+        </div>,
+        document.body,
     );
 }

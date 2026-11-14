@@ -1,0 +1,40 @@
+/* Directory rows: anchor targets must clear the sticky spine. */
+.row {
+    scroll-margin-top: calc(var(--spine-h) + var(--s4));
+}
+
+.affiliation {
+    display: block;
+}
+
+.affiliation + .affiliation {
+    margin-top: 1px;
+}
+
+/* pages.css hides the importance column below 760px; the row repeats it as its
+   own line there, so the priority is never lost on a phone. */
+.priorityMobile {
+    display: none;
+}
+
+@media (max-width: 760px) {
+    .priorityMobile {
+        display: block;
+        font-size: var(--micro);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+.key {
+    display: inline-block;
+    min-width: 18px;
+    padding: 0 4px;
+    border: var(--border) solid var(--rule-strong);
+    font-size: var(--tally);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-secondary);
+    text-align: center;
+}

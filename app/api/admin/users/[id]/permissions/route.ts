@@ -7,6 +7,7 @@ import {
 } from '@/lib/database';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 export async function PATCH(
     request: NextRequest,
@@ -93,6 +94,8 @@ export async function PATCH(
 
         return NextResponse.json({ user: updatedUser });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error updating user role and permissions:', error);
         return NextResponse.json(
             { error: 'Failed to update user role and permissions' },

@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAdminAuth } from '@/lib/useAdminAuth';
-import {
-    BellRinging,
-    BellSlash,
-    PaperPlaneTilt,
-} from '@phosphor-icons/react/dist/ssr';
 
 export default function PushNotificationToggle() {
     const [isSubscribed, setIsSubscribed] = useState(false);
@@ -180,50 +175,46 @@ export default function PushNotificationToggle() {
     }
 
     return (
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
             <button
                 onClick={isSubscribed ? unsubscribe : subscribe}
                 disabled={isLoading}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isSubscribed
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className="btn btn--sm"
+                style={{
+                    background: isSubscribed ? 'var(--foil)' : 'transparent',
+                    color: isSubscribed ? 'var(--pine-deep)' : 'var(--pine-ink)',
+                    borderColor: isSubscribed ? 'var(--foil)' : '#3a5446',
+                }}
                 title={
                     isSubscribed
                         ? 'Benachrichtigungen deaktivieren'
                         : 'Benachrichtigungen aktivieren'
                 }
             >
-                {isLoading ? (
-                    <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                ) : isSubscribed ? (
-                    <BellRinging className="w-5 h-5" />
-                ) : (
-                    <BellSlash className="w-5 h-5" />
-                )}
-                <span className="hidden sm:inline">
-                    {isSubscribed
-                        ? 'Benachrichtigungen an'
-                        : 'Benachrichtigungen aus'}
-                </span>
+                {isLoading
+                    ? 'Prüfe …'
+                    : isSubscribed
+                      ? 'Meldungen an'
+                      : 'Meldungen aus'}
             </button>
             {showTestButton && isSubscribed && isAuthenticated && (
                 <button
                     onClick={sendTestNotification}
                     disabled={testSending}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors bg-blue-100 text-blue-700 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn btn--sm"
+                    style={{
+                        background: 'transparent',
+                        color: 'var(--pine-ink)',
+                        borderColor: '#3a5446',
+                    }}
                     title="Test-Benachrichtigung senden"
                 >
-                    {testSending ? (
-                        <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                        <PaperPlaneTilt className="w-5 h-5" />
-                    )}
-                    <span className="hidden sm:inline">Testen</span>
+                    {testSending ? 'Sendet …' : 'Test'}
                 </button>
             )}
-            {error && <span className="text-xs text-red-600">{error}</span>}
+            {error && (
+                <span style={{ fontSize: 11, color: 'var(--foil)' }}>{error}</span>
+            )}
         </div>
     );
 }

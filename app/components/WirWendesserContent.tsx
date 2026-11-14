@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Users, BookOpen, UserPlus, X } from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
-import PortraitSubmissionModal from "@/app/components/PortraitSubmissionModal";
-import PageHeader from "@/app/components/layout/PageHeader";
-import Modal from "@/app/components/ui/Modal";
+import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
+import { Empty } from '@/app/components/register/Layout';
+import PortraitSubmissionModal from '@/app/components/PortraitSubmissionModal';
+import PortraitDialog from '@/app/dorfleben/wir-wendesser/portrait-dialog';
+import styles from '@/app/dorfleben/wir-wendesser/portrait.module.css';
 
 interface ApprovedPortrait {
-    id: number;
+    id: number | string;
     name: string;
     description: string;
     imageUrl: string;
@@ -16,199 +16,209 @@ interface ApprovedPortrait {
 }
 
 export default function WirWendesserContent() {
-    const [showPortraitModal, setShowPortraitModal] = useState(false);
-    const [selectedPortrait, setSelectedPortrait] =
-        useState<ApprovedPortrait | null>(null);
-    const [approvedPortraits, setApprovedPortraits] = useState<
-        ApprovedPortrait[]
-    >([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [portraits, setPortraits] = useState<ApprovedPortrait[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState(false);
+    const [selected, setSelected] = useState<ApprovedPortrait | null>(null);
+    const [showForm, setShowForm] = useState(false);
+    const [success, setSuccess] = useState(false);
 
-    useEffect(() => {
-        const loadApprovedPortraits = async () => {
-            try {
-                const response = await fetch("/api/portraits/approved");
-                if (response.ok) {
-                    const data = await response.json();
-                    setApprovedPortraits(data);
-                }
-            } catch (error) {
-                console.error("Error loading approved portraits:", error);
-            } finally {
-                setIsLoading(false);
+    const loadPortraits = useCallback(async () => {
+        setLoading(true);
+        setLoadError(false);
+
+        try {
+            const response = await fetch('/api/portraits/approved');
+            if (!response.ok) {
+                throw new Error(`Status ${response.status}`);
             }
-        };
 
-        loadApprovedPortraits();
+            const data: unknown = await response.json();
+            if (!Array.isArray(data)) {
+                throw new Error('Antwort war keine Liste');
+            }
+
+            setPortraits(data as ApprovedPortrait[]);
+        } catch (cause) {
+            console.error('Porträts: Liste nicht geladen', cause);
+            setLoadError(true);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
+    useEffect(() => {
+        void loadPortraits();
+    }, [loadPortraits]);
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-x-hidden">
-            <PageHeader
-                title="Wir Wendesser"
-                subtitle="Die Menschen unserer Dorfgemeinschaft"
-                icon={<Users />}
-                backgroundImage="/images/wendessen-luftaufnahme.jpg"
-                color="green"
-            />
-
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-16 overflow-x-hidden">
-                <div className="max-w-4xl mx-auto w-full">
-                    {/* Intro Section */}
-                    <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mb-12 border border-slate-100">
-                        <div className="space-y-6 text-gray-700 leading-relaxed text-lg">
-                            <p>
-                                Wendessen ist in den letzten Jahrzehnten durch
-                                drei Baugebiete kontinuierlich gewachsen,
-                                aktuell (Stand: Januar 2026) leben rund 1100
-                                Menschen hier. Und wenn alles läuft wie seit
-                                Jahren geplant, werden wir bald noch mehr sein -
-                                das neue Baugebiet an der Leipziger Allee, wo
-                                früher die alte Zuckerfabrik stand, wird Platz
-                                für über 100 Neu-Wendesser bieten.
-                            </p>
-                            <p>
-                                <strong>EINIGE</strong> unserer Mitbürgerinnen
-                                und Mitbürger wollen wir an dieser Stelle mit
-                                Kurzportraits vorstellen, als Gesichter unserer
-                                Gemeinschaft. Ohne Anspruch auf Vollständigkeit
-                                oder darauf, repräsentativ zu sein, versteht
-                                sich.
-                            </p>
-                            <p className="font-semibold text-emerald-700 italic">
-                                Wer sind sie, was machen sie, was bewegt sie,
-                                was wünschen sie sich?
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Approved Portraits Display */}
-                    <div className="mb-16">
-                        {isLoading ? (
-                            <div className="bg-white p-12 rounded-3xl shadow-lg text-center">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-                                <p className="text-gray-600">
-                                    Lade Portraits...
-                                </p>
-                            </div>
-                        ) : approvedPortraits.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-                                {approvedPortraits.map((portrait) => (
-                                    <div
-                                        key={portrait.id}
-                                        onClick={() =>
-                                            setSelectedPortrait(portrait)
-                                        }
-                                        className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-slate-100 group cursor-pointer"
-                                    >
-                                        <div className="aspect-[4/5] relative overflow-hidden">
-                                            <Image
-                                                src={portrait.imageUrl}
-                                                alt={`Portrait von ${portrait.name}`}
-                                                fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                            />
-                                        </div>
-                                        <div className="p-6">
-                                            <h5 className="text-xl font-bold text-gray-900 mb-3 break-words">
-                                                {portrait.name}
-                                            </h5>
-                                            <p className="text-gray-700 leading-relaxed break-words text-sm line-clamp-5">
-                                                {portrait.description}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="bg-white p-12 rounded-3xl shadow-lg text-center border-2 border-dashed border-emerald-100">
-                                <BookOpen className="w-12 h-12 text-emerald-200 mx-auto mb-4" />
-                                <p className="text-gray-500 italic">
-                                    Die ersten Portraits befinden sich in
-                                    Vorbereitung.
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Call to Action Section */}
-                    <div className="bg-gradient-to-br from-emerald-600 to-green-700 rounded-3xl p-8 md:p-12 shadow-2xl text-white">
-                        <div className="max-w-3xl mx-auto text-center">
-                            <h3 className="text-3xl font-bold mb-6">
-                                Wir Wendesser
-                            </h3>
-                            <p className="text-lg text-emerald-50 mb-8 leading-relaxed">
-                                Möchten auch Sie selbst hier vorkommen, etwas zu
-                                Ihrer Person und ihrer Geschichte erzählen? Dann
-                                schicken Sie uns doch einfach ein Foto und ein
-                                paar Textzeilen:
-                            </p>
-
-                            <button
-                                onClick={() => setShowPortraitModal(true)}
-                                className="inline-flex items-center px-8 py-4 bg-white text-emerald-700 font-bold rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 gap-3"
-                            >
-                                <UserPlus className="w-6 h-6" />
-                                <span>Portrait einreichen</span>
-                            </button>
-
-                            <p className="mt-8 text-sm text-emerald-100/70">
-                                Hinweis zur Klarstellung: Ein Rechtsanspruch auf
-                                Veröffentlichung des Beitrages besteht nicht.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+        <div>
+            <div className={styles.toolbar} style={{ marginTop: 'var(--s3)' }}>
+                <p className="small muted" aria-live="polite">
+                    {loading
+                        ? 'Porträts werden geladen …'
+                        : loadError
+                          ? 'Porträts konnten nicht geladen werden'
+                          : `${portraits.length} ${
+                                portraits.length === 1
+                                    ? 'Porträt'
+                                    : 'Porträts'
+                            } verzeichnet`}
+                </p>
+                <button
+                    type="button"
+                    className="btn btn--primary"
+                    onClick={() => {
+                        setSuccess(false);
+                        setShowForm(true);
+                    }}
+                >
+                    Portrait einreichen
+                </button>
             </div>
 
-            {/* Portrait Details Modal */}
-            <Modal
-                isOpen={!!selectedPortrait}
-                onClose={() => setSelectedPortrait(null)}
-                className="max-w-3xl w-full"
-            >
-                {selectedPortrait && (
-                    <div className="bg-white px-6 pt-6 pb-6">
-                        {/* Header */}
-                        <div className="flex items-start justify-between mb-4">
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">
-                                {selectedPortrait.name}
-                            </h3>
+            {success && (
+                <div
+                    className="notice notice--ok"
+                    role="status"
+                    style={{ marginTop: 'var(--s4)' }}
+                >
+                    <strong>Vielen Dank für Ihre Einreichung!</strong>
+                    <span>
+                        Wir prüfen das Portrait und melden uns bei Ihnen. Ein
+                        Rechtsanspruch auf Veröffentlichung besteht nicht.
+                    </span>
+                </div>
+            )}
+
+            <div style={{ marginTop: 'var(--s4)' }}>
+                {loading ? (
+                    <div className={styles.list} aria-busy="true">
+                        <div className="skeleton" style={{ height: 180 }} />
+                        <div className="skeleton" style={{ height: 180 }} />
+                        <p className="small muted">Porträts werden geladen …</p>
+                    </div>
+                ) : loadError ? (
+                    <div className="notice notice--error" role="alert">
+                        <strong>Porträts nicht geladen</strong>
+                        <span>
+                            Die Porträts konnten gerade nicht abgerufen werden.
+                            Bitte versuchen Sie es noch einmal.
+                        </span>
+                        <div style={{ marginTop: 'var(--s2)' }}>
                             <button
-                                onClick={() => setSelectedPortrait(null)}
-                                className="text-gray-400 hover:text-gray-600"
+                                type="button"
+                                className="btn btn--sm"
+                                onClick={() => {
+                                    void loadPortraits();
+                                }}
                             >
-                                <X className="w-6 h-6" />
+                                Erneut laden
                             </button>
                         </div>
+                    </div>
+                ) : portraits.length === 0 ? (
+                    <Empty
+                        title="Die ersten Portraits befinden sich in Vorbereitung."
+                        action={
+                            <button
+                                type="button"
+                                className="btn"
+                                onClick={() => {
+                                    setSuccess(false);
+                                    setShowForm(true);
+                                }}
+                            >
+                                Portrait einreichen
+                            </button>
+                        }
+                    >
+                        Sobald Einreichungen geprüft sind, stehen die
+                        Geschichten unserer Mitbürgerinnen und Mitbürger hier.
+                    </Empty>
+                ) : (
+                    <div className={styles.list}>
+                        {portraits.map((portrait) => (
+                            <article
+                                key={portrait.id}
+                                className="person-card person-card--plate"
+                            >
+                                <Image
+                                    src={portrait.imageUrl}
+                                    alt={`Porträt von ${portrait.name}`}
+                                    width={160}
+                                    height={160}
+                                />
+                                <div style={{ minWidth: 0 }}>
+                                    <p className="person-role">Porträt</p>
+                                    <h3
+                                        style={{
+                                            fontSize: 'var(--lead)',
+                                            lineHeight: 1.25,
+                                            overflowWrap: 'anywhere',
+                                        }}
+                                    >
+                                        {portrait.name}
+                                    </h3>
+                                    <p className={styles.excerpt}>
+                                        {portrait.description}
+                                    </p>
+                                    <button
+                                        type="button"
+                                        className={`btn btn--quiet btn--sm ${styles.cardAction}`}
+                                        onClick={() =>
+                                            setSelected(portrait)
+                                        }
+                                    >
+                                        Ganze Geschichte lesen
+                                    </button>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-                        {/* Image */}
-                        <div className="relative h-[25rem] aspect-square bg-gray-100 rounded-lg overflow-hidden mb-6 mx-auto border-[16px] border-white ring-2 ring-gray-100 shadow-lg">
-                            <Image
-                                src={selectedPortrait.imageUrl}
-                                alt={`Portrait von ${selectedPortrait.name}`}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
+            <p className="small muted" style={{ marginTop: 'var(--s4)' }}>
+                Hinweis zur Klarstellung: Ein Rechtsanspruch auf
+                Veröffentlichung des Beitrages besteht nicht. Eingereichte
+                E-Mail-Adressen werden nicht veröffentlicht.
+            </p>
 
-                        {/* Description */}
-                        <div>
-                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                {selectedPortrait.description}
-                            </p>
+            <PortraitDialog
+                open={selected !== null}
+                onClose={() => setSelected(null)}
+                title={selected?.name ?? 'Porträt'}
+            >
+                {selected && (
+                    <div>
+                        <Image
+                            className={styles.dialogImage}
+                            src={selected.imageUrl}
+                            alt={`Porträt von ${selected.name}`}
+                            width={260}
+                            height={260}
+                            loading="eager"
+                        />
+                        <div className="prose">
+                            {selected.description
+                                .split(/\n+/)
+                                .map((paragraph) => paragraph.trim())
+                                .filter(Boolean)
+                                .map((paragraph, index) => (
+                                    <p key={index}>{paragraph}</p>
+                                ))}
                         </div>
                     </div>
                 )}
-            </Modal>
+            </PortraitDialog>
 
-            {/* Portrait Submission Modal */}
             <PortraitSubmissionModal
-                isOpen={showPortraitModal}
-                onClose={() => setShowPortraitModal(false)}
+                isOpen={showForm}
+                onClose={() => setShowForm(false)}
                 onSuccess={() => {
-                    setShowPortraitModal(false);
+                    setShowForm(false);
+                    setSuccess(true);
                 }}
             />
         </div>

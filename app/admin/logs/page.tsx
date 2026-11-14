@@ -1,13 +1,14 @@
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
-import AdminLogs from './AdminLogs';
-import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import Link from 'next/link';
 import { Suspense } from 'react';
+import AdminLogs from './AdminLogs';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
 
 export default function LogsPage() {
     return (
-        <Suspense fallback={<div>Logs laden...</div>}>
+        <Suspense fallback={<p className="admin-empty">Log wird geladen …</p>}>
             <LogsContent />
         </Suspense>
     );
@@ -25,26 +26,19 @@ async function LogsContent() {
 
     if (!canViewLogs) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
+            <div>
+                <AdminHead title="Aktivitätslog" />
+                <Panel title="Keine Berechtigung">
+                    <p className="admin-empty">
                         Sie haben keine Berechtigung, das Aktivitätslog
                         anzusehen.
                     </p>
-                    <a
-                        href="/admin/dashboard"
-                        className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Zurück zum Dashboard
-                    </a>
-                </div>
+                    <p style={{ marginTop: 'var(--s4)' }}>
+                        <Link className="btn" href="/admin/dashboard">
+                            Zum Schreibtisch
+                        </Link>
+                    </p>
+                </Panel>
             </div>
         );
     }

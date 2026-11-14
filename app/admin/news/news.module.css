@@ -1,0 +1,230 @@
+/* News — the register's news list, preview and reorder panel. */
+
+.titleBtn {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    font-weight: 620;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--rule-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.titleBtn:hover {
+    color: var(--ledger);
+    text-decoration-color: var(--ledger);
+}
+
+.excerpt {
+    margin-top: 4px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    max-width: 70ch;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.rubric {
+    display: inline-block;
+    padding-left: var(--s2);
+    border-left: 2px solid var(--ledger);
+    font-size: var(--tally);
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.stateOpen {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1);
+    justify-content: flex-end;
+}
+
+.reorderPanel {
+    margin-bottom: var(--s5);
+}
+
+.reorderRow {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--s3);
+    padding: var(--s3) 0;
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.reorderRow:last-child {
+    border-bottom: 0;
+}
+
+.position {
+    font-size: var(--tally);
+    font-family: var(--font-ui);
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.reorderTitle {
+    font-size: var(--label);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.reorderMeta {
+    font-size: var(--tally);
+    color: var(--ink-muted);
+    margin-top: 2px;
+}
+
+.reorderButtons {
+    display: flex;
+    gap: var(--s1);
+}
+
+.reorderHint {
+    margin-top: var(--s3);
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+/* Overlays */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--s5) var(--s4);
+    overflow-y: auto;
+    background: rgba(20, 36, 32, 0.62);
+}
+
+.dialogWide {
+    width: min(820px, calc(100vw - 32px));
+}
+
+.footSticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+
+.articleHead {
+    padding-bottom: var(--s3);
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: var(--s4);
+}
+
+.articleTitle {
+    font-size: var(--h3);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    margin-top: var(--s2);
+    line-height: 1.2;
+}
+
+.articleMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s3);
+    margin-top: var(--s2);
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+/* Editor pages */
+.editorPanelTitle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2);
+    margin-bottom: var(--s3);
+}
+
+.editorFrame {
+    height: 520px;
+    border: var(--border) solid var(--rule-strong);
+    background: var(--paper-raised);
+}
+
+@media (min-width: 721px) {
+    .actions {
+        flex-wrap: nowrap;
+    }
+}
+
+@media (max-width: 720px) {
+    .colRubric,
+    .table .colRubric {
+        display: none;
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'title state'
+            'date date'
+            'actions actions';
+        gap: 4px var(--s3);
+        padding: var(--s3) 0;
+        border-bottom: var(--border) solid var(--rule);
+    }
+
+    .table td {
+        border-bottom: 0;
+        padding: 0;
+    }
+
+    .table .cellTitle {
+        grid-area: title;
+    }
+
+    .table .cellState {
+        grid-area: state;
+        text-align: right;
+    }
+
+    .table .cellDate {
+        grid-area: date;
+    }
+
+    .table .cellActions {
+        grid-area: actions;
+        text-align: left;
+    }
+}

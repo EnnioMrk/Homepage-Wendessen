@@ -1,14 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import {
-    Plus,
-    Trash,
-    PencilSimple,
-    MagnifyingGlass,
-} from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import PromptDialog from '@/app/components/ui/PromptDialog';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
+import ConfirmDialog from '@/app/admin/contacts/components/ConfirmDialog';
+import styles from './organizations.module.css';
 
 interface Organization {
     id: string;
@@ -17,27 +13,25 @@ interface Organization {
     description: string | null;
 }
 
+const EMPTY_FORM = { id: '', title: '', alt_title: '', description: '' };
+
 export default function AdminOrganizationsClient() {
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Dialog states
     const [isEditorOpen, setIsEditorOpen] = useState(false);
-    const [, setIsDeleting] = useState(false);
     const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
     const [deleteCandidate, setDeleteCandidate] = useState<Organization | null>(
-        null
+        null,
     );
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [formError, setFormError] = useState<string | null>(null);
 
-    // Form state
-    const [formData, setFormData] = useState({
-        id: '',
-        title: '',
-        alt_title: '',
-        description: '',
-    });
+    const [formData, setFormData] = useState(EMPTY_FORM);
 
     const fetchOrganizations = useCallback(async () => {
         setLoading(true);
@@ -50,9 +44,9 @@ export default function AdminOrganizationsClient() {
             } else {
                 setError('Fehler beim Laden der Organisationen');
             }
-        } catch (error) {
-            console.error('Error fetching organizations:', error);
-            setError('Fehler beim Laden der Organisationen');
+        } catch (fetchError) {
+            console.error('Error fetching organizations:', fetchError);
+            setError('Die Organisationen konnten nicht geladen werden.');
         } finally {
             setLoading(false);
         }
@@ -62,29 +56,59 @@ export default function AdminOrganizationsClient() {
         fetchOrganizations();
     }, [fetchOrganizations]);
 
-    const handleCreateClick = () => {
+    const filteredOrgs = useMemo(() => {
+        const query = searchQuery.toLowerCase();
+        return organizations
+            .filter(
+                (org) =>
+                    !query ||
+                    org.title.toLowerCase().includes(query) ||
+                    (org.alt_title ?? '').toLowerCase().includes(query) ||
+                    (org.description ?? '').toLowerCase().includes(query) ||
+                    org.id.toLowerCase().includes(query),
+            )
+            .sort((a, b) => a.title.localeCompare(b.title, 'de'));
+    }, [organizations, searchQuery]);
+
+    const openEditor = (org?: Organization) => {
+        setFormError(null);
+        setNotice(null);
+        if (org) {
+            setEditingOrg(org);
+            setFormData({
+                id: org.id,
+                title: org.title,
+                alt_title: org.alt_title || '',
+                description: org.description || '',
+            });
+        } else {
+            setEditingOrg(null);
+            setFormData(EMPTY_FORM);
+        }
+        setIsEditorOpen(true);
+    };
+
+    const closeEditor = () => {
+        setIsEditorOpen(false);
         setEditingOrg(null);
-        setFormData({ id: '', title: '', alt_title: '', description: '' });
-        setIsEditorOpen(true);
+        setFormData(EMPTY_FORM);
+        setFormError(null);
     };
 
-    const handleEditClick = (org: Organization) => {
-        setEditingOrg(org);
-        setFormData({
-            id: org.id,
-            title: org.title,
-            alt_title: org.alt_title || '',
-            description: org.description || '',
-        });
-        setIsEditorOpen(true);
-    };
+    const handleSave = async (event: React.FormEvent) => {
+        event.preventDefault();
 
-    const handleSave = async () => {
+        if (!formData.title.trim() || !formData.id.trim()) {
+            setFormError('Titel und Kennung sind erforderlich.');
+            return;
+        }
+
+        setIsSaving(true);
+        setFormError(null);
         try {
             const url = editingOrg
                 ? `/api/admin/organizations/${editingOrg.id}`
                 : '/api/admin/organizations';
-
             const method = editingOrg ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -95,14 +119,23 @@ export default function AdminOrganizationsClient() {
 
             if (response.ok) {
                 await fetchOrganizations();
-                setIsEditorOpen(false);
+                setNotice(
+                    editingOrg
+                        ? `Die Organisation „${formData.title}“ wurde gespeichert.`
+                        : `Die Organisation „${formData.title}“ wurde angelegt.`,
+                );
+                closeEditor();
             } else {
-                const data = await response.json();
-                alert(data.error || 'Fehler beim Speichern');
+                const data = await response.json().catch(() => ({}));
+                setFormError(
+                    data.error || 'Die Organisation konnte nicht gespeichert werden.',
+                );
             }
-        } catch (error) {
-            console.error('Error saving organization:', error);
-            alert('Fehler beim Speichern');
+        } catch (saveError) {
+            console.error('Error saving organization:', saveError);
+            setFormError('Die Organisation konnte nicht gespeichert werden.');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -115,36 +148,25 @@ export default function AdminOrganizationsClient() {
 
             if (response.ok) {
                 setOrganizations((prev) => prev.filter((o) => o.id !== id));
+                setNotice(
+                    `Die Organisation „${deleteCandidate?.title ?? ''}“ wurde gelöscht.`,
+                );
                 setDeleteCandidate(null);
             } else {
-                const data = await response.json();
-                alert(data.error || 'Fehler beim Löschen');
+                const data = await response.json().catch(() => ({}));
+                setError(data.error || 'Fehler beim Löschen');
             }
-        } catch (error) {
-            console.error('Error deleting organization:', error);
-            alert('Fehler beim Löschen');
+        } catch (deleteError) {
+            console.error('Error deleting organization:', deleteError);
+            setError('Die Organisation konnte nicht gelöscht werden.');
         } finally {
             setIsDeleting(false);
         }
     };
 
-    const filteredOrgs = organizations.filter(
-        (org) =>
-            org.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (org.alt_title &&
-                org.alt_title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (org.description &&
-                org.description
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase()))
-    );
-
-    // Auto-generate slug/ID from title for NEW orgs
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
+    const handleTitleChange = (value: string) => {
         if (!editingOrg) {
-            // New organization: auto-slugify
-            const slug = val
+            const slug = value
                 .toLowerCase()
                 .replace(/ä/g, 'ae')
                 .replace(/ö/g, 'oe')
@@ -153,213 +175,351 @@ export default function AdminOrganizationsClient() {
                 .replace(/[^a-z0-9 -]/g, '')
                 .replace(/\s+/g, '-')
                 .replace(/-+/g, '-');
-            setFormData((prev) => ({ ...prev, title: val, id: slug }));
+            setFormData((prev) => ({ ...prev, title: value, id: slug }));
         } else {
-            // Editing: just update title
-            setFormData((prev) => ({ ...prev, title: val }));
+            setFormData((prev) => ({ ...prev, title: value }));
         }
     };
 
-    if (loading) return <LoadingSpinner centered />;
+    if (loading) {
+        return (
+            <div>
+                <AdminHead
+                    title="Organisationen"
+                    sub="Vereine und Institutionen im Verzeichnis"
+                />
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">Organisationen werden geladen …</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">
-                    Organisationen
-                </h2>
-                <button
-                    onClick={handleCreateClick}
-                    className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
-                >
-                    <Plus size={16} className="mr-2" />
-                    Neue Organisation
-                </button>
-            </div>
+        <div>
+            <AdminHead
+                title="Organisationen"
+                sub="Vereine und Institutionen im Verzeichnis"
+                actions={
+                    <>
+                        <Link className="btn btn--sm" href="/admin/contacts">
+                            Zu den Kontakten
+                        </Link>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--primary"
+                            onClick={() => openEditor()}
+                        >
+                            Neue Organisation
+                        </button>
+                    </>
+                }
+            />
 
-            <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <MagnifyingGlass
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                    />
-                </div>
-                <input
-                    type="text"
-                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 placeholder-gray-500 focus:border-primary focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-                    placeholder="Suche nach Organisationen..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
-
-            {error && (
-                <div className="bg-red-50 text-red-700 p-4 rounded-md">
-                    {error}
+            {notice && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Gespeichert</strong>
+                    <span>{notice}</span>
                 </div>
             )}
 
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200">
-                    {filteredOrgs.length === 0 ? (
-                        <li className="px-6 py-12 text-center text-gray-500">
-                            Keine Organisationen gefunden.
-                        </li>
-                    ) : (
-                        filteredOrgs.map((org) => (
-                            <li
-                                key={org.id}
-                                className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between"
-                            >
-                                <div className="flex-1 min-w-0 pr-4">
-                                    <div className="flex items-center space-x-2">
-                                        <h3 className="text-lg font-medium text-gray-900 truncate">
-                                            {org.title}
-                                        </h3>
-                                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                                            {org.id}
-                                        </span>
-                                    </div>
-                                    {org.alt_title && (
-                                        <p className="text-sm font-semibold text-gray-600 mt-1">
-                                            Alt: {org.alt_title}
-                                        </p>
-                                    )}
-                                    {org.description && (
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            {org.description}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="flex items-center space-x-2 ml-4">
-                                    <button
-                                        onClick={() => handleEditClick(org)}
-                                        className="text-gray-400 hover:text-blue-600 p-2"
-                                        title="Bearbeiten"
-                                    >
-                                        <PencilSimple size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => setDeleteCandidate(org)}
-                                        className="text-gray-400 hover:text-red-600 p-2"
-                                        title="Löschen"
-                                    >
-                                        <Trash size={20} />
-                                    </button>
-                                </div>
-                            </li>
-                        ))
-                    )}
-                </ul>
-            </div>
+            {error && (
+                <div className="notice notice--error" role="alert">
+                    <strong>Organisationen nicht geladen</strong>
+                    <span>{error}</span>
+                    <span>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={fetchOrganizations}
+                        >
+                            Erneut laden
+                        </button>
+                    </span>
+                </div>
+            )}
 
-            {/* Editor Modal/Overlay */}
             {isEditorOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                        <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
-                            {editingOrg
-                                ? 'Organisation bearbeiten'
-                                : 'Neue Organisation'}
-                        </h3>
+                <Panel
+                    title={
+                        editingOrg
+                            ? `Organisation bearbeiten · ${editingOrg.title}`
+                            : 'Neue Organisation'
+                    }
+                    actions={
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={closeEditor}
+                        >
+                            Schließen
+                        </button>
+                    }
+                >
+                    <form onSubmit={handleSave}>
+                        {formError && (
+                            <div
+                                className="notice notice--error"
+                                role="alert"
+                                style={{ marginBottom: 'var(--s4)' }}
+                            >
+                                <strong>Nicht gespeichert</strong>
+                                <span>{formError}</span>
+                            </div>
+                        )}
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Titel (Name)
-                                </label>
-                                <input
-                                    type="text"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
-                                    value={formData.title}
-                                    onChange={handleTitleChange}
-                                />
+                        <div className="form-grid">
+                            <div className="form-row">
+                                <div className="field">
+                                    <label htmlFor="org-title">Titel *</label>
+                                    <input
+                                        className="input"
+                                        id="org-title"
+                                        type="text"
+                                        required
+                                        value={formData.title}
+                                        onChange={(event) =>
+                                            handleTitleChange(
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="org-id">
+                                        Kennung (Slug) *
+                                    </label>
+                                    <input
+                                        className="input"
+                                        id="org-id"
+                                        type="text"
+                                        required
+                                        disabled={!!editingOrg}
+                                        value={formData.id}
+                                        onChange={(event) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                id: event.target.value,
+                                            }))
+                                        }
+                                    />
+                                    <p className="hint">
+                                        {editingOrg
+                                            ? 'Die Kennung kann nach dem Anlegen nicht mehr geändert werden.'
+                                            : 'Wird aus dem Titel gebildet und kann angepasst werden.'}
+                                    </p>
+                                </div>
                             </div>
 
-                             <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    ID (Slug)
-                                </label>
-                                <input
-                                    type="text"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2 bg-gray-50 font-mono"
-                                    value={formData.id}
-                                    onChange={(e) =>
-                                         // Allow manual edit if needed, mainly for corrections
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            id: e.target.value,
-                                        }))
-                                    }
-                                    disabled={!!editingOrg} // Disable ID editing for existing orgs usually
-                                />
-                                {editingOrg && <p className="text-xs text-gray-500 mt-1">ID kann nachträglich nicht geändert werden.</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
+                            <div className="field">
+                                <label htmlFor="org-alt">
                                     Alternativer Titel (Kurzform)
                                 </label>
                                 <input
+                                    className="input"
+                                    id="org-alt"
                                     type="text"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
                                     value={formData.alt_title}
-                                    onChange={(e) =>
+                                    onChange={(event) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            alt_title: e.target.value,
+                                            alt_title: event.target.value,
                                         }))
                                     }
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
+
+                            <div className="field">
+                                <label htmlFor="org-description">
                                     Beschreibung
                                 </label>
                                 <textarea
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
-                                    rows={3}
+                                    className="textarea"
+                                    id="org-description"
+                                    rows={4}
                                     value={formData.description}
-                                    onChange={(e) =>
+                                    onChange={(event) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            description: e.target.value,
+                                            description: event.target.value,
                                         }))
                                     }
                                 />
                             </div>
                         </div>
 
-                        <div className="mt-6 flex justify-end space-x-3">
+                        <div className={styles.formFoot}>
                             <button
-                                onClick={() => setIsEditorOpen(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={closeEditor}
                             >
                                 Abbrechen
                             </button>
                             <button
-                                onClick={handleSave}
-                                disabled={!formData.title || !formData.id}
-                                className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary-dark disabled:opacity-50"
+                                type="submit"
+                                className="btn btn--primary"
+                                disabled={isSaving}
                             >
-                                Speichern
+                                {isSaving ? 'Speichern …' : 'Speichern'}
                             </button>
                         </div>
+                    </form>
+                </Panel>
+            )}
+
+            <div className="admin-filter" style={{ marginTop: isEditorOpen ? 'var(--s5)' : undefined }}>
+                <div className="field" style={{ flex: '1 1 260px' }}>
+                    <label htmlFor="org-search">Suche</label>
+                    <input
+                        className="input"
+                        id="org-search"
+                        type="search"
+                        placeholder="Titel, Kurzform, Kennung"
+                        value={searchQuery}
+                        onChange={(event) =>
+                            setSearchQuery(event.target.value)
+                        }
+                    />
+                </div>
+                {searchQuery && (
+                    <button
+                        type="button"
+                        className="btn btn--sm btn--quiet"
+                        onClick={() => setSearchQuery('')}
+                    >
+                        Zurücksetzen
+                    </button>
+                )}
+            </div>
+
+            <p className={styles.sub} role="status">
+                {filteredOrgs.length === organizations.length
+                    ? `${organizations.length} Organisationen`
+                    : `${filteredOrgs.length} von ${organizations.length} Organisationen`}
+            </p>
+
+            {filteredOrgs.length === 0 ? (
+                organizations.length === 0 ? (
+                    <div className="admin-empty">
+                        <p>Noch keine Organisation verzeichnet.</p>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--primary"
+                            onClick={() => openEditor()}
+                        >
+                            Erste Organisation anlegen
+                        </button>
                     </div>
+                ) : (
+                    <div className="admin-empty">
+                        <p>Keine Organisation passt zu dieser Suche.</p>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => setSearchQuery('')}
+                        >
+                            Suche zurücksetzen
+                        </button>
+                    </div>
+                )
+            ) : (
+                <div className={styles.scroll}>
+                    <table
+                        className={`data ${styles.table}`}
+                        aria-label="Organisationen"
+                    >
+                        <thead>
+                            <tr>
+                                <th scope="col">Organisation</th>
+                                <th scope="col" className={styles.colSlug}>
+                                    Kennung
+                                </th>
+                                <th scope="col" className={styles.colAlt}>
+                                    Alternativer Titel
+                                </th>
+                                <th scope="col" className="right">
+                                    Aktionen
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredOrgs.map((org) => (
+                                <tr key={org.id}>
+                                    <td>
+                                        <div className={styles.orgCell}>
+                                            <span className={styles.orgTitle}>
+                                                {org.title}
+                                            </span>
+                                            {org.description ? (
+                                                <span className={styles.desc}>
+                                                    {org.description}
+                                                </span>
+                                            ) : null}
+                                            <span
+                                                className={`${styles.inlineMeta} ${styles.altInline}`}
+                                            >
+                                                {org.alt_title
+                                                    ? `Auch: ${org.alt_title}`
+                                                    : 'Kein alternativer Titel'}
+                                                {` · Kennung: ${org.id}`}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className={styles.colSlug}>
+                                        <span className={styles.slug}>
+                                            {org.id}
+                                        </span>
+                                    </td>
+                                    <td className={styles.colAlt}>
+                                        {org.alt_title ? (
+                                            <span className={styles.slug}>
+                                                {org.alt_title}
+                                            </span>
+                                        ) : (
+                                            <span className={styles.sub}>—</span>
+                                        )}
+                                    </td>
+                                    <td className="right">
+                                        <div className={styles.actions}>
+                                            <button
+                                                type="button"
+                                                className="btn btn--sm btn--quiet"
+                                                onClick={() => openEditor(org)}
+                                            >
+                                                Bearbeiten
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn--sm btn--danger"
+                                                onClick={() =>
+                                                    setDeleteCandidate(org)
+                                                }
+                                            >
+                                                Löschen
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             )}
 
-            <PromptDialog
-                isOpen={!!deleteCandidate}
+            <ConfirmDialog
+                open={!!deleteCandidate}
                 title="Organisation löschen?"
-                description={`Möchten Sie die Organisation "${deleteCandidate?.title}" wirklich löschen?`}
-                confirmText="Löschen"
-                cancelText="Abbrechen"
+                description={`Die Organisation „${deleteCandidate?.title ?? ''}“ wird entfernt. Kontakte, die ihr zugeordnet sind, behalten den Namen als Text, verlieren aber die Verknüpfung.`}
+                confirmLabel="Organisation löschen"
+                danger
+                busy={isDeleting}
                 onConfirm={() =>
                     deleteCandidate && handleDelete(deleteCandidate.id)
                 }
                 onCancel={() => setDeleteCandidate(null)}
-                accentColor="red"
             />
         </div>
     );

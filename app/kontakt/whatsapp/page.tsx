@@ -1,130 +1,203 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import { getSiteSettings } from '@/lib/database';
 import {
-    Bell,
-    ShieldCheck,
-    DeviceMobile,
-    WhatsappLogo,
-} from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+    Leaf,
+    Margin,
+    Notice,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import styles from './whatsapp.module.css';
+import { pageToday } from '@/app/lib/page-today';
 
 export const metadata = {
-    title: 'WhatsApp-Kanal - Wendessen',
+    title: 'WhatsApp-Kanal',
     description:
-        'Folgen Sie dem offiziellen WhatsApp-Kanal von Wendessen. Bleiben Sie informiert über aktuelle Ereignisse, Veranstaltungen und wichtige Informationen aus unserem Dorf.',
+        'Der WhatsApp-Kanal von Wendessen: Hinweise auf Termine und Nachrichten aus dem Dorf.',
 };
 
-export default function WhatsAppPage() {
+const steps = [
+    {
+        label: 'Link oder Code',
+        note: 'Am Telefon den QR-Code scannen, am Rechner den Link zum Kanal öffnen.',
+    },
+    {
+        label: 'Kanal lesen',
+        note: 'Der Kanal zeigt die Beiträge des Ortsrats. Mitlesen ist ohne Abo möglich.',
+    },
+    {
+        label: 'Kanal folgen',
+        note: 'Auf „Folgen“ tippen. Danach erscheinen neue Beiträge im Kanal.',
+    },
+];
+
+export default async function WhatsAppPage() {
+    let settings: Record<string, string> = {};
+
+    try {
+        settings = await getSiteSettings();
+    } catch (error) {
+        console.error('WhatsApp-Seite: Einstellungen nicht geladen', error);
+    }
+
+    const channelUrl = settings.whatsapp_channel_url ?? '';
+    const isEnabled =
+        settings.whatsapp_channel_enabled === 'true' && channelUrl.length > 0;
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            <PageHeader
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="WhatsApp-Kanal"
+                    note={
+                        <>
+                            Der Kanal ist ein zusätzlicher Weg. Verzeichnis und
+                            Formular bleiben die Wege, die beim Ortsrat
+                            ankommen.
+                        </>
+                    }
+                />
+            }
+        >
+            <PageHead
+                kicker="Kontakt · Kanal"
                 title="WhatsApp-Kanal"
-                subtitle="Aktuelles aus Wendessen direkt auf Ihr Smartphone"
-                icon={<WhatsappLogo />}
-                color="green"
+                lede="Hinweise auf Termine und Nachrichten aus Wendessen, direkt auf das Telefon. Der Kanal ersetzt weder Verzeichnis noch Formular."
             />
 
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="max-w-4xl mx-auto">
-                    {/* QR Code Section - Immediately Visible */}
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-4xl p-8 sm:p-12 shadow-2xl mb-12 border-2 border-green-200">
-                        <div className="text-center mb-6">
-                            <h2 className="text-3xl sm:text-4xl font-bold text-green-800 mb-3">
-                                Kanal folgen
-                            </h2>
-                            <p className="text-lg text-gray-700">
-                                Scannen Sie den QR-Code mit Ihrem Smartphone
-                            </p>
-                        </div>
-
-                        <div className="flex justify-center mb-8">
-                            {/* QR Code */}
-                            <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-xl">
-                                <Image
+            {isEnabled ? (
+                <>
+                    <section aria-labelledby="folgen">
+                        <SectionHead title="Kanal folgen" id="folgen" />
+                        <div className={styles.intro}>
+                            <figure className={styles.qr}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
                                     src="/svgs/whatsapp-qrcode.svg"
-                                    alt="WhatsApp-Kanal QR-Code"
-                                    width={280}
-                                    height={280}
-                                    className="w-64 h-64 sm:w-72 sm:h-72"
+                                    alt="QR-Code zum WhatsApp-Kanal von Wendessen"
+                                    width={260}
+                                    height={260}
                                 />
+                                <figcaption>
+                                    QR-Code zum Kanal · mit der Kamera scannen
+                                </figcaption>
+                            </figure>
+                            <div>
+                                <p className={styles.introText}>
+                                    Der Kanal wird vom Ortsrat Wendessen
+                                    betreut. Wer folgt, bekommt neue Beiträge
+                                    angezeigt; antworten können nur
+                                    Kanalbetreiber.
+                                </p>
+                                <div
+                                    className="pill-row"
+                                    style={{ marginTop: 'var(--s4)' }}
+                                >
+                                    <a
+                                        className="btn btn--primary"
+                                        href={channelUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Kanal in WhatsApp öffnen
+                                    </a>
+                                    <Link
+                                        className="btn btn--quiet"
+                                        href="/kontakt/formular"
+                                    >
+                                        Stattdessen schreiben
+                                    </Link>
+                                </div>
                             </div>
                         </div>
+                    </section>
 
-                        {/* Direct Link */}
-                        <div className="text-center">
-                            <a
-                                href="https://whatsapp.com/channel/0029VaFPwF496H4KMB87my1z"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full transition-colors shadow-lg"
-                            >
-                                Kanal direkt öffnen
-                            </a>
+                    <section className="block" aria-labelledby="schritte">
+                        <SectionHead title="So funktioniert es" id="schritte" />
+                        <div className="club-index">
+                            {steps.map((step, index) => (
+                                <div key={step.label} className="club-line">
+                                    <span className="club-num">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </span>
+                                    <span className="club-name">
+                                        {step.label}
+                                    </span>
+                                    <span className="club-desc">
+                                        {step.note}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                    </section>
 
-                    {/* Benefits - Compact */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                        <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
-                            <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <Bell className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">
-                                Aktuelle Updates
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                Wichtige Nachrichten und Veranstaltungen
-                            </p>
-                        </div>
+                    <section className="block" aria-labelledby="daten">
+                        <SectionHead title="Kanal und Daten" id="daten" />
+                        <dl className="kv" style={{ marginTop: 'var(--s4)' }}>
+                            <dt>Betreiber</dt>
+                            <dd>Ortsrat Wendessen</dd>
+                            <dt>Inhalt</dt>
+                            <dd>
+                                Hinweise auf Termine, Nachrichten und
+                                Veröffentlichungen dieser Website
+                            </dd>
+                            <dt>Zugang</dt>
+                            <dd>
+                                <a
+                                    className="link"
+                                    href={channelUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Kanal öffnen (externer Link)
+                                </a>{' '}
+                                · QR-Code oben
+                            </dd>
+                            <dt>Daten</dt>
+                            <dd>
+                                Es gilt die Datenschutzerklärung von WhatsApp.
+                                Diese Seite bindet keine Inhalte von WhatsApp
+                                ein.{' '}
+                                <Link className="link" href="/datenschutz">
+                                    Datenschutz dieser Website
+                                </Link>
+                            </dd>
+                        </dl>
+                    </section>
+                </>
+            ) : (
+                <Notice tone="warn" title="Kanal derzeit nicht veröffentlicht">
+                    Der WhatsApp-Kanal ist für diese Website abgeschaltet. Es
+                    führt deshalb kein Link von hier dorthin. Nutzen Sie das{' '}
+                    <Link className="link" href="/kontakt/formular">
+                        Kontaktformular
+                    </Link>{' '}
+                    oder das{' '}
+                    <Link className="link" href="/kontakt/verzeichnis">
+                        Verzeichnis
+                    </Link>
+                    .
+                </Notice>
+            )}
 
-                        <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
-                            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <ShieldCheck className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">
-                                Offiziell
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                Vom Ortsrat Wendessen betreut
-                            </p>
-                        </div>
-
-                        <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
-                            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <DeviceMobile className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">
-                                Direkt aufs Handy
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                Push-Benachrichtigungen erhalten
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Alternative Contact - Compact */}
-                    <div className="text-center bg-gradient-to-r from-gray-50 to-slate-50 rounded-2xl p-6 shadow-md">
-                        <p className="text-gray-700 mb-4 text-sm">
-                            Weitere Kontaktmöglichkeiten
-                        </p>
-                        <div className="flex flex-wrap justify-center gap-3">
-                            <Link
-                                href="/kontakt/formular"
-                                className="inline-flex items-center px-5 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-full hover:bg-gray-50 transition-colors"
-                            >
-                                Kontaktformular
-                            </Link>
-                            <Link
-                                href="/kontakt/verzeichnis"
-                                className="inline-flex items-center px-5 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-full hover:bg-gray-50 transition-colors"
-                            >
-                                Kontaktverzeichnis
-                            </Link>
-                        </div>
-                    </div>
+            <section className="block" aria-labelledby="wege">
+                <SectionHead title="Weitere Wege" id="wege" />
+                <div className="pill-row" style={{ marginTop: 'var(--s4)' }}>
+                    <Link className="btn btn--quiet" href="/kontakt/verzeichnis">
+                        Verzeichnis
+                    </Link>
+                    <Link className="btn btn--quiet" href="/kontakt/formular">
+                        Kontaktformular
+                    </Link>
+                    <Link
+                        className="btn btn--quiet"
+                        href="/kontakt/redaktionsteam"
+                    >
+                        Redaktionsteam
+                    </Link>
                 </div>
-            </div>
-        </div>
+            </section>
+        </Leaf>
     );
 }

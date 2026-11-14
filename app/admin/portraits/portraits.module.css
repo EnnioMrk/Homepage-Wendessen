@@ -1,0 +1,150 @@
+/* Portraits — moderation rows with a plate and clear decisions. */
+
+.rows {
+    border-top: var(--border) solid var(--ink);
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 148px minmax(0, 1fr);
+    gap: var(--s4);
+    padding: var(--s4) 0;
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.thumb {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    border: var(--border) solid var(--rule-strong);
+    background: var(--paper-sunken);
+    cursor: zoom-in;
+    overflow: hidden;
+}
+
+.thumb img {
+    object-fit: cover;
+}
+
+.body {
+    min-width: 0;
+    display: grid;
+    gap: var(--s2);
+    align-content: start;
+}
+
+.rowHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s3);
+}
+
+.name {
+    font-size: var(--lead);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s3);
+    font-size: var(--small);
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.meta a {
+    color: var(--ledger);
+    overflow-wrap: anywhere;
+}
+
+.text {
+    color: var(--ink-secondary);
+    font-size: var(--label);
+    line-height: 1.55;
+    max-width: 78ch;
+    white-space: pre-wrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    margin-top: var(--s2);
+}
+
+/* Overlays */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--s5) var(--s4);
+    overflow-y: auto;
+    background: rgba(20, 36, 32, 0.62);
+}
+
+.dialogWide {
+    width: min(760px, calc(100vw - 32px));
+}
+
+.footSticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+
+.detailGrid {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--s4);
+    align-items: start;
+}
+
+.detailImage {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border: var(--border) solid var(--rule-strong);
+    background: var(--paper-sunken);
+    overflow: hidden;
+}
+
+.detailImage img {
+    object-fit: cover;
+}
+
+.detailText {
+    white-space: pre-wrap;
+    color: var(--ink-secondary);
+    line-height: 1.6;
+    margin-top: var(--s2);
+}
+
+@media (max-width: 640px) {
+    .row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .thumb {
+        max-width: 200px;
+    }
+
+    .detailGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detailImage {
+        max-width: 240px;
+    }
+}

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Plus, Trash, PencilSimple, EnvelopeIcon, Phone, Buildings, MagnifyingGlass, Funnel, X, CaretDown } from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import PromptDialog from '@/app/components/ui/PromptDialog';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AdminHead } from '@/app/components/admin/AdminPage';
+import ConfirmDialog from './components/ConfirmDialog';
+import styles from './contacts.module.css';
 import {
     CONTACT_PRIORITY_STOPS,
     getContactPriorityStop,
@@ -30,36 +31,38 @@ interface AdminContactsClientProps {
     canCreate?: boolean;
     canEdit?: boolean;
     canDelete?: boolean;
-    canManage?: boolean; // Keep for backward compatibility if needed, though we should remove if possible
 }
+
+type SortKey = 'name' | 'priority' | 'org';
+
+const SORT_LABELS: Record<SortKey, string> = {
+    name: 'Name A–Z',
+    priority: 'Priorität, hoch zuerst',
+    org: 'Organisation A–Z',
+};
 
 export default function AdminContactsClient({
     canCreate = false,
     canEdit = false,
     canDelete = false,
-    canManage = false // Fallback
 }: AdminContactsClientProps) {
-    // If canManage is provided (old way), it overrides unless specific perms are provided
-    // Ideally we migrate away from canManage. 
-    // For now, let's treat specific perms as primary.
-    // If the parent didn't pass specific perms (undefined), but passed canManage, we might want to infer?
-    // But since we just updated the parent to pass specific perms, we can rely on them.
-    // However, to be safe:
-    const effectiveCanCreate = canCreate || canManage;
-    const effectiveCanEdit = canEdit || canManage;
-    const effectiveCanDelete = canDelete || canManage;
-
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
+    const savedNotice =
+        searchParams.get('hinweis') === 'gespeichert'
+            ? 'Der Kontakt wurde gespeichert.'
+            : null;
     const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
-    const [, setIsDeleting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedOrg, setSelectedOrg] = useState<string>('');
-    const [selectedImportance, setSelectedImportance] = useState<string>('');
-    const [showFilters, setShowFilters] = useState(false);
+    const [selectedOrg, setSelectedOrg] = useState('');
+    const [selectedImportance, setSelectedImportance] = useState('');
+    const [sort, setSort] = useState<SortKey>('name');
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -67,18 +70,19 @@ export default function AdminContactsClient({
         try {
             const [contactsRes, orgsRes] = await Promise.all([
                 fetch('/api/admin/contacts'),
-                fetch('/api/admin/organizations')
+                fetch('/api/admin/organizations'),
             ]);
 
             if (contactsRes.ok) {
                 const contactsData = await contactsRes.json();
-                const normalizedContacts = (contactsData.contacts || []).map(
-                    (contact: Contact) => ({
+                setContacts(
+                    (contactsData.contacts || []).map((contact: Contact) => ({
                         ...contact,
-                        importance: normalizeLegacyImportance(contact.importance),
-                    })
+                        importance: normalizeLegacyImportance(
+                            contact.importance,
+                        ),
+                    })),
                 );
-                setContacts(normalizedContacts);
             } else {
                 setError('Fehler beim Laden der Kontakte');
             }
@@ -87,9 +91,9 @@ export default function AdminContactsClient({
                 const orgsData = await orgsRes.json();
                 setOrganizations(orgsData.organizations || []);
             }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setError('Fehler beim Laden der Daten');
+        } catch (fetchError) {
+            console.error('Error fetching data:', fetchError);
+            setError('Die Kontakte konnten nicht geladen werden.');
         } finally {
             setLoading(false);
         }
@@ -99,27 +103,57 @@ export default function AdminContactsClient({
         fetchData();
     }, [fetchData]);
 
-    const filteredContacts = contacts.filter(contact => {
+    const filteredContacts = useMemo(() => {
         const query = searchQuery.toLowerCase();
-        
-        // Search filter
-        const matchesSearch = !query || (
-            contact.name.toLowerCase().includes(query) ||
-            contact.emails.some(email => email.toLowerCase().includes(query)) ||
-            contact.phones.some(phone => phone.value.toLowerCase().includes(query)) ||
-            contact.affiliations.some(aff =>
-                aff.org.toLowerCase().includes(query) || aff.role.toLowerCase().includes(query)
-            )
-        );
 
-        // Organization filter
-        const matchesOrg = !selectedOrg || contact.affiliations.some(aff => aff.org === selectedOrg);
+        const filtered = contacts.filter((contact) => {
+            const matchesSearch =
+                !query ||
+                contact.name.toLowerCase().includes(query) ||
+                contact.emails.some((email) =>
+                    email.toLowerCase().includes(query),
+                ) ||
+                contact.phones.some((phone) =>
+                    phone.value.toLowerCase().includes(query),
+                ) ||
+                contact.addresses.some((address) =>
+                    address.toLowerCase().includes(query),
+                ) ||
+                contact.affiliations.some(
+                    (aff) =>
+                        aff.org.toLowerCase().includes(query) ||
+                        aff.role.toLowerCase().includes(query),
+                );
 
-        // Importance filter
-        const matchesImportance = !selectedImportance || contact.importance === parseInt(selectedImportance);
+            const matchesOrg =
+                !selectedOrg ||
+                contact.affiliations.some((aff) => aff.org === selectedOrg);
 
-        return matchesSearch && matchesOrg && matchesImportance;
-    });
+            const matchesImportance =
+                !selectedImportance ||
+                contact.importance === parseInt(selectedImportance, 10);
+
+            return matchesSearch && matchesOrg && matchesImportance;
+        });
+
+        return [...filtered].sort((a, b) => {
+            if (sort === 'priority') {
+                return (
+                    b.importance - a.importance ||
+                    a.name.localeCompare(b.name, 'de')
+                );
+            }
+            if (sort === 'org') {
+                const aOrg = a.affiliations[0]?.org ?? '\uffff';
+                const bOrg = b.affiliations[0]?.org ?? '\uffff';
+                return (
+                    aOrg.localeCompare(bOrg, 'de') ||
+                    a.name.localeCompare(b.name, 'de')
+                );
+            }
+            return a.name.localeCompare(b.name, 'de');
+        });
+    }, [contacts, searchQuery, selectedOrg, selectedImportance, sort]);
 
     const handleDelete = async (id: string) => {
         setIsDeleting(true);
@@ -129,15 +163,20 @@ export default function AdminContactsClient({
             });
 
             if (response.ok) {
-                setContacts(prev => prev.filter(c => c.id !== id));
+                setContacts((prev) =>
+                    prev.filter((contact) => contact.id !== id),
+                );
+                setNotice(
+                    `Der Kontakt „${contactToDelete?.name ?? ''}“ wurde gelöscht.`,
+                );
                 setContactToDelete(null);
             } else {
                 const data = await response.json();
-                alert(data.error || 'Fehler beim Löschen');
+                setError(data.error || 'Fehler beim Löschen des Kontakts');
             }
-        } catch (error) {
-            console.error('Error deleting contact:', error);
-            alert('Fehler beim Löschen');
+        } catch (deleteError) {
+            console.error('Error deleting contact:', deleteError);
+            setError('Der Kontakt konnte nicht gelöscht werden.');
         } finally {
             setIsDeleting(false);
         }
@@ -147,219 +186,440 @@ export default function AdminContactsClient({
         setSearchQuery('');
         setSelectedOrg('');
         setSelectedImportance('');
+        setSort('name');
     };
 
-    const hasActiveFilters = searchQuery !== '' || selectedOrg !== '' || selectedImportance !== '';
+    const openContact = (id: string) => {
+        router.push(`/admin/contacts/${id}`);
+    };
 
-    if (loading) return <LoadingSpinner centered />;
+    const hasActiveFilters =
+        searchQuery !== '' ||
+        selectedOrg !== '' ||
+        selectedImportance !== '' ||
+        sort !== 'name';
+
+    const head = (
+        <AdminHead
+            title="Kontakte"
+            sub={
+                <span>Ansprechpartner, Adressen und Vereinsfunktionen</span>
+            }
+            actions={
+                <>
+                    <Link className="btn btn--sm" href="/admin/organizations">
+                        Organisationen
+                    </Link>
+                    {canCreate && (
+                        <Link
+                            className="btn btn--sm btn--primary"
+                            href="/admin/contacts/neu"
+                        >
+                            Neuer Kontakt
+                        </Link>
+                    )}
+                </>
+            }
+        />
+    );
+
+    if (loading) {
+        return (
+            <div>
+                {head}
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">Kontakte werden geladen …</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-center sm:justify-between">
-                <h2 className="hidden text-xl font-semibold text-gray-900 sm:block">Kontaktverzeichnis</h2>
-                <div className="flex justify-center space-x-3">
-                    <button
-                        onClick={() => router.push('/admin/organizations')}
-                        className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm font-medium"
-                    >
-                        <Buildings size={16} className="mr-2" />
-                        Organisationen verwalten
-                    </button>
-                    {effectiveCanCreate && (
-                        <button
-                            onClick={() => router.push('/admin/contacts/neu')}
-                            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
-                        >
-                            <Plus size={16} className="mr-2" />
-                            Neuer Kontakt
-                        </button>
-                    )}
-                </div>
-            </div>
+        <div>
+            {head}
 
-            <div className="px-2 sm:px-0 flex flex-col md:flex-row gap-4">
-                <div className="relative flex-grow">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <MagnifyingGlass className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                    </div>
-                    <input
-                        type="text"
-                        name="search"
-                        id="search"
-                        className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 placeholder-gray-500 focus:border-primary focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm text-gray-900"
-                        placeholder="Suche nach Name, E-Mail, Telefon oder Organisation..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            <div className="px-2 sm:px-0 flex items-center justify-between gap-3">
-                <div className="text-sm text-gray-500">
-                    {filteredContacts.length} {filteredContacts.length === 1 ? 'Kontakt' : 'Kontakte'} gefunden
-                    {hasActiveFilters && ` (gefiltert aus ${contacts.length})`}
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={`inline-flex items-center px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
-                            showFilters || selectedOrg || selectedImportance
-                                ? 'bg-primary-50 border-primary text-primary'
-                                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                    >
-                        <Funnel size={18} className="mr-2" />
-                        Filter
-                        {(selectedOrg || selectedImportance) && (
-                            <span className="ml-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {(selectedOrg ? 1 : 0) + (selectedImportance ? 1 : 0)}
-                            </span>
-                        )}
-                        <CaretDown
-                            size={16}
-                            className={`ml-2 transform transition-transform ${showFilters ? 'rotate-180' : ''}`}
-                        />
-                    </button>
-                    {hasActiveFilters && (
-                        <button
-                            onClick={clearFilters}
-                            className="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
-                        >
-                            <X size={18} className="mr-2" />
-                            Zurücksetzen
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {showFilters && (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label htmlFor="org-filter" className="block text-sm font-medium text-gray-700 mb-1">
-                            Organisation
-                        </label>
-                        <select
-                            id="org-filter"
-                            value={selectedOrg}
-                            onChange={(e) => setSelectedOrg(e.target.value)}
-                            className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-                        >
-                            <option value="">Alle Organisationen</option>
-                            {organizations.map((org) => (
-                                <option key={org.id} value={org.title}>
-                                    {org.title}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="importance-filter" className="block text-sm font-medium text-gray-700 mb-1">
-                            Priorität
-                        </label>
-                        <select
-                            id="importance-filter"
-                            value={selectedImportance}
-                            onChange={(e) => setSelectedImportance(e.target.value)}
-                            className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
-                        >
-                            <option value="">Alle Prioritäten</option>
-                            {[...CONTACT_PRIORITY_STOPS]
-                                .sort((a, b) => b.value - a.value)
-                                .map((stop) => (
-                                    <option key={stop.value} value={stop.value}>
-                                        {stop.label} ({stop.value}) - {stop.example}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
+            {(notice ?? savedNotice) && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Gespeichert</strong>
+                    <span>{notice ?? savedNotice}</span>
                 </div>
             )}
 
             {error && (
-                <div className="bg-red-50 text-red-700 p-4 rounded-md">
-                    {error}
+                <div className="notice notice--error" role="alert">
+                    <strong>Kontakte nicht vollständig verfügbar</strong>
+                    <span>{error}</span>
+                    <span>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={fetchData}
+                        >
+                            Erneut laden
+                        </button>
+                    </span>
                 </div>
             )}
 
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200">
-                    {filteredContacts.length === 0 ? (
-                        <li className="px-6 py-12 text-center text-gray-500">
-                            Keine Kontakte gefunden.
-                        </li>
-                    ) : (
-                        filteredContacts.map((contact) => (
-                            <li key={contact.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between">
-                                <div className="flex-1 min-w-0 pr-4">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <h3 className="text-lg font-medium text-gray-900 truncate">
-                                            {contact.name}
-                                        </h3>
-                                        {contact.importance > 0 && (
-                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                                Priorität: {getContactPriorityStop(contact.importance).label} ({contact.importance})
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-y-1 gap-x-4 text-sm text-gray-500">
-                                        {contact.emails.length > 0 && (
-                                            <div className="flex items-center">
-                                                <EnvelopeIcon size={14} className="mr-1.5 text-gray-400" />
-                                                <span className="truncate max-w-[200px]">{contact.emails[0]}</span>
-                                                {contact.emails.length > 1 && <span className="ml-1">+{contact.emails.length - 1}</span>}
-                                            </div>
-                                        )}
-                                        {contact.phones.length > 0 && (
-                                            <div className="flex items-center">
-                                                <Phone size={14} className="mr-1.5 text-gray-400" />
-                                                <span className="truncate">{contact.phones[0].value}</span>
-                                                {contact.phones.length > 1 && <span className="ml-1">+{contact.phones.length - 1}</span>}
-                                            </div>
-                                        )}
-                                        {contact.affiliations.length > 0 && (
-                                            <div className="flex items-center">
-                                                <Buildings size={14} className="mr-1.5 text-gray-400" />
-                                                <span className="truncate">{contact.affiliations[0].org}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-2 ml-4">
-                                    {effectiveCanEdit && (
-                                        <button
-                                            onClick={() => router.push(`/admin/contacts/${contact.id}`)}
-                                            className="text-gray-400 hover:text-blue-600 p-2"
-                                            title="Bearbeiten"
-                                        >
-                                            <PencilSimple size={20} />
-                                        </button>
-                                    )}
-                                    {effectiveCanDelete && (
-                                        <button
-                                            onClick={() => setContactToDelete(contact)}
-                                            className="text-gray-400 hover:text-red-600 p-2"
-                                            title="Löschen"
-                                        >
-                                            <Trash size={20} />
-                                        </button>
-                                    )}
-                                </div>
-                            </li>
-                        ))
-                    )}
-                </ul>
+            <div className="admin-filter">
+                <div className="field" style={{ flex: '1 1 240px' }}>
+                    <label htmlFor="contact-search">Suche</label>
+                    <input
+                        className="input"
+                        id="contact-search"
+                        type="search"
+                        placeholder="Name, E-Mail, Telefon, Verein"
+                        value={searchQuery}
+                        onChange={(event) =>
+                            setSearchQuery(event.target.value)
+                        }
+                    />
+                </div>
+                <div className="field">
+                    <label htmlFor="contact-org">Organisation</label>
+                    <select
+                        className="select"
+                        id="contact-org"
+                        value={selectedOrg}
+                        onChange={(event) =>
+                            setSelectedOrg(event.target.value)
+                        }
+                    >
+                        <option value="">Alle Organisationen</option>
+                        {organizations.map((org) => (
+                            <option key={org.id} value={org.title}>
+                                {org.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="field">
+                    <label htmlFor="contact-importance">Priorität</label>
+                    <select
+                        className="select"
+                        id="contact-importance"
+                        value={selectedImportance}
+                        onChange={(event) =>
+                            setSelectedImportance(event.target.value)
+                        }
+                    >
+                        <option value="">Alle Prioritäten</option>
+                        {[...CONTACT_PRIORITY_STOPS]
+                            .sort((a, b) => b.value - a.value)
+                            .map((stop) => (
+                                <option key={stop.value} value={stop.value}>
+                                    {stop.value + 1} · {stop.label}
+                                </option>
+                            ))}
+                    </select>
+                </div>
+                <div className="field">
+                    <label htmlFor="contact-sort">Sortierung</label>
+                    <select
+                        className="select"
+                        id="contact-sort"
+                        value={sort}
+                        onChange={(event) =>
+                            setSort(event.target.value as SortKey)
+                        }
+                    >
+                        {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
+                            <option key={key} value={key}>
+                                {SORT_LABELS[key]}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {hasActiveFilters && (
+                    <button
+                        type="button"
+                        className="btn btn--sm btn--quiet"
+                        onClick={clearFilters}
+                    >
+                        Zurücksetzen
+                    </button>
+                )}
             </div>
 
-            <PromptDialog
-                isOpen={!!contactToDelete}
+            <p className={styles.sub} role="status">
+                {filteredContacts.length === contacts.length
+                    ? `${contacts.length} Kontakte`
+                    : `${filteredContacts.length} von ${contacts.length} Kontakten`}
+                {hasActiveFilters ? ' · gefiltert' : ''}
+            </p>
+
+            {filteredContacts.length === 0 ? (
+                contacts.length === 0 ? (
+                    <div className="admin-empty">
+                        <p>Noch kein Kontakt im Verzeichnis.</p>
+                        {canCreate && (
+                            <Link
+                                className="btn btn--sm btn--primary"
+                                href="/admin/contacts/neu"
+                            >
+                                Ersten Kontakt anlegen
+                            </Link>
+                        )}
+                    </div>
+                ) : (
+                    <div className="admin-empty">
+                        <p>Kein Kontakt passt zu diesen Filtern.</p>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={clearFilters}
+                        >
+                            Filter zurücksetzen
+                        </button>
+                    </div>
+                )
+            ) : (
+                <div className={styles.scroll}>
+                    <table className={`data ${styles.table}`} aria-label="Kontaktverzeichnis">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col" className={styles.colOrg}>
+                                    Organisation
+                                </th>
+                                <th scope="col" className={styles.colContact}>
+                                    Kontakt
+                                </th>
+                                <th scope="col" className={styles.colPrio}>
+                                    Priorität
+                                </th>
+                                {(canEdit || canDelete) && (
+                                    <th scope="col" className="right">
+                                        Aktionen
+                                    </th>
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredContacts.map((contact) => {
+                                const firstEmail = contact.emails[0];
+                                const firstPhone = contact.phones[0];
+                                const stop = getContactPriorityStop(
+                                    contact.importance,
+                                );
+                                const extraContacts =
+                                    contact.emails.length +
+                                    contact.phones.length -
+                                    (firstEmail ? 1 : 0) -
+                                    (firstPhone ? 1 : 0);
+                                return (
+                                    <tr key={contact.id}>
+                                        <td>
+                                            <div className={styles.nameCell}>
+                                                <span
+                                                    className={styles.nameMain}
+                                                >
+                                                    {contact.name}
+                                                </span>
+                                                <span
+                                                    className={`${styles.inlineMeta} ${styles.orgInline}`}
+                                                >
+                                                    {contact.affiliations.length >
+                                                    0
+                                                        ? contact.affiliations
+                                                              .map(
+                                                                  (aff) =>
+                                                                      aff.role
+                                                                          ? `${aff.org} · ${aff.role}`
+                                                                          : aff.org,
+                                                              )
+                                                              .join(' / ')
+                                                        : 'Keine Organisation'}
+                                                </span>
+                                                <span
+                                                    className={`${styles.inlineMeta} ${styles.contactInline}`}
+                                                >
+                                                    {firstEmail ? (
+                                                        <span>
+                                                            {firstEmail}
+                                                        </span>
+                                                    ) : null}
+                                                    {firstPhone ? (
+                                                        <span>
+                                                            {firstPhone.value}
+                                                        </span>
+                                                    ) : null}
+                                                    <span>
+                                                        Priorität{' '}
+                                                        {contact.importance + 1} ·{' '}
+                                                        {stop.label}
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className={styles.colOrg}>
+                                            {contact.affiliations.length ===
+                                            0 ? (
+                                                <span
+                                                    className={
+                                                        styles.cellEmpty
+                                                    }
+                                                >
+                                                    —
+                                                </span>
+                                            ) : (
+                                                <div
+                                                    className={styles.orgCell}
+                                                >
+                                                    {contact.affiliations.map(
+                                                        (aff, index) => (
+                                                            <span key={index}>
+                                                                {aff.org}
+                                                                {aff.role ? (
+                                                                    <span
+                                                                        className={
+                                                                            styles.orgRole
+                                                                        }
+                                                                    >
+                                                                        {' '}
+                                                                        ·{' '}
+                                                                        {
+                                                                            aff.role
+                                                                        }
+                                                                    </span>
+                                                                ) : null}
+                                                            </span>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className={styles.colContact}>
+                                            {!firstEmail && !firstPhone ? (
+                                                <span
+                                                    className={
+                                                        styles.cellEmpty
+                                                    }
+                                                >
+                                                    —
+                                                </span>
+                                            ) : (
+                                                <div
+                                                    className={
+                                                        styles.contactCell
+                                                    }
+                                                >
+                                                    {firstEmail && (
+                                                        <span
+                                                            className={
+                                                                styles.contactLine
+                                                            }
+                                                        >
+                                                            <span
+                                                                className={
+                                                                    styles.contactType
+                                                                }
+                                                            >
+                                                                E-Mail
+                                                            </span>
+                                                            <span>
+                                                                {firstEmail}
+                                                            </span>
+                                                        </span>
+                                                    )}
+                                                    {firstPhone && (
+                                                        <span
+                                                            className={
+                                                                styles.contactLine
+                                                            }
+                                                        >
+                                                            <span
+                                                                className={
+                                                                    styles.contactType
+                                                                }
+                                                            >
+                                                                {firstPhone.type}
+                                                            </span>
+                                                            <span>
+                                                                {
+                                                                    firstPhone.value
+                                                                }
+                                                            </span>
+                                                        </span>
+                                                    )}
+                                                    {extraContacts > 0 && (
+                                                        <span
+                                                            className={
+                                                                styles.sub
+                                                            }
+                                                        >
+                                                            +{extraContacts}{' '}
+                                                            {extraContacts === 1
+                                                                ? 'weiterer Eintrag'
+                                                                : 'weitere Einträge'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className={styles.colPrio}>
+                                            <span className={styles.prio}>
+                                                <span className={styles.num}>
+                                                    {contact.importance + 1}
+                                                </span>
+                                                <span className={styles.sub}>
+                                                    {stop.label}
+                                                </span>
+                                            </span>
+                                        </td>
+                                        {(canEdit || canDelete) && (
+                                            <td className="right">
+                                                <div className={styles.actions}>
+                                                    {canEdit && (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn--sm btn--quiet"
+                                                            onClick={() =>
+                                                                openContact(
+                                                                    contact.id,
+                                                                )
+                                                            }
+                                                        >
+                                                            Bearbeiten
+                                                        </button>
+                                                    )}
+                                                    {canDelete && (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn--sm btn--danger"
+                                                            onClick={() =>
+                                                                setContactToDelete(
+                                                                    contact,
+                                                                )
+                                                            }
+                                                        >
+                                                            Löschen
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        )}
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            <ConfirmDialog
+                open={!!contactToDelete}
                 title="Kontakt löschen?"
-                description={`Möchten Sie den Kontakt "${contactToDelete?.name}" wirklich löschen?`}
-                confirmText="Löschen"
-                cancelText="Abbrechen"
-                onConfirm={() => contactToDelete && handleDelete(contactToDelete.id)}
+                description={`Der Kontakt „${contactToDelete?.name ?? ''}“ wird aus dem Verzeichnis entfernt. Diese Aktion kann nicht rückgängig gemacht werden.`}
+                confirmLabel="Kontakt löschen"
+                danger
+                busy={isDeleting}
+                onConfirm={() =>
+                    contactToDelete && handleDelete(contactToDelete.id)
+                }
                 onCancel={() => setContactToDelete(null)}
-                accentColor="red"
             />
         </div>
     );

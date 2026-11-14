@@ -1,95 +1,123 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Fire } from "@phosphor-icons/react/dist/ssr";
-import PageHeader from "@/app/components/layout/PageHeader";
+import Image from 'next/image';
+import Link from 'next/link';
+import {
+    Leaf,
+    Margin,
+    PageHead,
+    SectionHead,
+} from '@/app/components/register/Layout';
+import { pageToday } from '@/app/lib/page-today';
 
 export const metadata = {
-    title: "Feuerwehr Wendessen - Übersicht",
+    title: 'Feuerwehr Wendessen – Übersicht',
     description:
-        "Übersicht über die Feuerwehr in Wendessen: Freiwillige Feuerwehr und Jugendfeuerwehr",
+        'Übersicht über die Feuerwehr in Wendessen: die Freiwillige Feuerwehr mit ihrer Einsatzabteilung und die Jugendfeuerwehr.',
 };
 
-export default function FeuerwehrOverviewPage() {
+export default async function FeuerwehrOverviewPage() {
+    const today = await pageToday();
+
     return (
-        <div className="min-h-screen flex flex-col">
-            <PageHeader
+        <Leaf
+            margin={
+                <Margin
+                    date={today}
+                    label="Feuerwehr"
+                    tallies={[{ label: 'Bereiche', value: 2 }]}
+                    note={
+                        <>
+                            Beide Bereiche teilen sich das Feuerwehrgerätehaus
+                            im alten Dorfkern, Kirchring / Schustergasse.
+                        </>
+                    }
+                />
+            }
+        >
+            <p className="small" style={{ marginBottom: 'var(--s4)' }}>
+                <Link className="link-quiet" href="/dorfleben">
+                    Dorfleben
+                </Link>{' '}
+                <span className="muted">/ Vereine / Feuerwehr</span>
+            </p>
+
+            <PageHead
                 title="Feuerwehr Wendessen"
-                subtitle="Wählen Sie einen Bereich"
-                icon={<Fire />}
-                backgroundImage="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
-                color="red"
+                lede="Zwei Bereiche, ein Gerätehaus: die Einsatzabteilung für den Dienst am Dorf und die Jugendfeuerwehr für Kinder und Jugendliche."
             />
 
-            {/* Image Selection Grid */}
-            <div className="flex-1 px-4 sm:px-6 lg:px-8">
-                <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-0 relative">
-                    {/* Red Bar (Vertical on Large screens, Horizontal on Mobile) */}
-                    <div className="absolute left-1/2 top-0 bottom-0 w-3 bg-white -translate-x-1/2 z-20 hidden lg:block shadow-lg"></div>
-                    <div className="absolute top-1/2 left-0 right-0 h-3 bg-white -translate-y-1/2 z-20 block lg:hidden shadow-lg"></div>
+            <div className="club-head">
+                <div>
+                    <p className="feature-lead">
+                        Die Freiwillige Feuerwehr Wendessen ist Teil der
+                        Feuerwehr Wolfenbüttel im Ortsteil Wendessen. Sie rückt
+                        aus, wenn Menschen, Tiere oder Sachwerte in Not geraten,
+                        und bildet ihren Nachwuchs in der eigenen
+                        Jugendfeuerwehr aus.
+                    </p>
+                    <dl className="club-facts">
+                        <div className="club-fact">
+                            <dt>Standort</dt>
+                            <dd>
+                                Feuerwehrgerätehaus, Kirchring / Schustergasse
+                            </dd>
+                        </div>
+                        <div className="club-fact">
+                            <dt>Einsatzabteilung</dt>
+                            <dd>Dienst mittwochs um 18:30 Uhr</dd>
+                        </div>
+                        <div className="club-fact">
+                            <dt>Jugendfeuerwehr</dt>
+                            <dd>Dienst montags von 18:00 bis 19:30 Uhr</dd>
+                        </div>
+                    </dl>
+                </div>
+                <Image
+                    src="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
+                    alt="Freiwillige Feuerwehr Wendessen"
+                    width={520}
+                    height={360}
+                    sizes="260px"
+                    priority
+                />
+            </div>
 
-                    {/* Freiwillige Feuerwehr / Einsatzabteilung - LEFT IMAGE */}
+            <section aria-labelledby="bereiche">
+                <SectionHead title="Die zwei Bereiche" id="bereiche" />
+                <div className="dir">
                     <Link
+                        className="dir-person"
                         href="/dorfleben/vereine/feuerwehr/einsatzabteilung"
-                        className="group relative overflow-hidden transition-all duration-300"
-                        aria-label="Zur Freiwilligen Feuerwehr Einsatzabteilung"
                     >
-                        <div className="relative h-[50vh] lg:h-[calc(100vh-300px)] w-full">
-                            <Image
-                                src="/images/Vereinsleben/freiwillige-feuerwehr.jpg"
-                                alt="Freiwillige Feuerwehr"
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                            {/* Inverted radial vignette - dark center, lighter edges */}
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,black_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0.4)_60%,transparent_80%,transparent_100%)]"></div>
-
-                            {/* Text Content - Centered with group hover on container */}
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
-                                <div className="transition-all duration-300 group-hover:scale-110">
-                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 drop-shadow-lg">
-                                        Freiwillige Feuerwehr
-                                    </h2>
-                                    <p className="text-xl sm:text-2xl md:text-3xl text-white/90 drop-shadow-lg">
-                                        Einsatzabteilung
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <span className="dir-name">Einsatzabteilung</span>
+                        <span className="dir-contacts">
+                            Retten, Löschen, Bergen, Schützen. Dienst mittwochs
+                            um 18:30 Uhr im Gerätehaus, Gäste sind willkommen.
+                        </span>
+                        <span className="dir-importance">Aktiv</span>
                     </Link>
-
-                    {/* Jugendfeuerwehr - RIGHT IMAGE */}
                     <Link
+                        className="dir-person"
                         href="/dorfleben/vereine/jugendfeuerwehr"
-                        className="group relative overflow-hidden transition-all duration-300"
-                        aria-label="Zur Jugendfeuerwehr"
                     >
-                        <div className="relative h-[50vh] lg:h-[calc(100vh-300px)] w-full">
-                            <Image
-                                src="/images/Vereinsleben/jugendfeuerwehr.jpeg"
-                                alt="Jugendfeuerwehr"
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                            {/* Inverted radial vignette - dark center, lighter edges */}
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,black_0%,rgba(0,0,0,0.8)_30%,rgba(0,0,0,0.4)_60%,transparent_80%,transparent_100%)]"></div>
-
-                            {/* Text Content - Centered with group hover on container */}
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 sm:p-8 md:p-10">
-                                <div className="transition-all duration-300 group-hover:scale-110">
-                                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 sm:mb-3 drop-shadow-lg">
-                                        Jugendfeuerwehr
-                                    </h2>
-                                    <p className="text-xl sm:text-2xl md:text-3xl text-white/90 drop-shadow-lg">
-                                        Für Kinder & Jugendliche
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <span className="dir-name">Jugendfeuerwehr</span>
+                        <span className="dir-contacts">
+                            Für Kinder und Jugendliche von 10 bis 16 Jahren.
+                            Dienst montags von 18:00 bis 19:30 Uhr im Jugendraum
+                            des Gerätehauses.
+                        </span>
+                        <span className="dir-importance">Nachwuchs</span>
                     </Link>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            <p className="block">
+                <Link
+                    className="arrow-link"
+                    href="/dorfleben/vereine/feuerwehr/einsatzabteilung"
+                >
+                    Zur Einsatzabteilung
+                </Link>
+            </p>
+        </Leaf>
     );
 }

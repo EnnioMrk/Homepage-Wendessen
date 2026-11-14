@@ -1,0 +1,275 @@
+.layouts {
+    overflow-x: auto;
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+}
+
+.layouts table {
+    min-width: 820px;
+}
+
+.cardList {
+    display: grid;
+    gap: 2px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.cardList li {
+    display: flex;
+    gap: var(--s2);
+}
+
+.cardNum {
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    min-width: 1.4em;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    justify-content: flex-end;
+}
+
+.confirm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    margin-bottom: var(--s4);
+}
+
+.confirm p {
+    font-size: var(--label);
+    max-width: 60ch;
+}
+
+.form {
+    display: grid;
+    gap: var(--s5);
+    max-width: 1120px;
+}
+
+.form :global(input.input),
+.form :global(select.select),
+.form :global(textarea.textarea) {
+    min-height: 44px;
+}
+
+.card {
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+    padding: var(--s4);
+    margin: 0;
+}
+
+.card > legend {
+    padding: 0 var(--s2);
+    font-size: var(--tally);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.cardNote {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    margin-bottom: var(--s4);
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: var(--s5);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .cardGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.fields {
+    display: grid;
+    gap: var(--s4);
+}
+
+.counter {
+    font-size: var(--tally);
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.buttonBlock {
+    border-top: var(--border) solid var(--rule);
+    padding-top: var(--s4);
+    display: grid;
+    gap: var(--s3);
+}
+
+.buttonHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2);
+}
+
+.buttonHead h4 {
+    font-size: var(--tally);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.themeBlock {
+    border: var(--border) dashed var(--rule-strong);
+    padding: var(--s4);
+    display: grid;
+    gap: var(--s3);
+    background: var(--paper);
+}
+
+.themeBlock p {
+    font-size: var(--small);
+    color: var(--ink-secondary);
+    max-width: 70ch;
+}
+
+.themeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--s3);
+}
+
+.presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+}
+
+.previewCol {
+    display: grid;
+    gap: var(--s3);
+    position: sticky;
+    top: var(--s4);
+}
+
+@media (max-width: 900px) {
+    .previewCol {
+        position: static;
+    }
+}
+
+.previewLabel {
+    font-size: var(--tally);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.previewCard img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.previewCard {
+    display: grid;
+}
+
+.imageBlock {
+    display: grid;
+    gap: var(--s3);
+}
+
+.imageFrame {
+    border: var(--border) solid var(--rule);
+    background: var(--paper-sunken);
+    min-height: 120px;
+    display: grid;
+    place-items: center;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    text-align: center;
+    padding: var(--s3);
+}
+
+.imageFrame img {
+    width: 100%;
+    height: auto;
+}
+
+.counterRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s2);
+}
+
+.saveBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    padding-top: var(--s3);
+    border-top: 2px solid var(--ink);
+}
+
+.pickerGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: var(--border);
+    background: var(--rule);
+    border: var(--border) solid var(--rule);
+}
+
+.pickerTile {
+    background: var(--paper-raised);
+    border: 0;
+    padding: 0;
+    display: grid;
+    cursor: pointer;
+    text-align: left;
+}
+
+.pickerTile img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.pickerName {
+    font-size: var(--tally);
+    padding: 4px 6px;
+    border-top: var(--border) solid var(--rule);
+    color: var(--ink-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pickerBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s3);
+    align-items: flex-end;
+    margin-bottom: var(--s4);
+}
+
+.pickerBar :global(.field) {
+    min-width: 180px;
+}

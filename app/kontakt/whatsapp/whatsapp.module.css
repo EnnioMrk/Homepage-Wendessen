@@ -1,0 +1,45 @@
+/* WhatsApp channel: QR plate and its two-column intro. */
+.intro {
+    display: grid;
+    grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+    gap: var(--s6);
+    align-items: start;
+    padding-top: var(--s4);
+}
+
+.qr {
+    border: var(--border) solid var(--ink);
+    background: var(--paper-raised);
+    padding: var(--s3);
+}
+
+.qr img {
+    width: 100%;
+    height: auto;
+}
+
+.qr figcaption {
+    padding-top: var(--s2);
+    font-size: var(--tally);
+    letter-spacing: 0.04em;
+    color: var(--ink-muted);
+    text-align: center;
+}
+
+.introText {
+    font-size: var(--body-lg);
+    line-height: 1.55;
+    color: var(--ink-secondary);
+    max-width: 58ch;
+}
+
+@media (max-width: 760px) {
+    .intro {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--s5);
+    }
+
+    .qr {
+        max-width: 280px;
+    }
+}

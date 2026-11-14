@@ -1,0 +1,31 @@
+/* News index and article page details — ruled lists, no cards. */
+
+.filters {
+    margin-bottom: var(--s5);
+}
+
+.back {
+    margin-bottom: var(--s5);
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--small);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ledger);
+    border-bottom: var(--border) solid var(--ledger);
+}
+
+.backLink:hover {
+    color: var(--pine);
+    border-bottom-color: var(--pine);
+}
+
+.pinned {
+    margin-top: var(--s3);
+}

@@ -1,0 +1,123 @@
+/* Wir Wendesser: portrait plates, the submission form and its dialog. */
+
+.list {
+    display: grid;
+    gap: var(--s4);
+    margin-top: var(--s3);
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    padding-bottom: var(--s3);
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.toolbar p {
+    margin: 0;
+}
+
+.excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: var(--s2);
+    font-size: var(--label);
+    line-height: 1.5;
+    color: var(--ink-secondary);
+}
+
+.cardAction {
+    margin-top: var(--s3);
+}
+
+.counter {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.counter[data-invalid='true'] {
+    color: var(--rubric);
+}
+
+.preview {
+    width: 160px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    border: var(--border) solid var(--rule);
+    background: var(--paper-sunken) center / cover no-repeat;
+}
+
+.previewActions {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    margin-top: var(--s2);
+}
+
+/* Native dialog: focus trap and Escape come from the platform. */
+.dialog {
+    width: min(720px, calc(100vw - 32px));
+    max-height: calc(100dvh - 48px);
+    margin: auto;
+    padding: 0;
+    border: var(--border) solid var(--ink);
+    background: var(--paper-raised);
+    color: var(--ink);
+    overflow: auto;
+    border-radius: 0;
+}
+
+.dialog::backdrop {
+    background: color-mix(in srgb, var(--pine-deep) 72%, transparent);
+}
+
+.dialogHead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s4);
+    padding: var(--s4) var(--s5);
+    background: var(--paper-raised);
+    border-bottom: var(--border) solid var(--ink);
+}
+
+.dialogHead h2 {
+    font-size: var(--lead);
+    line-height: 1.25;
+}
+
+.dialogBody {
+    padding: var(--s5);
+}
+
+.dialogImage {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    border: var(--border) solid var(--rule);
+    margin-bottom: var(--s4);
+}
+
+.legal {
+    padding: var(--s3) var(--s4);
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    font-size: var(--small);
+    line-height: 1.5;
+    color: var(--ink-secondary);
+}
+
+@media (max-width: 640px) {
+    .dialogBody,
+    .dialogHead {
+        padding-inline: var(--s4);
+    }
+}

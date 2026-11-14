@@ -16,6 +16,18 @@ interface LazySharedGalleryImageProps {
     onLoad?: (imageUrl: string) => void;
 }
 
+const placeholderBox = {
+    background: 'var(--paper-sunken)',
+    border: '1px solid var(--rule)',
+    color: 'var(--ink-muted)',
+    fontSize: 'var(--tally)',
+    letterSpacing: '0.04em',
+    display: 'grid',
+    placeItems: 'center',
+    textAlign: 'center' as const,
+    padding: '4px',
+};
+
 export default function LazySharedGalleryImage({
     imageId,
     alt,
@@ -28,16 +40,16 @@ export default function LazySharedGalleryImage({
     onLoad,
 }: LazySharedGalleryImageProps) {
     const { imageUrl, loading, error } = useSharedGalleryImage(imageId, onLoad);
+    const box = fill
+        ? { position: 'absolute' as const, inset: 0 }
+        : { width, height };
 
     if (loading) {
         return (
             <div
-                className={`bg-gray-200 animate-pulse ${className || ''}`}
-                style={
-                    fill
-                        ? { position: 'absolute', inset: 0 }
-                        : { width, height }
-                }
+                className={className}
+                style={{ ...placeholderBox, ...box }}
+                aria-hidden="true"
             />
         );
     }
@@ -45,15 +57,12 @@ export default function LazySharedGalleryImage({
     if (error || !imageUrl) {
         return (
             <div
-                className={`bg-gray-300 flex items-center justify-center text-gray-500 text-xs ${className || ''
-                    }`}
-                style={
-                    fill
-                        ? { position: 'absolute', inset: 0 }
-                        : { width, height }
-                }
+                className={className}
+                style={{ ...placeholderBox, ...box }}
+                role="img"
+                aria-label={`${alt} — Bild nicht verfügbar`}
             >
-                Fehler
+                Bild nicht verfügbar
             </div>
         );
     }

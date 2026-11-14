@@ -1,293 +1,440 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-    Plus,
-    Check,
-    Trash,
-    PencilSimple,
-    Copy,
-} from "@phosphor-icons/react/dist/ssr";
-import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
-import PromptDialog from "@/app/components/ui/PromptDialog";
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
+import { dateShort } from '@/app/lib/register-format';
+import s from './wendessen.module.css';
 
-interface Layout {
+interface CardSummary {
+    title?: string;
+}
+
+export interface LayoutItem {
     id: number;
     name: string;
     is_active: boolean;
     created_at: string;
-    card_1?: unknown;
-    card_2?: unknown;
-    card_3?: unknown;
+    card_1?: CardSummary | null;
+    card_2?: CardSummary | null;
+    card_3?: CardSummary | null;
 }
 
 interface AdminWendessenClientProps {
     canManage?: boolean;
     canCreate?: boolean;
+    flash?: string;
+}
+
+function cardTitles(layout: LayoutItem) {
+    return [layout.card_1, layout.card_2, layout.card_3].map(
+        (card, index) => ({
+            index: index + 1,
+            title: card?.title?.trim() || 'Ohne Titel',
+        })
+    );
 }
 
 export default function AdminWendessenClient({
     canManage = false,
     canCreate = false,
+    flash,
 }: AdminWendessenClientProps) {
-    const router = useRouter();
-    const [layouts, setLayouts] = useState<Layout[]>([]);
+    const [layouts, setLayouts] = useState<LayoutItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [layoutToDelete, setLayoutToDelete] = useState<Layout | null>(null);
-    const [, setIsDeleting] = useState(false);
-    const [isActivating, setIsActivating] = useState<number | null>(null);
-    const [duplicatingLayoutId, setDuplicatingLayoutId] = useState<
-        number | null
-    >(null);
+    const [success, setSuccess] = useState<string | null>(flash ?? null);
+    const [reloadKey, setReloadKey] = useState(0);
+    const [activating, setActivating] = useState<number | null>(null);
+    const [duplicating, setDuplicating] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<LayoutItem | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
-        fetchLayouts();
-    }, []);
+        let cancelled = false;
 
-    const fetchLayouts = async () => {
-        try {
-            const response = await fetch("/api/admin/wendessen");
-            if (response.ok) {
-                const data = await response.json();
-                setLayouts(data.layouts || []);
-            } else {
-                setError("Fehler beim Laden der Layouts");
+        async function load() {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch('/api/admin/wendessen');
+                if (!response.ok) {
+                    throw new Error(`Status ${response.status}`);
+                }
+                const data = (await response.json()) as {
+                    layouts?: LayoutItem[];
+                };
+                if (!cancelled) setLayouts(data.layouts ?? []);
+            } catch (loadError) {
+                console.error('Error fetching layouts:', loadError);
+                if (!cancelled) {
+                    setError('Die Layouts konnten nicht geladen werden.');
+                }
+            } finally {
+                if (!cancelled) setLoading(false);
             }
-        } catch (error) {
-            console.error("Error fetching layouts:", error);
-            setError("Fehler beim Laden der Layouts");
-        } finally {
-            setLoading(false);
         }
-    };
 
-    const handleSetActive = async (id: number) => {
-        setIsActivating(id);
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, [reloadKey]);
+
+    const activeLayout = useMemo(
+        () => layouts.find((layout) => layout.is_active) ?? null,
+        [layouts]
+    );
+
+    async function activate(layout: LayoutItem) {
+        setActivating(layout.id);
+        setError(null);
         try {
-            const response = await fetch(`/api/admin/wendessen/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch(`/api/admin/wendessen/${layout.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_active: true }),
             });
-
-            if (response.ok) {
-                fetchLayouts(); // Refresh to show new active status
-            } else {
-                alert("Fehler beim Aktivieren des Layouts");
+            if (!response.ok) {
+                let message = 'Das Layout konnte nicht aktiviert werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
-        } catch (error) {
-            console.error("Error activating layout:", error);
-            alert("Fehler beim Aktivieren des Layouts");
+            setSuccess(`„${layout.name}“ ist jetzt das aktive Layout.`);
+            setReloadKey((key) => key + 1);
+        } catch (activateError) {
+            setError(
+                activateError instanceof Error
+                    ? activateError.message
+                    : 'Das Layout konnte nicht aktiviert werden.'
+            );
         } finally {
-            setIsActivating(null);
+            setActivating(null);
         }
-    };
+    }
 
-    const handleDelete = async (id: number) => {
-        setIsDeleting(true);
+    async function duplicate(layout: LayoutItem) {
+        if (!canCreate) return;
+        setDuplicating(layout.id);
+        setError(null);
         try {
-            const response = await fetch(`/api/admin/wendessen/${id}`, {
-                method: "DELETE",
-            });
-
-            if (response.ok) {
-                setLayouts((prev) => prev.filter((l) => l.id !== id));
-                setLayoutToDelete(null);
-            } else {
-                const data = await response.json();
-                alert(data.error || "Fehler beim Löschen");
-            }
-        } catch (error) {
-            console.error("Error deleting layout:", error);
-            alert("Fehler beim Löschen");
-        } finally {
-            setIsDeleting(false);
-        }
-    };
-
-    const handleDuplicate = async (layout: Layout) => {
-        if (!canCreate) {
-            return;
-        }
-
-        setDuplicatingLayoutId(layout.id);
-
-        try {
-            const response = await fetch("/api/admin/wendessen", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch('/api/admin/wendessen', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: layout.name?.trim()
                         ? `${layout.name} (Kopie)`
-                        : "Layout Kopie",
+                        : 'Layout Kopie',
                     card_1: layout.card_1,
                     card_2: layout.card_2,
                     card_3: layout.card_3,
                 }),
             });
-
-            if (response.ok) {
-                fetchLayouts();
-            } else {
-                const data = await response.json();
-                alert(data.error || "Fehler beim Duplizieren");
+            if (!response.ok) {
+                let message = 'Das Layout konnte nicht dupliziert werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
             }
-        } catch (error) {
-            console.error("Error duplicating layout:", error);
-            alert("Fehler beim Duplizieren");
+            setSuccess(`„${layout.name}“ wurde als Kopie angelegt.`);
+            setReloadKey((key) => key + 1);
+        } catch (duplicateError) {
+            setError(
+                duplicateError instanceof Error
+                    ? duplicateError.message
+                    : 'Das Layout konnte nicht dupliziert werden.'
+            );
         } finally {
-            setDuplicatingLayoutId(null);
+            setDuplicating(null);
         }
-    };
+    }
 
-    if (loading) return <LoadingSpinner centered />;
+    async function remove() {
+        if (!deleteTarget) return;
+        setDeleting(true);
+        setError(null);
+        try {
+            const response = await fetch(
+                `/api/admin/wendessen/${deleteTarget.id}`,
+                { method: 'DELETE' }
+            );
+            if (!response.ok) {
+                let message = 'Das Layout konnte nicht gelöscht werden.';
+                try {
+                    const data = (await response.json()) as { error?: string };
+                    if (data.error) message = data.error;
+                } catch {
+                    // Keep the German fallback.
+                }
+                throw new Error(message);
+            }
+            setSuccess(`„${deleteTarget.name}“ wurde gelöscht.`);
+            setDeleteTarget(null);
+            setReloadKey((key) => key + 1);
+        } catch (deleteError) {
+            setError(
+                deleteError instanceof Error
+                    ? deleteError.message
+                    : 'Das Layout konnte nicht gelöscht werden.'
+            );
+        } finally {
+            setDeleting(false);
+        }
+    }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center px-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                    Verfügbare Layouts
-                </h2>
-                {canManage && (
-                    <button
-                        onClick={() => router.push("/admin/wendessen/neu")}
-                        className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md flex items-center text-sm font-medium"
-                    >
-                        <Plus size={16} className="mr-2" />
-                        Neues Layout
-                    </button>
-                )}
-            </div>
+        <div>
+            <AdminHead
+                title="Dorfwissen"
+                sub="Drei Kacheln für die Startseite · ein Layout ist jeweils aktiv"
+                actions={
+                    canManage ? (
+                        <Link
+                            className="btn btn--primary btn--sm"
+                            href="/admin/wendessen/neu"
+                        >
+                            Neues Layout
+                        </Link>
+                    ) : undefined
+                }
+            />
 
-            {error && (
-                <div className="bg-red-50 text-red-700 p-4 rounded-md">
-                    {error}
+            {success && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Ausgeführt</strong>
+                    <span>{success}</span>
+                    <button
+                        type="button"
+                        className="btn btn--quiet btn--sm"
+                        onClick={() => setSuccess(null)}
+                    >
+                        Schließen
+                    </button>
                 </div>
             )}
 
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200">
-                    {layouts.length === 0 ? (
-                        <li className="px-6 py-12 text-center text-gray-500">
-                            Keine Layouts vorhanden. Erstellen Sie das erste!
-                        </li>
-                    ) : (
-                        layouts.map((layout) => (
-                            <li
-                                key={layout.id}
-                                className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between"
-                            >
-                                <div>
-                                    <div className="flex items-center">
-                                        <h3 className="text-lg font-medium text-gray-900 mr-3">
-                                            {layout.name}
-                                        </h3>
-                                        {layout.is_active && (
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Aktiv
-                                            </span>
-                                        )}
-                                    </div>
-                                    <p className="text-sm text-gray-500">
-                                        Erstellt am{" "}
-                                        {new Date(
-                                            layout.created_at,
-                                        ).toLocaleDateString("de-DE")}
-                                    </p>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    {canCreate && (
-                                        <button
-                                            onClick={() =>
-                                                handleDuplicate(layout)
-                                            }
-                                            disabled={
-                                                duplicatingLayoutId ===
-                                                layout.id
-                                            }
-                                            className="text-gray-400 hover:text-gray-700 p-2"
-                                            title="Duplizieren"
-                                        >
-                                            {duplicatingLayoutId ===
-                                            layout.id ? (
-                                                <LoadingSpinner size="sm" />
-                                            ) : (
-                                                <Copy size={20} />
-                                            )}
-                                        </button>
-                                    )}
-                                    {!layout.is_active && canManage && (
-                                        <button
-                                            onClick={() =>
-                                                handleSetActive(layout.id)
-                                            }
-                                            disabled={
-                                                isActivating === layout.id
-                                            }
-                                            className="text-gray-400 hover:text-green-600 p-2"
-                                            title="Aktivieren"
-                                        >
-                                            {isActivating === layout.id ? (
-                                                <LoadingSpinner size="sm" />
-                                            ) : (
-                                                <Check size={20} />
-                                            )}
-                                        </button>
-                                    )}
-                                    {canManage && (
-                                        <>
-                                            <button
-                                                onClick={() =>
-                                                    router.push(
-                                                        `/admin/wendessen/${layout.id}`,
-                                                    )
-                                                }
-                                                className="text-gray-400 hover:text-blue-600 p-2"
-                                                title="Bearbeiten"
-                                            >
-                                                <PencilSimple size={20} />
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    setLayoutToDelete(layout)
-                                                }
-                                                disabled={layout.is_active} // Cannot delete active
-                                                className={`p-2 transition-colors ${
-                                                    layout.is_active
-                                                        ? "text-gray-200 cursor-not-allowed"
-                                                        : "text-gray-400 hover:text-red-600"
-                                                }`}
-                                                title={
-                                                    layout.is_active
-                                                        ? "Aktives Layout kann nicht gelöscht werden"
-                                                        : "Löschen"
-                                                }
-                                            >
-                                                <Trash size={20} />
-                                            </button>
-                                        </>
-                                    )}
-                                </div>
-                            </li>
-                        ))
-                    )}
-                </ul>
-            </div>
+            {error && (
+                <div className="notice notice--error" role="alert">
+                    <strong>Fehler</strong>
+                    <span>{error}</span>
+                    <button
+                        type="button"
+                        className="btn btn--sm"
+                        onClick={() => setReloadKey((key) => key + 1)}
+                    >
+                        Erneut laden
+                    </button>
+                </div>
+            )}
 
-            <PromptDialog
-                isOpen={!!layoutToDelete}
-                title="Layout löschen?"
-                description={`Möchten Sie das Layout "${layoutToDelete?.name}" wirklich löschen?`}
-                confirmText="Löschen"
-                cancelText="Abbrechen"
-                onConfirm={() =>
-                    layoutToDelete && handleDelete(layoutToDelete.id)
-                }
-                onCancel={() => setLayoutToDelete(null)}
-                accentColor="red"
-            />
+            {deleteTarget && (
+                <div className={`notice notice--warn ${s.confirm}`}>
+                    <p>
+                        Soll das Layout „{deleteTarget.name}“ gelöscht werden?
+                        Die drei Karten dieses Layouts entfallen damit. Das
+                        aktive Layout kann nicht gelöscht werden.
+                    </p>
+                    <span className="admin-actions">
+                        <button
+                            type="button"
+                            className="btn btn--quiet btn--sm"
+                            onClick={() => setDeleteTarget(null)}
+                            disabled={deleting}
+                        >
+                            Abbrechen
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn--danger btn--sm"
+                            onClick={remove}
+                            disabled={deleting}
+                        >
+                            {deleting ? 'Löschen …' : 'Endgültig löschen'}
+                        </button>
+                    </span>
+                </div>
+            )}
+
+            {loading ? (
+                <p className="admin-empty" role="status">
+                    Layouts werden geladen …
+                </p>
+            ) : layouts.length === 0 ? (
+                <div className="admin-empty">
+                    <h2>Keine Layouts vorhanden</h2>
+                    <p>
+                        Die Startseite zeigt in diesem Bereich nichts an, solange
+                        kein Layout aktiv ist.
+                    </p>
+                    {canManage && (
+                        <Link
+                            className="btn btn--primary btn--sm"
+                            href="/admin/wendessen/neu"
+                        >
+                            Erstes Layout anlegen
+                        </Link>
+                    )}
+                </div>
+            ) : (
+                <Panel
+                    title="Layouts"
+                    flush
+                    actions={
+                        <span className="tally">
+                            {layouts.length}{' '}
+                            {layouts.length === 1 ? 'Layout' : 'Layouts'}
+                            {activeLayout
+                                ? ` · aktiv: ${activeLayout.name}`
+                                : ' · kein aktives Layout'}
+                        </span>
+                    }
+                >
+                    <div className={s.layouts}>
+                        <table className="data">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Layout</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Erstellt</th>
+                                    <th scope="col" className="right">
+                                        Aktionen
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {layouts.map((layout) => (
+                                    <tr key={layout.id}>
+                                        <td>
+                                            <strong>{layout.name}</strong>
+                                            <ol className={s.cardList}>
+                                                {cardTitles(layout).map(
+                                                    (card) => (
+                                                        <li key={card.index}>
+                                                            <span
+                                                                className={
+                                                                    s.cardNum
+                                                                }
+                                                            >
+                                                                {card.index}.
+                                                            </span>
+                                                            <span>
+                                                                {card.title}
+                                                            </span>
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ol>
+                                        </td>
+                                        <td>
+                                            {layout.is_active ? (
+                                                <span className="stamp stamp--decided">
+                                                    Aktiv
+                                                </span>
+                                            ) : (
+                                                <span className="stamp stamp--draft">
+                                                    Inaktiv
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="num">
+                                            {dateShort(
+                                                new Date(layout.created_at)
+                                            )}
+                                        </td>
+                                        <td>
+                                            <span className={s.actions}>
+                                                {canManage && (
+                                                    <Link
+                                                        className="btn btn--quiet btn--sm"
+                                                        href={`/admin/wendessen/${layout.id}`}
+                                                    >
+                                                        Bearbeiten
+                                                    </Link>
+                                                )}
+                                                {canManage && !layout.is_active && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm"
+                                                        onClick={() =>
+                                                            activate(layout)
+                                                        }
+                                                        disabled={
+                                                            activating ===
+                                                            layout.id
+                                                        }
+                                                    >
+                                                        {activating === layout.id
+                                                            ? 'Aktivieren …'
+                                                            : 'Aktivieren'}
+                                                    </button>
+                                                )}
+                                                {canCreate && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--quiet btn--sm"
+                                                        onClick={() =>
+                                                            duplicate(layout)
+                                                        }
+                                                        disabled={
+                                                            duplicating ===
+                                                            layout.id
+                                                        }
+                                                    >
+                                                        {duplicating === layout.id
+                                                            ? 'Kopieren …'
+                                                            : 'Duplizieren'}
+                                                    </button>
+                                                )}
+                                                {canManage && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--danger btn--sm"
+                                                        onClick={() =>
+                                                            setDeleteTarget(
+                                                                layout
+                                                            )
+                                                        }
+                                                        disabled={layout.is_active}
+                                                        title={
+                                                            layout.is_active
+                                                                ? 'Das aktive Layout kann nicht gelöscht werden.'
+                                                                : 'Layout löschen'
+                                                        }
+                                                    >
+                                                        Löschen
+                                                    </button>
+                                                )}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Panel>
+            )}
+
+            {!loading && activeLayout && (
+                <p className="hint" style={{ marginTop: 'var(--s3)' }}>
+                    Die Startseite liest nur das aktive Layout. Ein Wechsel
+                    wirkt sofort nach dem nächsten Aufruf.
+                </p>
+            )}
+
+            <p style={{ marginTop: 'var(--s4)' }}>
+                <Link className="btn btn--quiet btn--sm" href="/admin/dashboard">
+                    Zum Schreibtisch
+                </Link>
+            </p>
         </div>
     );
 }

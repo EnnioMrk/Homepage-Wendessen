@@ -1,14 +1,14 @@
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
-import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
-import AdminWendessenClient from './AdminWendessenClient';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import AdminWendessenClient from './AdminWendessenClient';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
 
 export default function AdminWendessenPage() {
     return (
-        <Suspense fallback={<div>Laden...</div>}>
+        <Suspense fallback={<p className="admin-empty">Layouts werden geladen …</p>}>
             <AdminWendessenContent />
         </Suspense>
     );
@@ -21,7 +21,6 @@ async function AdminWendessenContent() {
         redirect('/admin/login');
     }
 
-    // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canView = hasPermission(currentUser, 'wendessen.view');
     const canCreate = hasPermission(currentUser, 'wendessen.create');
@@ -29,61 +28,27 @@ async function AdminWendessenContent() {
 
     if (!canView) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
+            <div>
+                <AdminHead title="Dorfwissen" />
+                <Panel title="Keine Berechtigung">
+                    <p className="admin-empty">
                         Sie haben keine Berechtigung, diesen Bereich zu
                         verwalten.
                     </p>
-                    <Link
-                        href="/admin/dashboard"
-                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        <ArrowLeft className="w-4 h-4 inline mr-2" />
-                        Zurück zum Dashboard
-                    </Link>
-                </div>
+                    <p style={{ marginTop: 'var(--s4)' }}>
+                        <Link className="btn" href="/admin/dashboard">
+                            Zum Schreibtisch
+                        </Link>
+                    </p>
+                </Panel>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-6">
-                        <div className="flex items-center">
-                            <Link
-                                href="/admin/dashboard"
-                                className="mr-4 p-2 text-gray-600 hover:text-gray-900"
-                            >
-                                <ArrowLeft size={20} />
-                            </Link>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">
-                                    Das ist Wendessen
-                                </h1>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Layouts und Inhalte der Startseite verwalten
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <AdminWendessenClient
-                    canManage={canManage}
-                    canCreate={canCreate || canManage}
-                />
-            </main>
-        </div>
+        <AdminWendessenClient
+            canManage={canManage}
+            canCreate={canCreate || canManage}
+        />
     );
 }

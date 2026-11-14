@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, type CSSProperties } from 'react';
-import { Plus, Trash, FloppyDisk } from '@phosphor-icons/react/dist/ssr';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
+import { useEffect, useState } from 'react';
+import styles from '../contacts.module.css';
 import {
     CONTACT_PRIORITY_MAX,
     CONTACT_PRIORITY_MIN,
+    CONTACT_PRIORITY_STOPS,
     getContactPriorityStop,
     normalizeLegacyImportance,
 } from '@/lib/constants/contact-priorities';
@@ -40,6 +40,23 @@ const emptyContact: ContactData = {
     importance: 0,
 };
 
+const PHONE_TYPES = ['Mobil', 'Privat', 'Geschäftlich', 'Fax', 'Sonstiges'];
+
+function phoneTypeLabel(type: string): string {
+    if (!type) return type;
+    const labels: Record<string, string> = {
+        mobil: 'Mobil',
+        mobile: 'Mobil',
+        privat: 'Privat',
+        'geschäftlich': 'Geschäftlich',
+        geschaeftlich: 'Geschäftlich',
+        fax: 'Fax',
+        sonstiges: 'Sonstiges',
+    };
+    const known = labels[type.toLowerCase()];
+    return known ?? type.charAt(0).toUpperCase() + type.slice(1);
+}
+
 export default function ContactForm({
     initialData,
     onSubmit,
@@ -58,39 +75,39 @@ export default function ContactForm({
     };
 
     const [formData, setFormData] = useState<ContactData>(
-        getInitialFormData(initialData)
-    );
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
-    const [, setLoadingOrgs] = useState(false);
+        getInitialFormData(initialData),
+    );    const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [orgsError, setOrgsError] = useState(false);
+    const [nameError, setNameError] = useState('');
 
     useEffect(() => {
         const fetchOrgs = async () => {
-            setLoadingOrgs(true);
             try {
                 const response = await fetch('/api/admin/organizations');
                 if (response.ok) {
                     const data = await response.json();
                     setOrganizations(data.organizations || []);
+                } else {
+                    setOrgsError(true);
                 }
             } catch (error) {
                 console.error('Failed to fetch organizations', error);
-            } finally {
-                setLoadingOrgs(false);
+                setOrgsError(true);
             }
         };
         fetchOrgs();
     }, []);
 
-    useEffect(() => {
-        setFormData(getInitialFormData(initialData));
-    }, [initialData]);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!formData.name.trim()) {
+            setNameError('Bitte tragen Sie einen Namen ein.');
+            return;
+        }
+        setNameError('');
         onSubmit(formData);
     };
 
-    // Helper for array modifications
     const addArrayItem = <T,>(key: keyof ContactData, item: T) => {
         setFormData((prev) => ({
             ...prev,
@@ -101,7 +118,7 @@ export default function ContactForm({
     const updateArrayItem = <T,>(
         key: keyof ContactData,
         index: number,
-        item: T
+        item: T,
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -117,316 +134,468 @@ export default function ContactForm({
     };
 
     const selectedPriority = getContactPriorityStop(formData.importance);
-    const sliderProgress =
-        ((formData.importance - CONTACT_PRIORITY_MIN) /
-            (CONTACT_PRIORITY_MAX - CONTACT_PRIORITY_MIN)) *
-        100;
-    const sliderStyle = {
-        '--slider-progress': `${sliderProgress}%`,
-    } as CSSProperties;
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="space-y-8 bg-white p-6 shadow rounded-md"
-        >
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Name
-                </label>
-                <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                />
+        <form className="panel" onSubmit={handleSubmit}>
+            <div className="panel-head">
+                <h2>Kontaktdaten</h2>
+                <span className={styles.sub}>
+                    Felder mit * sind erforderlich
+                </span>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Priorität
-                </label>
-                <div className="mt-2 rounded-xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
-                    <div className="rounded-md bg-white/80 px-3 py-2 text-sm text-gray-900">
-                        <span className="font-semibold">
-                            Stufe {selectedPriority.value}: {selectedPriority.label}
-                        </span>{' '}
-                        <span className="text-gray-700">({selectedPriority.example})</span>
-                    </div>
-
-                    <div className="mt-3 pb-1">
+            <div className="panel-body">
+                <div className={styles.formGrid}>
+                    <div className="field">
+                        <label htmlFor="contact-name">Name *</label>
                         <input
-                            type="range"
-                            min={CONTACT_PRIORITY_MIN}
-                            max={CONTACT_PRIORITY_MAX}
-                            step={1}
-                            value={formData.importance}
-                            onChange={(e) =>
+                            className="input"
+                            id="contact-name"
+                            type="text"
+                            required
+                            autoComplete="name"
+                            value={formData.name}
+                            aria-invalid={nameError ? 'true' : undefined}
+                            aria-describedby={
+                                nameError ? 'contact-name-error' : undefined
+                            }
+                            onChange={(event) => {
                                 setFormData({
                                     ...formData,
-                                    importance: parseInt(e.target.value, 10),
-                                })
-                            }
-                            style={sliderStyle}
-                            className="priority-slider h-2 w-full cursor-pointer"
+                                    name: event.target.value,
+                                });
+                                if (nameError) setNameError('');
+                            }}
                         />
+                        {nameError && (
+                            <p className="error-text" id="contact-name-error">
+                                {nameError}
+                            </p>
+                        )}
                     </div>
-                </div>
-            </div>
 
-            {/* Emails */}
-            <div>
-                <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                        E-Mail Adressen
-                    </label>
-                    <button
-                        type="button"
-                        onClick={() => addArrayItem('emails', '')}
-                        className="text-sm text-primary hover:text-primary-dark flex items-center"
-                    >
-                        <Plus size={16} className="mr-1" /> Hinzufügen
-                    </button>
-                </div>
-                <div className="space-y-2">
-                    {formData.emails.map((email, index) => (
-                        <div key={index} className="flex gap-2">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) =>
-                                    updateArrayItem(
-                                        'emails',
-                                        index,
-                                        e.target.value
-                                    )
-                                }
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="E-Mail Adresse"
-                            />
+                    <div className="field">
+                        <label htmlFor="contact-priority">Priorität</label>
+                        <div className={styles.priority}>
+                            <div className={styles.priorityHead}>
+                                <span
+                                    className={styles.priorityValue}
+                                    id="contact-priority-value"
+                                >
+                                    <strong>Priorität {formData.importance + 1}</strong> ·{' '}
+                                    {selectedPriority.label}
+                                </span>
+                                <span className={styles.sub}>
+                                    {selectedPriority.example}
+                                </span>
+                            </div>
+                            <div className={styles.slice}>
+                                <input
+                                    className="priority-slider"
+                                    id="contact-priority"
+                                    type="range"
+                                    min={CONTACT_PRIORITY_MIN}
+                                    max={CONTACT_PRIORITY_MAX}
+                                    step={1}
+                                    value={formData.importance}
+                                    aria-describedby="contact-priority-value"
+                                    aria-valuetext={`Priorität ${formData.importance + 1} von ${CONTACT_PRIORITY_MAX + 1}, ${selectedPriority.label}`}
+                                    onChange={(event) =>
+                                        setFormData({
+                                            ...formData,
+                                            importance: parseInt(
+                                                event.target.value,
+                                                10,
+                                            ),
+                                        })
+                                    }
+                                />
+                                <div className={styles.ticks} aria-hidden="true">
+                                    {CONTACT_PRIORITY_STOPS.map((stop) => (
+                                        <span key={stop.value}>
+                                            {stop.value}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <p className="hint">
+                            0 ist der Standardkontakt, 7 die Spitze der
+                            Ortsverwaltung.
+                        </p>
+                    </div>
+
+                    <section className={styles.group} aria-labelledby="contact-emails">
+                        <div className={styles.groupHead}>
+                            <h3 className={styles.groupTitle} id="contact-emails">
+                                E-Mail-Adressen
+                            </h3>
                             <button
                                 type="button"
-                                onClick={() => removeArrayItem('emails', index)}
-                                className="text-red-500 hover:text-red-700 p-2"
+                                className="btn btn--sm btn--quiet"
+                                onClick={() => addArrayItem('emails', '')}
                             >
-                                <Trash size={18} />
+                                Hinzufügen
                             </button>
                         </div>
-                    ))}
-                    {formData.emails.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                            Keine E-Mails
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            {/* Phones */}
-            <div>
-                <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Telefonnummern
-                    </label>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            addArrayItem('phones', { type: 'Mobil', value: '' })
-                        }
-                        className="text-sm text-primary hover:text-primary-dark flex items-center"
-                    >
-                        <Plus size={16} className="mr-1" /> Hinzufügen
-                    </button>
-                </div>
-                <div className="space-y-2">
-                    {formData.phones.map((phone, index) => (
-                        <div key={index} className="flex gap-2">
-                            <select
-                                value={phone.type}
-                                onChange={(e) =>
-                                    updateArrayItem('phones', index, {
-                                        ...phone,
-                                        type: e.target.value,
-                                    })
-                                }
-                                className="block w-1/3 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                            >
-                                <option value="Mobil">Mobil</option>
-                                <option value="Privat">Privat</option>
-                                <option value="Geschäftlich">
-                                    Geschäftlich
-                                </option>
-                                <option value="Fax">Fax</option>
-                                <option value="Sonstiges">Sonstiges</option>
-                            </select>
-                            <input
-                                type="text"
-                                value={phone.value}
-                                onChange={(e) =>
-                                    updateArrayItem('phones', index, {
-                                        ...phone,
-                                        value: e.target.value,
-                                    })
-                                }
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="Nummer"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => removeArrayItem('phones', index)}
-                                className="text-red-500 hover:text-red-700 p-2"
-                            >
-                                <Trash size={18} />
-                            </button>
+                        <div className={styles.rows}>
+                            {formData.emails.length === 0 && (
+                                <p className={styles.emptyRow}>
+                                    Keine E-Mail-Adresse eingetragen.
+                                </p>
+                            )}
+                            {formData.emails.map((email, index) => (
+                                <div className={styles.row} key={index}>
+                                    <div className="field">
+                                        <label htmlFor={`contact-email-${index}`}>
+                                            E-Mail {index + 1}
+                                        </label>
+                                        <input
+                                            className="input"
+                                            id={`contact-email-${index}`}
+                                            type="email"
+                                            autoComplete="email"
+                                            value={email}
+                                            placeholder="name@beispiel.de"
+                                            onChange={(event) =>
+                                                updateArrayItem(
+                                                    'emails',
+                                                    index,
+                                                    event.target.value,
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--danger"
+                                        onClick={() =>
+                                            removeArrayItem('emails', index)
+                                        }
+                                        aria-label={`E-Mail ${index + 1} entfernen`}
+                                    >
+                                        Entfernen
+                                    </button>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                    {formData.phones.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                            Keine Telefonnummern
-                        </p>
-                    )}
-                </div>
-            </div>
+                    </section>
 
-            {/* Addresses */}
-            <div>
-                <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Adressen
-                    </label>
-                    <button
-                        type="button"
-                        onClick={() => addArrayItem('addresses', '')}
-                        className="text-sm text-primary hover:text-primary-dark flex items-center"
-                    >
-                        <Plus size={16} className="mr-1" /> Hinzufügen
-                    </button>
-                </div>
-                <div className="space-y-2">
-                    {formData.addresses.map((address, index) => (
-                        <div key={index} className="flex gap-2">
-                            <input
-                                type="text"
-                                value={address}
-                                onChange={(e) =>
-                                    updateArrayItem(
-                                        'addresses',
-                                        index,
-                                        e.target.value
-                                    )
-                                }
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="Adresse"
-                            />
+                    <section className={styles.group} aria-labelledby="contact-phones">
+                        <div className={styles.groupHead}>
+                            <h3 className={styles.groupTitle} id="contact-phones">
+                                Telefonnummern
+                            </h3>
                             <button
                                 type="button"
+                                className="btn btn--sm btn--quiet"
                                 onClick={() =>
-                                    removeArrayItem('addresses', index)
+                                    addArrayItem('phones', {
+                                        type: 'Mobil',
+                                        value: '',
+                                    })
                                 }
-                                className="text-red-500 hover:text-red-700 p-2"
                             >
-                                <Trash size={18} />
+                                Hinzufügen
                             </button>
                         </div>
-                    ))}
-                    {formData.addresses.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                            Keine Adressen
-                        </p>
-                    )}
-                </div>
-            </div>
+                        <div className={styles.rows}>
+                            {formData.phones.length === 0 && (
+                                <p className={styles.emptyRow}>
+                                    Keine Telefonnummer eingetragen.
+                                </p>
+                            )}
+                            {formData.phones.map((phone, index) => (
+                                <div
+                                    className={`${styles.row} ${styles.rowPhones}`}
+                                    key={index}
+                                >
+                                    <div className="field">
+                                        <label
+                                            htmlFor={`contact-phone-type-${index}`}
+                                        >
+                                            Typ {index + 1}
+                                        </label>
+                                        <select
+                                            className="select"
+                                            id={`contact-phone-type-${index}`}
+                                            value={phone.type}
+                                            onChange={(event) =>
+                                                updateArrayItem(
+                                                    'phones',
+                                                    index,
+                                                    {
+                                                        ...phone,
+                                                        type: event.target.value,
+                                                    },
+                                                )
+                                            }
+                                        >
+                                            {phone.type &&
+                                                !PHONE_TYPES.includes(
+                                                    phone.type,
+                                                ) && (
+                                                    <option value={phone.type}>
+                                                        {phoneTypeLabel(
+                                                            phone.type,
+                                                        )}
+                                                    </option>
+                                                )}
+                                            {PHONE_TYPES.map((type) => (
+                                                <option key={type} value={type}>
+                                                    {type}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="field">
+                                        <label
+                                            htmlFor={`contact-phone-value-${index}`}
+                                        >
+                                            Nummer {index + 1}
+                                        </label>
+                                        <input
+                                            className="input"
+                                            id={`contact-phone-value-${index}`}
+                                            type="tel"
+                                            autoComplete="tel"
+                                            value={phone.value}
+                                            placeholder="05331 000000"
+                                            onChange={(event) =>
+                                                updateArrayItem(
+                                                    'phones',
+                                                    index,
+                                                    {
+                                                        ...phone,
+                                                        value: event.target
+                                                            .value,
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--danger"
+                                        onClick={() =>
+                                            removeArrayItem('phones', index)
+                                        }
+                                        aria-label={`Telefonnummer ${index + 1} entfernen`}
+                                    >
+                                        Entfernen
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-            {/* Affiliations */}
-            <div>
-                <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Zugehörigkeiten (Verein/Funktion)
-                    </label>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            addArrayItem('affiliations', { org: '', role: '' })
-                        }
-                        className="text-sm text-primary hover:text-primary-dark flex items-center"
-                    >
-                        <Plus size={16} className="mr-1" /> Hinzufügen
-                    </button>
-                </div>
-                <div className="space-y-2">
-                    {formData.affiliations.map((aff, index) => (
-                        <div key={index} className="flex gap-2">
-                            <select
-                                value={aff.org}
-                                onChange={(e) =>
-                                    updateArrayItem('affiliations', index, {
-                                        ...aff,
-                                        org: e.target.value,
-                                    })
-                                }
-                                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
+                    <section className={styles.group} aria-labelledby="contact-addresses">
+                        <div className={styles.groupHead}>
+                            <h3
+                                className={styles.groupTitle}
+                                id="contact-addresses"
                             >
-                                <option value="">
-                                    - Organisation wählen -
-                                </option>
-                                {organizations.map((org) => (
-                                    <option key={org.id} value={org.title}>
-                                        {org.title}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                type="text"
-                                value={aff.role}
-                                onChange={(e) =>
-                                    updateArrayItem('affiliations', index, {
-                                        ...aff,
-                                        role: e.target.value,
-                                    })
-                                }
-                                className="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="Rolle / Funktion"
-                            />
+                                Adressen
+                            </h3>
                             <button
                                 type="button"
-                                onClick={() =>
-                                    removeArrayItem('affiliations', index)
-                                }
-                                className="text-red-500 hover:text-red-700 p-2"
+                                className="btn btn--sm btn--quiet"
+                                onClick={() => addArrayItem('addresses', '')}
                             >
-                                <Trash size={18} />
+                                Hinzufügen
                             </button>
                         </div>
-                    ))}
-                    {formData.affiliations.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">
-                            Keine Zugehörigkeiten
-                        </p>
-                    )}
+                        <div className={styles.rows}>
+                            {formData.addresses.length === 0 && (
+                                <p className={styles.emptyRow}>
+                                    Keine Adresse eingetragen.
+                                </p>
+                            )}
+                            {formData.addresses.map((address, index) => (
+                                <div className={styles.row} key={index}>
+                                    <div className="field">
+                                        <label
+                                            htmlFor={`contact-address-${index}`}
+                                        >
+                                            Adresse {index + 1}
+                                        </label>
+                                        <input
+                                            className="input"
+                                            id={`contact-address-${index}`}
+                                            type="text"
+                                            autoComplete="street-address"
+                                            value={address}
+                                            placeholder="Straße, Hausnummer, Ort"
+                                            onChange={(event) =>
+                                                updateArrayItem(
+                                                    'addresses',
+                                                    index,
+                                                    event.target.value,
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--danger"
+                                        onClick={() =>
+                                            removeArrayItem('addresses', index)
+                                        }
+                                        aria-label={`Adresse ${index + 1} entfernen`}
+                                    >
+                                        Entfernen
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section
+                        className={styles.group}
+                        aria-labelledby="contact-affiliations"
+                    >
+                        <div className={styles.groupHead}>
+                            <h3
+                                className={styles.groupTitle}
+                                id="contact-affiliations"
+                            >
+                                Zugehörigkeiten (Verein und Funktion)
+                            </h3>
+                            <button
+                                type="button"
+                                className="btn btn--sm btn--quiet"
+                                onClick={() =>
+                                    addArrayItem('affiliations', {
+                                        org: '',
+                                        role: '',
+                                    })
+                                }
+                            >
+                                Hinzufügen
+                            </button>
+                        </div>
+                        {orgsError && (
+                            <div className="notice notice--warn">
+                                <strong>Organisationen nicht geladen</strong>
+                                <span>
+                                    Die Auswahl der Vereine ist nicht verfügbar.
+                                    Der Kontakt kann trotzdem gespeichert
+                                    werden.
+                                </span>
+                            </div>
+                        )}
+                        <div className={styles.rows}>
+                            {formData.affiliations.length === 0 && (
+                                <p className={styles.emptyRow}>
+                                    Keine Zugehörigkeit eingetragen.
+                                </p>
+                            )}
+                            {formData.affiliations.map((aff, index) => (
+                                <div
+                                    className={`${styles.row} ${styles.rowAff}`}
+                                    key={index}
+                                >
+                                    <div className="field">
+                                        <label
+                                            htmlFor={`contact-aff-org-${index}`}
+                                        >
+                                            Organisation {index + 1}
+                                        </label>
+                                        <select
+                                            className="select"
+                                            id={`contact-aff-org-${index}`}
+                                            value={aff.org}
+                                            onChange={(event) =>
+                                                updateArrayItem(
+                                                    'affiliations',
+                                                    index,
+                                                    {
+                                                        ...aff,
+                                                        org: event.target.value,
+                                                    },
+                                                )
+                                            }
+                                        >
+                                            <option value="">
+                                                Organisation wählen
+                                            </option>
+                                            {aff.org &&
+                                                !organizations.some(
+                                                    (org) =>
+                                                        org.title === aff.org,
+                                                ) && (
+                                                    <option value={aff.org}>
+                                                        {aff.org}
+                                                    </option>
+                                                )}
+                                            {organizations.map((org) => (
+                                                <option
+                                                    key={org.id}
+                                                    value={org.title}
+                                                >
+                                                    {org.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="field">
+                                        <label
+                                            htmlFor={`contact-aff-role-${index}`}
+                                        >
+                                            Funktion {index + 1}
+                                        </label>
+                                        <input
+                                            className="input"
+                                            id={`contact-aff-role-${index}`}
+                                            type="text"
+                                            value={aff.role}
+                                            placeholder="z. B. 1. Vorsitzende"
+                                            onChange={(event) =>
+                                                updateArrayItem(
+                                                    'affiliations',
+                                                    index,
+                                                    {
+                                                        ...aff,
+                                                        role: event.target.value,
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--danger"
+                                        onClick={() =>
+                                            removeArrayItem(
+                                                'affiliations',
+                                                index,
+                                            )
+                                        }
+                                        aria-label={`Zugehörigkeit ${index + 1} entfernen`}
+                                    >
+                                        Entfernen
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
                 </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <div className={styles.formFoot}>
                 <button
                     type="button"
+                    className="btn btn--quiet"
                     onClick={onCancel}
-                    className="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                     Abbrechen
                 </button>
                 <button
                     type="submit"
+                    className="btn btn--primary"
                     disabled={isSubmitting}
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
                 >
-                    {isSubmitting ? (
-                        <LoadingSpinner size="sm" className="mr-2" />
-                    ) : (
-                        <FloppyDisk size={16} className="mr-2" />
-                    )}
-                    Speichern
+                    {isSubmitting ? 'Speichern …' : 'Speichern'}
                 </button>
             </div>
         </form>

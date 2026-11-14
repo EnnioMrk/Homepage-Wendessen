@@ -3,6 +3,7 @@ import { requirePermission } from '@/lib/permissions';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 export async function GET() {
     try {
@@ -12,6 +13,8 @@ export async function GET() {
         `;
         return NextResponse.json(items);
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error fetching archive items:', error);
         return NextResponse.json(
             { error: 'Failed to fetch archive items' },

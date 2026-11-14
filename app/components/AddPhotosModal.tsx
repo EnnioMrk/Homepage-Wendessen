@@ -1,7 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import {
+    useRef,
+    useState,
+    type ChangeEvent,
+    type DragEvent,
+    type FormEvent,
+} from 'react';
+import Image from 'next/image';
+import { createPortal } from 'react-dom';
 import * as exifr from 'exifr';
+import { useDialog } from '@/app/impressionen/dialog';
+import styles from '@/app/impressionen/impressionen.module.css';
+import { formatFileSize } from '@/app/impressionen/format';
+
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 interface PhotoData {
     file: File;
@@ -26,6 +39,15 @@ interface AddPhotosModalProps {
     onSuccess: () => void;
 }
 
+function readPreview(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
+}
+
 export default function AddPhotosModal({
     group,
     onClose,
@@ -35,19 +57,37 @@ export default function AddPhotosModal({
     const [submitterName, setSubmitterName] = useState('');
     const [submitterEmail, setSubmitterEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [progress, setProgress] = useState<{ done: number; total: number } | null>(
+        null,
+    );
     const [error, setError] = useState('');
+    const [dragging, setDragging] = useState(false);
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files) return;
+    const panelRef = useRef<HTMLDivElement>(null);
+    useDialog(panelRef, onClose);
 
-        const newPhotos: PhotoData[] = [];
+    async function addFiles(files: File[]) {
+        if (files.length === 0) return;
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const preview = URL.createObjectURL(file);
+        for (const file of files) {
+            if (!file.type.startsWith('image/')) {
+                setError(
+                    `Die Datei "${file.name}" ist kein Bild. Erlaubt sind JPG, PNG und WebP.`,
+                );
+                return;
+            }
+            if (file.size > MAX_FILE_BYTES) {
+                setError(
+                    `Die Datei "${file.name}" ist zu groß. Höchstens 10 MB pro Foto.`,
+                );
+                return;
+            }
+        }
 
-            // Extract EXIF metadata
+        setError('');
+        const next: PhotoData[] = [];
+
+        for (const file of files) {
             let dateTaken: string | undefined;
             let location: string | undefined;
 
@@ -63,78 +103,69 @@ export default function AddPhotosModal({
                 });
 
                 if (exif) {
-                    // Try to get date in order of preference
                     const exifDate =
-                        exif.DateTimeOriginal ||
-                        exif.CreateDate ||
-                        exif.DateTime;
+                        exif.DateTimeOriginal ?? exif.CreateDate ?? exif.DateTime;
                     if (exifDate) {
                         dateTaken = new Date(exifDate).toISOString();
                     }
-
-                    // Get GPS coordinates if available
                     if (exif.GPSLatitude && exif.GPSLongitude) {
-                        location = `${exif.GPSLatitude.toFixed(
-                            6
-                        )}, ${exif.GPSLongitude.toFixed(6)}`;
+                        location = `${exif.GPSLatitude.toFixed(6)}, ${exif.GPSLongitude.toFixed(6)}`;
                     }
                 }
-            } catch (error) {
-                console.error('Error extracting EXIF data:', error);
+            } catch {
+                // A photo without EXIF is still a photo.
             }
 
-            newPhotos.push({
-                file,
-                preview,
-                description: '',
-                dateTaken,
-                location,
-            });
+            const preview = await readPreview(file);
+            next.push({ file, preview, description: '', dateTaken, location });
         }
 
-        setPhotos([...photos, ...newPhotos]);
+        setPhotos((current) => [...current, ...next]);
+    }
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files ?? []);
+        event.target.value = '';
+        await addFiles(files);
+    };
+
+    const handleDrop = async (event: DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        setDragging(false);
+        await addFiles(Array.from(event.dataTransfer.files ?? []));
     };
 
     const removePhoto = (index: number) => {
-        const newPhotos = [...photos];
-        URL.revokeObjectURL(newPhotos[index].preview);
-        newPhotos.splice(index, 1);
-        setPhotos(newPhotos);
+        setPhotos((current) => current.filter((_, i) => i !== index));
     };
 
     const updatePhotoDescription = (index: number, description: string) => {
-        const newPhotos = [...photos];
-        newPhotos[index].description = description;
-        setPhotos(newPhotos);
+        setPhotos((current) =>
+            current.map((photo, i) =>
+                i === index ? { ...photo, description } : photo,
+            ),
+        );
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setError('');
 
         if (photos.length === 0) {
-            setError('Bitte fügen Sie mindestens ein Foto hinzu');
+            setError('Bitte fügen Sie mindestens ein Foto hinzu.');
             return;
         }
 
-        if (!submitterName) {
-            setError('Bitte geben Sie Ihren Namen ein');
+        if (!submitterName.trim()) {
+            setError('Bitte geben Sie Ihren Namen ein.');
             return;
         }
 
         setIsSubmitting(true);
 
         try {
-            // Submit each photo to the existing group
-            for (const photo of photos) {
-                const reader = new FileReader();
-                const imageData = await new Promise<string>(
-                    (resolve, reject) => {
-                        reader.onload = () => resolve(reader.result as string);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(photo.file);
-                    }
-                );
+            for (const [index, photo] of photos.entries()) {
+                setProgress({ done: index, total: photos.length });
 
                 const response = await fetch('/api/shared-gallery/submit', {
                     method: 'POST',
@@ -145,7 +176,7 @@ export default function AddPhotosModal({
                         description: photo.description || '',
                         submitterName,
                         submitterEmail,
-                        imageData,
+                        imageData: photo.preview,
                         imageMimeType: photo.file.type,
                         imageFilename: photo.file.name,
                         dateTaken: photo.dateTaken,
@@ -158,247 +189,222 @@ export default function AddPhotosModal({
                 }
             }
 
+            setProgress(null);
             onSuccess();
-        } catch (error) {
-            console.error('Error submitting photos:', error);
+        } catch (uploadError) {
+            console.error('Error submitting photos:', uploadError);
+            setProgress(null);
             setError(
-                'Fehler beim Hochladen der Fotos. Bitte versuchen Sie es erneut.'
+                'Fehler beim Hochladen der Fotos. Bitte versuchen Sie es erneut.',
             );
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 pt-20">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+    return createPortal(
+        <div className={styles.dialog}>
+            <div
+                ref={panelRef}
+                className={`${styles.dialogPanel} ${styles.dialogWide}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-photos-title"
+            >
+                <div className={styles.dialogHead}>
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            Fotos hinzufügen
-                        </h2>
-                        <p className="text-sm text-gray-600 mt-1">
-                            Zu:{' '}
-                            <span className="font-semibold">{group.title}</span>
+                        <h2 id="add-photos-title">Fotos ergänzen</h2>
+                        <p className={styles.dialogSub}>
+                            Sammlung: {group.title} · {group.totalCount} Fotos
                         </p>
                     </div>
                     <button
+                        type="button"
+                        className="btn btn--sm"
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        aria-label="Schließen"
+                        data-autofocus
                     >
-                        <svg
-                            className="w-6 h-6 text-gray-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
+                        Schließen
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {/* Name Input */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Ihr Name *
-                        </label>
-                        <input
-                            type="text"
-                            value={submitterName}
-                            onChange={(e) => setSubmitterName(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                            placeholder="Max Mustermann"
-                            required
-                        />
-                    </div>
+                <form className="form-grid" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="notice notice--error" role="alert">
+                            <strong>Nicht hochgeladen</strong>
+                            <span>{error}</span>
+                        </div>
+                    )}
 
-                    {/* Email Input */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Ihre E-Mail-Adresse
-                        </label>
-                        <input
-                            type="email"
-                            value={submitterEmail}
-                            onChange={(e) => setSubmitterEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                            placeholder="ihre.email@beispiel.de"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                            Zur Verifizierung und für Rückfragen
-                        </p>
-                    </div>
+                    {progress && (
+                        <div className="notice" role="status" aria-live="polite">
+                            <strong>Wird hochgeladen</strong>
+                            <span>
+                                Foto {progress.done + 1} von {progress.total}
+                            </span>
+                        </div>
+                    )}
 
-                    {/* File Upload */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Fotos auswählen *
-                        </label>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+                    <div className="form-row">
+                        <div className="field">
+                            <label htmlFor="add-name">Ihr Name *</label>
                             <input
+                                className="input"
+                                id="add-name"
+                                type="text"
+                                value={submitterName}
+                                onChange={(event) =>
+                                    setSubmitterName(event.target.value)
+                                }
+                                maxLength={255}
+                                autoComplete="name"
+                                required
+                            />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="add-email">
+                                E-Mail-Adresse (optional)
+                            </label>
+                            <input
+                                className="input"
+                                id="add-email"
+                                type="email"
+                                value={submitterEmail}
+                                onChange={(event) =>
+                                    setSubmitterEmail(event.target.value)
+                                }
+                                maxLength={255}
+                                autoComplete="email"
+                            />
+                            <span className="hint">
+                                Wird nicht öffentlich angezeigt, nur für
+                                Rückfragen.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span className="field-label">Fotos auswählen *</span>
+                        <label
+                            className={`dropzone ${styles.dz}`}
+                            htmlFor="add-photos"
+                            data-active={dragging}
+                            onDragOver={(event) => {
+                                event.preventDefault();
+                                setDragging(true);
+                            }}
+                            onDragLeave={() => setDragging(false)}
+                            onDrop={handleDrop}
+                        >
+                            <span className={styles.dropTitle}>
+                                Fotos hier ablegen
+                            </span>
+                            <span className={styles.dropHint}>
+                                JPG, PNG oder WebP · höchstens 10 MB je Foto ·
+                                mehrere Dateien möglich
+                            </span>
+                            <span className={styles.dropLink}>
+                                Dateien auswählen
+                            </span>
+                            <input
+                                className="visually-hidden"
+                                id="add-photos"
                                 type="file"
                                 accept="image/*"
                                 multiple
                                 onChange={handleFileChange}
-                                className="hidden"
-                                id="photo-upload"
                             />
-                            <label
-                                htmlFor="photo-upload"
-                                className="cursor-pointer"
-                            >
-                                <div className="flex flex-col items-center gap-2">
-                                    <svg
-                                        className="w-12 h-12 text-gray-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                        />
-                                    </svg>
-                                    <span className="text-blue-600 font-medium">
-                                        Fotos auswählen
-                                    </span>
-                                    <span className="text-sm text-gray-500">
-                                        oder hierher ziehen
-                                    </span>
-                                </div>
-                            </label>
-                        </div>
+                        </label>
                     </div>
 
-                    {/* Photo Previews */}
                     {photos.length > 0 && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-900">
-                                Ausgewählte Fotos ({photos.length})
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {photos.map((photo, index) => (
-                                    <div
-                                        key={index}
-                                        className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50"
-                                    >
-                                        <div className="relative aspect-video bg-gray-200">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                src={photo.preview}
-                                                alt={`Preview ${index + 1}`}
-                                                className="w-full h-full object-cover"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    removePhoto(index)
-                                                }
-                                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                        <ul className="file-list">
+                            {photos.map((photo, index) => (
+                                <li
+                                    key={`${photo.file.name}-${index}`}
+                                    className={styles.fileRow}
+                                >
+                                    <span className={styles.fileThumb}>
+                                        <Image
+                                            src={photo.preview}
+                                            alt=""
+                                            width={56}
+                                            height={56}
+                                            unoptimized
+                                        />
+                                    </span>
+                                    <div className={styles.fileBody}>
+                                        <span className={styles.fileName}>
+                                            {photo.file.name}
+                                        </span>
+                                        <span className={styles.fileMeta}>
+                                            {formatFileSize(
+                                                photo.file.size,
+                                            )}
+                                            {photo.location
+                                                ? ` · GPS ${photo.location}`
+                                                : ''}
+                                        </span>
+                                        <div className="field">
+                                            <label
+                                                htmlFor={`add-desc-${index}`}
                                             >
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        <div className="p-3 space-y-2">
-                                            <div className="text-xs text-gray-600">
-                                                <p className="font-medium truncate">
-                                                    {photo.file.name} (
-                                                    {(
-                                                        photo.file.size /
-                                                        (1024 * 1024)
-                                                    ).toFixed(2)}{' '}
-                                                    MB)
-                                                </p>
-                                                {photo.dateTaken && (
-                                                    <p className="text-gray-500">
-                                                        📅{' '}
-                                                        {new Date(
-                                                            photo.dateTaken
-                                                        ).toLocaleDateString(
-                                                            'de-DE',
-                                                            {
-                                                                day: '2-digit',
-                                                                month: '2-digit',
-                                                                year: 'numeric',
-                                                            }
-                                                        )}
-                                                    </p>
-                                                )}
-                                                {photo.location && (
-                                                    <p className="text-gray-500">
-                                                        📍 {photo.location}
-                                                    </p>
-                                                )}
-                                            </div>
+                                                Beschreibung (optional)
+                                            </label>
                                             <textarea
+                                                className={`textarea ${styles.desc}`}
+                                                id={`add-desc-${index}`}
+                                                rows={2}
                                                 value={photo.description}
-                                                onChange={(e) =>
+                                                onChange={(event) =>
                                                     updatePhotoDescription(
                                                         index,
-                                                        e.target.value
+                                                        event.target.value,
                                                     )
                                                 }
-                                                placeholder="Beschreibung (optional)"
-                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                                                rows={2}
                                             />
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                    <button
+                                        type="button"
+                                        className={`btn btn--quiet btn--sm ${styles.fileRemove}`}
+                                        onClick={() => removePhoto(index)}
+                                    >
+                                        Entfernen
+                                        <span className="visually-hidden">
+                                            {' '}
+                                            {photo.file.name}
+                                        </span>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
                     )}
 
-                    {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                            {error}
-                        </div>
-                    )}
-
-                    {/* Submit Buttons */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <div className="form-actions">
+                        <button
+                            type="submit"
+                            className="btn btn--primary"
+                            disabled={isSubmitting || photos.length === 0}
+                            aria-busy={isSubmitting}
+                        >
+                            {isSubmitting
+                                ? 'Wird hochgeladen …'
+                                : `${photos.length} ${photos.length === 1 ? 'Foto' : 'Fotos'} hinzufügen`}
+                        </button>
                         <button
                             type="button"
+                            className="btn"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                             disabled={isSubmitting}
                         >
                             Abbrechen
                         </button>
-                        <button
-                            type="submit"
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={isSubmitting || photos.length === 0}
-                        >
-                            {isSubmitting
-                                ? 'Wird hochgeladen...'
-                                : `${photos.length} Foto${
-                                      photos.length !== 1 ? 's' : ''
-                                  } hinzufügen`}
-                        </button>
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }

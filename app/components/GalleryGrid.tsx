@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import { isMinioUrl } from '@/lib/utils/blob-utils-client';
+import { dateLong, dateShort, plural } from '@/app/lib/register-format';
 import ImageLightbox from './ImageLightbox';
 import AddPhotosModal from './AddPhotosModal';
-import Modal from '@/app/components/ui/Modal';
-import { isMinioUrl } from '@/lib/utils/blob-utils-client';
+import { useDialog } from '@/app/impressionen/dialog';
+import styles from '@/app/impressionen/impressionen.module.css';
 
-interface GalleryImage {
+export interface GalleryImage {
     id: string;
     imageUrl: string;
     description?: string;
@@ -15,7 +17,7 @@ interface GalleryImage {
     location?: string;
 }
 
-interface GalleryGroup {
+export interface GalleryGroup {
     submissionGroupId: string;
     title: string;
     description?: string;
@@ -29,258 +31,207 @@ interface GalleryGridProps {
     groups: GalleryGroup[];
 }
 
-export default function GalleryGrid({ groups }: GalleryGridProps) {
-    const [selectedImage, setSelectedImage] = useState<{
-        submissionId: string;
-        imageUrl: string;
-        title: string;
-        description?: string;
-        submitterName?: string;
-        submittedAt: Date;
-        dateTaken?: Date;
-        location?: string;
-        filename?: string;
-    } | null>(null);
-    const [addPhotosGroup, setAddPhotosGroup] = useState<GalleryGroup | null>(
-        null
+function AuthorsDialog({
+    group,
+    onClose,
+}: {
+    group: GalleryGroup;
+    onClose: () => void;
+}) {
+    const panelRef = useRef<HTMLDivElement>(null);
+    useDialog(panelRef, onClose);
+
+    return (
+        <div className={styles.dialog}>
+            <div
+                ref={panelRef}
+                className={styles.dialogPanel}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="authors-title"
+            >
+                <div className={styles.dialogHead}>
+                    <div>
+                        <h2 id="authors-title">Eingereicht von</h2>
+                        <p className={styles.dialogSub}>{group.title}</p>
+                    </div>
+                    <button
+                        type="button"
+                        className="btn btn--sm"
+                        onClick={onClose}
+                        aria-label="Schließen"
+                        data-autofocus
+                    >
+                        Schließen
+                    </button>
+                </div>
+                <ul className={styles.nameList}>
+                    {group.submitterNames.filter(Boolean).map((name) => (
+                        <li key={name}>{name}</li>
+                    ))}
+                </ul>
+            </div>
+        </div>
     );
-    const [showAuthorsPopup, setShowAuthorsPopup] = useState<string | null>(
-        null
+}
+
+export default function GalleryGrid({ groups }: GalleryGridProps) {
+    const [viewer, setViewer] = useState<{ groupId: string; index: number } | null>(
+        null,
+    );
+    const [addPhotosGroup, setAddPhotosGroup] =
+        useState<GalleryGroup | null>(null);
+    const [authorsGroupId, setAuthorsGroupId] = useState<string | null>(null);
+
+    const authorsGroup = useMemo(
+        () => groups.find((group) => group.submissionGroupId === authorsGroupId),
+        [authorsGroupId, groups],
     );
 
-    const gradients = [
-        'from-purple-500 via-pink-500 to-red-500',
-        'from-blue-500 via-cyan-500 to-teal-500',
-        'from-orange-500 via-amber-500 to-yellow-500',
-        'from-green-500 via-emerald-500 to-lime-500',
-        'from-indigo-500 via-purple-500 to-pink-500',
-        'from-rose-500 via-pink-500 to-fuchsia-500',
-    ];
+    const viewerGroup = viewer
+        ? groups.find((group) => group.submissionGroupId === viewer.groupId)
+        : undefined;
 
     return (
         <>
-            <div className="max-w-7xl mx-auto space-y-16">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-                    Unsere Galerie
-                </h2>
-                {groups.map((group, index) => {
-                    const gradient = gradients[index % gradients.length];
+            {groups.map((group) => {
+                const names = group.submitterNames.filter(Boolean);
+                const extraNames = names.length > 1 ? names.length - 1 : 0;
+                const groupKey = group.submissionGroupId;
+                const headingId = `gruppe-${groupKey}`;
 
-                    return (
-                        <div key={group.submissionGroupId} className="relative">
-                            {/* Decorative gradient background */}
-                            <div
-                                className={`absolute -inset-4 bg-gradient-to-r ${gradient} rounded-3xl opacity-10 blur-2xl`}
-                            ></div>
-
-                            <div className="relative">
-                                {/* Group Header with gradient accent */}
-                                <div className="mb-6">
-                                    <div className="flex items-center justify-start gap-3 mb-3 flex-wrap">
-                                        <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
-                                            {group.title}
-                                        </h3>
-                                        <button
-                                            onClick={() =>
-                                                setAddPhotosGroup(group)
-                                            }
-                                            className={`px-4 py-1.5 bg-gradient-to-r ${gradient} hover:opacity-90 text-white rounded-full font-medium text-sm transition-opacity flex items-center gap-2`}
-                                        >
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M12 4v16m8-8H4"
-                                                />
-                                            </svg>
-                                            Ergänzen
-                                        </button>
-                                    </div>
-                                    {/* Gallery-level descriptions removed per request */}
-                                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                                        <span className="font-medium">
-                                            {group.totalCount} Foto
-                                            {group.totalCount !== 1 ? 's' : ''}
-                                        </span>
-                                        <span className="text-gray-400">•</span>
-                                        {group.submitterNames.length > 0 && (
-                                            <>
-                                                <span className="flex items-center gap-1.5 font-medium">
-                                                    <svg
-                                                        className="w-4 h-4 text-gray-500"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth={2}
-                                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                                        />
-                                                    </svg>
-                                                    {group.submitterNames[0]}
-                                                    {group.submitterNames
-                                                        .length > 1 && (
-                                                            <>
-                                                                {' und '}
-                                                                <button
-                                                                    onClick={() =>
-                                                                        setShowAuthorsPopup(
-                                                                            group.submissionGroupId
-                                                                        )
-                                                                    }
-                                                                    className="text-blue-600 hover:text-blue-700 underline"
-                                                                >
-                                                                    {group
-                                                                        .submitterNames
-                                                                        .length -
-                                                                        1}{' '}
-                                                                    mehr
-                                                                </button>
-                                                            </>
-                                                        )}
-                                                </span>
-                                                <span className="text-gray-400">
-                                                    •
-                                                </span>
-                                            </>
+                return (
+                    <section
+                        key={groupKey}
+                        className="gallery-group"
+                        aria-labelledby={headingId}
+                    >
+                        <div className="gallery-group-head">
+                            <div>
+                                <h2 id={headingId}>{group.title}</h2>
+                                <p className={`gallery-meta ${styles.metaRow}`}>
+                                    <span className={styles.metaItem}>
+                                        {group.totalCount}{' '}
+                                        {plural(
+                                            group.totalCount,
+                                            'Foto',
+                                            'Fotos',
                                         )}
-                                        <span>
-                                            {new Date(
-                                                group.submittedAt
-                                            ).toLocaleDateString('de-DE', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}
+                                    </span>
+                                    {names.length > 0 && (
+                                        <span className={styles.metaItem}>
+                                            {names[0]}
+                                            {extraNames > 0 && (
+                                                <>
+                                                    {' · '}
+                                                    <button
+                                                        type="button"
+                                                        className={
+                                                            styles.moreNames
+                                                        }
+                                                        onClick={() =>
+                                                            setAuthorsGroupId(
+                                                                groupKey,
+                                                            )
+                                                        }
+                                                    >
+                                                        +{extraNames} mehr
+                                                    </button>
+                                                </>
+                                            )}
                                         </span>
-                                    </div>
-                                </div>
+                                    )}
+                                    <span className={styles.metaItem}>
+                                        {dateLong(new Date(group.submittedAt))}
+                                    </span>
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                className="btn btn--sm"
+                                onClick={() => setAddPhotosGroup(group)}
+                            >
+                                Ergänzen
+                            </button>
+                        </div>
 
-                                {/* Group Images with staggered layout */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 md:gap-2">
-                                    {group.images.map((photo, photoIndex) => (
-                                        <div
-                                            key={photo.id}
-                                            className="group relative cursor-pointer mb-4"
-                                            style={{
-                                                animationDelay: `${photoIndex * 100
-                                                    }ms`,
-                                            }}
+                        <ul className={styles.plates}>
+                            {group.images.map((photo, index) => {
+                                const description = photo.description?.trim();
+                                return (
+                                    <li key={photo.id}>
+                                        <button
+                                            type="button"
+                                            className={styles.plate}
                                             onClick={() =>
-                                                setSelectedImage({
-                                                    submissionId: photo.id,
-                                                    imageUrl: photo.imageUrl,
-                                                    title: group.title,
-                                                    description:
-                                                        photo.description,
-                                                    submitterName:
-                                                        group.submitterNames[0],
-                                                    submittedAt:
-                                                        group.submittedAt,
-                                                    dateTaken: photo.dateTaken,
-                                                    location: photo.location,
+                                                setViewer({
+                                                    groupId: groupKey,
+                                                    index,
                                                 })
                                             }
+                                            aria-label={`${
+                                                description || group.title
+                                            } — Foto ${index + 1} von ${
+                                                group.images.length
+                                            } in der Bildansicht öffnen`}
                                         >
-                                            {/* Padded container without border/background; image has asymmetric corner radii */}
-                                            <div className="p-3 rounded-3xl">
-                                                <div className="relative aspect-square overflow-hidden rounded-t-3xl rounded-b-2xl">
-                                                    <Image
-                                                        src={photo.imageUrl}
-                                                        alt={
-                                                            photo.description?.trim() ||
-                                                            group.title
+                                            <span className={styles.plateImage}>
+                                                <Image
+                                                    src={photo.imageUrl}
+                                                    alt=""
+                                                    fill
+                                                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 210px"
+                                                    unoptimized={isMinioUrl(
+                                                        photo.imageUrl,
+                                                    )}
+                                                />
+                                            </span>
+                                            <span
+                                                className={styles.plateCaption}
+                                            >
+                                                <span className={styles.plateDate}>
+                                                    {dateShort(
+                                                        new Date(
+                                                            photo.dateTaken ??
+                                                                group.submittedAt,
+                                                        ),
+                                                    )}
+                                                </span>
+                                                {description && (
+                                                    <span
+                                                        className={
+                                                            styles.plateText
                                                         }
-                                                        fill
-                                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                                                        unoptimized={isMinioUrl(photo.imageUrl)}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Info below the image container */}
-                                            <div className="px-5">
-                                                <div className="w-full flex items-center justify-between text-sm text-gray-700 font-medium">
-                                                    <span className="truncate">
-                                                        {group
-                                                            .submitterNames[0] ||
-                                                            'Anonym'}
+                                                    >
+                                                        {description}
                                                     </span>
-                                                    <span className="text-sm text-gray-500">
-                                                        {photo.dateTaken
-                                                            ? new Date(
-                                                                photo.dateTaken
-                                                            ).toLocaleDateString(
-                                                                'de-DE',
-                                                                {
-                                                                    day: 'numeric',
-                                                                    month: 'short',
-                                                                    year: 'numeric',
-                                                                }
-                                                            )
-                                                            : new Date(
-                                                                group.submittedAt
-                                                            ).toLocaleDateString(
-                                                                'de-DE',
-                                                                {
-                                                                    day: 'numeric',
-                                                                    month: 'short',
-                                                                    year: 'numeric',
-                                                                }
-                                                            )}
-                                                    </span>
-                                                </div>
+                                                )}
+                                            </span>
+                                        </button>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </section>
+                );
+            })}
 
-                                                {photo.description?.trim() ? (
-                                                    <p className="mt-1 text-sm text-gray-700 line-clamp-3 leading-relaxed">
-                                                        {photo.description.trim()}
-                                                    </p>
-                                                ) : null}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Separator line with gradient */}
-                            {index < groups.length - 1 && (
-                                <div className="mt-16">
-                                    <div
-                                        className={`h-1 w-full bg-gradient-to-r ${gradient} opacity-20 rounded-full`}
-                                    ></div>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Lightbox */}
-            {selectedImage && (
+            {viewer && viewerGroup && viewerGroup.images[viewer.index] && (
                 <ImageLightbox
-                    submissionId={selectedImage.submissionId}
-                    imageUrl={selectedImage.imageUrl}
-                    title={selectedImage.title}
-                    description={selectedImage.description}
-                    submitterName={selectedImage.submitterName}
-                    submittedAt={selectedImage.submittedAt}
-                    dateTaken={selectedImage.dateTaken}
-                    location={selectedImage.location}
-                    filename={selectedImage.filename}
-                    onClose={() => setSelectedImage(null)}
+                    images={viewerGroup.images}
+                    index={viewer.index}
+                    title={viewerGroup.title}
+                    submitterName={viewerGroup.submitterNames[0]}
+                    submittedAt={new Date(viewerGroup.submittedAt)}
+                    onIndexChange={(index) =>
+                        setViewer((current) =>
+                            current ? { ...current, index } : current,
+                        )
+                    }
+                    onClose={() => setViewer(null)}
                 />
             )}
 
-            {/* Add Photos Modal */}
             {addPhotosGroup && (
                 <AddPhotosModal
                     group={addPhotosGroup}
@@ -292,56 +243,12 @@ export default function GalleryGrid({ groups }: GalleryGridProps) {
                 />
             )}
 
-            {/* Authors Popup */}
-            <Modal
-                isOpen={!!showAuthorsPopup}
-                onClose={() => setShowAuthorsPopup(null)}
-                maxWidth="md"
-                showCloseButton
-            >
-                {showAuthorsPopup &&
-                    (() => {
-                        const group = groups.find(
-                            (g) => g.submissionGroupId === showAuthorsPopup
-                        );
-                        if (!group) return null;
-
-                        return (
-                            <div className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900">
-                                        Autoren
-                                    </h3>
-                                </div>
-                                <div className="space-y-2">
-                                    {group.submitterNames.map((name, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                                        >
-                                            <svg
-                                                className="w-5 h-5 text-gray-500"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                                />
-                                            </svg>
-                                            <span className="font-medium text-gray-900">
-                                                {name}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })()}
-            </Modal>
+            {authorsGroup && (
+                <AuthorsDialog
+                    group={authorsGroup}
+                    onClose={() => setAuthorsGroupId(null)}
+                />
+            )}
         </>
     );
 }

@@ -1,23 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import {
-    Check,
-    X,
-    Eye,
-    Trash,
-    Clock,
-    CheckCircle,
-    XCircle,
-    EnvelopeIcon,
-    Calendar,
-    ArrowCounterClockwise,
-    WarningCircle,
-} from '@phosphor-icons/react/dist/ssr';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { usePermissions } from '@/lib/usePermissions';
-import PromptDialog from '@/app/components/ui/PromptDialog';
-import Modal from '@/app/components/ui/Modal';
+import { dateLong, dateShort } from '@/app/lib/register-format';
+import styles from './portraits.module.css';
 
 interface PortraitSubmission {
     id: number;
@@ -37,6 +24,85 @@ interface AdminPortraitsProps {
     onSubmissionsUpdate: () => void;
 }
 
+const statusText = (status: string) => {
+    switch (status) {
+        case 'pending':
+            return 'Wartend';
+        case 'approved':
+            return 'Freigegeben';
+        case 'rejected':
+            return 'Abgelehnt';
+        default:
+            return status;
+    }
+};
+
+const statusStamp = (status: string) => {
+    switch (status) {
+        case 'pending':
+            return 'stamp stamp--new';
+        case 'approved':
+            return 'stamp stamp--decided';
+        case 'rejected':
+            return 'stamp stamp--cancelled';
+        default:
+            return 'stamp';
+    }
+};
+
+function useOverlay(open: boolean, onClose: () => void) {
+    const ref = useRef<HTMLDivElement>(null);
+    const closeRef = useRef(onClose);
+
+    useEffect(() => {
+        closeRef.current = onClose;
+    }, [onClose]);
+
+    useEffect(() => {
+        if (!open) return;
+        const element = ref.current;
+        if (!element) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+        const focusable = () =>
+            Array.from(
+                element.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                ),
+            ).filter((node) => node.offsetParent !== null);
+
+        focusable()[0]?.focus();
+
+        const handleKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.stopPropagation();
+                closeRef.current();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const items = focusable();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKey);
+        return () => {
+            document.removeEventListener('keydown', handleKey);
+            previouslyFocused?.focus();
+        };
+    }, [open]);
+
+    return ref;
+}
+
 export default function AdminPortraits({
     submissions,
     onSubmissionsUpdate,
@@ -48,103 +114,67 @@ export default function AdminPortraits({
         'all' | 'pending' | 'approved' | 'rejected'
     >('all');
     const [isActionLoading, setIsActionLoading] = useState<number | null>(null);
-
-    // Dialog states
     const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
-    const [errorDialog, setErrorDialog] = useState<{
-        isOpen: boolean;
-        message: string;
-    }>({ isOpen: false, message: '' });
+    const [error, setError] = useState<string | null>(null);
+    const [flash, setFlash] = useState<string | null>(null);
 
     const canEdit = hasPermission('portraits.edit');
     const canDelete = hasPermission('portraits.delete');
 
-    const getImageUrl = (submission: PortraitSubmission): string => {
-        return submission.imageUrl;
-    };
+    useEffect(() => {
+        if (!flash) return;
+        const timer = window.setTimeout(() => setFlash(null), 4000);
+        return () => window.clearTimeout(timer);
+    }, [flash]);
 
     const filteredSubmissions = submissions.filter((submission) => {
         if (filterStatus === 'all') return true;
         return submission.status === filterStatus;
     });
 
-    const showError = (message: string) => {
-        setErrorDialog({ isOpen: true, message });
-    };
-
-    const handleApprove = async (id: number) => {
+    const runAction = async (
+        id: number,
+        action: 'approve' | 'reject' | 'reset',
+    ) => {
         setIsActionLoading(id);
+        setError(null);
         try {
             const response = await fetch('/api/admin/portraits', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, action: 'approve' }),
+                body: JSON.stringify({ id, action }),
             });
 
             if (response.ok) {
                 onSubmissionsUpdate();
                 setSelectedSubmission(null);
+                setFlash(
+                    action === 'approve'
+                        ? 'Portrait freigegeben.'
+                        : action === 'reject'
+                          ? 'Portrait abgelehnt.'
+                          : 'Portrait auf „Wartend“ zurückgesetzt.',
+                );
             } else {
-                const error = await response.json();
-                showError(
-                    error.message || 'Fehler beim Freigeben der Einreichung',
+                const data = await response.json().catch(() => null);
+                setError(
+                    data?.message ||
+                        (action === 'approve'
+                            ? 'Fehler beim Freigeben der Einreichung'
+                            : action === 'reject'
+                              ? 'Fehler beim Ablehnen der Einreichung'
+                              : 'Fehler beim Zurücksetzen der Einreichung'),
                 );
             }
-        } catch (error) {
-            console.error('Error approving submission:', error);
-            showError('Fehler beim Freigeben der Einreichung');
-        } finally {
-            setIsActionLoading(null);
-        }
-    };
-
-    const handleReject = async (id: number) => {
-        setIsActionLoading(id);
-        try {
-            const response = await fetch('/api/admin/portraits', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, action: 'reject' }),
-            });
-
-            if (response.ok) {
-                onSubmissionsUpdate();
-                setSelectedSubmission(null);
-            } else {
-                const error = await response.json();
-                showError(
-                    error.message || 'Fehler beim Ablehnen der Einreichung',
-                );
-            }
-        } catch (error) {
-            console.error('Error rejecting submission:', error);
-            showError('Fehler beim Ablehnen der Einreichung');
-        } finally {
-            setIsActionLoading(null);
-        }
-    };
-
-    const handleReset = async (id: number) => {
-        setIsActionLoading(id);
-        try {
-            const response = await fetch('/api/admin/portraits', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, action: 'reset' }),
-            });
-
-            if (response.ok) {
-                onSubmissionsUpdate();
-                setSelectedSubmission(null);
-            } else {
-                const error = await response.json();
-                showError(
-                    error.message || 'Fehler beim Zurücksetzen der Einreichung',
-                );
-            }
-        } catch (error) {
-            console.error('Error resetting submission:', error);
-            showError('Fehler beim Zurücksetzen der Einreichung');
+        } catch (actionError) {
+            console.error('Error updating submission:', actionError);
+            setError(
+                action === 'approve'
+                    ? 'Fehler beim Freigeben der Einreichung'
+                    : action === 'reject'
+                      ? 'Fehler beim Ablehnen der Einreichung'
+                      : 'Fehler beim Zurücksetzen der Einreichung',
+            );
         } finally {
             setIsActionLoading(null);
         }
@@ -152,6 +182,7 @@ export default function AdminPortraits({
 
     const handleDelete = async (id: number) => {
         setIsActionLoading(id);
+        setError(null);
         try {
             const response = await fetch('/api/admin/portraits', {
                 method: 'DELETE',
@@ -162,460 +193,460 @@ export default function AdminPortraits({
             if (response.ok) {
                 onSubmissionsUpdate();
                 setSelectedSubmission(null);
+                setFlash('Einreichung gelöscht.');
             } else {
-                const error = await response.json();
-                showError(
-                    error.message || 'Fehler beim Löschen der Einreichung',
+                const data = await response.json().catch(() => null);
+                setError(
+                    data?.message || 'Fehler beim Löschen der Einreichung',
                 );
             }
-        } catch (error) {
-            console.error('Error deleting submission:', error);
-            showError('Fehler beim Löschen der Einreichung');
+        } catch (deleteError) {
+            console.error('Error deleting submission:', deleteError);
+            setError('Fehler beim Löschen der Einreichung');
         } finally {
             setIsActionLoading(null);
             setDeleteConfirmId(null);
         }
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Clock className="w-5 h-5 text-yellow-500" />;
-            case 'approved':
-                return <CheckCircle className="w-5 h-5 text-green-500" />;
-            case 'rejected':
-                return <XCircle className="w-5 h-5 text-red-500" />;
-            default:
-                return <Clock className="w-5 h-5 text-gray-500" />;
-        }
-    };
+    const filterTabs: {
+        key: 'all' | 'pending' | 'approved' | 'rejected';
+        label: string;
+    }[] = [
+        { key: 'all', label: 'Alle' },
+        { key: 'pending', label: 'Wartend' },
+        { key: 'approved', label: 'Freigegeben' },
+        { key: 'rejected', label: 'Abgelehnt' },
+    ];
 
-    const getStatusBadge = (status: string) => {
-        const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full';
-        switch (status) {
-            case 'pending':
-                return `${baseClasses} bg-yellow-100 text-yellow-800`;
-            case 'approved':
-                return `${baseClasses} bg-green-100 text-green-800`;
-            case 'rejected':
-                return `${baseClasses} bg-red-100 text-red-800`;
-            default:
-                return `${baseClasses} bg-gray-100 text-gray-800`;
-        }
-    };
+    const countFor = (key: 'all' | 'pending' | 'approved' | 'rejected') =>
+        key === 'all'
+            ? submissions.length
+            : submissions.filter((submission) => submission.status === key)
+                  .length;
 
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return 'Wartend';
-            case 'approved':
-                return 'Freigegeben';
-            case 'rejected':
-                return 'Abgelehnt';
-            default:
-                return status;
-        }
-    };
+    const detailRef = useOverlay(selectedSubmission !== null, () =>
+        setSelectedSubmission(null),
+    );
+    const deleteRef = useOverlay(deleteConfirmId !== null, () =>
+        setDeleteConfirmId(null),
+    );
 
     return (
-        <div className="py-6">
-            {/* Filter Tabs */}
-            <div className="mb-6">
-                <div className="border-b border-gray-200">
-                    <nav className="-mb-px flex space-x-8">
-                        {[
-                            {
-                                key: 'all',
-                                label: 'Alle',
-                                count: submissions.length,
-                            },
-                            {
-                                key: 'pending',
-                                label: 'Wartend',
-                                count: submissions.filter(
-                                    (s) => s.status === 'pending',
-                                ).length,
-                            },
-                            {
-                                key: 'approved',
-                                label: 'Freigegeben',
-                                count: submissions.filter(
-                                    (s) => s.status === 'approved',
-                                ).length,
-                            },
-                            {
-                                key: 'rejected',
-                                label: 'Abgelehnt',
-                                count: submissions.filter(
-                                    (s) => s.status === 'rejected',
-                                ).length,
-                            },
-                        ].map((tab) => (
-                            <button
-                                key={tab.key}
-                                onClick={() =>
-                                    setFilterStatus(
-                                        tab.key as
-                                            | 'all'
-                                            | 'pending'
-                                            | 'approved'
-                                            | 'rejected',
-                                    )
-                                }
-                                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                                    filterStatus === tab.key
-                                        ? 'border-green-500 text-green-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                            >
-                                {tab.label}
-                                <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2 rounded-full text-xs">
-                                    {tab.count}
-                                </span>
-                            </button>
-                        ))}
-                    </nav>
-                </div>
-            </div>
-
-            {/* Submissions List */}
-            {filteredSubmissions.length === 0 ? (
-                <div className="text-center py-12">
-                    <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Eye className="w-12 h-12 text-gray-400" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        Keine Einreichungen gefunden
-                    </h3>
-                    <p className="text-gray-500">
-                        {filterStatus === 'all'
-                            ? 'Es wurden noch keine Portrait-Einreichungen eingereicht.'
-                            : `Keine Einreichungen mit Status "${getStatusText(
-                                  filterStatus,
-                              )}".`}
-                    </p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredSubmissions.map((submission) => (
-                        <div
-                            key={submission.id}
-                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                            onClick={() => setSelectedSubmission(submission)}
-                        >
-                            {/* Image */}
-                            <div className="relative h-48 bg-gray-100">
-                                <Image
-                                    src={getImageUrl(submission)}
-                                    alt={`Portrait von ${submission.name}`}
-                                    fill
-                                    className="object-cover"
-                                />
-                                <div className="absolute top-3 right-3">
-                                    {getStatusIcon(submission.status)}
-                                </div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="p-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-lg font-semibold text-gray-900">
-                                        {submission.name}
-                                    </h3>
-                                    <span
-                                        className={getStatusBadge(
-                                            submission.status,
-                                        )}
-                                    >
-                                        {getStatusText(submission.status)}
-                                    </span>
-                                </div>
-
-                                <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                                    {submission.description}
-                                </p>
-
-                                <div className="flex items-center text-xs text-gray-500 mb-4">
-                                    <Calendar className="w-3 h-3 mr-1" />
-                                    {new Date(
-                                        submission.submittedAt,
-                                    ).toLocaleDateString('de-DE', {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                    {submission.email && (
-                                        <>
-                                            <EnvelopeIcon className="w-3 h-3 ml-3 mr-1" />
-                                            <span className="truncate">
-                                                {submission.email}
-                                            </span>
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Actions */}
-                                <div
-                                    className="flex space-x-2"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <button
-                                        onClick={() =>
-                                            setSelectedSubmission(submission)
-                                        }
-                                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center"
-                                    >
-                                        <Eye className="w-4 h-4 mr-1" />
-                                        Details
-                                    </button>
-
-                                    {submission.status === 'pending' &&
-                                        canEdit && (
-                                            <>
-                                                <button
-                                                    onClick={() =>
-                                                        handleApprove(
-                                                            submission.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isActionLoading ===
-                                                        submission.id
-                                                    }
-                                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                >
-                                                    <Check className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleReject(
-                                                            submission.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isActionLoading ===
-                                                        submission.id
-                                                    }
-                                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            </>
-                                        )}
-
-                                    {submission.status === 'approved' &&
-                                        canEdit && (
-                                            <>
-                                                <button
-                                                    onClick={() =>
-                                                        handleReset(
-                                                            submission.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isActionLoading ===
-                                                        submission.id
-                                                    }
-                                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                    title="Zurücksetzen auf Wartend"
-                                                >
-                                                    <ArrowCounterClockwise className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleReject(
-                                                            submission.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isActionLoading ===
-                                                        submission.id
-                                                    }
-                                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                    title="Ablehnen"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            </>
-                                        )}
-
-                                    {submission.status === 'rejected' &&
-                                        canEdit && (
-                                            <>
-                                                <button
-                                                    onClick={() =>
-                                                        handleReset(
-                                                            submission.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isActionLoading ===
-                                                        submission.id
-                                                    }
-                                                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                    title="Zurücksetzen auf Wartend"
-                                                >
-                                                    <ArrowCounterClockwise className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleApprove(
-                                                            submission.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isActionLoading ===
-                                                        submission.id
-                                                    }
-                                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                                    title="Freigeben"
-                                                >
-                                                    <Check className="w-4 h-4" />
-                                                </button>
-                                            </>
-                                        )}
-
-                                    {canDelete && (
-                                        <button
-                                            onClick={() =>
-                                                setDeleteConfirmId(
-                                                    submission.id,
-                                                )
-                                            }
-                                            disabled={
-                                                isActionLoading ===
-                                                submission.id
-                                            }
-                                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center justify-center"
-                                        >
-                                            <Trash className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+        <div>
+            {flash && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Gespeichert</strong>
+                    <span>{flash}</span>
                 </div>
             )}
 
-            {/* Detail Modal */}
-            <Modal
-                isOpen={!!selectedSubmission}
-                onClose={() => setSelectedSubmission(null)}
-                className="max-w-3xl w-full"
+            {error && (
+                <div className="notice notice--error" role="alert">
+                    <strong>Nicht abgeschlossen</strong>
+                    <span>{error}</span>
+                    <div style={{ marginTop: 'var(--s2)' }}>
+                        <button
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => setError(null)}
+                        >
+                            Hinweis schließen
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <div className="tabs" role="tablist" aria-label="Status filtern">
+                {filterTabs.map((tab) => (
+                    <button
+                        key={tab.key}
+                        type="button"
+                        role="tab"
+                        aria-selected={filterStatus === tab.key}
+                        aria-controls="portrait-list"
+                        onClick={() => setFilterStatus(tab.key)}
+                    >
+                        {tab.label} ({countFor(tab.key)})
+                    </button>
+                ))}
+            </div>
+
+            <div
+                id="portrait-list"
+                role="tabpanel"
+                style={{ marginTop: 'var(--s4)' }}
             >
-                {selectedSubmission && (
-                    <>
-                        <div className="bg-white px-6 pt-6 pb-4">
-                            {/* Header */}
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-1">
-                                        {selectedSubmission.name}
-                                    </h3>
-                                    <div className="flex items-center space-x-3">
+                {filteredSubmissions.length === 0 ? (
+                    <div className="empty">
+                        <h3>Keine Einreichungen gefunden</h3>
+                        <p>
+                            {filterStatus === 'all'
+                                ? 'Es wurden noch keine Portrait-Einreichungen eingereicht.'
+                                : `Keine Einreichungen mit Status „${statusText(
+                                      filterStatus,
+                                  )}“.`}
+                        </p>
+                    </div>
+                ) : (
+                    <div className={styles.rows}>
+                        {filteredSubmissions.map((submission) => (
+                            <article
+                                key={submission.id}
+                                className={styles.row}
+                            >
+                                <button
+                                    type="button"
+                                    className={styles.thumb}
+                                    onClick={() =>
+                                        setSelectedSubmission(submission)
+                                    }
+                                    aria-label={`Portrait von ${submission.name} öffnen`}
+                                >
+                                    <Image
+                                        src={submission.imageUrl}
+                                        alt={`Portrait von ${submission.name}`}
+                                        fill
+                                        sizes="(max-width: 640px) 200px, 148px"
+                                    />
+                                </button>
+                                <div className={styles.body}>
+                                    <div className={styles.rowHead}>
+                                        <h2 className={styles.name}>
+                                            {submission.name}
+                                        </h2>
                                         <span
-                                            className={getStatusBadge(
-                                                selectedSubmission.status,
+                                            className={statusStamp(
+                                                submission.status,
                                             )}
                                         >
-                                            {getStatusText(
-                                                selectedSubmission.status,
-                                            )}
-                                        </span>
-                                        <span className="text-sm text-gray-500">
-                                            {new Date(
-                                                selectedSubmission.submittedAt,
-                                            ).toLocaleDateString('de-DE', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
+                                            {statusText(submission.status)}
                                         </span>
                                     </div>
+                                    <p className={styles.meta}>
+                                        <span>
+                                            Eingereicht am{' '}
+                                            {dateShort(
+                                                new Date(
+                                                    submission.submittedAt,
+                                                ),
+                                            )}
+                                        </span>
+                                        {submission.email && (
+                                            <a
+                                                href={`mailto:${submission.email}`}
+                                            >
+                                                {submission.email}
+                                            </a>
+                                        )}
+                                    </p>
+                                    <p className={styles.text}>
+                                        {submission.description}
+                                    </p>
+                                    <div className={styles.actions}>
+                                        <button
+                                            type="button"
+                                            className="btn btn--sm btn--quiet"
+                                            onClick={() =>
+                                                setSelectedSubmission(
+                                                    submission,
+                                                )
+                                            }
+                                        >
+                                            Prüfen
+                                        </button>
+                                        {submission.status === 'pending' &&
+                                            canEdit && (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm btn--primary"
+                                                        onClick={() =>
+                                                            runAction(
+                                                                submission.id,
+                                                                'approve',
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isActionLoading ===
+                                                            submission.id
+                                                        }
+                                                    >
+                                                        Freigeben
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm btn--danger"
+                                                        onClick={() =>
+                                                            runAction(
+                                                                submission.id,
+                                                                'reject',
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isActionLoading ===
+                                                            submission.id
+                                                        }
+                                                    >
+                                                        Ablehnen
+                                                    </button>
+                                                </>
+                                            )}
+                                        {submission.status === 'approved' &&
+                                            canEdit && (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm btn--quiet"
+                                                        onClick={() =>
+                                                            runAction(
+                                                                submission.id,
+                                                                'reset',
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isActionLoading ===
+                                                            submission.id
+                                                        }
+                                                    >
+                                                        Zurücksetzen
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm btn--danger"
+                                                        onClick={() =>
+                                                            runAction(
+                                                                submission.id,
+                                                                'reject',
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isActionLoading ===
+                                                            submission.id
+                                                        }
+                                                    >
+                                                        Ablehnen
+                                                    </button>
+                                                </>
+                                            )}
+                                        {submission.status === 'rejected' &&
+                                            canEdit && (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm btn--quiet"
+                                                        onClick={() =>
+                                                            runAction(
+                                                                submission.id,
+                                                                'reset',
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isActionLoading ===
+                                                            submission.id
+                                                        }
+                                                    >
+                                                        Zurücksetzen
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn--sm btn--primary"
+                                                        onClick={() =>
+                                                            runAction(
+                                                                submission.id,
+                                                                'approve',
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isActionLoading ===
+                                                            submission.id
+                                                        }
+                                                    >
+                                                        Freigeben
+                                                    </button>
+                                                </>
+                                            )}
+                                        {canDelete && (
+                                            <button
+                                                type="button"
+                                                className="btn btn--sm btn--danger"
+                                                onClick={() =>
+                                                    setDeleteConfirmId(
+                                                        submission.id,
+                                                    )
+                                                }
+                                                disabled={
+                                                    isActionLoading ===
+                                                    submission.id
+                                                }
+                                            >
+                                                Löschen
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => setSelectedSubmission(null)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </div>
 
-                            {/* Image */}
-                            <div className="relative h-[25rem] aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4 mx-auto border-[16px] border-white ring-2 ring-gray-100 shadow-lg">
-                                <Image
-                                    src={getImageUrl(selectedSubmission)}
-                                    alt={`Portrait von ${selectedSubmission.name}`}
-                                    fill
-                                    className="object-cover rounded-md"
-                                />
-                            </div>
-
-                            {/* Description */}
-                            <div className="mb-4">
-                                <h4 className="text-sm font-medium text-gray-900 mb-2">
-                                    Beschreibung:
-                                </h4>
-                                <p className="text-gray-700 whitespace-pre-wrap">
-                                    {selectedSubmission.description}
+            {selectedSubmission && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            setSelectedSubmission(null);
+                    }}
+                >
+                    <div
+                        ref={detailRef}
+                        className={`dialog ${styles.dialogWide}`}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="portrait-detail-title"
+                    >
+                        <div className="dialog-head">
+                            <div>
+                                <p className="small muted">
+                                    Portrait-Einreichung
                                 </p>
+                                <h2 id="portrait-detail-title">
+                                    {selectedSubmission.name}
+                                </h2>
+                            </div>
+                            <button
+                                type="button"
+                                className="dialog-close"
+                                onClick={() => setSelectedSubmission(null)}
+                                aria-label="Dialog schließen"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="dialog-body">
+                            <div className={styles.detailGrid}>
+                                <div className={styles.detailImage}>
+                                    <Image
+                                        src={selectedSubmission.imageUrl}
+                                        alt={`Portrait von ${selectedSubmission.name}`}
+                                        fill
+                                        sizes="(max-width: 640px) 240px, 220px"
+                                    />
+                                </div>
+                                <div>
+                                    <span
+                                        className={statusStamp(
+                                            selectedSubmission.status,
+                                        )}
+                                    >
+                                        {statusText(
+                                            selectedSubmission.status,
+                                        )}
+                                    </span>
+                                    <dl
+                                        className="kv"
+                                        style={{ marginTop: 'var(--s3)' }}
+                                    >
+                                        <dt>Eingereicht</dt>
+                                        <dd>
+                                            {dateLong(
+                                                new Date(
+                                                    selectedSubmission.submittedAt,
+                                                ),
+                                            )}
+                                        </dd>
+                                        <dt>E-Mail</dt>
+                                        <dd>
+                                            {selectedSubmission.email ? (
+                                                <a
+                                                    className="link"
+                                                    href={`mailto:${selectedSubmission.email}`}
+                                                >
+                                                    {selectedSubmission.email}
+                                                </a>
+                                            ) : (
+                                                '—'
+                                            )}
+                                        </dd>
+                                        <dt>Datei</dt>
+                                        <dd>
+                                            {selectedSubmission.imageFilename ||
+                                                '—'}
+                                        </dd>
+                                    </dl>
+                                </div>
                             </div>
 
-                            {/* Email */}
-                            {selectedSubmission.email && (
-                                <div className="mb-6">
-                                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                                        E-Mail:
-                                    </h4>
-                                    <a
-                                        href={`mailto:${selectedSubmission.email}`}
-                                        className="text-blue-600 hover:text-blue-800"
-                                    >
-                                        {selectedSubmission.email}
-                                    </a>
-                                </div>
-                            )}
+                            <p
+                                style={{
+                                    marginTop: 'var(--s4)',
+                                    fontSize: 'var(--tally)',
+                                    fontWeight: 650,
+                                    letterSpacing: '0.12em',
+                                    textTransform: 'uppercase',
+                                    color: 'var(--ink-faint)',
+                                }}
+                            >
+                                Text des Einreichenden
+                            </p>
+                            <p className={styles.detailText}>
+                                {selectedSubmission.description}
+                            </p>
                         </div>
-
-                        {/* Actions */}
-                        <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                        <div className={`dialog-foot ${styles.footSticky}`}>
+                            {canDelete && (
+                                <button
+                                    type="button"
+                                    className="btn btn--danger"
+                                    onClick={() => {
+                                        const target =
+                                            selectedSubmission.id;
+                                        setSelectedSubmission(null);
+                                        setDeleteConfirmId(target);
+                                    }}
+                                    disabled={
+                                        isActionLoading ===
+                                        selectedSubmission.id
+                                    }
+                                >
+                                    Löschen
+                                </button>
+                            )}
                             {selectedSubmission.status === 'pending' &&
                                 canEdit && (
                                     <>
                                         <button
+                                            type="button"
+                                            className="btn btn--quiet"
                                             onClick={() =>
-                                                handleApprove(
+                                                runAction(
                                                     selectedSubmission.id,
+                                                    'reject',
                                                 )
                                             }
                                             disabled={
                                                 isActionLoading ===
                                                 selectedSubmission.id
                                             }
-                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
-                                            <Check className="w-4 h-4 mr-2" />
-                                            Freigeben
+                                            Ablehnen
                                         </button>
                                         <button
+                                            type="button"
+                                            className="btn btn--primary"
                                             onClick={() =>
-                                                handleReject(
+                                                runAction(
                                                     selectedSubmission.id,
+                                                    'approve',
                                                 )
                                             }
                                             disabled={
                                                 isActionLoading ===
                                                 selectedSubmission.id
                                             }
-                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
-                                            <X className="w-4 h-4 mr-2" />
-                                            Ablehnen
+                                            Freigeben
                                         </button>
                                     </>
                                 )}
@@ -623,33 +654,35 @@ export default function AdminPortraits({
                                 canEdit && (
                                     <>
                                         <button
+                                            type="button"
+                                            className="btn btn--quiet"
                                             onClick={() =>
-                                                handleReset(
+                                                runAction(
                                                     selectedSubmission.id,
+                                                    'reset',
                                                 )
                                             }
                                             disabled={
                                                 isActionLoading ===
                                                 selectedSubmission.id
                                             }
-                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
-                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
                                             Zurücksetzen
                                         </button>
                                         <button
+                                            type="button"
+                                            className="btn btn--danger"
                                             onClick={() =>
-                                                handleReject(
+                                                runAction(
                                                     selectedSubmission.id,
+                                                    'reject',
                                                 )
                                             }
                                             disabled={
                                                 isActionLoading ===
                                                 selectedSubmission.id
                                             }
-                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
-                                            <X className="w-4 h-4 mr-2" />
                                             Ablehnen
                                         </button>
                                     </>
@@ -658,88 +691,114 @@ export default function AdminPortraits({
                                 canEdit && (
                                     <>
                                         <button
+                                            type="button"
+                                            className="btn btn--quiet"
                                             onClick={() =>
-                                                handleReset(
+                                                runAction(
                                                     selectedSubmission.id,
+                                                    'reset',
                                                 )
                                             }
                                             disabled={
                                                 isActionLoading ===
                                                 selectedSubmission.id
                                             }
-                                            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
-                                            <ArrowCounterClockwise className="w-4 h-4 mr-2" />
                                             Zurücksetzen
                                         </button>
                                         <button
+                                            type="button"
+                                            className="btn btn--primary"
                                             onClick={() =>
-                                                handleApprove(
+                                                runAction(
                                                     selectedSubmission.id,
+                                                    'approve',
                                                 )
                                             }
                                             disabled={
                                                 isActionLoading ===
                                                 selectedSubmission.id
                                             }
-                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
                                         >
-                                            <Check className="w-4 h-4 mr-2" />
                                             Freigeben
                                         </button>
                                     </>
                                 )}
-                            {canDelete && (
-                                <button
-                                    onClick={() =>
-                                        setDeleteConfirmId(
-                                            selectedSubmission.id,
-                                        )
-                                    }
-                                    disabled={
-                                        isActionLoading ===
-                                        selectedSubmission.id
-                                    }
-                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:bg-gray-400 flex items-center"
-                                >
-                                    <Trash className="w-4 h-4 mr-2" />
-                                    Löschen
-                                </button>
-                            )}
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => setSelectedSubmission(null)}
+                            >
+                                Schließen
+                            </button>
                         </div>
-                    </>
-                )}
-            </Modal>
+                    </div>
+                </div>
+            )}
 
-            {/* Delete Confirmation Dialog */}
-            <PromptDialog
-                isOpen={deleteConfirmId !== null}
-                onCancel={() => setDeleteConfirmId(null)}
-                onConfirm={async () => {
-                    if (deleteConfirmId !== null) {
-                        await handleDelete(deleteConfirmId);
-                    }
-                }}
-                title="Einreichung löschen"
-                description="Sind Sie sicher, dass Sie diese Einreichung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-                confirmText="Löschen"
-                cancelText="Abbrechen"
-                icon={<Trash className="h-12 w-12" />}
-                accentColor="red"
-            />
-
-            {/* Error Dialog */}
-            <PromptDialog
-                isOpen={errorDialog.isOpen}
-                onCancel={() => setErrorDialog({ isOpen: false, message: '' })}
-                onConfirm={() => setErrorDialog({ isOpen: false, message: '' })}
-                title="Fehler"
-                description={errorDialog.message}
-                confirmText="OK"
-                cancelText="Schließen"
-                icon={<WarningCircle className="h-12 w-12" />}
-                accentColor="red"
-            />
+            {deleteConfirmId !== null && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            setDeleteConfirmId(null);
+                    }}
+                >
+                    <div
+                        ref={deleteRef}
+                        className="dialog"
+                        role="alertdialog"
+                        aria-modal="true"
+                        aria-labelledby="portrait-delete-title"
+                    >
+                        <div className="dialog-head">
+                            <h2 id="portrait-delete-title">
+                                Einreichung löschen
+                            </h2>
+                            <button
+                                type="button"
+                                className="dialog-close"
+                                onClick={() => setDeleteConfirmId(null)}
+                                aria-label="Dialog schließen"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="dialog-body">
+                            <div className="notice notice--warn">
+                                <strong>
+                                    Sind Sie sicher, dass Sie diese Einreichung
+                                    löschen möchten?
+                                </strong>
+                                <span>
+                                    Bild und Datensatz werden entfernt. Diese
+                                    Aktion kann nicht rückgängig gemacht
+                                    werden.
+                                </span>
+                            </div>
+                        </div>
+                        <div className={`dialog-foot ${styles.footSticky}`}>
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => setDeleteConfirmId(null)}
+                            >
+                                Abbrechen
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn--danger"
+                                onClick={() => handleDelete(deleteConfirmId)}
+                                disabled={isActionLoading === deleteConfirmId}
+                            >
+                                {isActionLoading === deleteConfirmId
+                                    ? 'Löschen …'
+                                    : 'Endgültig löschen'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

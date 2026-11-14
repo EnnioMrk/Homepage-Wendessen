@@ -1,85 +1,80 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Leaf, Margin, Notice, PageHead } from '@/app/components/register/Layout';
 import SharedGallerySubmissionForm from './SharedGallerySubmissionForm';
-import { Camera } from '@phosphor-icons/react/dist/ssr';
-import PageHeader from '@/app/components/layout/PageHeader';
+import { pageToday } from '@/app/lib/page-today';
 
-export const metadata = {
-    title: 'Fotos einreichen - Impressionen - Wendessen',
-    description: 'Teilen Sie Ihre Fotos aus Wendessen mit der Gemeinschaft',
+export const metadata: Metadata = {
+    title: 'Fotos einreichen',
+    description:
+        'Fotos aus Wendessen für die Galerie einreichen: eine Sammlung mit Titel, Aufnahmedatum und Beschreibungen, geprüft vor der Veröffentlichung.',
+    alternates: { canonical: '/impressionen/einreichen' },
+    openGraph: {
+        type: 'website',
+        title: 'Fotos einreichen · Wendessen',
+        description:
+            'Fotos aus Wendessen für die Impressionen im Register einreichen.',
+    },
 };
 
-export default function ImpessionenEinreichenPage() {
+export default async function ImpressionenEinreichenPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-            <PageHeader
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Fotos einreichen"
+                    note={
+                        <>
+                            Eine Einreichung ist eine Sammlung. Titel und
+                            Aufnahmedatum gelten für alle Fotos darin.
+                        </>
+                    }
+                />
+            }
+        >
+            <PageHead
+                kicker="Register · Bilder"
                 title="Fotos einreichen"
-                subtitle="Teilen Sie Ihre schönsten Momente aus Wendessen"
-                icon={<Camera />}
-                color="purple"
+                lede="Fotos aus Wendessen für die Galerie im Register. Sie legen eine Sammlung an: einen Titel, ein Aufnahmedatum und beliebig viele Fotos mit eigener Beschreibung."
+                actions={
+                    <Link
+                        className="btn"
+                        href="/impressionen/einreichen/erweitern"
+                    >
+                        Zu bestehender Sammlung hinzufügen
+                    </Link>
+                }
             />
 
-            {/* Form Section */}
-            <div className="container mx-auto px-4 py-12">
-                <div className="max-w-3xl mx-auto">
-                    <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                        <div className="mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                                So funktioniert&apos;s
-                            </h2>
-                            <div className="space-y-3 text-gray-700">
-                                <p className="flex items-start">
-                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 font-bold text-sm mr-3 mt-0.5 flex-shrink-0">
-                                        1
-                                    </span>
-                                    <span>
-                                        Wählen Sie ein oder mehrere Fotos aus,
-                                        die Sie mit der Gemeinschaft teilen
-                                        möchten
-                                    </span>
-                                </p>
-                                <p className="flex items-start">
-                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 font-bold text-sm mr-3 mt-0.5 flex-shrink-0">
-                                        2
-                                    </span>
-                                    <span>
-                                        Geben Sie einen Titel sowie optional das
-                                        Aufnahmedatum (oder einen Zeitraum) für
-                                        die gesamte Sammlung ein
-                                    </span>
-                                </p>
-                                <p className="flex items-start">
-                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 font-bold text-sm mr-3 mt-0.5 flex-shrink-0">
-                                        3
-                                    </span>
-                                    <span>
-                                        Ihre Einreichungen werden von unserem
-                                        Team geprüft
-                                    </span>
-                                </p>
-                                <p className="flex items-start">
-                                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-600 font-bold text-sm mr-3 mt-0.5 flex-shrink-0">
-                                        4
-                                    </span>
-                                    <span>
-                                        Nach der Freigabe erscheinen Ihre Fotos
-                                        in unserer Impressionen-Galerie
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
+            <ol className="steps" aria-label="Ablauf der Einreichung">
+                <li className="step">
+                    <strong>Schritt 1</strong>
+                    Fotos wählen
+                </li>
+                <li className="step">
+                    <strong>Schritt 2</strong>
+                    Titel und Datum
+                </li>
+                <li className="step">
+                    <strong>Schritt 3</strong>
+                    Prüfung
+                </li>
+                <li className="step">
+                    <strong>Schritt 4</strong>
+                    Freigabe
+                </li>
+            </ol>
 
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                            <p className="text-sm text-blue-800">
-                                <strong>Hinweis:</strong> Bitte stellen Sie
-                                sicher, dass Sie die Rechte an den hochgeladenen
-                                Fotos besitzen und dass keine Personen ohne
-                                deren Zustimmung abgebildet sind.
-                            </p>
-                        </div>
-                    </div>
+            <Notice tone="info" title="Rechte und abgebildete Personen">
+                Bitte stellen Sie sicher, dass Sie die Rechte an den
+                hochgeladenen Fotos besitzen und dass keine Personen ohne deren
+                Zustimmung abgebildet sind.
+            </Notice>
 
-                    <SharedGallerySubmissionForm />
-                </div>
+            <div style={{ marginTop: 'var(--s5)' }}>
+                <SharedGallerySubmissionForm />
             </div>
-        </div>
+        </Leaf>
     );
 }

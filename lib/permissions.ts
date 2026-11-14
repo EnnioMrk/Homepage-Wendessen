@@ -1,4 +1,5 @@
 import { getCurrentAdminUser, AdminUser } from './auth';
+import { ApiAuthError } from './api-error';
 
 // Define role default permissions (used as templates at user creation)
 export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
@@ -174,7 +175,7 @@ export async function requirePermission(
     const user = await getCurrentAdminUser();
 
     if (!user) {
-        throw new Error('Unauthorized: Not authenticated');
+        throw new ApiAuthError(401, 'Unauthorized: Not authenticated');
     }
 
     if (!hasPermission(user, permission)) {
@@ -188,7 +189,10 @@ export async function requirePermission(
             // swallow logging errors
         }
 
-        throw new Error(`Forbidden: Missing permission '${permission}'`);
+        throw new ApiAuthError(
+            403,
+            `Forbidden: Missing permission '${permission}'`,
+        );
     }
 
     return user;
@@ -203,12 +207,13 @@ export async function requireAnyPermission(
     const user = await getCurrentAdminUser();
 
     if (!user) {
-        throw new Error('Unauthorized: Not authenticated');
+        throw new ApiAuthError(401, 'Unauthorized: Not authenticated');
     }
 
     if (!hasAnyPermission(user, permissions)) {
-        throw new Error(
-            `Forbidden: Missing one of permissions: ${permissions.join(', ')}`
+        throw new ApiAuthError(
+            403,
+            `Forbidden: Missing one of permissions: ${permissions.join(', ')}`,
         );
     }
 

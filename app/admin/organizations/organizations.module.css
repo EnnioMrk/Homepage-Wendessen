@@ -1,0 +1,86 @@
+/* Organizations — ruled register of clubs and institutions. */
+
+.scroll {
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 100%;
+}
+
+.orgCell {
+    display: grid;
+    gap: 3px;
+    min-width: 220px;
+}
+
+.orgTitle {
+    font-weight: 620;
+    font-size: var(--label);
+    overflow-wrap: anywhere;
+}
+
+.sub {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.desc {
+    font-size: var(--small);
+    color: var(--ink-secondary);
+    max-width: 62ch;
+    overflow-wrap: anywhere;
+}
+
+.slug {
+    font-size: var(--small);
+    color: var(--ink-secondary);
+    letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    justify-content: flex-end;
+}
+
+.inlineMeta {
+    display: none;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+    .colAlt {
+        display: none;
+    }
+
+    .altInline {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    .colSlug {
+        display: none;
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+}
+
+/* --- Editor --------------------------------------------------- */
+
+.formFoot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--s2);
+    margin-top: var(--s5);
+    padding-top: var(--s4);
+    border-top: var(--border) solid var(--rule);
+}

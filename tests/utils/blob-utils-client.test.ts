@@ -1,5 +1,13 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
 import { isMinioUrl } from "../../lib/utils/blob-utils-client";
+
+// isMinioUrl is a development-only helper by design; bun test runs with
+// NODE_ENV=test, so the suite sets the documented development mode for itself.
+const previousNodeEnv = process.env.NODE_ENV;
+(process.env as Record<string, string>).NODE_ENV = "development";
+afterAll(() => {
+    (process.env as Record<string, string>).NODE_ENV = previousNodeEnv;
+});
 
 describe("blob-utils-client", () => {
     test("returns false for empty values", () => {

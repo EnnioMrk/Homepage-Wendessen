@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { resetAdminPassword, getAdminUserById } from '@/lib/database/admin';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 // Generate a random 6-digit number
 function generateInitialPassword(): string {
@@ -62,6 +63,8 @@ export async function POST(request: NextRequest) {
             username: targetUser.username,
         });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error resetting admin password:', error);
         return NextResponse.json(
             { error: 'Failed to reset admin password' },

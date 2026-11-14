@@ -1,18 +1,44 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Leaf, Margin, PageHead } from '@/app/components/register/Layout';
 import AddToExistingForm from './AddToExistingForm';
+import { pageToday } from '@/app/lib/page-today';
 
-export const metadata = {
-    title: 'Fotos hinzufügen - Wendessen',
-    description: 'Fügen Sie weitere Fotos zu Ihrer bestehenden Einreichung hinzu',
+export const metadata: Metadata = {
+    title: 'Fotos ergänzen',
+    description:
+        'Weitere Fotos zu einer bestehenden Sammlung in der Wendessener Bildergalerie hinzufügen.',
+    alternates: { canonical: '/impressionen/einreichen/erweitern' },
 };
 
-export default function AddToExistingPage() {
+export default async function AddToExistingPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-12">
-            <div className="container mx-auto px-4">
-                <div className="max-w-4xl mx-auto">
-                    <AddToExistingForm />
-                </div>
-            </div>
-        </div>
+        <Leaf
+            margin={
+                <Margin
+                    date={await pageToday()}
+                    label="Fotos ergänzen"
+                    note={
+                        <>
+                            Ergänzte Fotos erbt die Sammlung: Titel und
+                            Einsendender bleiben, die Prüfung beginnt von vorn.
+                        </>
+                    }
+                />
+            }
+        >
+            <PageHead
+                kicker="Register · Bilder"
+                title="Fotos ergänzen"
+                lede="Weitere Fotos zu einer Sammlung, die bereits im Register steht. Titel und Einsendender kommen aus der gewählten Sammlung."
+                actions={
+                    <Link className="btn" href="/impressionen/einreichen">
+                        Neue Sammlung anlegen
+                    </Link>
+                }
+            />
+
+            <AddToExistingForm />
+        </Leaf>
     );
 }

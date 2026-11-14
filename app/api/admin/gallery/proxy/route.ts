@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '../../../../../lib/permissions';
 import dns from 'dns';
 import net from 'net';
+import { apiAuthResponse } from '@/lib/api-error';
 
 function resolveHost(endpoint?: string): string | null {
     if (!endpoint) return null;
@@ -206,6 +207,8 @@ export async function GET(request: NextRequest) {
             headers,
         });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         if (error instanceof Error) {
             if (error.message.startsWith('Unauthorized:')) {
                 return NextResponse.json(

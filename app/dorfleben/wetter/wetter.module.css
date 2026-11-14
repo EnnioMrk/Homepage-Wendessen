@@ -1,0 +1,84 @@
+/* Weather station: board toolbar, numbered value rows, forecast text. */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s2) var(--s4);
+    padding-bottom: var(--s3);
+    border-bottom: var(--border) solid var(--rule);
+    margin-bottom: var(--s4);
+}
+
+.toolbar p {
+    margin: 0;
+}
+
+.toolbar strong {
+    font-weight: 620;
+    color: var(--ink);
+}
+
+/* `.weather-day` is 44px | 1fr | auto | auto; row numbers and notes keep it. */
+.rowNum {
+    font-size: var(--tally);
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.rowNote {
+    text-align: right;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+/* Tables use a row header; thead th styling does not reach tbody. */
+.rowHead {
+    text-align: left;
+    font-weight: 620;
+    padding: 10px var(--s3) 10px 0;
+    border-bottom: var(--border) solid var(--rule);
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.time {
+    display: block;
+    font-size: var(--tally);
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.valueNote {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--tally);
+    font-weight: 400;
+    color: var(--ink-muted);
+    font-variant-numeric: normal;
+}
+
+.forecast::first-letter {
+    text-transform: uppercase;
+}
+
+.skeletonStack {
+    display: grid;
+    gap: var(--s3);
+    margin-top: var(--s4);
+}
+
+.skeletonRow {
+    height: 64px;
+}
+
+@media (max-width: 640px) {
+    .rowNote {
+        grid-column: 2 / -1;
+        text-align: left;
+    }
+    .rowHead {
+        white-space: normal;
+    }
+}

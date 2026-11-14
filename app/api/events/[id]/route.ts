@@ -8,6 +8,7 @@ import {
 import { requireAnyPermission, hasPermission } from '@/lib/permissions';
 import { revalidatePathSafe, revalidateTagSafe } from '@/lib/revalidate';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 export async function GET(
     _request: NextRequest,
@@ -26,6 +27,8 @@ export async function GET(
 
         return NextResponse.json(event);
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('API Error fetching event:', error);
         return NextResponse.json(
             { error: 'Failed to fetch event' },
@@ -126,6 +129,8 @@ export async function PUT(
 
         return NextResponse.json(updatedEvent);
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('API Error updating event:', error);
         return NextResponse.json(
             { error: 'Failed to update event' },

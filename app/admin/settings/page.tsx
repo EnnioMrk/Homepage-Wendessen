@@ -1,13 +1,16 @@
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
-import AdminSettings from './AdminSettings';
-import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import Link from 'next/link';
 import { Suspense } from 'react';
+import AdminSettings from './AdminSettings';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
 
 export default function SettingsPage() {
     return (
-        <Suspense fallback={<div>Einstellungen laden...</div>}>
+        <Suspense
+            fallback={<p className="admin-empty">Einstellungen werden geladen …</p>}
+        >
             <SettingsContent />
         </Suspense>
     );
@@ -20,33 +23,25 @@ async function SettingsContent() {
         redirect('/admin/login');
     }
 
-    // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canViewSettings = hasPermission(currentUser, 'settings.view');
     const canEditSettings = hasPermission(currentUser, 'settings.edit');
 
     if (!canViewSettings) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
+            <div>
+                <AdminHead title="Einstellungen" />
+                <Panel title="Keine Berechtigung">
+                    <p className="admin-empty">
                         Sie haben keine Berechtigung, die Einstellungen
                         anzusehen.
                     </p>
-                    <a
-                        href="/admin/dashboard"
-                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        <ArrowLeft className="w-4 h-4 inline mr-2" />
-                        Zurück zum Dashboard
-                    </a>
-                </div>
+                    <p style={{ marginTop: 'var(--s4)' }}>
+                        <Link className="btn" href="/admin/dashboard">
+                            Zum Schreibtisch
+                        </Link>
+                    </p>
+                </Panel>
             </div>
         );
     }

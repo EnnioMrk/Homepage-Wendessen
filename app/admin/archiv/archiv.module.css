@@ -1,0 +1,119 @@
+.tableWrap {
+    overflow-x: auto;
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+}
+
+.tableWrap table {
+    min-width: 760px;
+}
+
+.titleCell {
+    display: grid;
+    gap: 3px;
+    max-width: 46ch;
+}
+
+.excerpt {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    justify-content: flex-end;
+}
+
+.confirm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    margin-bottom: var(--s4);
+}
+
+.confirm p {
+    font-size: var(--label);
+    max-width: 60ch;
+}
+
+.form {
+    max-width: 860px;
+}
+
+.form :global(input.input),
+.form :global(select.select),
+.form :global(textarea.textarea) {
+    min-height: 44px;
+}
+
+.editor {
+    height: min(70vh, 720px);
+    min-height: 420px;
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+}
+
+.preview {
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+    padding: var(--s5);
+}
+
+.previewHead {
+    padding-bottom: var(--s4);
+    margin-bottom: var(--s5);
+    border-bottom: 2px solid var(--ink);
+}
+
+.previewKicker {
+    font-size: var(--tally);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rubric);
+}
+
+.previewTitle {
+    font-size: var(--h2);
+    line-height: 1.15;
+    margin-block: var(--s2);
+}
+
+.previewMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.stepRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--s5);
+    padding-top: var(--s4);
+    border-top: var(--border) solid var(--rule);
+}
+
+.dialogBody {
+    display: grid;
+    gap: var(--s4);
+}
+
+.dialogMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+    font-size: var(--small);
+    color: var(--ink-muted);
+}

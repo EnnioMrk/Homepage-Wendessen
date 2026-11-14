@@ -1,13 +1,28 @@
 import { isAuthenticated, getCurrentAdminUser } from '@/lib/auth';
 import { hasPermission } from '@/lib/permissions';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import CreateNewsForm from './CreateNewsForm';
-import { Warning, ArrowLeft } from '@phosphor-icons/react/dist/ssr';
+import { AdminHead } from '@/app/components/admin/AdminPage';
 import { Suspense } from 'react';
 
 export default function CreateNewsPage() {
     return (
-        <Suspense fallback={<div>Laden...</div>}>
+        <Suspense
+            fallback={
+                <div>
+                    <AdminHead
+                        title="Neue Nachricht"
+                        sub="Register der Nachrichten"
+                    />
+                    <div className="panel">
+                        <div className="panel-body">
+                            <p className="muted">Lade Editor …</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        >
             <CreateNewsContent />
         </Suspense>
     );
@@ -20,30 +35,25 @@ async function CreateNewsContent() {
         redirect('/admin/login');
     }
 
-    // Check permissions
     const currentUser = await getCurrentAdminUser();
     const canCreateNews = hasPermission(currentUser, 'news.create');
 
     if (!canCreateNews) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
-                        Sie haben keine Berechtigung, Neuigkeiten zu erstellen.
+            <div>
+                <AdminHead
+                    title="Neue Nachricht"
+                    sub="Register der Nachrichten"
+                />
+                <div className="empty">
+                    <h3>Keine Berechtigung</h3>
+                    <p>
+                        Sie haben keine Berechtigung, Nachrichten zu erstellen.
+                        Wenden Sie sich an die Redaktionsleitung.
                     </p>
-                    <a
-                        href="/admin/news"
-                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        <ArrowLeft className="w-4 h-4 inline mr-2" />
+                    <Link className="btn btn--quiet" href="/admin/news">
                         Zurück zur Übersicht
-                    </a>
+                    </Link>
                 </div>
             </div>
         );

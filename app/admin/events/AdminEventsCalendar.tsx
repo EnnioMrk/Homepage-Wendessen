@@ -1,53 +1,39 @@
 'use client';
 
-import { Calendar, momentLocalizer, View } from 'react-big-calendar';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import type { View } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/de';
-import '../../was-steht-an/calendar.css'; // Import calendar styles
-import { useState, useMemo } from 'react';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { CalendarEvent } from '@/lib/database';
-import { getCategoryBackgroundColor } from '@/lib/utils/event-utils';
 
 import { usePermissions } from '@/lib/usePermissions';
-import {
-    UsersThree,
-    CalendarBlank,
-    Lightning,
-    MusicNotesSimple,
-    MapPin,
-    Clock,
-    X,
-    User,
-    PencilSimple,
-    Trash,
-    FloppyDisk,
-    ImageSquare,
-    ProhibitInset,
-    ArrowCounterClockwise,
-    Buildings,
-} from '@phosphor-icons/react/dist/ssr';
-import Image from 'next/image';
 import EventModal from '@/app/components/events/EventModal';
 import GalleryImagePicker from '@/app/admin/components/GalleryImagePicker';
 import ImageCropper from '@/app/components/ui/ImageCropper';
 import CroppedImage from '@/app/components/ui/CroppedImage';
 import { ImageCropConfig } from '@/lib/database/events';
-import { Crop } from '@phosphor-icons/react/dist/ssr';
-
-// Set German locale and configure moment properly
-moment.locale('de');
 
 import { ASSOCIATIONS_MAP } from '@/lib/constants/associations';
 import {
     EVENT_CATEGORIES,
-    EVENT_CATEGORY_MAP,
 } from '@/lib/constants/categories';
+import {
+    clock,
+    dateLong,
+    dateShort,
+    timeRange,
+    weekday,
+    weekdayLong,
+} from '@/app/lib/register-format';
+import styles from './events.module.css';
 
-// Vereine map for display
-const VEREINE_MAP: Record<string, string> = ASSOCIATIONS_MAP;
+moment.locale('de');
 
-// Create localizer with proper configuration
 const localizer = momentLocalizer(moment);
+
+const VEREINE_MAP: Record<string, string> = ASSOCIATIONS_MAP;
 
 interface AdminEventsCalendarProps {
     initialEvents: CalendarEvent[];
@@ -56,7 +42,6 @@ interface AdminEventsCalendarProps {
     onEventsUpdate?: () => Promise<void>;
 }
 
-// Event form interface
 interface EventFormData {
     title: string;
     description: string;
@@ -87,91 +72,106 @@ const defaultEventForm: EventFormData = {
     imageCropData: undefined,
 };
 
-// Custom event component
-const EventComponent = ({ event }: { event: CalendarEvent }) => {
-    const isCancelled = event.isCancelled;
+type Period = 'upcoming' | 'past' | 'all';
+type PendingAction = 'cancel' | 'restore' | 'delete' | null;
 
-    return (
-        <div
-            className={`${
-                isCancelled
-                    ? 'bg-gray-400 line-through opacity-70'
-                    : getCategoryBackgroundColor(event.category || 'sonstiges')
-            } text-white p-1 rounded text-xs font-medium overflow-hidden`}
-        >
-            <div className="truncate">
-                {isCancelled && '🚫 '}
-                {event.title}
-            </div>
-        </div>
+const categoryLabel = (category?: string) =>
+    EVENT_CATEGORIES.find((entry) => entry.id === category)?.label ??
+    'Sonstiges';
+
+const humanise = (value: string) =>
+    value
+        .replace(/-wendessen.*$/i, '')
+        .replace(/-ev$/i, '')
+        .split('-')
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+
+/**
+ * Event rows store a club id, which does not always equal an association key
+ * (`frauenhilfe-wendessen` vs `frauenhilfe`). Resolve by exact key, then by
+ * prefix, then print a readable name instead of the raw machine id.
+ */
+const vereinLabel = (vereinId?: string) => {
+    if (!vereinId) return '—';
+    if (VEREINE_MAP[vereinId]) return VEREINE_MAP[vereinId];
+    const clean = vereinId.replace(/-wendessen.*$/i, '').replace(/-ev$/i, '');
+    const match = Object.entries(VEREINE_MAP).find(
+        ([key]) => key === clean || key.startsWith(clean) || clean.startsWith(key),
     );
+    return match ? match[1] : humanise(vereinId);
 };
 
-// Custom agenda event component
-const AgendaEventComponent = ({ event }: { event: CalendarEvent }) => {
-    const isCancelled = event.isCancelled;
+const EventComponent = ({ event }: { event: CalendarEvent }) => (
+    <span className={event.isCancelled ? styles.calEventCancelled : undefined}>
+        {event.isCancelled ? 'Abgesagt · ' : ''}
+        {event.title}
+    </span>
+);
 
-    return (
-        <div
-            className={`flex items-center space-x-3 ${
-                isCancelled ? 'opacity-60' : ''
-            }`}
-        >
-            <div
-                className={`w-3 h-3 rounded-full ${
-                    isCancelled
-                        ? 'bg-gray-400'
-                        : getCategoryBackgroundColor(
-                              event.category || 'sonstiges',
-                          )
-                }`}
-            ></div>
-            <div className="flex-1">
-                <div
-                    className={`font-medium ${
-                        isCancelled
-                            ? 'text-gray-500 line-through'
-                            : 'text-gray-900'
-                    }`}
-                >
-                    {isCancelled && '🚫 '}
-                    {event.title}
-                </div>
-                {event.location && (
-                    <div className="text-sm text-gray-500">
-                        {event.location}
-                    </div>
-                )}
-                {event.organizer && (
-                    <div className="text-sm text-gray-500">
-                        Veranstalter: {event.organizer}
-                    </div>
-                )}
-                {isCancelled && event.cancelledAt && (
-                    <div className="text-xs text-red-600 mt-1">Abgesagt</div>
-                )}
-            </div>
-            <div className="text-right">
-                <div className="text-sm font-medium text-gray-900">
-                    {moment(event.start).format('HH:mm')}
-                    {event.end && ` - ${moment(event.end).format('HH:mm')}`}
-                </div>
-                <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 ${
-                        isCancelled
-                            ? 'bg-gray-100 text-gray-600'
-                            : `${EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.bgLight || 'bg-gray-100'} ${EVENT_CATEGORY_MAP[event.category || 'sonstiges']?.textDark || 'text-gray-800'}`
-                    }`}
-                >
-                    {isCancelled
-                        ? 'Abgesagt'
-                        : EVENT_CATEGORY_MAP[event.category || 'sonstiges']
-                              ?.label || 'Sonstiges'}
-                </span>
-            </div>
-        </div>
-    );
-};
+/**
+ * Focus trap and Escape for the ruled overlays. The overlay markup is a plain
+ * fixed layer (not a native dialog) so the gallery picker and cropper can sit
+ * above it.
+ */
+function useOverlay(
+    open: boolean,
+    onClose: () => void,
+    blocked?: React.RefObject<boolean>,
+) {
+    const ref = useRef<HTMLDivElement>(null);
+    const closeRef = useRef(onClose);
+
+    useEffect(() => {
+        closeRef.current = onClose;
+    }, [onClose]);
+
+    useEffect(() => {
+        if (!open) return;
+        const element = ref.current;
+        if (!element) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+        const focusable = () =>
+            Array.from(
+                element.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                ),
+            ).filter((node) => node.offsetParent !== null);
+
+        focusable()[0]?.focus();
+
+        const handleKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                if (blocked?.current) return;
+                event.stopPropagation();
+                closeRef.current();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const items = focusable();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKey);
+        return () => {
+            document.removeEventListener('keydown', handleKey);
+            previouslyFocused?.focus();
+        };
+    }, [open, blocked]);
+
+    return ref;
+}
 
 export default function AdminEventsCalendar({
     initialEvents,
@@ -181,7 +181,6 @@ export default function AdminEventsCalendar({
 }: AdminEventsCalendarProps) {
     const { hasPermission, user } = usePermissions();
 
-    // Memoized events that updates when initialEvents changes
     const events = useMemo(
         () =>
             initialEvents.map((event) => ({
@@ -192,88 +191,43 @@ export default function AdminEventsCalendar({
         [initialEvents],
     );
 
-    // Check if user can edit/cancel this specific event
     const canEditEvent = (event: CalendarEvent) => {
-        // First check if user has general events.edit permission
-        if (hasPermission('events.edit')) {
-            return true;
-        }
-
-        // If not, check if user has verein-specific edit permission
-        if (!hasPermission('verein.events.edit')) {
-            return false;
-        }
-
-        // User has verein permission - check if event belongs to their verein
-        // Both user and event must have vereinId, and they must match
-        if (
+        if (hasPermission('events.edit')) return true;
+        if (!hasPermission('verein.events.edit')) return false;
+        return Boolean(
             user?.vereinId &&
-            event.vereinId &&
-            event.vereinId === user.vereinId
-        ) {
-            return true;
-        }
-
-        // Event doesn't belong to a verein or doesn't match user's verein
-        return false;
+                event.vereinId &&
+                event.vereinId === user.vereinId,
+        );
     };
 
     const canCancelEvent = (event: CalendarEvent) => {
-        // First check if user has general events.cancel permission
-        if (hasPermission('events.cancel')) {
-            return true;
-        }
-
-        // If not, check if user has verein-specific cancel permission
-        if (!hasPermission('verein.events.cancel')) {
-            return false;
-        }
-
-        // User has verein permission - check if event belongs to their verein
-        // Both user and event must have vereinId, and they must match
-        if (
+        if (hasPermission('events.cancel')) return true;
+        if (!hasPermission('verein.events.cancel')) return false;
+        return Boolean(
             user?.vereinId &&
-            event.vereinId &&
-            event.vereinId === user.vereinId
-        ) {
-            return true;
-        }
-
-        // Event doesn't belong to a verein or doesn't match user's verein
-        return false;
+                event.vereinId &&
+                event.vereinId === user.vereinId,
+        );
     };
 
     const canDeleteEvent = (event: CalendarEvent) => {
-        // First check if user has general events.delete permission
-        if (hasPermission('events.delete')) {
-            return true;
-        }
-
-        // If not, check if user has verein-specific delete permission
-        if (!hasPermission('verein.events.delete')) {
-            return false;
-        }
-
-        // User has verein permission - check if event belongs to their verein
-        // Both user and event must have vereinId, and they must match
-        if (
+        if (hasPermission('events.delete')) return true;
+        if (!hasPermission('verein.events.delete')) return false;
+        return Boolean(
             user?.vereinId &&
-            event.vereinId &&
-            event.vereinId === user.vereinId
-        ) {
-            return true;
-        }
-
-        // Event doesn't belong to a verein or doesn't match user's verein
-        return false;
+                event.vereinId &&
+                event.vereinId === user.vereinId,
+        );
     };
 
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
         null,
     );
-    const [showEventModal, setShowEventModal] = useState(false);
-    const [eventForm, setEventForm] = useState<EventFormData>(defaultEventForm);
     const [isEditing, setIsEditing] = useState(false);
+    const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+    const [eventForm, setEventForm] = useState<EventFormData>(defaultEventForm);
+    const [formError, setFormError] = useState<string | null>(null);
     const [view, setView] = useState<View>('agenda');
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
@@ -284,29 +238,44 @@ export default function AdminEventsCalendar({
         start?: string;
         end?: string;
     }>({});
+    const [search, setSearch] = useState('');
+    const [period, setPeriod] = useState<Period>('upcoming');
+    const [flash, setFlash] = useState<string | null>(null);
 
-    const getCategoryIcon = (category: string) => {
-        switch (category) {
-            case 'sitzung':
-                return <UsersThree className="w-5 h-5" />;
-            case 'veranstaltung':
-                return <CalendarBlank className="w-5 h-5" />;
-            case 'sport':
-                return <Lightning className="w-5 h-5" />;
-            case 'kultur':
-                return <MusicNotesSimple className="w-5 h-5" />;
-            default:
-                return <CalendarBlank className="w-5 h-5" />;
-        }
-    };
+    useEffect(() => {
+        if (!flash) return;
+        const timer = window.setTimeout(() => setFlash(null), 4500);
+        return () => window.clearTimeout(timer);
+    }, [flash]);
 
-    const handleSelectEvent = (event: CalendarEvent) => {
+    const closeDetail = useCallback(() => {
+        setSelectedEvent(null);
+        setIsEditing(false);
+        setPendingAction(null);
+        setFormError(null);
+    }, []);
+
+    const childOverlayRef = useRef(false);
+    useEffect(() => {
+        childOverlayRef.current = showImagePicker || showCropper;
+    }, [showImagePicker, showCropper]);
+
+    const detailRef = useOverlay(
+        Boolean(selectedEvent),
+        closeDetail,
+        childOverlayRef,
+    );
+
+    const openEvent = (event: CalendarEvent) => {
         setSelectedEvent(event);
-        setShowEventModal(true);
+        setIsEditing(false);
+        setPendingAction(null);
+        setFormError(null);
     };
+
+    const handleSelectEvent = (event: CalendarEvent) => openEvent(event);
 
     const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
-        // Only allow creating events if user has permission
         if (
             !hasPermission('events.create') &&
             !hasPermission('verein.events.create')
@@ -314,31 +283,26 @@ export default function AdminEventsCalendar({
             return;
         }
 
-        // Get the actual Date objects from the slot
         const startDate = slotInfo.start;
         const endDate = slotInfo.end;
 
         if (startDate && endDate) {
-            // Format dates in local timezone to avoid UTC conversion issues
-            const formatLocalDate = (date: Date) => {
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
+            const formatLocalDate = (value: Date) => {
+                const year = value.getFullYear();
+                const month = String(value.getMonth() + 1).padStart(2, '0');
+                const day = String(value.getDate()).padStart(2, '0');
                 return `${year}-${month}-${day}`;
             };
 
             const start = formatLocalDate(startDate);
             let end;
 
-            // Calculate the difference in days
             const timeDiff = endDate.getTime() - startDate.getTime();
             const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
 
-            // If selecting a single day (difference is 0 or 1 day), use the same date for start and end
             if (daysDiff <= 1) {
                 end = start;
             } else {
-                // For multi-day selections, use the day before the end date (since calendar adds an extra day)
                 const adjustedEndDate = new Date(endDate);
                 adjustedEndDate.setDate(adjustedEndDate.getDate() - 1);
                 end = formatLocalDate(adjustedEndDate);
@@ -349,10 +313,25 @@ export default function AdminEventsCalendar({
 
         setIsModalOpen(true);
     };
+
     const handleUpdateEvent = async () => {
         if (!selectedEvent) return;
 
+        if (!eventForm.title.trim()) {
+            setFormError('Bitte geben Sie einen Titel an.');
+            return;
+        }
+        if (!eventForm.start || !eventForm.end) {
+            setFormError('Bitte Start und Ende angeben.');
+            return;
+        }
+        if (new Date(eventForm.end) < new Date(eventForm.start)) {
+            setFormError('Das Ende darf nicht vor dem Start liegen.');
+            return;
+        }
+
         setLoading(true);
+        setFormError(null);
         try {
             const response = await fetch(`/api/events/${selectedEvent.id}`, {
                 method: 'PUT',
@@ -367,30 +346,25 @@ export default function AdminEventsCalendar({
             });
 
             if (response.ok) {
-                // Refresh events from parent component
                 await onEventsUpdate?.();
-                setIsEditing(false);
-                setSelectedEvent(null);
-                setShowEventModal(false);
+                closeDetail();
+                setFlash('Termin gespeichert.');
             } else {
-                alert('Fehler beim Aktualisieren des Termins');
+                const data = await response.json().catch(() => null);
+                setFormError(
+                    data?.error || 'Fehler beim Aktualisieren des Termins.',
+                );
             }
         } catch (error) {
             console.error('Error updating event:', error);
-            alert('Fehler beim Aktualisieren des Termins');
+            setFormError('Fehler beim Aktualisieren des Termins.');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleDeleteEvent = async () => {
         if (!selectedEvent) return;
-
-        if (
-            !confirm(
-                'Möchten Sie diesen Termin wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
-            )
-        )
-            return;
 
         setLoading(true);
         try {
@@ -399,34 +373,28 @@ export default function AdminEventsCalendar({
             });
 
             if (response.ok) {
-                // Refresh events from parent component
                 await onEventsUpdate?.();
-                setShowEventModal(false);
-                setSelectedEvent(null);
+                closeDetail();
+                setFlash('Termin gelöscht.');
             } else {
-                const errorData = await response.json();
-                console.error('Delete failed with status:', response.status);
-                alert(
-                    errorData.error ||
+                const errorData = await response.json().catch(() => null);
+                setFormError(
+                    errorData?.error ||
                         'Fehler beim Löschen des Termins. Nur Administratoren können Termine dauerhaft löschen.',
                 );
+                setPendingAction(null);
             }
         } catch (error) {
             console.error('Error deleting event:', error);
-            alert('Fehler beim Löschen des Termins');
+            setFormError('Fehler beim Löschen des Termins.');
+            setPendingAction(null);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleCancelEvent = async () => {
         if (!selectedEvent) return;
-
-        if (
-            !confirm(
-                'Möchten Sie diesen Termin absagen? Der Termin bleibt sichtbar, wird aber als abgesagt markiert.',
-            )
-        )
-            return;
 
         setLoading(true);
         try {
@@ -438,26 +406,27 @@ export default function AdminEventsCalendar({
             );
 
             if (response.ok) {
-                // Refresh events from parent component
                 await onEventsUpdate?.();
-                setShowEventModal(false);
-                setSelectedEvent(null);
+                closeDetail();
+                setFlash('Termin abgesagt. Er bleibt im Register sichtbar.');
             } else {
-                const errorData = await response.json();
-                console.error('Cancel failed with status:', response.status);
-                alert(errorData.error || 'Fehler beim Absagen des Termins');
+                const errorData = await response.json().catch(() => null);
+                setFormError(
+                    errorData?.error || 'Fehler beim Absagen des Termins.',
+                );
+                setPendingAction(null);
             }
         } catch (error) {
             console.error('Error cancelling event:', error);
-            alert('Fehler beim Absagen des Termins');
+            setFormError('Fehler beim Absagen des Termins.');
+            setPendingAction(null);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleRestoreEvent = async () => {
         if (!selectedEvent) return;
-
-        if (!confirm('Möchten Sie diesen Termin wiederherstellen?')) return;
 
         setLoading(true);
         try {
@@ -469,23 +438,30 @@ export default function AdminEventsCalendar({
             );
 
             if (response.ok) {
-                // Refresh events from parent component
                 await onEventsUpdate?.();
-                setShowEventModal(false);
-                setSelectedEvent(null);
+                closeDetail();
+                setFlash('Termin wiederhergestellt.');
             } else {
-                const errorData = await response.json();
-                console.error('Restore failed with status:', response.status);
-                alert(
-                    errorData.error ||
-                        'Fehler beim Wiederherstellen des Termins',
+                const errorData = await response.json().catch(() => null);
+                setFormError(
+                    errorData?.error ||
+                        'Fehler beim Wiederherstellen des Termins.',
                 );
+                setPendingAction(null);
             }
         } catch (error) {
             console.error('Error restoring event:', error);
-            alert('Fehler beim Wiederherstellen des Termins');
+            setFormError('Fehler beim Wiederherstellen des Termins.');
+            setPendingAction(null);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
+    };
+
+    const runPendingAction = () => {
+        if (pendingAction === 'cancel') return handleCancelEvent();
+        if (pendingAction === 'restore') return handleRestoreEvent();
+        if (pendingAction === 'delete') return handleDeleteEvent();
     };
 
     const startEditing = () => {
@@ -502,500 +478,920 @@ export default function AdminEventsCalendar({
             imageUrl: selectedEvent.imageUrl || '',
             imageCropData: selectedEvent.imageCropData,
         });
+        setFormError(null);
+        setPendingAction(null);
         setIsEditing(true);
     };
 
-    const categoryOptions = EVENT_CATEGORIES.map((c) => ({
-        value: c.id,
-        label: c.label,
+    const categoryOptions = EVENT_CATEGORIES.map((entry) => ({
+        value: entry.id,
+        label: entry.label,
     }));
 
+    const query = search.trim().toLowerCase();
+    const matchesQuery = (event: CalendarEvent) => {
+        if (!query) return true;
+        return [
+            event.title,
+            event.location,
+            event.organizer,
+            categoryLabel(event.category),
+            vereinLabel(event.vereinId),
+        ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+            .includes(query);
+    };
+
+    const visibleEvents = events.filter(matchesQuery);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const agendaEvents = visibleEvents
+        .filter((event) => {
+            if (period === 'upcoming') return event.end >= today;
+            if (period === 'past') return event.end < today;
+            return true;
+        })
+        .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+    const viewLabels: { id: View; label: string }[] = [
+        { id: 'agenda', label: 'Agenda' },
+        { id: 'month', label: 'Monat' },
+        { id: 'week', label: 'Woche' },
+        { id: 'day', label: 'Tag' },
+    ];
+
+    const rangeLabel = () => {
+        if (view === 'month') return moment(date).format('MMMM YYYY');
+        if (view === 'week') {
+            return `${moment(date).startOf('week').format('DD.MM.')} – ${moment(
+                date,
+            )
+                .endOf('week')
+                .format('DD.MM.YYYY')}`;
+        }
+        return moment(date).format('dddd, DD. MMMM YYYY');
+    };
+
+    const navigate = (direction: -1 | 1 | 0) => {
+        if (direction === 0) {
+            setDate(new Date());
+            return;
+        }
+        const unit = view === 'month' ? 'month' : view === 'week' ? 'week' : 'day';
+        setDate(moment(date).add(direction, unit).toDate());
+    };
+
+    const selectedIsCancelled = Boolean(selectedEvent?.isCancelled);
+
+    const confirmCopy = () => {
+        if (!selectedEvent) return null;
+        if (pendingAction === 'cancel') {
+            return {
+                tone: 'notice--warn',
+                title: 'Termin absagen?',
+                text: 'Der Termin wird nicht gelöscht. Er bleibt im Register und auf der Website sichtbar, verliert seine Farbe und erhält den Stempel „Abgesagt“.',
+                confirm: 'Ja, absagen',
+                button: 'btn--danger',
+            };
+        }
+        if (pendingAction === 'restore') {
+            return {
+                tone: 'notice--ok',
+                title: 'Termin wiederherstellen?',
+                text: 'Der Stempel „Abgesagt“ wird entfernt. Der Termin gilt wieder als angesetzt.',
+                confirm: 'Wiederherstellen',
+                button: 'btn--primary',
+            };
+        }
+        return {
+            tone: 'notice--warn',
+            title: 'Termin dauerhaft löschen?',
+            text: 'Der Eintrag wird aus dem Register entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
+            confirm: 'Endgültig löschen',
+            button: 'btn--danger',
+        };
+    };
+
+    const confirmation = confirmCopy();
+
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
-            {/* Calendar */}
-            <div className="calendar-container">
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 600 }}
-                    onSelectEvent={handleSelectEvent}
-                    onSelectSlot={handleSelectSlot}
-                    onNavigate={setDate}
-                    onView={setView}
-                    view={view}
-                    date={date}
-                    length={365}
-                    selectable
-                    components={{
-                        event: EventComponent,
-                        agenda: {
-                            event: AgendaEventComponent,
-                        },
-                    }}
-                    messages={{
-                        next: 'Weiter',
-                        previous: 'Zurück',
-                        today: 'Heute',
-                        month: 'Monat',
-                        week: 'Woche',
-                        day: 'Tag',
-                        agenda: 'Agenda',
-                        date: 'Datum',
-                        time: 'Zeit',
-                        event: 'Ereignis',
-                        noEventsInRange: 'Keine Termine in diesem Zeitraum',
-                        showMore: (total: number) => `+ ${total} weitere`,
-                    }}
-                    culture="de"
-                />
+        <div>
+            {flash && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Gespeichert</strong>
+                    <span>{flash}</span>
+                </div>
+            )}
+
+            <div className={styles.toolbar}>
+                <div
+                    className="tabs"
+                    role="tablist"
+                    aria-label="Ansicht wählen"
+                >
+                    {viewLabels.map((entry) => (
+                        <button
+                            key={entry.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={view === entry.id}
+                            aria-controls="event-view-panel"
+                            onClick={() => setView(entry.id)}
+                        >
+                            {entry.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Event Details Modal */}
-            {showEventModal && selectedEvent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4 pb-4 pt-[66px] md:pt-[68px] lg:pt-[70px] z-[60] overflow-y-auto">
-                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-auto">
-                        <div className="flex justify-between items-start mb-6">
+            <div className="filterbar">
+                <div className="field grow">
+                    <label htmlFor="event-search">Suche</label>
+                    <input
+                        id="event-search"
+                        className="input"
+                        type="search"
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        placeholder="Titel, Ort, Verein …"
+                    />
+                </div>
+                {view === 'agenda' && (
+                    <div className="field">
+                        <label htmlFor="event-period">Zeitraum</label>
+                        <select
+                            id="event-period"
+                            className="select"
+                            value={period}
+                            onChange={(event) =>
+                                setPeriod(event.target.value as Period)
+                            }
+                        >
+                            <option value="upcoming">Kommende</option>
+                            <option value="past">Vergangene</option>
+                            <option value="all">Alle</option>
+                        </select>
+                    </div>
+                )}
+                <p className="count">
+                    {view === 'agenda'
+                        ? `${agendaEvents.length} von ${events.length} Einträgen`
+                        : `${visibleEvents.length} von ${events.length} Einträgen`}
+                </p>
+            </div>
+
+            <div id="event-view-panel" role="tabpanel">
+                {view === 'agenda' ? (
+                    agendaEvents.length === 0 ? (
+                        <div className="empty">
+                            <h3>Keine Termine im gewählten Zeitraum</h3>
+                            <p>
+                                {query
+                                    ? 'Die Suche ergab keinen Treffer. Setzen Sie den Suchbegriff zurück oder wählen Sie einen anderen Zeitraum.'
+                                    : period === 'past'
+                                      ? 'Für die Vergangenheit sind keine Einträge verzeichnet.'
+                                      : 'Für diesen Zeitraum ist noch kein Termin eingetragen. Legen Sie den ersten Eintrag an.'}
+                            </p>
+                        </div>
+                    ) : (
+                        <table className={`data ${styles.agenda}`}>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Datum</th>
+                                    <th scope="col">Zeit</th>
+                                    <th scope="col">Termin</th>
+                                    <th scope="col" className={styles.colPlace}>
+                                        Ort
+                                    </th>
+                                    <th scope="col" className={styles.colClub}>
+                                        Verein
+                                    </th>
+                                    <th scope="col">Zustand</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {agendaEvents.map((event) => (
+                                    <tr key={event.id}>
+                                        <td className={styles.cellDate}>
+                                            <span className={styles.dateCell}>
+                                                <span className={styles.dow}>
+                                                    {weekday(event.start)}
+                                                </span>
+                                                <span>
+                                                    {dateShort(event.start)}
+                                                </span>
+                                            </span>
+                                        </td>
+                                        <td
+                                            className={styles.cellTime}
+                                            style={{
+                                                whiteSpace: 'nowrap',
+                                                fontVariantNumeric:
+                                                    'tabular-nums',
+                                            }}
+                                        >
+                                            {timeRange(event.start, event.end)}
+                                        </td>
+                                        <td className={styles.cellTitle}>
+                                            <button
+                                                type="button"
+                                                className={`${styles.agendaTitle} ${
+                                                    event.isCancelled
+                                                        ? styles.agendaTitleCancelled
+                                                        : ''
+                                                }`}
+                                                onClick={() => openEvent(event)}
+                                            >
+                                                {event.title}
+                                            </button>
+                                            <span className={styles.category}>
+                                                {categoryLabel(event.category)}
+                                            </span>
+                                        </td>
+                                        <td className={styles.colPlace}>
+                                            <span className={styles.place}>
+                                                {event.location || '—'}
+                                            </span>
+                                        </td>
+                                        <td className={styles.colClub}>
+                                            <span className={styles.club}>
+                                                {vereinLabel(event.vereinId)}
+                                            </span>
+                                        </td>
+                                        <td className={styles.cellState}>
+                                            {event.isCancelled ? (
+                                                <span className="stamp stamp--cancelled">
+                                                    Abgesagt
+                                                </span>
+                                            ) : (
+                                                <span className={styles.stateOpen}>
+                                                    Angesetzt
+                                                </span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )
+                ) : (
+                    <>
+                        <div className={styles.navRow}>
+                            <button
+                                type="button"
+                                className="btn btn--sm btn--quiet"
+                                onClick={() => navigate(-1)}
+                            >
+                                Zurück
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn--sm btn--quiet"
+                                onClick={() => navigate(0)}
+                            >
+                                Heute
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn--sm btn--quiet"
+                                onClick={() => navigate(1)}
+                            >
+                                Weiter
+                            </button>
+                            <p className={styles.rangeLabel}>{rangeLabel()}</p>
+                        </div>
+                        <div className={styles.surface}>
+                            <Calendar
+                                localizer={localizer}
+                                events={visibleEvents}
+                                startAccessor="start"
+                                endAccessor="end"
+                                onSelectEvent={handleSelectEvent}
+                                onSelectSlot={handleSelectSlot}
+                                onNavigate={setDate}
+                                onView={setView}
+                                view={view}
+                                views={['month', 'week', 'day']}
+                                date={date}
+                                selectable
+                                toolbar={false}
+                                components={{ event: EventComponent }}
+                                messages={{
+                                    next: 'Weiter',
+                                    previous: 'Zurück',
+                                    today: 'Heute',
+                                    month: 'Monat',
+                                    week: 'Woche',
+                                    day: 'Tag',
+                                    agenda: 'Agenda',
+                                    date: 'Datum',
+                                    time: 'Zeit',
+                                    event: 'Termin',
+                                    noEventsInRange:
+                                        'Keine Termine in diesem Zeitraum',
+                                    showMore: (total: number) =>
+                                        `+ ${total} weitere`,
+                                }}
+                                culture="de"
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {/* Detail / edit dialog */}
+            {selectedEvent && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) closeDetail();
+                    }}
+                >
+                    <div
+                        ref={detailRef}
+                        className={`dialog ${styles.dialogWide}`}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="event-dialog-title"
+                    >
+                        <div className="dialog-head">
                             <div>
-                                <h3 className="text-xl font-bold text-gray-900">
+                                <h2 id="event-dialog-title">
                                     {isEditing
                                         ? 'Termin bearbeiten'
                                         : selectedEvent.title}
-                                </h3>
-                                {selectedEvent.isCancelled && !isEditing && (
-                                    <span className="inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <ProhibitInset className="w-3 h-3 mr-1" />
-                                        Abgesagt
-                                    </span>
-                                )}
+                                </h2>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                {!isEditing && (
-                                    <>
-                                        {canEditEvent(selectedEvent) && (
-                                            <button
-                                                onClick={startEditing}
-                                                className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                                                title="Bearbeiten"
-                                            >
-                                                <PencilSimple className="w-4 h-4" />
-                                            </button>
-                                        )}
-                                        {canCancelEvent(selectedEvent) &&
-                                            (selectedEvent.isCancelled ? (
-                                                <button
-                                                    onClick={handleRestoreEvent}
-                                                    disabled={loading}
-                                                    className="p-2 text-green-600 hover:bg-green-50 rounded-md"
-                                                    title="Termin wiederherstellen"
-                                                >
-                                                    <ArrowCounterClockwise className="w-4 h-4" />
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={handleCancelEvent}
-                                                    disabled={loading}
-                                                    className="p-2 text-orange-600 hover:bg-orange-50 rounded-md"
-                                                    title="Termin absagen"
-                                                >
-                                                    <ProhibitInset className="w-4 h-4" />
-                                                </button>
-                                            ))}
-                                        {canDeleteEvent(selectedEvent) && (
-                                            <button
-                                                onClick={handleDeleteEvent}
-                                                disabled={loading}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-md"
-                                                title="Termin dauerhaft löschen (nur für Administratoren)"
-                                            >
-                                                <Trash className="w-4 h-4" />
-                                            </button>
-                                        )}
-                                    </>
-                                )}
-                                <button
-                                    onClick={() => {
-                                        setShowEventModal(false);
-                                        setIsEditing(false);
-                                    }}
-                                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                className="dialog-close"
+                                onClick={closeDetail}
+                                aria-label="Dialog schließen"
+                            >
+                                ×
+                            </button>
                         </div>
 
-                        {isEditing ? (
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Titel
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={eventForm.title}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                title: e.target.value,
-                                            })
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                    />
+                        <div className="dialog-body">
+                            {formError && (
+                                <div
+                                    className="notice notice--error"
+                                    role="alert"
+                                    style={{ marginBottom: 'var(--s4)' }}
+                                >
+                                    <strong>Nicht gespeichert</strong>
+                                    <span>{formError}</span>
                                 </div>
+                            )}
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Beschreibung
-                                    </label>
-                                    <textarea
-                                        value={eventForm.description}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                description: e.target.value,
-                                            })
-                                        }
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Start
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            value={eventForm.start}
-                                            onChange={(e) =>
-                                                setEventForm({
-                                                    ...eventForm,
-                                                    start: e.target.value,
-                                                })
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Ende
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            value={eventForm.end}
-                                            onChange={(e) =>
-                                                setEventForm({
-                                                    ...eventForm,
-                                                    end: e.target.value,
-                                                })
-                                            }
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Ort
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={eventForm.location}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                location: e.target.value,
-                                            })
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Kategorie
-                                    </label>
-                                    <select
-                                        value={eventForm.category}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                category: e.target
-                                                    .value as CalendarEvent['category'],
-                                            })
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                    >
-                                        {categoryOptions.map((option) => (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Veranstalter
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={eventForm.organizer}
-                                        onChange={(e) =>
-                                            setEventForm({
-                                                ...eventForm,
-                                                organizer: e.target.value,
-                                            })
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Bild (optional)
-                                    </label>
-                                    <div className="space-y-2">
-                                        {eventForm.imageUrl ? (
-                                            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className="w-12 h-12 rounded-lg overflow-hidden relative">
-                                                    <Image
-                                                        src={eventForm.imageUrl}
-                                                        alt="Ausgewähltes Bild"
-                                                        fill
-                                                        className="object-cover"
+                            {isEditing ? (
+                                <form
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        handleUpdateEvent();
+                                    }}
+                                >
+                                    <div className={styles.formSection}>
+                                        <p className={styles.formSectionTitle}>
+                                            Eintrag
+                                        </p>
+                                        <div className={styles.formGrid}>
+                                            <div className="field">
+                                                <label htmlFor="event-title">
+                                                    Titel *
+                                                </label>
+                                                <input
+                                                    id="event-title"
+                                                    className="input"
+                                                    type="text"
+                                                    required
+                                                    value={eventForm.title}
+                                                    onChange={(event) =>
+                                                        setEventForm({
+                                                            ...eventForm,
+                                                            title: event.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="field">
+                                                <label htmlFor="event-description">
+                                                    Beschreibung
+                                                </label>
+                                                <textarea
+                                                    id="event-description"
+                                                    className="textarea"
+                                                    rows={4}
+                                                    value={
+                                                        eventForm.description
+                                                    }
+                                                    onChange={(event) =>
+                                                        setEventForm({
+                                                            ...eventForm,
+                                                            description:
+                                                                event.target
+                                                                    .value,
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                            <div className={styles.formRow}>
+                                                <div className="field">
+                                                    <label htmlFor="event-start">
+                                                        Start *
+                                                    </label>
+                                                    <input
+                                                        id="event-start"
+                                                        className="input"
+                                                        type="datetime-local"
+                                                        required
+                                                        value={eventForm.start}
+                                                        onChange={(event) =>
+                                                            setEventForm({
+                                                                ...eventForm,
+                                                                start: event
+                                                                    .target
+                                                                    .value,
+                                                            })
+                                                        }
                                                     />
                                                 </div>
-                                                <div className="flex-1 flex items-stretch justify-between gap-3">
-                                                    <div>
-                                                        <p className="text-sm font-medium text-gray-900">
-                                                            Bild ausgewählt
-                                                        </p>
-                                                        <p className="mt-1 text-xs text-gray-500">
-                                                            Wird in der
-                                                            Terminübersicht
-                                                            angezeigt
-                                                        </p>
+                                                <div className="field">
+                                                    <label htmlFor="event-end">
+                                                        Ende *
+                                                    </label>
+                                                    <input
+                                                        id="event-end"
+                                                        className="input"
+                                                        type="datetime-local"
+                                                        required
+                                                        value={eventForm.end}
+                                                        onChange={(event) =>
+                                                            setEventForm({
+                                                                ...eventForm,
+                                                                end: event.target
+                                                                    .value,
+                                                            })
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className={styles.formRow}>
+                                                <div className="field">
+                                                    <label htmlFor="event-location">
+                                                        Ort
+                                                    </label>
+                                                    <input
+                                                        id="event-location"
+                                                        className="input"
+                                                        type="text"
+                                                        value={
+                                                            eventForm.location
+                                                        }
+                                                        onChange={(event) =>
+                                                            setEventForm({
+                                                                ...eventForm,
+                                                                location:
+                                                                    event.target
+                                                                        .value,
+                                                            })
+                                                        }
+                                                    />
+                                                </div>
+                                                <div className="field">
+                                                    <label htmlFor="event-organizer">
+                                                        Veranstalter
+                                                    </label>
+                                                    <input
+                                                        id="event-organizer"
+                                                        className="input"
+                                                        type="text"
+                                                        value={
+                                                            eventForm.organizer
+                                                        }
+                                                        onChange={(event) =>
+                                                            setEventForm({
+                                                                ...eventForm,
+                                                                organizer:
+                                                                    event.target
+                                                                        .value,
+                                                            })
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="field">
+                                                <label htmlFor="event-category">
+                                                    Rubrik
+                                                </label>
+                                                <select
+                                                    id="event-category"
+                                                    className="select"
+                                                    value={eventForm.category}
+                                                    onChange={(event) =>
+                                                        setEventForm({
+                                                            ...eventForm,
+                                                            category: event.target
+                                                                .value as CalendarEvent['category'],
+                                                        })
+                                                    }
+                                                >
+                                                    {categoryOptions.map(
+                                                        (option) => (
+                                                            <option
+                                                                key={
+                                                                    option.value
+                                                                }
+                                                                value={
+                                                                    option.value
+                                                                }
+                                                            >
+                                                                {option.label}
+                                                            </option>
+                                                        ),
+                                                    )}
+                                                </select>
+                                            </div>
+                                            <div className="field">
+                                                <span className="field-label">
+                                                    Bild
+                                                </span>
+                                                {eventForm.imageUrl ? (
+                                                    <div
+                                                        className={
+                                                            styles.imageTray
+                                                        }
+                                                    >
+                                                        <span
+                                                            className={
+                                                                styles.trayThumb
+                                                            }
+                                                        >
+                                                            <CroppedImage
+                                                                src={
+                                                                    eventForm.imageUrl
+                                                                }
+                                                                cropData={
+                                                                    eventForm.imageCropData
+                                                                }
+                                                                viewId="popup"
+                                                                alt="Gewähltes Terminbild"
+                                                                fill
+                                                            />
+                                                        </span>
+                                                        <span
+                                                            className={
+                                                                styles.imageTrayText
+                                                            }
+                                                        >
+                                                            Das Bild erscheint in
+                                                            der Terminübersicht.
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn--sm btn--quiet"
+                                                            onClick={() =>
+                                                                setShowCropper(
+                                                                    true,
+                                                                )
+                                                            }
+                                                        >
+                                                            Zuschneiden
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn--sm btn--quiet"
+                                                            onClick={() =>
+                                                                setEventForm({
+                                                                    ...eventForm,
+                                                                    imageUrl:
+                                                                        '',
+                                                                    imageCropData:
+                                                                        undefined,
+                                                                })
+                                                            }
+                                                        >
+                                                            Entfernen
+                                                        </button>
                                                     </div>
+                                                ) : (
                                                     <button
                                                         type="button"
+                                                        className={
+                                                            styles.picker
+                                                        }
                                                         onClick={() =>
-                                                            setShowCropper(
+                                                            setShowImagePicker(
                                                                 true,
                                                             )
                                                         }
-                                                        className="inline-flex items-center justify-center self-stretch rounded-md border border-indigo-200 bg-indigo-50 px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300"
                                                     >
-                                                        <Crop className="w-4 h-4 mr-1.5" />
-                                                        Bild zuschneiden
+                                                        Bild aus der Galerie
+                                                        wählen
                                                     </button>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setEventForm({
-                                                            ...eventForm,
-                                                            imageUrl: '',
-                                                            imageCropData:
-                                                                undefined,
-                                                        })
-                                                    }
-                                                    className="text-gray-400 hover:text-gray-600"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.formSection}>
+                                        <p className={styles.formSectionTitle}>
+                                            Absage
+                                        </p>
+                                        {selectedIsCancelled ? (
+                                            <div className="notice notice--warn">
+                                                <strong>
+                                                    Dieser Termin ist abgesagt
+                                                </strong>
+                                                <span>
+                                                    Der Eintrag bleibt im
+                                                    Register sichtbar. Zum
+                                                    Reaktivieren wechseln Sie
+                                                    zurück in die Ansicht und
+                                                    wählen „Wiederherstellen“.
+                                                </span>
                                             </div>
                                         ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setShowImagePicker(true)
-                                                }
-                                                className="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
-                                            >
-                                                <ImageSquare className="w-5 h-5 text-gray-400 mr-2" />
-                                                <span className="text-gray-600">
-                                                    Bild aus Galerie wählen
+                                            <div className="notice">
+                                                <strong>
+                                                    Absagen statt löschen
+                                                </strong>
+                                                <span>
+                                                    Ein abgesagter Termin bleibt
+                                                    im Register und auf der
+                                                    Website sichtbar, wird aber
+                                                    mit dem Stempel „Abgesagt“
+                                                    gekennzeichnet. Die
+                                                    Absage können Sie in der
+                                                    Ansicht auslösen.
                                                 </span>
-                                            </button>
+                                            </div>
+                                        )}
+                                        {canCancelEvent(selectedEvent) && (
+                                            <div
+                                                style={{
+                                                    marginTop: 'var(--s3)',
+                                                }}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className="btn btn--sm btn--danger"
+                                                    onClick={() => {
+                                                        setIsEditing(false);
+                                                        setPendingAction(
+                                                            selectedIsCancelled
+                                                                ? 'restore'
+                                                                : 'cancel',
+                                                        );
+                                                    }}
+                                                >
+                                                    {selectedIsCancelled
+                                                        ? 'Wiederherstellen'
+                                                        : 'Termin absagen'}
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
-                                </div>
 
-                                <div className="flex justify-end space-x-2 pt-4">
-                                    <button
-                                        onClick={() => setIsEditing(false)}
-                                        className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                                    <div
+                                        className={`dialog-foot ${styles.footSticky}`}
+                                        style={{ marginTop: 'var(--s5)' }}
                                     >
-                                        Abbrechen
-                                    </button>
-                                    <button
-                                        onClick={handleUpdateEvent}
-                                        disabled={loading}
-                                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
-                                    >
-                                        <FloppyDisk className="w-4 h-4 mr-2 inline" />
-                                        Speichern
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {selectedEvent.isCancelled && (
-                                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                                        <div className="flex items-start">
-                                            <ProhibitInset className="w-5 h-5 text-red-600 mt-0.5 mr-3" />
-                                            <div>
-                                                <h4 className="text-sm font-semibold text-red-900 mb-1">
-                                                    Dieser Termin wurde abgesagt
-                                                </h4>
+                                        <button
+                                            type="button"
+                                            className="btn btn--quiet"
+                                            onClick={() => {
+                                                setIsEditing(false);
+                                                setFormError(null);
+                                            }}
+                                            disabled={loading}
+                                        >
+                                            Abbrechen
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="btn btn--primary"
+                                            disabled={loading}
+                                        >
+                                            {loading
+                                                ? 'Speichern …'
+                                                : 'Änderungen speichern'}
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <>
+                                    <div className={styles.detailState}>
+                                        <span className={styles.category}>
+                                            {categoryLabel(
+                                                selectedEvent.category,
+                                            )}
+                                        </span>
+                                        {selectedIsCancelled && (
+                                            <div className="notice notice--warn">
+                                                <strong>
+                                                    Dieser Termin ist abgesagt
+                                                </strong>
                                                 {selectedEvent.cancelledBy && (
-                                                    <p className="text-xs text-red-700">
-                                                        Abgesagt von:{' '}
+                                                    <span>
+                                                        Abgesagt von{' '}
                                                         {
                                                             selectedEvent.cancelledBy
                                                         }
-                                                    </p>
+                                                        {selectedEvent.cancelledAt
+                                                            ? ` am ${dateShort(
+                                                                  new Date(
+                                                                      selectedEvent.cancelledAt,
+                                                                  ),
+                                                              )} um ${clock(
+                                                                  new Date(
+                                                                      selectedEvent.cancelledAt,
+                                                                  ),
+                                                              )} Uhr`
+                                                            : ''}
+                                                        .
+                                                    </span>
                                                 )}
-                                                {selectedEvent.cancelledAt && (
-                                                    <p className="text-xs text-red-700">
-                                                        Am:{' '}
-                                                        {moment(
-                                                            selectedEvent.cancelledAt,
-                                                        ).format(
-                                                            'DD.MM.YYYY, HH:mm',
-                                                        )}{' '}
-                                                        Uhr
-                                                    </p>
-                                                )}
+                                                <span>
+                                                    Der Eintrag bleibt im
+                                                    Register sichtbar und ist auf
+                                                    der Website als abgesagt
+                                                    gekennzeichnet.
+                                                </span>
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="flex items-center space-x-3">
-                                    <div
-                                        className={`p-2 rounded-lg ${
-                                            selectedEvent.category === 'sitzung'
-                                                ? 'bg-blue-100 text-blue-600'
-                                                : selectedEvent.category ===
-                                                    'veranstaltung'
-                                                  ? 'bg-green-100 text-green-600'
-                                                  : selectedEvent.category ===
-                                                      'sport'
-                                                    ? 'bg-orange-100 text-orange-600'
-                                                    : selectedEvent.category ===
-                                                        'kultur'
-                                                      ? 'bg-purple-100 text-purple-600'
-                                                      : 'bg-gray-100 text-gray-600'
-                                        }`}
-                                    >
-                                        {getCategoryIcon(
-                                            selectedEvent.category ||
-                                                'sonstiges',
                                         )}
                                     </div>
-                                    <span className="font-medium text-gray-700">
-                                        {categoryOptions.find(
-                                            (opt) =>
-                                                opt.value ===
-                                                selectedEvent.category,
-                                        )?.label || 'Sonstiges'}
-                                    </span>
-                                </div>
 
-                                <div className="flex items-center space-x-3">
-                                    <Clock className="w-5 h-5 text-gray-500" />
-                                    <span className="text-gray-700">
-                                        {moment(selectedEvent.start).format(
-                                            'dddd, DD. MMMM YYYY, HH:mm',
-                                        )}{' '}
-                                        -{' '}
-                                        {moment(selectedEvent.end).format(
-                                            'HH:mm',
-                                        )}{' '}
-                                        Uhr
-                                    </span>
-                                </div>
+                                    <dl className="kv">
+                                        <dt>Zeit</dt>
+                                        <dd>
+                                            {weekdayLong(selectedEvent.start)},{' '}
+                                            {dateLong(selectedEvent.start)} ·{' '}
+                                            {timeRange(
+                                                selectedEvent.start,
+                                                selectedEvent.end,
+                                            )}{' '}
+                                            Uhr
+                                        </dd>
+                                        <dt>Ort</dt>
+                                        <dd>{selectedEvent.location || '—'}</dd>
+                                        <dt>Veranstalter</dt>
+                                        <dd>
+                                            {selectedEvent.organizer || '—'}
+                                        </dd>
+                                        <dt>Verein</dt>
+                                        <dd>
+                                            {vereinLabel(selectedEvent.vereinId)}
+                                        </dd>
+                                    </dl>
 
-                                {selectedEvent.location && (
-                                    <div className="flex items-center space-x-3">
-                                        <MapPin className="w-5 h-5 text-gray-500" />
-                                        <span className="text-gray-700">
-                                            {selectedEvent.location}
-                                        </span>
-                                    </div>
-                                )}
+                                    {selectedEvent.description && (
+                                        <>
+                                            <p className={styles.kicker}>
+                                                Beschreibung
+                                            </p>
+                                            <p className={styles.description}>
+                                                {selectedEvent.description}
+                                            </p>
+                                        </>
+                                    )}
 
-                                {selectedEvent.organizer && (
-                                    <div className="flex items-center space-x-3">
-                                        <User className="w-5 h-5 text-gray-500" />
-                                        <span className="text-gray-700">
-                                            {selectedEvent.organizer}
-                                        </span>
-                                    </div>
-                                )}
-                                {selectedEvent.vereinId &&
-                                    typeof selectedEvent.vereinId ===
-                                        'string' && (
-                                        <div className="flex items-center space-x-3">
-                                            <Buildings className="w-5 h-5 text-gray-500" />
-                                            <span className="text-gray-700">
-                                                {VEREINE_MAP[
-                                                    selectedEvent.vereinId
-                                                ] || selectedEvent.vereinId}
-                                            </span>
+                                    {selectedEvent.imageUrl && (
+                                        <div
+                                            className={styles.figure}
+                                            style={{
+                                                position: 'relative',
+                                                aspectRatio: '16 / 9',
+                                                marginTop: 'var(--s4)',
+                                            }}
+                                        >
+                                            <CroppedImage
+                                                src={selectedEvent.imageUrl}
+                                                cropData={
+                                                    selectedEvent.imageCropData
+                                                }
+                                                viewId="popup"
+                                                alt={selectedEvent.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                            <p className={styles.figureCaption}>
+                                                Terminbild
+                                            </p>
                                         </div>
                                     )}
 
-                                {selectedEvent.imageUrl && (
-                                    <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 relative aspect-video">
-                                        <CroppedImage
-                                            src={selectedEvent.imageUrl}
-                                            cropData={
-                                                selectedEvent.imageCropData
-                                            }
-                                            viewId="popup"
-                                            alt={selectedEvent.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                )}
+                                    {confirmation && pendingAction && (
+                                        <div className={styles.confirmBlock}>
+                                            <div
+                                                className={`notice ${confirmation.tone}`}
+                                                role="alert"
+                                            >
+                                                <strong>
+                                                    {confirmation.title}
+                                                </strong>
+                                                <span>{confirmation.text}</span>
+                                            </div>
+                                            <div
+                                                className={
+                                                    styles.confirmActions
+                                                }
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className={`btn ${confirmation.button}`}
+                                                    onClick={runPendingAction}
+                                                    disabled={loading}
+                                                >
+                                                    {loading
+                                                        ? 'Einen Moment …'
+                                                        : confirmation.confirm}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn--quiet"
+                                                    onClick={() =>
+                                                        setPendingAction(null)
+                                                    }
+                                                    disabled={loading}
+                                                >
+                                                    Abbrechen
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
 
-                                {selectedEvent.description && (
-                                    <div className="mt-6">
-                                        <h4 className="font-bold text-gray-800 mb-2">
-                                            Beschreibung
-                                        </h4>
-                                        <p className="text-gray-700 leading-relaxed">
-                                            {selectedEvent.description}
-                                        </p>
-                                    </div>
+                        {!isEditing && (
+                            <div className={`dialog-foot ${styles.footSticky}`}>
+                                {canDeleteEvent(selectedEvent) && (
+                                    <button
+                                        type="button"
+                                        className="btn btn--danger"
+                                        onClick={() => setPendingAction('delete')}
+                                        disabled={loading}
+                                    >
+                                        Löschen
+                                    </button>
                                 )}
+                                {canCancelEvent(selectedEvent) && (
+                                    <button
+                                        type="button"
+                                        className="btn btn--quiet"
+                                        onClick={() =>
+                                            setPendingAction(
+                                                selectedIsCancelled
+                                                    ? 'restore'
+                                                    : 'cancel',
+                                            )
+                                        }
+                                        disabled={loading}
+                                    >
+                                        {selectedIsCancelled
+                                            ? 'Wiederherstellen'
+                                            : 'Absagen'}
+                                    </button>
+                                )}
+                                {canEditEvent(selectedEvent) && (
+                                    <button
+                                        type="button"
+                                        className="btn btn--primary"
+                                        onClick={startEditing}
+                                        disabled={loading}
+                                    >
+                                        Bearbeiten
+                                    </button>
+                                )}
+                                <button
+                                    type="button"
+                                    className="btn btn--quiet"
+                                    onClick={closeDetail}
+                                    disabled={loading}
+                                >
+                                    Schließen
+                                </button>
                             </div>
                         )}
                     </div>
                 </div>
             )}
 
-            {/* Event Modal for creating new events from button */}
             <EventModal
                 isOpen={showCreateModal}
                 onClose={() => setShowCreateModal?.(false)}
                 onSuccess={() => {
-                    // Refresh the events list using the parent's update function
                     onEventsUpdate?.();
+                    setFlash('Termin angelegt.');
                 }}
             />
 
-            {/* Event Modal for creating new events from calendar selection */}
             <EventModal
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -1003,15 +1399,14 @@ export default function AdminEventsCalendar({
                     setModalInitialValues({});
                 }}
                 onSuccess={() => {
-                    // Refresh the events list using the parent's update function
                     onEventsUpdate?.();
                     setIsModalOpen(false);
                     setModalInitialValues({});
+                    setFlash('Termin angelegt.');
                 }}
                 initialValues={modalInitialValues}
             />
 
-            {/* Image Picker Modal */}
             {showImagePicker && (
                 <GalleryImagePicker
                     onSelect={(image) => {
@@ -1026,7 +1421,6 @@ export default function AdminEventsCalendar({
                 />
             )}
 
-            {/* Image Cropper Modal */}
             {showCropper && eventForm.imageUrl && (
                 <ImageCropper
                     imageUrl={eventForm.imageUrl}
@@ -1041,100 +1435,6 @@ export default function AdminEventsCalendar({
                     onCancel={() => setShowCropper(false)}
                 />
             )}
-
-            <style jsx global>{`
-                .calendar-container .rbc-calendar {
-                    font-family: inherit;
-                }
-
-                .calendar-container .rbc-header {
-                    background-color: #f8fafc;
-                    border-bottom: 1px solid #e2e8f0;
-                    padding: 12px 8px;
-                    font-weight: 600;
-                    color: #374151;
-                }
-
-                .calendar-container .rbc-month-view {
-                    border: 1px solid #e2e8f0;
-                    border-radius: 12px;
-                    overflow: hidden;
-                }
-
-                .calendar-container .rbc-date-cell {
-                    padding: 8px;
-                }
-
-                .calendar-container .rbc-off-range-bg {
-                    background-color: #f9fafb;
-                }
-
-                .calendar-container .rbc-today {
-                    background-color: #fef3c7;
-                }
-
-                .calendar-container .rbc-toolbar {
-                    margin-bottom: 20px;
-                    gap: 16px;
-                    flex-wrap: wrap;
-                }
-
-                .calendar-container .rbc-toolbar-label {
-                    color: #1f2937;
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                    text-align: center;
-                    flex-grow: 1;
-                    padding: 8px 16px;
-                }
-
-                .calendar-container .rbc-toolbar button {
-                    background-color: #6366f1;
-                    border: none;
-                    color: white;
-                    padding: 8px 16px;
-                    border-radius: 8px;
-                    font-weight: 500;
-                    transition: all 0.2s;
-                }
-
-                .calendar-container .rbc-toolbar button:hover {
-                    background-color: #4f46e5;
-                    transform: translateY(-1px);
-                }
-
-                .calendar-container .rbc-toolbar button.rbc-active {
-                    background-color: #312e81;
-                }
-
-                .calendar-container .rbc-event {
-                    border: none;
-                    border-radius: 4px;
-                }
-
-                .calendar-container .rbc-slot-selection {
-                    background-color: rgba(99, 102, 241, 0.1);
-                }
-
-                /* Make agenda view scrollable */
-                .calendar-container .rbc-agenda-view {
-                    max-height: 600px;
-                    overflow-y: auto;
-                }
-
-                .calendar-container .rbc-agenda-table {
-                    width: 100%;
-                }
-
-                /* Sticky header for agenda view */
-                .calendar-container .rbc-agenda-view table > thead {
-                    position: sticky;
-                    top: 0;
-                    background-color: white;
-                    z-index: 10;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                }
-            `}</style>
         </div>
     );
 }

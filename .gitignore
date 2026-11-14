@@ -46,4 +46,11 @@ next-env.d.ts
 # Prevent all env-like files
 *.env*.*
 
-.playwright-mcp
+.playwright-mcpbackups/
+
+.openchamber/
+# verification build (distDir override)
+.next-build*/
+
+# review screenshots are evidence, not source
+.impeccable/review/

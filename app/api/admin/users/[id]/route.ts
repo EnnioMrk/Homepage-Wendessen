@@ -3,6 +3,7 @@ import { requirePermission } from '@/lib/permissions';
 import { deleteAdminUser, getAdminUserById } from '@/lib/database';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 export async function DELETE(
     request: NextRequest,
@@ -47,6 +48,8 @@ export async function DELETE(
 
         return NextResponse.json({ success: true });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error deleting admin user:', error);
 
         if (

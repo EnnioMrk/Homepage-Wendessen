@@ -1,0 +1,245 @@
+/* Users — the register of keepers and the permission matrix. */
+
+.scroll {
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 100%;
+}
+
+.nameCell {
+    display: grid;
+    gap: 2px;
+    min-width: 170px;
+}
+
+.nameMain {
+    font-weight: 620;
+    font-size: var(--label);
+    overflow-wrap: anywhere;
+}
+
+.sub {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.meta {
+    display: grid;
+    gap: 2px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+}
+
+.inlineMeta {
+    display: none;
+    gap: 2px;
+    font-size: var(--small);
+    color: var(--ink-muted);
+    overflow-wrap: anywhere;
+}
+
+.statusInline {
+    display: none;
+}.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    justify-content: flex-end;
+}
+
+.actions button {
+    white-space: nowrap;
+}
+
+@media (max-width: 1080px) {
+    .colVerein {
+        display: none;
+    }
+
+    .vereinInline {
+        display: grid;
+    }
+}
+
+@media (max-width: 860px) {
+    .colLogin {
+        display: none;
+    }
+
+    .loginInline {
+        display: grid;
+    }
+}
+
+@media (max-width: 720px) {
+    .colRole {
+        display: none;
+    }
+
+    .colStatus {
+        display: none;
+    }
+
+    .roleInline {
+        display: grid;
+    }
+
+    .statusInline {
+        display: inline-flex;
+        margin-top: 4px;
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+}
+
+/* --- Dialogs --------------------------------------------------- */
+
+.dialogWide {
+    display: flex;
+    flex-direction: column;
+    width: min(920px, calc(100vw - 24px));
+    max-height: calc(100dvh - 48px);
+    overflow: hidden;
+}
+
+.dialogSub {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    margin-top: 2px;
+}
+
+.dialogBody {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.formFoot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--s2);
+    margin-top: var(--s5);
+    padding-top: var(--s4);
+    border-top: var(--border) solid var(--rule);
+}
+
+.formFoot--flush {
+    margin-top: var(--s4);
+}
+
+.secret {
+    display: grid;
+    gap: var(--s2);
+    padding: var(--s4);
+    border: var(--border) solid var(--ink);
+    background: var(--paper);
+}
+
+.secretRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2);
+}
+
+.secretValue {
+    font-size: var(--h3);
+    font-weight: 650;
+    letter-spacing: 0.16em;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Permission catalogue -------------------------------------- */
+
+.searchRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--s3);
+    margin-bottom: var(--s4);
+}
+
+.permGroup {
+    border-top: var(--border) solid var(--ink);
+    padding: var(--s3) 0 var(--s2);
+}
+
+.permGroupHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s2) var(--s4);
+    padding-bottom: var(--s2);
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.permGroupTitle {
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.permTools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2);
+}
+
+.permCount {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.permList {
+    display: grid;
+}
+
+.permRow {
+    display: grid;
+    gap: var(--s2);
+    padding: var(--s2) 0;
+    border-bottom: var(--border) solid var(--rule);
+}
+
+.permText {
+    display: grid;
+    gap: 2px;
+}
+
+.permName {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2);
+    font-size: var(--label);
+}
+
+.permKey {
+    font-size: var(--micro);
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.permDesc {
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.permEmpty {
+    padding: var(--s4) 0;
+    font-size: var(--label);
+    color: var(--ink-muted);
+}

@@ -1,25 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import LoadingSpinner from '@/app/components/ui/LoadingSpinner';
-import { usePermissions } from '@/lib/usePermissions';
-import {
-    UploadSimple,
-    MagnifyingGlass,
-    ArrowsDownUp,
-    PencilSimple,
-    Trash,
-    Eye,
-    DownloadSimple,
-    ArrowLeft,
-    X,
-    Check,
-    WarningCircle,
-} from '@phosphor-icons/react/dist/ssr';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Image from 'next/image';
-import PromptDialog from '@/app/components/ui/PromptDialog';
-import Modal from '@/app/components/ui/Modal';
+import { usePermissions } from '@/lib/usePermissions';
+import { AdminHead, Panel } from '@/app/components/admin/AdminPage';
+import { dateShort } from '@/app/lib/register-format';
+import styles from './gallery.module.css';
 
 interface GalleryImage {
     id: string;
@@ -32,12 +18,80 @@ interface GalleryImage {
     uploadedAt: string;
 }
 
+const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+const absoluteUrl = (url: string) => {
+    if (typeof window === 'undefined') return url;
+    try {
+        return new URL(url, window.location.origin).toString();
+    } catch {
+        return url;
+    }
+};
+
+function useOverlay(open: boolean, onClose: () => void) {
+    const ref = useRef<HTMLDivElement>(null);
+    const closeRef = useRef(onClose);
+
+    useEffect(() => {
+        closeRef.current = onClose;
+    }, [onClose]);
+
+    useEffect(() => {
+        if (!open) return;
+        const element = ref.current;
+        if (!element) return;
+
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+        const focusable = () =>
+            Array.from(
+                element.querySelectorAll<HTMLElement>(
+                    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                ),
+            ).filter((node) => node.offsetParent !== null);
+
+        focusable()[0]?.focus();
+
+        const handleKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.stopPropagation();
+                closeRef.current();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const items = focusable();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKey);
+        return () => {
+            document.removeEventListener('keydown', handleKey);
+            previouslyFocused?.focus();
+        };
+    }, [open]);
+
+    return ref;
+}
+
 export default function AdminGallery() {
-    const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { hasPermission } = usePermissions();
 
-    // Check permissions
     const canUpload = hasPermission('gallery.upload');
     const canEdit = hasPermission('gallery.edit');
     const canDelete = hasPermission('gallery.delete');
@@ -48,7 +102,7 @@ export default function AdminGallery() {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState<string>('date');
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(
-        null
+        null,
     );
     const [isRenaming, setIsRenaming] = useState(false);
     const [isRenamingLoading, setIsRenamingLoading] = useState(false);
@@ -57,8 +111,9 @@ export default function AdminGallery() {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [flash, setFlash] = useState<string | null>(null);
     const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(
-        null
+        null,
     );
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -66,49 +121,66 @@ export default function AdminGallery() {
         fetchImages();
     }, []);
 
-    const fetchImages = async () => {
+    useEffect(() => {
+        if (!flash) return;
+        const timer = window.setTimeout(() => setFlash(null), 4000);
+        return () => window.clearTimeout(timer);
+    }, [flash]);
+
+    const fetchImages = async (showLoading = false) => {
+        if (showLoading) setLoading(true);
         try {
             const response = await fetch('/api/admin/gallery');
             if (response.ok) {
                 const data = await response.json();
                 setImages(data.images || []);
+                setError(null);
             } else {
                 setError('Fehler beim Laden der Bilder');
             }
-        } catch (error) {
-            console.error('Error fetching images:', error);
+        } catch (fetchError) {
+            console.error('Error fetching images:', fetchError);
             setError('Fehler beim Laden der Bilder');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const resetUpload = () => {
+        setShowUploadModal(false);
+        setSelectedFiles([]);
+        setUploadName('');
+    };
+
+    const handleFileSelect = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         const files = Array.from(event.target.files || []);
-        if (files.length > 0) {
-            // Validate all files
-            for (const file of files) {
-                if (!file.type.startsWith('image/')) {
-                    setError('Bitte wählen Sie nur Bilddateien aus');
-                    return;
-                }
+        event.target.value = '';
+        if (files.length === 0) return;
 
-                if (file.size > 5 * 1024 * 1024) {
-                    setError(
-                        `Die Datei "${file.name}" ist zu groß. Maximum: 5MB`
-                    );
-                    return;
-                }
+        for (const file of files) {
+            if (!file.type.startsWith('image/')) {
+                setError('Bitte wählen Sie nur Bilddateien aus');
+                return;
             }
 
-            setSelectedFiles(files);
-            if (files.length === 1) {
-                setUploadName(files[0].name.replace(/\.[^/.]+$/, '')); // Remove extension
-            } else {
-                setUploadName(''); // Clear name for multiple files
+            if (file.size > 5 * 1024 * 1024) {
+                setError(
+                    `Die Datei "${file.name}" ist zu groß. Maximum: 5 MB`,
+                );
+                return;
             }
-            setShowUploadModal(true);
         }
+
+        setSelectedFiles(files);
+        if (files.length === 1) {
+            setUploadName(files[0].name.replace(/\.[^/.]+$/, ''));
+        } else {
+            setUploadName('');
+        }
+        setError(null);
+        setShowUploadModal(true);
     };
 
     const handleUpload = async () => {
@@ -133,7 +205,6 @@ export default function AdminGallery() {
                 const formData = new FormData();
                 formData.append('file', file);
 
-                // For single file, use custom name; for multiple files, use original names
                 const displayName =
                     selectedFiles.length === 1
                         ? uploadName.trim()
@@ -150,22 +221,25 @@ export default function AdminGallery() {
                     const data = await response.json();
                     uploadedImages.push(data.image);
                 } else {
-                    const errorData = await response.json();
+                    const errorData = await response.json().catch(() => null);
                     setError(
-                        errorData.error ||
-                            `Fehler beim Hochladen von ${file.name}`
+                        errorData?.error ||
+                            `Fehler beim Hochladen von ${file.name}`,
                     );
+                    setUploading(false);
                     return;
                 }
             }
 
-            // Add all uploaded images to the list
             setImages((prev) => [...uploadedImages, ...prev]);
-            setShowUploadModal(false);
-            setSelectedFiles([]);
-            setUploadName('');
-        } catch (error) {
-            console.error('Upload error:', error);
+            resetUpload();
+            setFlash(
+                uploadedImages.length === 1
+                    ? 'Bild hochgeladen.'
+                    : `${uploadedImages.length} Bilder hochgeladen.`,
+            );
+        } catch (uploadError) {
+            console.error('Upload error:', uploadError);
             setError('Fehler beim Hochladen der Bilder');
         } finally {
             setUploading(false);
@@ -191,16 +265,17 @@ export default function AdminGallery() {
             if (response.ok) {
                 const data = await response.json();
                 setImages((prev) =>
-                    prev.map((img) => (img.id === imageId ? data.image : img))
+                    prev.map((img) => (img.id === imageId ? data.image : img)),
                 );
                 setIsRenaming(false);
                 setSelectedImage(null);
+                setFlash('Bild umbenannt.');
             } else {
-                const errorData = await response.json();
-                setError(errorData.error || 'Fehler beim Umbenennen');
+                const errorData = await response.json().catch(() => null);
+                setError(errorData?.error || 'Fehler beim Umbenennen');
             }
-        } catch (error) {
-            console.error('Rename error:', error);
+        } catch (renameError) {
+            console.error('Rename error:', renameError);
             setError('Fehler beim Umbenennen des Bildes');
         } finally {
             setIsRenamingLoading(false);
@@ -218,15 +293,45 @@ export default function AdminGallery() {
                 setImages((prev) => prev.filter((img) => img.id !== imageId));
                 setSelectedImage(null);
                 setImageToDelete(null);
+                setFlash('Bild gelöscht.');
             } else {
-                const errorData = await response.json();
-                setError(errorData.error || 'Fehler beim Löschen');
+                const errorData = await response.json().catch(() => null);
+                setError(errorData?.error || 'Fehler beim Löschen');
             }
-        } catch (error) {
-            console.error('Delete error:', error);
+        } catch (deleteError) {
+            console.error('Delete error:', deleteError);
             setError('Fehler beim Löschen des Bildes');
         } finally {
             setIsDeleting(false);
+        }
+    };
+
+    const copyLink = async (image: GalleryImage) => {
+        const text = absoluteUrl(image.url);
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+                setFlash('Bildlink kopiert.');
+                return;
+            }
+            throw new Error('clipboard unavailable');
+        } catch {
+            try {
+                const area = document.createElement('textarea');
+                area.value = text;
+                area.setAttribute('readonly', '');
+                area.style.position = 'fixed';
+                area.style.opacity = '0';
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                document.body.removeChild(area);
+                setFlash('Bildlink kopiert.');
+            } catch {
+                setError(
+                    'Der Link konnte nicht kopiert werden. Öffnen Sie das Bild und kopieren Sie die Adresse aus der Vorschau.',
+                );
+            }
         }
     };
 
@@ -253,7 +358,6 @@ export default function AdminGallery() {
                         new Date(a.uploadedAt).getTime()
                     );
                 case 'updated':
-                    // For now, use uploadedAt as updated date (can be enhanced later)
                     return (
                         new Date(b.uploadedAt).getTime() -
                         new Date(a.uploadedAt).getTime()
@@ -263,561 +367,625 @@ export default function AdminGallery() {
             }
         });
 
-    const formatFileSize = (bytes: number) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
+    const previewUrls = useMemo(
+        () => selectedFiles.map((file) => URL.createObjectURL(file)),
+        [selectedFiles],
+    );
+
+    const previewRef = useOverlay(selectedImage !== null && !isRenaming, () =>
+        setSelectedImage(null),
+    );
+    const renameRef = useOverlay(selectedImage !== null && isRenaming, () => {
+        setIsRenaming(false);
+        setSelectedImage(null);
+    });
+    const uploadRef = useOverlay(showUploadModal, resetUpload);
+    const deleteRef = useOverlay(imageToDelete !== null, () =>
+        setImageToDelete(null),
+    );
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-6">
-                        <div className="flex items-center">
-                            <button
-                                onClick={() => router.push('/admin/dashboard')}
-                                className="mr-4 p-2 text-gray-600 hover:text-gray-900"
-                            >
-                                <ArrowLeft size={20} />
-                            </button>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">
-                                    Galerie Verwaltung
-                                </h1>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Bilder hochladen, verwalten und organisieren
-                                </p>
-                            </div>
-                        </div>
-                        {canUpload && (
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center"
-                            >
-                                <UploadSimple size={16} className="mr-2" />
-                                Bild hochladen
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </header>
-
-            {/* Search and Sort Bar */}
-            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="px-4 py-6 sm:px-0">
-                    <div className="bg-white shadow rounded-lg p-6 mb-6">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="flex-1 relative">
-                                <MagnifyingGlass
-                                    size={20}
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Bilder durchsuchen..."
-                                    value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                />
-                            </div>
-                            <div className="relative">
-                                <ArrowsDownUp
-                                    size={20}
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                />
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    className="pl-10 pr-8 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                >
-                                    <option value="date">Nach Datum</option>
-                                    <option value="name">Nach Name</option>
-                                    <option value="updated">
-                                        Nach Aktualisierung
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {error && (
-                            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md flex items-center">
-                                <WarningCircle size={16} className="mr-2" />
-                                {error}
-                                <button
-                                    onClick={() => setError(null)}
-                                    className="ml-auto"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Gallery Grid */}
-                    {loading ? (
-                        <div className="bg-white shadow rounded-lg p-12 text-center">
-                            <LoadingSpinner
-                                size="lg"
-                                text="Lade Bilder..."
-                                centered
-                            />
-                        </div>
-                    ) : sortedAndFilteredImages.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            {sortedAndFilteredImages.map((image) => (
-                                <div
-                                    key={image.id}
-                                    className="bg-white rounded-lg shadow-md group"
-                                >
-                                    <div className="p-3 pb-0">
-                                        <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-100">
-                                            <Image
-                                                src={image.url}
-                                                alt={image.displayName}
-                                                fill
-                                                className="object-cover"
-                                                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                                            />
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-                                                <div className="opacity-0 group-hover:opacity-100 flex space-x-2">
-                                                    <button
-                                                        onClick={() =>
-                                                            setSelectedImage(
-                                                                image
-                                                            )
-                                                        }
-                                                        className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
-                                                    >
-                                                        <Eye size={16} />
-                                                    </button>
-                                                    {canEdit && (
-                                                        <button
-                                                            onClick={() => {
-                                                                setSelectedImage(
-                                                                    image
-                                                                );
-                                                                setNewName(
-                                                                    image.displayName
-                                                                );
-                                                                setIsRenaming(
-                                                                    true
-                                                                );
-                                                            }}
-                                                            className="p-2 bg-white rounded-full hover:bg-gray-100 text-gray-700 hover:text-gray-900"
-                                                        >
-                                                            <PencilSimple
-                                                                size={16}
-                                                            />
-                                                        </button>
-                                                    )}
-                                                    {canDelete && (
-                                                        <button
-                                                            onClick={() =>
-                                                                setImageToDelete(
-                                                                    image
-                                                                )
-                                                            }
-                                                            className="p-2 bg-white rounded-full hover:bg-red-100 text-red-600 hover:text-red-700"
-                                                        >
-                                                            <Trash size={16} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="px-3 pb-3">
-                                        <h3 className="font-medium text-gray-900 truncate">
-                                            {image.displayName}
-                                        </h3>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            {formatFileSize(image.size)}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="bg-white shadow rounded-lg p-12 text-center">
-                            <div className="text-gray-400 mb-4">
-                                <UploadSimple size={48} className="mx-auto" />
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                Keine Bilder gefunden
-                            </h3>
-                            <p className="text-gray-600 mb-4">
-                                {searchTerm
-                                    ? 'Keine Bilder entsprechen Ihren Suchkriterien.'
-                                    : 'Laden Sie Ihr erstes Bild hoch, um zu beginnen.'}
-                            </p>
-                            {!searchTerm && canUpload && (
-                                <button
-                                    onClick={() =>
-                                        fileInputRef.current?.click()
-                                    }
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                                >
-                                    Erstes Bild hochladen
-                                </button>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Hidden File Input */}
-            <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleFileSelect}
-                className="hidden"
+        <div>
+            <AdminHead
+                title="Bilder"
+                sub={
+                    loading
+                        ? 'Galerie der Redaktion'
+                        : `${images.length} ${
+                              images.length === 1 ? 'Bild' : 'Bilder'
+                          } in der Galerie`
+                }
+                actions={
+                    canUpload ? (
+                        <button
+                            type="button"
+                            className="btn btn--primary"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            Bilder hochladen
+                        </button>
+                    ) : null
+                }
             />
 
-            {/* Upload Modal */}
-            <Modal
-                isOpen={showUploadModal}
-                onClose={() => {
-                    setShowUploadModal(false);
-                    setSelectedFiles([]);
-                    setUploadName('');
-                }}
-                maxWidth="2xl"
-                backdropBlur={true}
-            >
-                <div className="p-6 text-left">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-medium text-gray-900">
-                            {selectedFiles.length === 1
-                                ? 'Bild hochladen'
-                                : `${selectedFiles.length} Bilder hochladen`}
-                        </h3>
+            {flash && (
+                <div className="notice notice--ok" role="status">
+                    <strong>Gespeichert</strong>
+                    <span>{flash}</span>
+                </div>
+            )}
+
+            {error && (
+                <div className="notice notice--error" role="alert">
+                    <strong>Nicht abgeschlossen</strong>
+                    <span>{error}</span>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: 'var(--s2)',
+                            marginTop: 'var(--s2)',
+                        }}
+                    >
                         <button
-                            onClick={() => {
-                                setShowUploadModal(false);
-                                setSelectedFiles([]);
-                                setUploadName('');
-                            }}
-                            className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => fetchImages(true)}
                         >
-                            <X size={20} />
-                        </button>
-                    </div>
-
-                    {selectedFiles.length > 0 && (
-                        <div className="mb-4">
-                            {selectedFiles.length === 1 ? (
-                                <div className="aspect-video relative bg-gray-100 rounded-lg overflow-hidden">
-                                    <Image
-                                        src={URL.createObjectURL(
-                                            selectedFiles[0]
-                                        )}
-                                        alt="Preview"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                                    {selectedFiles.map((file, index) => (
-                                        <div
-                                            key={index}
-                                            className="aspect-square relative bg-gray-100 rounded-lg overflow-hidden"
-                                        >
-                                            <Image
-                                                src={URL.createObjectURL(
-                                                    file
-                                                )}
-                                                alt={`Preview ${index + 1}`}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                            <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-                                                {file.name.length > 15
-                                                    ? file.name.substring(
-                                                          0,
-                                                          12
-                                                      ) + '...'
-                                                    : file.name}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {selectedFiles.length === 1 && (
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Bildname *
-                            </label>
-                            <input
-                                type="text"
-                                value={uploadName}
-                                onChange={(e) =>
-                                    setUploadName(e.target.value)
-                                }
-                                placeholder="Name für das Bild eingeben..."
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                autoFocus
-                            />
-                        </div>
-                    )}
-
-                    {selectedFiles.length > 1 && (
-                        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                            <p className="text-sm text-blue-800">
-                                <strong>Hinweis:</strong> Bei mehreren
-                                Bildern werden die ursprünglichen Dateinamen
-                                verwendet.
-                            </p>
-                        </div>
-                    )}
-
-                    <div className="flex justify-end space-x-3">
-                        <button
-                            onClick={() => {
-                                setShowUploadModal(false);
-                                setSelectedFiles([]);
-                                setUploadName('');
-                            }}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-                        >
-                            Abbrechen
+                            Erneut laden
                         </button>
                         <button
-                            onClick={handleUpload}
-                            disabled={
-                                uploading ||
-                                (selectedFiles.length === 1 &&
-                                    !uploadName.trim()) ||
-                                selectedFiles.length === 0
-                            }
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 flex items-center"
+                            type="button"
+                            className="btn btn--sm btn--quiet"
+                            onClick={() => setError(null)}
                         >
-                            {uploading ? (
-                                <>
-                                    <LoadingSpinner
-                                        size="sm"
-                                        color="white"
-                                        className="mr-2"
-                                    />
-                                    Hochladen...
-                                </>
-                            ) : (
-                                <>
-                                    <UploadSimple
-                                        size={16}
-                                        className="mr-2"
-                                    />
-                                    {selectedFiles.length === 1
-                                        ? 'Hochladen'
-                                        : `${selectedFiles.length} Bilder hochladen`}
-                                </>
-                            )}
+                            Hinweis schließen
                         </button>
                     </div>
                 </div>
-            </Modal>
+            )}
 
-            {/* Image Detail Modal */}
-            <Modal
-                isOpen={selectedImage !== null && !isRenaming}
-                onClose={() => setSelectedImage(null)}
-                maxWidth="3xl"
-                backdropBlur={true}
-                centered={false}
-            >
-                {selectedImage && (
-                    <div className="p-6 text-left">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">
-                                {selectedImage.displayName}
-                            </h3>
+            {canUpload && (
+                <div className={styles.uploadPanel}>
+                    <Panel title="Hochladen">
+                        <div className={styles.uploadRow}>
+                            <div className="field">
+                                <span className="field-label">
+                                    Bilddateien
+                                </span>
+                                <div className={styles.uploadControl}>
+                                    <label
+                                        className="btn btn--quiet"
+                                        htmlFor="gallery-file-input"
+                                    >
+                                        Dateien wählen
+                                    </label>
+                                    <input
+                                        ref={fileInputRef}
+                                        id="gallery-file-input"
+                                        className="visually-hidden"
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={handleFileSelect}
+                                    />
+                                    <span className="hint">
+                                        Mehrfachauswahl möglich. JPG, PNG oder
+                                        WebP, maximal 5 MB je Datei. Beim
+                                        Hochladen wird in WebP umgewandelt.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </Panel>
+                </div>
+            )}
+
+            <div className="filterbar">
+                <div className="field grow">
+                    <label htmlFor="gallery-search">Suche</label>
+                    <input
+                        id="gallery-search"
+                        className="input"
+                        type="search"
+                        value={searchTerm}
+                        onChange={(event) =>
+                            setSearchTerm(event.target.value)
+                        }
+                        placeholder="Name oder Originaldatei …"
+                    />
+                </div>
+                <div className="field">
+                    <label htmlFor="gallery-sort">Sortierung</label>
+                    <select
+                        id="gallery-sort"
+                        className="select"
+                        value={sortBy}
+                        onChange={(event) => setSortBy(event.target.value)}
+                    >
+                        <option value="date">Nach Datum</option>
+                        <option value="name">Nach Name</option>
+                        <option value="updated">Nach Aktualisierung</option>
+                    </select>
+                </div>
+                <p className="count">
+                    {sortedAndFilteredImages.length} von {images.length} Bildern
+                </p>
+            </div>
+
+            {loading ? (
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">Lade Bilder …</p>
+                    </div>
+                </div>
+            ) : sortedAndFilteredImages.length === 0 ? (
+                <div className="empty">
+                    <h3>
+                        {images.length === 0
+                            ? 'Noch kein Bild in der Galerie'
+                            : 'Kein Bild gefunden'}
+                    </h3>
+                    <p>
+                        {images.length === 0
+                            ? 'Die Galerie ist leer. Geladene Bilder stehen anschließend in Terminen, Nachrichten und auf Dorfseiten zur Auswahl.'
+                            : 'Die Suche ergab keinen Treffer. Setzen Sie den Suchbegriff zurück oder wählen Sie eine andere Sortierung.'}
+                    </p>
+                    {images.length === 0 && canUpload && (
+                        <button
+                            type="button"
+                            className="btn btn--primary"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            Erstes Bild hochladen
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <div className="plates">
+                    {sortedAndFilteredImages.map((image) => (
+                        <figure key={image.id} className={styles.cell}>
                             <button
-                                onClick={() => setSelectedImage(null)}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                type="button"
+                                className={styles.thumb}
+                                onClick={() => setSelectedImage(image)}
                             >
-                                <X size={20} />
+                                <Image
+                                    src={image.url}
+                                    alt={image.displayName}
+                                    fill
+                                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 200px"
+                                />
+                            </button>
+                            <figcaption className={styles.caption}>
+                                <span className={styles.captionName}>
+                                    {image.displayName}
+                                </span>
+                                <span className={styles.captionMeta}>
+                                    <span>{formatFileSize(image.size)}</span>
+                                    <span>
+                                        {dateShort(new Date(image.uploadedAt))}
+                                    </span>
+                                </span>
+                            </figcaption>
+                            <div className={styles.cellActions}>
+                                <button
+                                    type="button"
+                                    className="btn btn--sm btn--quiet"
+                                    onClick={() => setSelectedImage(image)}
+                                >
+                                    Ansehen
+                                </button>
+                                {canDelete ? (
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--danger"
+                                        onClick={() =>
+                                            setImageToDelete(image)
+                                        }
+                                    >
+                                        Löschen
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className="btn btn--sm btn--quiet"
+                                        onClick={() => copyLink(image)}
+                                    >
+                                        Link
+                                    </button>
+                                )}
+                            </div>
+                        </figure>
+                    ))}
+                </div>
+            )}
+
+            {selectedImage && !isRenaming && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            setSelectedImage(null);
+                    }}
+                >
+                    <div
+                        ref={previewRef}
+                        className={`dialog ${styles.dialogWide}`}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="gallery-preview-title"
+                    >
+                        <div className="dialog-head">
+                            <div>
+                                <p className="small muted">Bild</p>
+                                <h2 id="gallery-preview-title">
+                                    {selectedImage.displayName}
+                                </h2>
+                            </div>
+                            <button
+                                type="button"
+                                className="dialog-close"
+                                onClick={() => setSelectedImage(null)}
+                                aria-label="Vorschau schließen"
+                            >
+                                ×
                             </button>
                         </div>
-
-                        <div className="mb-6">
-                            <div className="relative w-full h-[50vh] bg-gray-100 rounded-2xl overflow-hidden">
+                        <div className="dialog-body">
+                            <div className={styles.previewFrame}>
                                 <Image
                                     src={selectedImage.url}
                                     alt={selectedImage.displayName}
                                     fill
-                                    className="object-contain"
-                                    sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 60vw"
+                                    sizes="(max-width: 900px) 92vw, 820px"
                                 />
                             </div>
+                            <dl className="kv">
+                                <dt>Originalname</dt>
+                                <dd>{selectedImage.originalName}</dd>
+                                <dt>Dateigröße</dt>
+                                <dd>{formatFileSize(selectedImage.size)}</dd>
+                                <dt>Typ</dt>
+                                <dd>{selectedImage.mimeType}</dd>
+                                <dt>Hochgeladen</dt>
+                                <dd>
+                                    {dateShort(
+                                        new Date(selectedImage.uploadedAt),
+                                    )}
+                                </dd>
+                            </dl>
                         </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span className="font-medium text-gray-700">
-                                    Originalname:
-                                </span>
-                                <p className="text-gray-900">
-                                    {selectedImage.originalName}
-                                </p>
-                            </div>
-                            <div>
-                                <span className="font-medium text-gray-700">
-                                    Dateigröße:
-                                </span>
-                                <p className="text-gray-900">
-                                    {formatFileSize(selectedImage.size)}
-                                </p>
-                            </div>
-                            <div>
-                                <span className="font-medium text-gray-700">
-                                    Typ:
-                                </span>
-                                <p className="text-gray-900">
-                                    {selectedImage.mimeType}
-                                </p>
-                            </div>
-                            <div>
-                                <span className="font-medium text-gray-700">
-                                    Hochgeladen:
-                                </span>
-                                <p className="text-gray-900">
-                                    {new Date(
-                                        selectedImage.uploadedAt
-                                    ).toLocaleDateString('de-DE')}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end space-x-3 mt-6">
+                        <div className={`dialog-foot ${styles.footSticky}`}>
+                            {canDelete && (
+                                <button
+                                    type="button"
+                                    className="btn btn--danger"
+                                    onClick={() => {
+                                        const target = selectedImage;
+                                        setSelectedImage(null);
+                                        setImageToDelete(target);
+                                    }}
+                                >
+                                    Löschen
+                                </button>
+                            )}
                             {canEdit && (
                                 <button
+                                    type="button"
+                                    className="btn btn--quiet"
                                     onClick={() => {
                                         setNewName(selectedImage.displayName);
                                         setIsRenaming(true);
                                     }}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md flex items-center"
                                 >
-                                    <PencilSimple size={16} className="mr-2" />
                                     Umbenennen
                                 </button>
                             )}
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => copyLink(selectedImage)}
+                            >
+                                Link kopieren
+                            </button>
                             <a
+                                className="btn btn--quiet"
                                 href={selectedImage.url}
                                 download={selectedImage.displayName}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center"
                             >
-                                <DownloadSimple size={16} className="mr-2" />
                                 Herunterladen
                             </a>
-                        </div>
-                    </div>
-                )}
-            </Modal>
-
-            {/* Rename Modal */}
-            <Modal
-                isOpen={selectedImage !== null && isRenaming}
-                onClose={() => {
-                    setIsRenaming(false);
-                    setSelectedImage(null);
-                }}
-                maxWidth="md"
-                backdropBlur={true}
-            >
-                {selectedImage && (
-                    <div className="p-6 text-left">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-900">
-                                Bild umbenennen
-                            </h3>
                             <button
-                                onClick={() => {
-                                    setIsRenaming(false);
-                                    setSelectedImage(null);
-                                }}
-                                className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => setSelectedImage(null)}
                             >
-                                <X size={20} />
+                                Schließen
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
 
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Neuer Name
-                            </label>
-                            <input
-                                type="text"
-                                value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                                autoFocus
-                            />
-                        </div>
-
-                        <div className="flex justify-end space-x-3">
+            {selectedImage && isRenaming && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) {
+                            setIsRenaming(false);
+                            setSelectedImage(null);
+                        }
+                    }}
+                >
+                    <div
+                        ref={renameRef}
+                        className="dialog"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="gallery-rename-title"
+                    >
+                        <div className="dialog-head">
+                            <h2 id="gallery-rename-title">Bild umbenennen</h2>
                             <button
+                                type="button"
+                                className="dialog-close"
                                 onClick={() => {
                                     setIsRenaming(false);
                                     setSelectedImage(null);
                                 }}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                                aria-label="Dialog schließen"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="dialog-body">
+                            <div className="field">
+                                <label htmlFor="gallery-new-name">
+                                    Neuer Name
+                                </label>
+                                <input
+                                    id="gallery-new-name"
+                                    className="input"
+                                    type="text"
+                                    value={newName}
+                                    onChange={(event) =>
+                                        setNewName(event.target.value)
+                                    }
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+                        <div className={`dialog-foot ${styles.footSticky}`}>
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => {
+                                    setIsRenaming(false);
+                                    setSelectedImage(null);
+                                }}
                             >
                                 Abbrechen
                             </button>
                             <button
+                                type="button"
+                                className="btn btn--primary"
                                 onClick={() =>
                                     handleRename(selectedImage.id, newName)
                                 }
                                 disabled={isRenamingLoading}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
-                                {isRenamingLoading ? (
-                                    <>
-                                        <LoadingSpinner
-                                            size="sm"
-                                            color="white"
-                                            className="mr-2"
-                                        />
-                                        Speichern...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Check size={16} className="mr-2" />
-                                        Speichern
-                                    </>
-                                )}
+                                {isRenamingLoading
+                                    ? 'Speichern …'
+                                    : 'Namen speichern'}
                             </button>
                         </div>
                     </div>
-                )}
-            </Modal>
+                </div>
+            )}
 
-            {/* Delete Confirmation Dialog */}
-            <PromptDialog
-                isOpen={Boolean(imageToDelete)}
-                title="Bild löschen?"
-                description={`Möchten Sie das Bild "${imageToDelete?.displayName}" wirklich löschen?`}
-                detail="Diese Aktion kann nicht rückgängig gemacht werden."
-                confirmText={isDeleting ? 'Löschen...' : 'Löschen'}
-                cancelText="Abbrechen"
-                onConfirm={() =>
-                    imageToDelete && handleDelete(imageToDelete.id)
-                }
-                onCancel={() => setImageToDelete(null)}
-                icon={<Trash className="h-7 w-7" weight="duotone" />}
-                accentColor="red"
-            />
+            {showUploadModal && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            resetUpload();
+                    }}
+                >
+                    <div
+                        ref={uploadRef}
+                        className={`dialog ${styles.dialogWide}`}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="gallery-upload-title"
+                    >
+                        <div className="dialog-head">
+                            <h2 id="gallery-upload-title">
+                                {selectedFiles.length === 1
+                                    ? 'Bild hochladen'
+                                    : `${selectedFiles.length} Bilder hochladen`}
+                            </h2>
+                            <button
+                                type="button"
+                                className="dialog-close"
+                                onClick={resetUpload}
+                                aria-label="Dialog schließen"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="dialog-body">
+                            {error && (
+                                <div
+                                    className="notice notice--error"
+                                    role="alert"
+                                    style={{ marginBottom: 'var(--s4)' }}
+                                >
+                                    <strong>Nicht hochgeladen</strong>
+                                    <span>{error}</span>
+                                </div>
+                            )}
+
+                            {selectedFiles.length === 1 ? (
+                                <div className={styles.uploadSingle}>
+                                    <Image
+                                        src={previewUrls[0]}
+                                        alt={`Vorschau von ${selectedFiles[0].name}`}
+                                        fill
+                                        unoptimized
+                                        sizes="820px"
+                                    />
+                                </div>
+                            ) : (
+                                <div className={styles.uploadPreviews}>
+                                    {selectedFiles.map((file, index) => (
+                                        <div
+                                            key={`${file.name}-${index}`}
+                                            className={styles.uploadPreview}
+                                        >
+                                            <Image
+                                                src={previewUrls[index]}
+                                                alt={`Vorschau von ${file.name}`}
+                                                fill
+                                                unoptimized
+                                                sizes="160px"
+                                            />
+                                            <span
+                                                className={
+                                                    styles.uploadFileName
+                                                }
+                                            >
+                                                {file.name}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {selectedFiles.length === 1 && (
+                                <div className="field">
+                                    <label htmlFor="gallery-upload-name">
+                                        Bildname *
+                                    </label>
+                                    <input
+                                        id="gallery-upload-name"
+                                        className="input"
+                                        type="text"
+                                        value={uploadName}
+                                        onChange={(event) =>
+                                            setUploadName(event.target.value)
+                                        }
+                                        autoFocus
+                                    />
+                                </div>
+                            )}
+
+                            {selectedFiles.length > 1 && (
+                                <div className="notice">
+                                    <strong>Mehrere Dateien</strong>
+                                    <span>
+                                        Bei mehreren Bildern werden die
+                                        ursprünglichen Dateinamen als
+                                        Bildnamen verwendet.
+                                    </span>
+                                </div>
+                            )}
+
+                            <p className={styles.hint}>
+                                {selectedFiles.length === 1
+                                    ? 'Maximal 5 MB. Das Bild wird beim Hochladen in WebP umgewandelt.'
+                                    : `${selectedFiles.length} Dateien, je maximal 5 MB.`}
+                            </p>
+                        </div>
+                        <div className={`dialog-foot ${styles.footSticky}`}>
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={resetUpload}
+                                disabled={uploading}
+                            >
+                                Abbrechen
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn--primary"
+                                onClick={handleUpload}
+                                disabled={
+                                    uploading ||
+                                    (selectedFiles.length === 1 &&
+                                        !uploadName.trim()) ||
+                                    selectedFiles.length === 0
+                                }
+                            >
+                                {uploading
+                                    ? 'Hochladen …'
+                                    : selectedFiles.length === 1
+                                      ? 'Hochladen'
+                                      : `${selectedFiles.length} Bilder hochladen`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {imageToDelete && (
+                <div
+                    className={styles.overlay}
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget)
+                            setImageToDelete(null);
+                    }}
+                >
+                    <div
+                        ref={deleteRef}
+                        className="dialog"
+                        role="alertdialog"
+                        aria-modal="true"
+                        aria-labelledby="gallery-delete-title"
+                    >
+                        <div className="dialog-head">
+                            <h2 id="gallery-delete-title">Bild löschen</h2>
+                            <button
+                                type="button"
+                                className="dialog-close"
+                                onClick={() => setImageToDelete(null)}
+                                aria-label="Dialog schließen"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="dialog-body">
+                            <div className="notice notice--warn">
+                                <strong>{imageToDelete.displayName}</strong>
+                                <span>
+                                    Bild und Datei werden entfernt. Diese
+                                    Aktion kann nicht rückgängig gemacht
+                                    werden.
+                                </span>
+                            </div>
+                        </div>
+                        <div className={`dialog-foot ${styles.footSticky}`}>
+                            <button
+                                type="button"
+                                className="btn btn--quiet"
+                                onClick={() => setImageToDelete(null)}
+                            >
+                                Abbrechen
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn--danger"
+                                onClick={() => handleDelete(imageToDelete.id)}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting
+                                    ? 'Löschen …'
+                                    : 'Endgültig löschen'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

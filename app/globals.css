@@ -2,173 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-    :root {
-        /* Main color palette based on the Wendessen village colors */
+/* The design system lives in app/design/*.css and is imported by the root
+   layout after this file, so Tailwind's preflight never outranks it. */
 
-        /* Primary: Fresh green */
-        --primary-hsl: 102 28% 57%; /* #7FB069 */
-        --primary-light-hsl: 102 28% 67%; /* #9BC88A */
-        --primary-dark-hsl: 102 32% 35%; /* Darker for better contrast: #4D7639 */
-
-        /* Secondary: Deep blue-gray (previously accent) */
-        --secondary-hsl: 200 45% 32%; /* #2B5F75 */
-        --secondary-light-hsl: 201 41% 41%; /* #3D7A94 */
-        --secondary-dark-hsl: 200 55% 24%; /* #1A4A5C */
-
-        /* Accent: Warm gold (previously secondary) */
-        --accent-hsl: 39 72% 67%; /* #E8B96C */
-        --accent-light-hsl: 40 82% 80%; /* #F5D4A3 */
-        --accent-dark-hsl: 39 61% 56%; /* #D4A04A */
-
-        /* Standard UI colors */
-        --background: 0 0% 100%; /* white */
-        --foreground: 0 0% 10%; /* #1A1A1A */
-
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 10%;
-
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 10%;
-
-        /* Re-map the color variables to our palette */
-        --primary: var(--primary-hsl);
-        --primary-foreground: 0 0% 100%;
-        --primary-dark: var(--primary-dark-hsl);
-
-        --secondary: var(--secondary-hsl);
-        --secondary-foreground: 0 0% 10%;
-
-        --accent: var(--accent-hsl);
-        --accent-foreground: 0 0% 100%;
-
-        --muted: 210 20% 96%;
-        --muted-foreground: 215 8% 50%;
-
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 0 0% 100%;
-
-        --border: 214 32% 91%;
-        --input: 214 32% 91%;
-        --ring: var(--primary-hsl);
-
-        --radius: 0.5rem;
-    }
-}
-
-@layer base {
-    * {
-        @apply border-border;
-    }
-    html {
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE and Edge */
-    }
-    html::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera */
-    }
-    body {
-        @apply bg-background text-foreground;
-        overflow-x: hidden;
-    }
-}
-
-/* Ensure form controls have high-contrast text by default */
+/* Legacy utility surfaces inherit the register's geometry:
+   nothing rounded, nothing floating, text always ink on paper. */
 @layer base {
     input,
     textarea,
     select {
-        @apply text-gray-900 bg-white;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        @apply text-gray-400;
+        @apply bg-background-secondary text-foreground;
     }
 }
 
-/* Custom styles for navigation */
-.navigation-menu-trigger {
-    @apply bg-white text-foreground hover:bg-primary/20 hover:text-primary-dark;
+.shadow,
+.shadow-sm,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+    box-shadow: none !important;
 }
 
-.navigation-menu-content {
-    @apply bg-white border border-border shadow-lg;
-}
-
-.navigation-menu-item {
-    @apply hover:bg-primary/15 hover:text-primary-dark;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-    }
-}
-
-body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
-}
-
+/* Priority slider, rebuilt as a ruled track */
 .priority-slider {
     -webkit-appearance: none;
     appearance: none;
+    width: 100%;
+    height: 24px;
     background: transparent;
+    cursor: pointer;
 }
 
 .priority-slider::-webkit-slider-runnable-track {
-    height: 0.5rem;
-    border-radius: 9999px;
-    background: linear-gradient(
-        to right,
-        hsl(var(--primary)) 0%,
-        hsl(var(--primary)) var(--slider-progress, 0%),
-        rgb(209 213 219) var(--slider-progress, 0%),
-        rgb(209 213 219) 100%
-    );
+    height: 2px;
+    background: var(--rule-strong);
 }
 
 .priority-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    box-shadow: none !important;
-    filter: none !important;
-    border: 2px solid hsl(var(--primary-dark));
-    background: #ffffff;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 9999px;
-    cursor: pointer;
-    margin-top: -0.25rem;
+    width: 14px;
+    height: 22px;
+    margin-top: -10px;
+    background: var(--pine);
+    border: 1px solid var(--pine-deep);
+    box-shadow: none;
 }
 
 .priority-slider::-moz-range-track {
-    height: 0.5rem;
-    border-radius: 9999px;
-    background: rgb(209 213 219);
-}
-
-.priority-slider::-moz-range-progress {
-    height: 0.5rem;
-    border-radius: 9999px;
-    background: hsl(var(--primary));
+    height: 2px;
+    background: var(--rule-strong);
 }
 
 .priority-slider::-moz-range-thumb {
-    appearance: none;
-    box-shadow: none !important;
-    filter: none !important;
-    border: 2px solid hsl(var(--primary-dark));
-    background: #ffffff;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 9999px;
-    cursor: pointer;
+    width: 14px;
+    height: 22px;
+    border-radius: 0;
+    background: var(--pine);
+    border: 1px solid var(--pine-deep);
+    box-shadow: none;
 }
 
-.priority-slider:focus {
+.priority-slider:focus-visible {
     outline: none;
+    box-shadow: var(--focus-ring);
 }

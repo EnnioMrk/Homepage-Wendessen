@@ -2,8 +2,9 @@
 
 import AdminPortraits from './AdminPortraits';
 import { useState, useEffect } from 'react';
-import { ArrowLeft, UsersThree, Warning } from '@phosphor-icons/react/dist/ssr';
+import Link from 'next/link';
 import { usePermissions } from '@/lib/usePermissions';
+import { AdminHead } from '@/app/components/admin/AdminPage';
 
 interface PortraitSubmission {
     id: number;
@@ -37,7 +38,7 @@ export default function AdminPortraitsPage() {
                     headers: {
                         'Cache-Control': 'no-cache',
                     },
-                }
+                },
             );
 
             if (!response.ok) {
@@ -47,8 +48,8 @@ export default function AdminPortraitsPage() {
             const data = await response.json();
             setSubmissions(data);
             setError(null);
-        } catch (err) {
-            console.error('Error loading submissions:', err);
+        } catch (loadError) {
+            console.error('Error loading submissions:', loadError);
             setError('Fehler beim Laden der Portrait-Einreichungen');
         } finally {
             if (showLoadingScreen) {
@@ -72,8 +73,8 @@ export default function AdminPortraitsPage() {
                 }
 
                 await loadSubmissions(true);
-            } catch (err) {
-                console.error('Error during initialization:', err);
+            } catch (initError) {
+                console.error('Error during initialization:', initError);
                 setError('Fehler beim Laden der Portrait-Einreichungen');
                 setLoading(false);
             }
@@ -82,14 +83,23 @@ export default function AdminPortraitsPage() {
         checkAuthAndLoadSubmissions();
     }, []);
 
+    const pendingCount = submissions.filter(
+        (submission) => submission.status === 'pending',
+    ).length;
+
     if (loading || permissionsLoading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">
-                        Lade Portrait-Einreichungen...
-                    </p>
+            <div>
+                <AdminHead
+                    title="Portrait-Einreichungen"
+                    sub="Gästebuch der Gesichter"
+                />
+                <div className="panel">
+                    <div className="panel-body">
+                        <p className="muted">
+                            Lade Portrait-Einreichungen …
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -97,23 +107,20 @@ export default function AdminPortraitsPage() {
 
     if (!hasPermission('portraits.view')) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Warning className="w-8 h-8 text-red-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Keine Berechtigung
-                    </h2>
-                    <p className="text-gray-600 mb-6">
+            <div>
+                <AdminHead
+                    title="Portrait-Einreichungen"
+                    sub="Gästebuch der Gesichter"
+                />
+                <div className="empty">
+                    <h3>Keine Berechtigung</h3>
+                    <p>
                         Sie haben keine Berechtigung, Portraits zu verwalten.
+                        Wenden Sie sich an die Redaktionsleitung.
                     </p>
-                    <a
-                        href="/admin/dashboard"
-                        className="inline-block bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-md font-medium"
-                    >
-                        ← Zurück zum Dashboard
-                    </a>
+                    <Link className="btn btn--quiet" href="/admin/dashboard">
+                        Zurück zum Schreibtisch
+                    </Link>
                 </div>
             </div>
         );
@@ -121,99 +128,54 @@ export default function AdminPortraitsPage() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Fehler beim Laden der Portrait-Einreichungen
-                    </h2>
-                    <p className="text-gray-600 mb-4">
-                        Die Portrait-Einreichungen konnten nicht geladen werden.
-                    </p>
-                    <a
-                        href="/admin/dashboard"
-                        className="text-indigo-600 hover:text-indigo-800 font-medium"
+            <div>
+                <AdminHead
+                    title="Portrait-Einreichungen"
+                    sub="Gästebuch der Gesichter"
+                />
+                <div className="notice notice--error" role="alert">
+                    <strong>Einreichungen nicht geladen</strong>
+                    <span>
+                        Die Portrait-Einreichungen konnten nicht geladen
+                        werden. Prüfen Sie die Verbindung und versuchen Sie es
+                        erneut.
+                    </span>
+                </div>
+                <div
+                    style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 'var(--s2)',
+                        marginTop: 'var(--s4)',
+                    }}
+                >
+                    <button
+                        type="button"
+                        className="btn btn--primary"
+                        onClick={() => loadSubmissions(true)}
                     >
-                        ← Zurück zum Dashboard
-                    </a>
+                        Erneut laden
+                    </button>
+                    <Link className="btn btn--quiet" href="/admin/dashboard">
+                        Zurück zum Schreibtisch
+                    </Link>
                 </div>
             </div>
         );
     }
 
-    const pendingCount = submissions.filter(
-        (s) => s.status === 'pending'
-    ).length;
-    const approvedCount = submissions.filter(
-        (s) => s.status === 'approved'
-    ).length;
-    const rejectedCount = submissions.filter(
-        (s) => s.status === 'rejected'
-    ).length;
-
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <a
-                                href="/admin/dashboard"
-                                className="mr-4 p-2 text-gray-600 hover:text-gray-900"
-                            >
-                                <ArrowLeft className="w-6 h-6" />
-                            </a>
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                                    <UsersThree className="w-8 h-8 mr-3 text-green-600" />
-                                    Portrait-Einreichungen
-                                </h1>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Portrait-Einreichungen verwalten und
-                                    freigeben
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Statistics */}
-                        <div className="hidden md:flex space-x-4">
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-yellow-600">
-                                    {pendingCount}
-                                </div>
-                                <div className="text-xs text-gray-600">
-                                    Wartend
-                                </div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-green-600">
-                                    {approvedCount}
-                                </div>
-                                <div className="text-xs text-gray-600">
-                                    Freigegeben
-                                </div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-red-600">
-                                    {rejectedCount}
-                                </div>
-                                <div className="text-xs text-gray-600">
-                                    Abgelehnt
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main>
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <AdminPortraits
-                        submissions={submissions}
-                        onSubmissionsUpdate={refreshSubmissions}
-                    />
-                </div>
-            </main>
+        <div>
+            <AdminHead
+                title="Portrait-Einreichungen"
+                sub={`${submissions.length} ${
+                    submissions.length === 1 ? 'Einreichung' : 'Einreichungen'
+                } · ${pendingCount} wartend`}
+            />
+            <AdminPortraits
+                submissions={submissions}
+                onSubmissionsUpdate={refreshSubmissions}
+            />
         </div>
     );
 }

@@ -58,6 +58,8 @@ console.log(
 );
 
 const nextConfig: NextConfig = {
+    // A build can run beside a dev server without fighting over .next/.
+    distDir: process.env.NEXT_DIST_DIR || '.next',
     images: {
         // Use only remotePatterns (domains is deprecated). Keep patterns strict
         // and only enable them when a MinIO hostname is configured via env.

@@ -1,0 +1,746 @@
+/* ============================================================
+   ADMIN — the keeper's desk. Same leaf, a rail instead of a margin.
+   ============================================================ */
+
+.admin-shell {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    min-height: 100dvh;
+}
+
+/* The workspace keeps its own chrome: no public spine, no colophon. */
+body:has(.admin-shell) .spine,
+body:has(.admin-shell) .colophon {
+    display: none;
+}
+
+body:has(.admin-shell) {
+    background: var(--paper);
+}
+
+.admin-rail {
+    background: var(--pine-deep);
+    color: var(--pine-ink-muted);
+    border-right: var(--border) solid var(--foil);
+    padding: var(--s4) 0 var(--s6);
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s3);
+    padding: 4px 0 var(--s3);
+    border-bottom: var(--border) solid var(--rule);
+    margin-bottom: var(--s4);
+    font-size: var(--small);
+    color: var(--ink-muted);
+}
+
+.admin-topbar strong {
+    color: var(--ink);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: var(--tally);
+}
+
+.admin-topbar a {
+    color: var(--ink-secondary);
+    text-decoration: none;
+    border-bottom: var(--border) solid var(--rule-strong);
+}
+
+.admin-topbar a:hover {
+    color: var(--ledger);
+}
+
+.admin-rail-head {
+    padding: 0 var(--s4) var(--s3);
+    border-bottom: var(--border) solid var(--pine-line-soft);
+    margin-bottom: var(--s3);
+}
+
+.admin-rail-head .who {
+    font-size: var(--small);
+    color: var(--pine-ink);
+    font-weight: 600;
+}
+
+.admin-rail-head .role {
+    font-size: var(--micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--foil);
+    margin-top: 2px;
+}
+
+.admin-rail-head .verein {
+    font-size: var(--tally);
+    color: var(--pine-ink-muted);
+    margin-top: 2px;
+}
+
+.admin-nav-group {
+    padding: var(--s3) var(--s4) 4px;
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--pine-label);
+}
+
+.admin-nav a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s2);
+    padding: 8px var(--s4);
+    font-size: var(--label);
+    color: var(--pine-ink-muted);
+    text-decoration: none;
+    border-left: var(--border) solid transparent;
+}
+
+.admin-nav a:hover {
+    background: var(--pine-raised);
+    color: var(--pine-ink);
+}
+
+.admin-nav a[aria-current='page'] {
+    background: var(--pine-raised);
+    color: var(--pine-ink);
+    border-left-color: var(--foil);
+}
+
+.admin-nav .count {
+    min-width: 20px;
+    padding: 1px 5px;
+    text-align: center;
+    font-size: var(--micro);
+    font-weight: 650;
+    color: var(--pine-deep);
+    background: var(--foil);
+    font-variant-numeric: tabular-nums;
+}
+
+.admin-main {
+    padding: var(--s6) var(--s6) var(--s8);
+    min-width: 0;
+    background: var(--paper);
+}
+
+.admin-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s3);
+    padding-bottom: var(--s3);
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: var(--s5);
+}
+
+.admin-head h1 {
+    font-size: var(--h2);
+}
+
+.admin-head .admin-sub {
+    font-size: var(--small);
+    color: var(--ink-muted);
+    margin-top: 4px;
+}
+
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    align-items: center;
+}
+
+.panel {
+    border: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+}
+
+.panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--s2) var(--s3);
+    border-bottom: var(--border) solid var(--rule);
+    background: var(--paper-sunken);
+}
+
+.panel-head h2,
+.panel-head h3 {
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.panel-body {
+    padding: var(--s4);
+}
+
+.panel-body--flush {
+    padding: 0;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: var(--border) solid var(--rule);
+    background: var(--rule);
+    gap: var(--border);
+}
+
+.stat {
+    background: var(--paper-raised);
+    padding: var(--s3) var(--s3) var(--s4);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.stat .stat-label {
+    display: block;
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.stat .stat-value {
+    display: block;
+    font-size: var(--stat);
+    font-weight: 640;
+    font-stretch: 92%;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    margin-top: 6px;
+}
+
+.stat .stat-note {
+    display: block;
+    font-size: var(--tally);
+    color: var(--ink-muted);
+    margin-top: 2px;
+}
+
+a.stat:hover .stat-value {
+    color: var(--ledger);
+}
+
+.admin-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s3);
+    align-items: flex-end;
+    padding: var(--s3) 0;
+    border-bottom: var(--border) solid var(--rule);
+    margin-bottom: var(--s3);
+}
+
+.admin-filter .field {
+    min-width: 150px;
+}
+
+.admin-filter .input,
+.admin-filter .select {
+    min-height: 36px;
+    padding: 6px var(--s2);
+    font-size: var(--label);
+}
+
+.admin-empty {
+    padding: var(--s6);
+    text-align: center;
+    border: var(--border) dashed var(--rule-strong);
+    color: var(--ink-muted);
+}
+
+.admin-login {
+    min-height: calc(100dvh - var(--spine-h));
+    display: grid;
+    place-items: center;
+    padding: var(--s6) var(--s4);
+}
+
+.admin-login-card {
+    width: min(420px, 100%);
+    border: var(--border) solid var(--ink);
+    background: var(--paper-raised);
+    padding: var(--s6);
+}
+
+.admin-login-card h1 {
+    font-size: var(--h3);
+    margin-bottom: 4px;
+}
+
+.admin-login-card .lede {
+    font-size: var(--label);
+    margin-bottom: var(--s5);
+}
+
+/* Tools row at the foot of the rail */
+.admin-rail-tools {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    align-items: stretch;
+    padding: var(--s4);
+    margin-top: auto;
+    border-top: var(--border) solid var(--pine-line-soft);
+}
+
+.admin-mobile-menu {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .admin-shell {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .admin-rail {
+        display: none;
+    }
+    .admin-main {
+        padding: var(--s4) var(--s4) var(--s8);
+    }
+    .admin-mobile-menu {
+        display: block;
+        margin-bottom: var(--s4);
+        border: var(--border) solid var(--pine);
+        background: var(--pine-deep);
+    }
+    .admin-mobile-menu > summary {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--s2);
+        padding: 11px var(--s3);
+        color: var(--pine-ink);
+        font-size: var(--small);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+    }
+    .admin-mobile-menu > summary::-webkit-details-marker {
+        display: none;
+    }
+    .admin-mobile-menu > summary::after {
+        content: '+';
+        color: var(--foil);
+        font-size: var(--input-text);
+        line-height: 1;
+    }
+    .admin-mobile-menu[open] > summary::after {
+        content: '−';
+    }
+    .admin-mobile-menu .admin-nav {
+        border-top: var(--border) solid var(--pine-line-soft);
+        padding-bottom: var(--s2);
+    }
+    .admin-mobile-menu .admin-rail-tools {
+        border-top: var(--border) solid var(--pine-line-soft);
+    }
+}
+
+/* Dialog primitives for the new surfaces */
+.dialog {
+    border: var(--border) solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 0;
+    width: min(640px, calc(100vw - 32px));
+    max-height: calc(100dvh - 64px);
+    overflow: auto;
+}
+
+.dialog::backdrop {
+    background: rgba(20, 36, 32, 0.62);
+}
+
+.dialog-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--s4);
+    padding: var(--s4) var(--s5);
+    border-bottom: var(--border) solid var(--ink);
+    background: var(--paper-raised);
+}
+
+.dialog-head h2 {
+    font-size: var(--lead);
+}
+
+.dialog-body {
+    padding: var(--s5);
+}
+
+.dialog-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+    justify-content: flex-end;
+    padding: var(--s3) var(--s5);
+    border-top: var(--border) solid var(--rule);
+    background: var(--paper-raised);
+}
+
+.dialog-close {
+    background: none;
+    border: var(--border) solid var(--rule-strong);
+    width: 44px;
+    height: 44px;
+    line-height: 1;
+    font-size: var(--close);
+    cursor: pointer;
+    color: var(--ink-secondary);
+}
+
+.dialog-close:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+/* ============================================================
+   BRIDGE — legacy utility markup inside the workspace.
+   Old admin screens keep their structure; the register owns their
+   colours, radii and rules so no incumbent palette leaks through.
+   ============================================================ */
+
+.admin-main .bg-white,
+.admin-main .bg-card {
+    background-color: var(--paper-raised);
+}
+
+.admin-main .bg-gray-50,
+.admin-main .bg-slate-50,
+.admin-main .bg-background,
+.admin-main .bg-background-secondary {
+    background-color: var(--paper);
+}
+
+.admin-main .bg-gray-100,
+.admin-main .bg-background-muted,
+.admin-main .bg-muted {
+    background-color: var(--paper-sunken);
+}
+
+.admin-main .text-gray-900,
+.admin-main .text-foreground,
+.admin-main .text-black {
+    color: var(--ink);
+}
+
+.admin-main .text-gray-800,
+.admin-main .text-gray-700,
+.admin-main .text-foreground-muted {
+    color: var(--ink-secondary);
+}
+
+.admin-main .text-gray-600,
+.admin-main .text-gray-500,
+.admin-main .text-foreground-subtle {
+    color: var(--ink-muted);
+}
+
+.admin-main .text-gray-400 {
+    color: var(--ink-faint);
+}
+
+.admin-main .border-gray-100,
+.admin-main .border-gray-200,
+.admin-main .border-gray-300,
+.admin-main .border-border {
+    border-color: var(--rule);
+}
+
+.admin-main .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+.admin-main .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--rule);
+}
+
+.admin-main .bg-blue-600,
+.admin-main .bg-indigo-600,
+.admin-main .bg-primary,
+.admin-main .bg-emerald-600,
+.admin-main .bg-green-600 {
+    background-color: var(--pine);
+    color: var(--pine-ink);
+}
+
+.admin-main .hover\:bg-blue-700:hover,
+.admin-main .hover\:bg-indigo-700:hover,
+.admin-main .hover\:bg-primary-dark:hover,
+.admin-main .hover\:bg-emerald-700:hover,
+.admin-main .hover\:bg-green-700:hover {
+    background-color: var(--pine-deep);
+    color: var(--pine-text-strong);
+}
+
+.admin-main .text-blue-600,
+.admin-main .text-indigo-600,
+.admin-main .text-primary,
+.admin-main .text-emerald-600 {
+    color: var(--ledger);
+}
+
+.admin-main .bg-red-600,
+.admin-main .bg-destructive {
+    background-color: var(--rubric);
+    color: var(--pine-text-strong);
+}
+
+.admin-main .hover\:bg-red-700:hover {
+    background-color: var(--rubric-ink);
+}
+
+.admin-main .text-red-600,
+.admin-main .text-red-700,
+.admin-main .text-destructive,
+.admin-main .text-error {
+    color: var(--rubric);
+}
+
+.admin-main .bg-red-50,
+.admin-main .bg-red-100,
+.admin-main .bg-error-light {
+    background-color: var(--rubric-soft);
+}
+
+.admin-main .bg-green-50,
+.admin-main .bg-green-100,
+.admin-main .bg-emerald-50,
+.admin-main .bg-emerald-100,
+.admin-main .bg-success-light {
+    background-color: var(--ok-soft);
+}
+
+.admin-main .bg-yellow-50,
+.admin-main .bg-amber-50,
+.admin-main .bg-orange-50,
+.admin-main .bg-warning-light {
+    background-color: var(--amber-soft);
+}
+
+.admin-main .bg-blue-50,
+.admin-main .bg-indigo-50 {
+    background-color: var(--ledger-soft);
+}
+
+.admin-main .border-red-200,
+.admin-main .border-red-300 {
+    border-color: var(--rubric);
+}
+
+.admin-main .border-green-200,
+.admin-main .border-emerald-200 {
+    border-color: var(--ok);
+}
+
+.admin-main .rounded-full {
+    border-radius: 0;
+}
+
+.admin-main .shadow,
+.admin-main .shadow-sm,
+.admin-main .shadow-md,
+.admin-main .shadow-lg,
+.admin-main .shadow-xl {
+    box-shadow: none;
+}
+
+.admin-main table {
+    font-size: var(--label);
+}
+
+.admin-main thead th {
+    text-align: left;
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+    border-bottom: var(--border) solid var(--ink);
+    padding: 8px 12px 8px 0;
+    background: transparent;
+}
+
+.admin-main tbody td {
+    border-bottom: var(--border) solid var(--rule);
+    padding: 10px 12px 10px 0;
+    color: var(--ink);
+    vertical-align: top;
+}
+
+.admin-main tbody tr:hover td {
+    background: var(--paper-raised);
+}
+
+.admin-main input:not(.priority-slider),
+.admin-main select,
+.admin-main textarea {
+    background: var(--paper-raised);
+    border: var(--border) solid var(--rule-strong);
+    color: var(--ink);
+    border-radius: 0;
+    font-size: var(--label);
+    min-height: 38px;
+    padding: 7px 10px;
+}
+
+.admin-main input:focus-visible,
+.admin-main select:focus-visible,
+.admin-main textarea:focus-visible {
+    border-color: var(--ledger);
+    box-shadow: inset 0 0 0 1px var(--ledger);
+    outline: none;
+}
+
+/* ============================================================
+   CALENDAR — react-big-calendar inside the workspace.
+   The library keeps its behaviour; the register owns its surface.
+   ============================================================ */
+
+.rbc-calendar {
+    font-family: var(--font-ui);
+    color: var(--ink);
+    font-size: var(--small);
+}
+
+.rbc-toolbar {
+    gap: var(--s2);
+    margin-bottom: var(--s3);
+}
+
+.rbc-toolbar button {
+    border: var(--border) solid var(--rule-strong);
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--ink-secondary);
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 10px;
+    min-height: 34px;
+}
+
+.rbc-toolbar button:hover {
+    background: var(--paper-sunken);
+    color: var(--ink);
+}
+
+.rbc-toolbar button.rbc-active,
+.rbc-toolbar button.rbc-active:hover {
+    background: var(--pine);
+    border-color: var(--pine);
+    color: var(--pine-ink);
+    box-shadow: none;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+    font-size: var(--lead);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+}
+
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view,
+.rbc-time-header,
+.rbc-time-content,
+.rbc-time-header-content,
+.rbc-day-bg,
+.rbc-header,
+.rbc-month-row,
+.rbc-time-slot,
+.rbc-timeslot-group,
+.rbc-agenda-view table.rbc-agenda-table,
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td,
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+    border-color: var(--rule);
+}
+
+.rbc-header {
+    background: var(--paper-sunken);
+    padding: 5px 6px;
+    font-size: var(--micro);
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+}
+
+.rbc-off-range-bg {
+    background: var(--paper-sunken);
+}
+
+.rbc-today {
+    background: var(--rubric-soft);
+}
+
+.rbc-date-cell {
+    padding: 3px 5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.rbc-event,
+.rbc-event.rbc-selected {
+    border-radius: 0;
+    border: 0;
+    border-left: var(--border) solid var(--foil);
+    background: var(--pine);
+    color: var(--pine-ink);
+    padding: 1px 4px;
+    font-size: var(--tally);
+}
+
+.rbc-event.rbc-selected {
+    background: var(--ledger);
+}
+
+.rbc-show-more {
+    color: var(--ledger);
+    font-size: var(--micro);
+    font-weight: 600;
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+    background: var(--paper-sunken);
+    font-size: var(--micro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+    padding: 6px;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+    padding: 6px;
+    font-size: var(--small);
+}
+
+.rbc-time-gutter .rbc-timeslot-group,
+.rbc-label {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--micro);
+    color: var(--ink-muted);
+}

@@ -5,6 +5,7 @@ import { convertFileToWebP } from '../../../../lib/utils/image-utils';
 import { sql } from '@/lib/sql';
 import { getCurrentAdminUser } from '@/lib/auth';
 import { logAdminAction, getRequestInfo } from '@/lib/admin-log';
+import { apiAuthResponse } from '@/lib/api-error';
 
 interface GalleryImageRow {
     id: number;
@@ -39,6 +40,8 @@ export async function GET() {
 
         return NextResponse.json({ images });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error fetching images:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
@@ -130,6 +133,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ image: newImage });
     } catch (error) {
+        const authResponse = apiAuthResponse(error);
+        if (authResponse) return authResponse;
         console.error('Error uploading image:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
