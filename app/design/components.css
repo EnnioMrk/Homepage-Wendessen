@@ -677,7 +677,7 @@ a.entry:focus-visible .entry-title {
     }
 
     .entry-date .time {
-        font-size: 0.75rem;
+        font-size: var(--clock-sm);
         letter-spacing: -0.01em;
     }
     .entry-date .d {

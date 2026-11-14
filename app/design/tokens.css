@@ -66,6 +66,7 @@
     --day-lg: 1.75rem; /* 28 — entry date */
     --day-sm: 1.125rem; /* 18 — compact date */
     --input-text: 1rem; /* 16 — never smaller, avoids iOS zoom */
+    --clock-sm: 0.75rem; /* 12 — the only phone-scale time, fits the 64 px column */
     --close: 1.125rem; /* 18 — dialog close glyph */
 
     /* space */
