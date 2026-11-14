@@ -181,6 +181,20 @@ Results at this point: **38/38 a11y checks clean**, **0 low-contrast nodes**
 across the 11 audited routes (after raising `--ink-faint` to 4.5:1 and the
 hidden menu label to the foil), and the `.rbc-*` calendar skin added.
 
+## 5b. Ship record
+
+- Branch `v2`, commit `b101fee`, pushed to `origin/v2`.
+- Production build from the same tree: 132 routes, `tsc`/`eslint` clean.
+- Served for inspection on `http://127.0.0.1:3004`
+  (`NEXT_DIST_DIR=.next-build PORT=3004 bun run start`).
+- Temporary reviewer account `redesign-review` deleted; its password file
+  removed. The database contains no test rows from this run (contacts, archive
+  entries and layouts created during verification were deleted; `archive_id_seq`
+  was repaired to match the existing rows).
+- Extra evidence kept with the review set: `.impeccable/review/extra/agenda-july-cancelled.png`
+  (cancelled agenda rows struck and stamped in July 2026, the only month with
+  cancelled entries).
+
 ## 6. Gates
 
 ### Production build (interim, before the last admin wave)
