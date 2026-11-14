@@ -13,9 +13,13 @@ import { newsCategories } from '@/app/components/news/content';
 import { pageToday } from '@/app/lib/page-today';
 
 export async function generateStaticParams() {
+    if (!process.env.DATABASE_URL) return [{ kategorie: 'Verwaltung' }];
+    const { newsCategories } = await import('@/app/components/news/content');
+    const { loadNews } = await import('@/app/components/news/news-data');
     const news = await loadNews();
-    if (!news) return [];
-    return newsCategories(news).map((kategorie) => ({ kategorie }));
+    return newsCategories(news ?? []).map((kategorie: string) => ({
+        kategorie,
+    }));
 }
 
 export async function generateMetadata({

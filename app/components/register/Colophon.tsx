@@ -8,7 +8,7 @@ import { InstallPWA } from '@/app/components/layout/InstallPWA';
  * the footer never drifts from what the editors configured.
  */
 export async function Colophon() {
-    const settings = await getSiteSettings();
+    const settings = await getSiteSettings().catch(() => ({}) as Record<string, string>);
     const copyright =
         settings.copyright_text || '© Ortsrat Wendessen. Alle Rechte vorbehalten.';
     const whatsappUrl = settings.whatsapp_channel_url || '';

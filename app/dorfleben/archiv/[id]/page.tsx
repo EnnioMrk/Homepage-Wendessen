@@ -5,10 +5,15 @@ import type { Descendant } from 'slate';
 import ArticleRenderer from '@/app/components/news/ArticleRenderer';
 import { Leaf, Margin, PageHead } from '@/app/components/register/Layout';
 import { dateLong } from '@/app/lib/register-format';
-import { getArchiveItemById, getArchiveItems } from '@/lib/database';
+import { getArchiveItemById } from '@/lib/database';
 import { pageToday } from '@/app/lib/page-today';
 
 export async function generateStaticParams() {
+    // A build without a database runs in compile mode and prerenders nothing;
+    // Cache Components still insists on a non-empty list, so give it a throwaway
+    // param that mode never renders.
+    if (!process.env.DATABASE_URL) return [{ id: '1' }];
+    const { getArchiveItems } = await import('@/lib/database');
     const items = await getArchiveItems();
     return items.map((item) => ({ id: String(item.id) }));
 }

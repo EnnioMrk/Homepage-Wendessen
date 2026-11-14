@@ -84,9 +84,19 @@ the variable names, never the values.
 
   ```bash
   bun install --frozen-lockfile
-  bun run build          # lint + next build
+  bun run build          # lint + next build (scripts/build.mjs)
   bun run start          # or the host's Next runtime
   ```
+
+- **The build does not require the database.** `scripts/build.mjs` checks for
+  `DATABASE_URL`; when it is absent (a container build has no runtime secrets)
+  it builds in compile mode: no page is prerendered, every route renders on
+  demand and reads PostgreSQL at runtime, where the env is available. Nothing
+  is baked with empty data. When `DATABASE_URL` is present the normal build runs
+  and 50 pages are prerendered. The PostgreSQL pool is created on first query,
+  so importing a route module during the build never throws.
+- The container command is `bun run start`; the platform provides `PORT` and the
+  runtime environment.
 
 - No new service, no new port, no new database. The redesign adds routes and
   CSS only; `next.config.ts` keeps the MinIO image patterns.

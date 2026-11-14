@@ -29,9 +29,11 @@ function descriptionOf(article: NewsItem): string {
 }
 
 export async function generateStaticParams() {
+    // A database is needed to know the article ids. A build without one runs in
+    // compile mode and never calls this; a normal build has the rows.
+    if (!process.env.DATABASE_URL) return [{ id: '1' }];
     const news = await loadNews();
-    if (!news) return [];
-    return news.map((item) => ({ id: item.articleId }));
+    return (news ?? []).map((item) => ({ id: item.articleId }));
 }
 
 export async function generateMetadata({

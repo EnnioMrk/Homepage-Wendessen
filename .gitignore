@@ -50,7 +50,7 @@ next-env.d.ts
 
 .openchamber/
 # verification build (distDir override)
-.next-build*/
+.next-*/
 
 # review screenshots are evidence, not source
 .impeccable/review/
