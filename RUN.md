@@ -197,26 +197,6 @@ hidden menu label to the foil), and the `.rbc-*` calendar skin added.
 
 ## 6. Gates
 
-### Detector (final)
-
-`impeccable detect --json app lib` → **`[]`**. It took three passes: the first
-run found 180 findings (mostly legacy palette and off-ramp sizes), the second
-21, and the last one had a single advisory (a 12 px phone clock), now a token
-(`--clock-sm`) documented in DESIGN.md.
-
-### Final automated results
-
-| Check | Result |
-|---|---|
-| `bun run build` (prod, `.next-build`) | 132 routes, TypeScript clean, lint clean |
-| `bun test` unit + capability + design | 66 pass, 0 fail (406 assertions) |
-| `bun test tests/parity/routes.test.ts` (prod server) | 71 pass, 0 fail |
-| a11y + overflow audit, 19 routes × 2 widths | 38/38 clean |
-| contrast audit, 11 routes | 0 nodes below AA |
-| hover-state contrast (primary button, links) | 14.46:1 / 8.55:1 |
-| `impeccable detect` | `[]` |
-
-
 ### Production build (interim, before the last admin wave)
 
 `NEXT_DIST_DIR=.next-build bun run build` → **compiled, TypeScript clean, 132
@@ -365,8 +345,24 @@ no captured screen changes visually because the only new visible element is the
 number under a cancelled row's label, and no cancelled entry is in the upcoming
 list.
 
-### Detector
+### Detector — final result
 
-`impeccable detect --json app/design` → `[]` (clean). The remaining findings are
-in legacy components that the rewrite replaces or that are deleted at cleanup;
-the full run and its disposition are recorded under the finish gate.
+`impeccable detect --json app lib` → **`[]`**. It took three passes: the first
+run found 180 findings (mostly legacy palette and off-ramp sizes), the second
+21, and the last one had a single advisory (a 12 px phone clock), now a token
+(`--clock-sm`) documented in DESIGN.md.
+
+Final automated results
+
+| Check | Result |
+|---|---|
+| `bun run build` (prod, `.next-build`) | 132 routes, TypeScript clean, lint clean |
+| `bun test` unit + capability + design | 66 pass, 0 fail (406 assertions) |
+| `bun test tests/parity/routes.test.ts` (prod server) | 71 pass, 0 fail |
+| a11y + overflow audit, 19 routes × 2 widths | 38/38 clean |
+| contrast audit, 11 routes | 0 nodes below AA |
+| hover-state contrast (primary button, links) | 14.46:1 / 8.55:1 |
+| `impeccable detect` | `[]` |
+
+
+
