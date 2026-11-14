@@ -181,6 +181,26 @@ Results at this point: **38/38 a11y checks clean**, **0 low-contrast nodes**
 across the 11 audited routes (after raising `--ink-faint` to 4.5:1 and the
 hidden menu label to the foil), and the `.rbc-*` calendar skin added.
 
+## 5a. Deployment fix (container build)
+
+The first container build (Nixpacks, no runtime secrets in the build) failed:
+`lib/sql.ts` threw at import when `DATABASE_URL` was absent, and the prerender
+step then tried to read PostgreSQL. Fixes:
+
+- The pg pool is created on first query (`getPool()`), so importing a route
+  during build never throws.
+- `scripts/build.mjs` (the `build` script) checks `DATABASE_URL` — including the
+  value in `.env`, which it reads the way Next does. Without a database it
+  builds in compile mode: **no page is prerendered** (0 HTML files), every route
+  renders on demand against the runtime database. With a database it runs the
+  normal build and prerenders 50 pages.
+- A build-time-only guard returns empty rows instead of throwing when Next
+  evaluates a route during data collection in that mode; it cannot bake empty
+  pages because compile mode emits none.
+- `.next-*` build directories are ignored by ESLint and git.
+- Verified: database-less build succeeds (0 HTML), `next start` with the runtime
+  env serves real data and correct 404s; a normal build still prerenders.
+
 ## 5b. Ship record
 
 - Branch `v2`, commit `b101fee`, pushed to `origin/v2`.
